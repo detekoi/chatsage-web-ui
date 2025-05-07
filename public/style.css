@@ -216,7 +216,7 @@ a:not(.button):active {
     
     .twitch-login:hover,
     .twitch-login:focus {
-        background-color: #9146FF;
+        /* Keep the same background color, only change shadow */
         box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
     }
 
