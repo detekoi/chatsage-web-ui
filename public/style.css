@@ -1,119 +1,117 @@
 /* General body and container for UI pages */
-body.web-ui {
-    font-family: var(--font-primary, 'Atkinson Hyperlegible', sans-serif);
-    background-color: var(--color-background, #ffffff);
-    color: var(--color-text, #121212);
+body {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    background-color: #ffffff;
+    color: #121212;
     line-height: 1.6;
-    margin: 0; /* reset.css might handle this, but good to be explicit */
+    margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column; /* Allow footer to push down */
+    flex-direction: column;
     align-items: center;
-    justify-content: center; /* Center content vertically for login/short pages */
-    min-height: 100vh;
+    justify-content: center;
+    height: 100vh;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-.ui-container {
-    background-color: var(--color-card-bg, #f5f5f5);
-    padding: var(--spacing-large, 32px);
-    border-radius: 8px; /* Softer radius than project cards if desired */
-    border: 2px solid var(--color-border, #333333);
-    box-shadow: var(--shadow-size-card, 8px) var(--shadow-size-card, 8px) 0 var(--color-border, #333333);
+.container {
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 8px;
+    border: 2px solid #333333;
+    box-shadow: 8px 8px 0 #333333;
     text-align: center;
     max-width: 500px;
     width: 90%;
-    margin: var(--spacing-medium, 24px); /* Add some margin */
+    position: relative;
+    z-index: 1;
 }
 
-/* Typography matching your site */
-.ui-container h1 {
-    font-size: var(--font-size-large, 3rem); /* Matches .project-title */
-    color: var(--color-text); /* Ensure it uses the theme text color */
-    margin-bottom: var(--spacing-medium, 24px);
+/* Typography */
+h1 {
+    font-size: 3rem;
+    margin-bottom: 24px;
     font-weight: 700;
 }
 
-.ui-container p {
+p {
     line-height: 1.6;
-    margin-bottom: var(--spacing-medium, 24px);
-    font-size: var(--font-size-regular, 1rem);
+    margin-bottom: 24px;
+    font-size: 1rem;
 }
 
-/* Button Styling (adapting your existing 'a' button style) */
-.ui-button,
-.ui-container a.ui-button { /* Target links styled as buttons */
-    background-color: var(--color-background, white); /* Light background for buttons by default */
-    color: var(--color-text, #121212);
-    border: 2px solid var(--color-text, #121212);
+/* Button Styling */
+a.button, button.button {
+    background-color: white;
+    color: #121212;
+    border: 2px solid #121212;
     position: relative;
-    box-shadow: var(--shadow-size-default, 4px) var(--shadow-size-default, 4px) 0 var(--color-text, #121212);
+    box-shadow: 4px 4px 0 #121212;
     text-decoration: none;
     transition: all 0.2s ease;
-    padding: 10px 18px; /* Slightly larger padding for better click target */
+    padding: 6px 12px;
     display: inline-block;
-    font-weight: 700; /* Match your 'a' style */
-    font-size: var(--font-size-regular, 1rem);
+    font-weight: 600;
+    margin: 8px 0;
     cursor: pointer;
-    border-radius: 4px; /* Optional: subtle radius */
-    margin: var(--spacing-small, 8px) 0;
 }
 
-.ui-button:hover,
-.ui-container a.ui-button:hover,
-.ui-button:focus,
-.ui-container a.ui-button:focus {
-    transform: var(--hover-transform, translate(-2px, -2px));
-    box-shadow: var(--shadow-size-hover, 6px) var(--shadow-size-hover, 6px) 1px var(--shadow-opacity-light, rgba(0, 0, 0, 0.6));
+a.button:hover,
+a.button:focus,
+button.button:hover,
+button.button:focus {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.6);
     text-decoration: none;
 }
 
-.ui-button:active,
-.ui-container a.ui-button:active {
-    transform: var(--active-transform, translate(2px, 2px));
-    box-shadow: 1px 1px 0 var(--color-text, #121212);
-    background-color: var(--color-active-light, #eaeaea);
+a.button:active,
+button.button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #121212;
+    background-color: #eaeaea;
 }
 
-.ui-button:disabled {
-  cursor: wait;
-  background-color: var(--color-secondary, #eeeeee);
-  box-shadow: 1px 1px 0 var(--color-border, #333333);
-  color: #888888;
-  transform: translate(1px, 1px);
+button.button:disabled,
+a.button:disabled {
+    cursor: wait;
+    background-color: #eeeeee;
+    box-shadow: 1px 1px 0 #333333;
+    color: #888888;
+    transform: translate(1px, 1px);
 }
-
 
 /* Specific button for Twitch Login */
-.twitch-login-button {
+.twitch-login {
     background-color: #9146FF; /* Twitch Purple */
     color: white;
     border-color: #772CE8; /* Darker Twitch Purple */
-    box-shadow: var(--shadow-size-default, 4px) var(--shadow-size-default, 4px) 0 #772CE8;
+    box-shadow: 4px 4px 0 #772CE8;
 }
 
-.twitch-login-button:hover,
-.twitch-login-button:focus {
-    background-color: #772CE8;
-    box-shadow: var(--shadow-size-hover, 6px) var(--shadow-size-hover, 6px) 1px rgba(0, 0, 0, 0.4);
+.twitch-login:hover,
+.twitch-login:focus {
+    /* Keep same background color on hover, only change shadow */
+    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.4);
 }
 
-.twitch-login-button:active {
+.twitch-login:active {
     background-color: #5c16c5;
     box-shadow: 1px 1px 0 #772CE8;
 }
 
 /* Dashboard Specific Styles */
 #bot-status-container {
-    margin: var(--spacing-medium, 24px) 0;
-    padding: var(--spacing-medium, 24px);
-    border: 2px solid var(--color-border, #333333);
+    margin: 24px 0;
+    padding: 24px;
+    border: 2px solid #333333;
     border-radius: 5px;
-    background-color: var(--color-secondary, #eeeeee); /* Slightly different from card-bg for differentiation */
+    background-color: #eeeeee; /* Slightly different from card-bg for differentiation */
 }
 
 #bot-status-container p {
-    margin-bottom: var(--spacing-small);
+    margin-bottom: 8px;
 }
 
 #bot-status-container strong {
@@ -129,32 +127,32 @@ body.web-ui {
 }
 
 #action-message {
-    margin-top: var(--spacing-medium, 24px);
+    margin-top: 24px;
     font-weight: bold;
     min-height: 20px; /* To prevent layout shifts */
-    font-size: var(--font-size-small);
+    font-size: 0.875rem;
 }
 
-/* Links in dashboard not styled as buttons */
-.ui-container a:not(.ui-button) {
+/* Links not styled as buttons */
+a:not(.button) {
     background-color: transparent;
-    color: var(--color-text); /* Use theme text color */
+    color: #121212;
     border: none;
     box-shadow: none;
     text-decoration: underline;
     padding: 0;
-    font-weight: normal; /* Or bold if you prefer */
+    font-weight: normal;
 }
 
-.ui-container a:not(.ui-button):hover,
-.ui-container a:not(.ui-button):focus {
-    color: #666666; /* Use a link hover color from your theme or define one */
+a:not(.button):hover,
+a:not(.button):focus {
+    color: #666666;
     transform: none;
     box-shadow: none;
     text-decoration: underline;
 }
 
-.ui-container a:not(.ui-button):active {
+a:not(.button):active {
     color: #999999;
     transform: none;
     box-shadow: none;
@@ -162,101 +160,95 @@ body.web-ui {
 }
 
 
-/* Dark Mode Adjustments for UI */
+/* Dark Mode Adjustments */
 @media (prefers-color-scheme: dark) {
-    body.web-ui {
-        background-color: var(--color-background, #121212);
-        color: var(--color-text, #ffffff);
+    body {
+        background-color: #121212;
+        color: #ffffff;
     }
 
-    .ui-container {
-        background-color: var(--color-card-bg, #1e1e1e);
-        border-color: var(--color-border, #ffffff);
-        box-shadow: var(--shadow-size-card, 8px) var(--shadow-size-card, 8px) 0 var(--color-border, #ffffff);
+    .container {
+        background-color: #1e1e1e;
+        border-color: #ffffff;
+        box-shadow: 8px 8px 0 #ffffff;
     }
 
-    .ui-container h1 {
-        color: var(--color-text, #ffffff);
+    h1 {
+        color: #ffffff;
     }
 
-    .ui-button,
-    .ui-container a.ui-button {
-        background-color: var(--color-text, #ffffff); /* Light buttons on dark bg */
-        color: var(--color-background, #121212);    /* Dark text on light buttons */
-        border: 2px solid var(--color-border, #ffffff); /* Border matches dark mode text color */
-        box-shadow: var(--shadow-size-default, 4px) var(--shadow-size-default, 4px) 0 var(--shadow-color, rgba(255, 255, 255, 0.33));
+    a.button, 
+    button.button {
+        background-color: #ffffff;
+        color: #121212;
+        border: 2px solid #ffffff;
+        box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.33);
     }
 
-    .ui-button:hover,
-    .ui-container a.ui-button:hover,
-    .ui-button:focus,
-    .ui-container a.ui-button:focus {
-        box-shadow: var(--shadow-size-hover, 6px) var(--shadow-size-hover, 6px) 1px var(--shadow-color, rgba(255, 255, 255, 0.1));
-        /* Keep background and text color on hover */
+    a.button:hover,
+    a.button:focus,
+    button.button:hover,
+    button.button:focus {
+        box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.1);
     }
 
-    .ui-button:active,
-    .ui-container a.ui-button:active {
-        box-shadow: 1px 1px 0 var(--shadow-color, rgba(255, 255, 255, 0.33));
-        background-color: var(--color-active-dark, #333333); /* Darker active state for button */
-        color: var(--color-text, #ffffff); /* Text color for active state */
+    a.button:active,
+    button.button:active {
+        box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.33);
+        background-color: #333333;
+        color: #ffffff;
     }
     
-    .ui-button:disabled {
+    button.button:disabled,
+    a.button:disabled {
       background-color: #444444;
       border-color: #666666;
       color: #888888;
-      box-shadow: 1px 1px 0 var(--shadow-color, rgba(255, 255, 255, 0.33));
+      box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.33);
     }
 
-    .twitch-login-button { /* Keep Twitch purple, adjust shadow for dark mode if needed */
+    .twitch-login {
         background-color: #9146FF;
         color: white;
         border-color: #772CE8;
-        box-shadow: var(--shadow-size-default, 4px) var(--shadow-size-default, 4px) 0 #5c16c5; /* Darker shadow */
+        box-shadow: 4px 4px 0 #5c16c5;
     }
-     .twitch-login-button:hover,
-    .twitch-login-button:focus {
-        background-color: #772CE8;
-        box-shadow: var(--shadow-size-hover, 6px) var(--shadow-size-hover, 6px) 1px rgba(255, 255, 255, 0.2);
+    
+    .twitch-login:hover,
+    .twitch-login:focus {
+        background-color: #9146FF;
+        box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
     }
 
-    .twitch-login-button:active {
+    .twitch-login:active {
         background-color: #5c16c5;
         box-shadow: 1px 1px 0 #772CE8;
     }
 
-
     #bot-status-container {
-        background-color: var(--color-secondary, #333333);
-        border-color: var(--color-border, #ffffff); /* Use border color from dark theme */
+        background-color: #333333;
+        border-color: #ffffff;
     }
 
-    .ui-container a:not(.ui-button) {
-        color: var(--color-text, #ffffff);
+    a:not(.button) {
+        color: #ffffff;
     }
 
-    .ui-container a:not(.ui-button):hover,
-    .ui-container a:not(.ui-button):focus {
-        color: #bbbbbb; /* Lighter gray for hover on dark */
+    a:not(.button):hover,
+    a:not(.button):focus {
+        color: #bbbbbb;
     }
-     .ui-container a:not(.ui-button):active {
+    
+    a:not(.button):active {
         color: #999999;
     }
 }
 
-/* Add a canvas for the background if you want to reuse that effect */
-#web-ui-staticCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -2; /* Ensure it's behind the main body content */
-  display: block;
-  pointer-events: none;
+/* Canvas styling moved to inline HTML */
+
+html {
+    height: 100%;
+    overflow: hidden;
 }
 
-.container {
-    background-color: #fff;
-}
+/* Removed duplicate .container definition */
