@@ -67,3 +67,22 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+functions/.runtimeconfig.json
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear on external disks
+.Spotlight-V100
+.Trashes
+
+# macOS metadata files
+*.DS_Store
