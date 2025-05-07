@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatSage Bot Management</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="web-ui">
+    <canvas id="staticCanvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none;"></canvas>
+    <div class="ui-container">
+        <h1>Welcome to ChatSage Management</h1>
+        <p>Add or remove ChatSage from your Twitch channel.</p>
+        <a href="https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/webUi/auth/twitch/redirect" class="ui-button twitch-login-button">Login with Twitch to Manage Bot</a>
+    </div>
+    <script src="static-background.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatSage Dashboard</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="staticCanvas" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none;"></canvas>
+    <div class="container">
+        <h1>ChatSage Dashboard</h1>
+        <p>Welcome, <span id="twitch-username">loading...</span>!</p>
+        <div id="bot-status-container">
+            <p>Bot status for channel <strong id="channel-name-status">your channel</strong>: <strong id="bot-status">Loading...</strong></p>
+            <button id="add-bot-btn" style="display:none;">Add Bot to My Channel</button>
+            <button id="remove-bot-btn" style.display="none;">Remove Bot from My Channel</button>
+        </div>
+        <p id="action-message"></p>
+        <a href="#" id="logout-link">Logout</a>
+    </div>
+    <script src="dashboard.js"></script>
+    <script src="static-background.js"></script>
+</body>
+</html>
