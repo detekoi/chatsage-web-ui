@@ -22,36 +22,48 @@ const app = express();
 // These will be loaded from .env files (e.g., .env.streamsage-bot for deployed, .env for local emulator)
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
-const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_URL; // Renamed for clarity
-const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL || "http://127.0.0.1:5002"; // Fallback for local
-const JWT_SECRET = process.env.JWT_SECRET_KEY; // Renamed for clarity
+const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_URL;
+const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION = "1h";
-const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET || "default-fallback-session-secret-string";
+const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
+
+if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET || !CALLBACK_REDIRECT_URI_CONFIG || !FRONTEND_URL_CONFIG || !JWT_SECRET || !SESSION_SECRET_FOR_COOKIE_PARSER) {
+  console.error("CRITICAL: One or more environment variables are missing. Check .env files and deployment configuration.");
+  // For an HTTP function, you might not want to throw here as it might prevent any response.
+  // But be aware that routes relying on these will fail.
+  // Consider how to handle this gracefully if a variable is missing.
+}
 
 app.use(cookieParser(SESSION_SECRET_FOR_COOKIE_PARSER));
 
-// CORS Middleware
+// Improved CORS Middleware
 app.use((req, res, next) => {
   const allowedOrigins = [
-    FRONTEND_URL_CONFIG, // This will be the live URL when deployed, or local from .env
-    "http://127.0.0.1:5002", // Explicitly for local dev
-    "http://localhost:5002", // Explicitly for local dev
+    FRONTEND_URL_CONFIG, // This will be the live URL from .env.streamsage-bot when deployed or local from .env when emulated
+    "http://127.0.0.1:5002", // Keep for local emulator access
+    "http://localhost:5002", // Keep for local emulator access
   ].filter(Boolean);
 
   const origin = req.headers.origin;
+  console.log(`CORS Check: Request Origin: ${origin}, Allowed Production Frontend URL: ${FRONTEND_URL_CONFIG}`);
+
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  // Allow ngrok origins dynamically for local testing if you use it
-  if (origin && origin.includes("ngrok-free.app")) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+    console.log(`CORS Check: Origin ${origin} is allowed.`);
+  } else {
+    if (origin) {
+      console.warn(`CORS Check: Origin ${origin} is NOT in allowed list: ${allowedOrigins.join(", ")}`);
+    }
   }
 
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
+
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
+    console.log(`CORS Check: Responding to OPTIONS request for origin: ${origin}`);
+    return res.sendStatus(204);
   }
   next();
 });
