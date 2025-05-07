@@ -11,7 +11,7 @@
 }
 
 /* Font loading */
-@font-face {
+/* @font-face {
   font-family: 'Atkinson Hyperlegible';
   src: url('../assets/fonts/atkinson-hyperlegible/AtkinsonHyperlegible-Regular.ttf') format('truetype');
   font-weight: 400;
@@ -41,7 +41,7 @@
   font-weight: 700;
   font-style: italic;
   font-display: swap;
-}
+} */
 
 :root {
   /* Typography */

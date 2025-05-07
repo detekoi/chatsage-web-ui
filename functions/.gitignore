@@ -1,0 +1,16 @@
+node_modules/
+*.local
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# macOS folder attributes
+__MACOSX/
+
+# Sensitive files
+functions/.runtimeconfig.json
+.env
+.env.*
+*.env

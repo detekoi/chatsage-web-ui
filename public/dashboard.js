@@ -8,67 +8,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutLink = document.getElementById('logout-link');
 
     // IMPORTANT: Configure this to your deployed Cloud Function URL
-    const API_BASE_URL = 'https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/webUi';
-
+    const API_BASE_URL = 'http://127.0.0.1:5001/streamsage-bot/us-central1/webUi';
+    let appSessionToken = null; // Variable to hold the token
     let loggedInUser = null;
 
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-
     async function initializeDashboard() {
-        const userLogin = getCookie('twitch_user_login');
-        const userId = getCookie('twitch_user_id');
+        appSessionToken = localStorage.getItem('app_session_token');
+        console.log("Dashboard: Loaded app_session_token from localStorage:", appSessionToken); // Log what's loaded
 
-        if (!userLogin || !userId) {
-            console.log("No user cookies found, redirecting to login initiation.");
-            // If no user info, they need to log in.
-            // You might redirect them to the main page or your auth redirect function.
-            // Since this page is dashboard.html, if they land here without cookies,
-            // it implies the callback redirect worked but maybe cookies weren't set or read yet.
-            // For a robust solution, the callback should set a flag or redirect with a parameter
-            // that this page can check.
-            // For now, if cookies are missing, we assume they need to go through login.
-            // This might cause a loop if cookies are blocked or not setting correctly.
-            // window.location.href = `${API_BASE_URL}/auth/twitch/redirect`; // Careful with redirect loops
-            twitchUsernameEl.textContent = "Not logged in";
-            actionMessageEl.textContent = "Please login to manage the bot.";
-            botStatusEl.textContent = "Unknown";
-            return;
-        }
+        const userLoginFromStorage = localStorage.getItem('twitch_user_login');
+        const userIdFromStorage = localStorage.getItem('twitch_user_id');
 
-        loggedInUser = { login: userLogin, id: userId, displayName: userLogin }; // Use login as display name
-        twitchUsernameEl.textContent = loggedInUser.displayName;
-        channelNameStatusEl.textContent = loggedInUser.login;
-        actionMessageEl.textContent = '';
+        if (userLoginFromStorage && userIdFromStorage) {
+            loggedInUser = { login: userLoginFromStorage, id: userIdFromStorage, displayName: userLoginFromStorage };
+            twitchUsernameEl.textContent = loggedInUser.displayName;
+            channelNameStatusEl.textContent = loggedInUser.login;
+            actionMessageEl.textContent = '';
 
-        try {
-            const statusRes = await fetch(`${API_BASE_URL}/api/bot/status`, { credentials: 'include' }); // Send cookies
+            if (!appSessionToken) {
+                console.warn("No session token found, API calls might fail authentication.");
+                actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+                // Optionally redirect to login if token is essential
+                // window.location.href = 'index.html';
+                return;
+            }
 
-            if (!statusRes.ok) {
-                if (statusRes.status === 401) {
-                     actionMessageEl.textContent = "Session expired or invalid. Please login again.";
-                    // Optionally redirect to login
-                    // window.location.href = `${API_BASE_URL}/auth/twitch/redirect`;
-                    return;
+            try {
+                const headers = {};
+                if (appSessionToken) {
+                    headers['Authorization'] = `Bearer ${appSessionToken}`;
                 }
-                throw new Error(`Failed to fetch status: ${statusRes.statusText}`);
-            }
-            const statusData = await statusRes.json();
+                console.log("Dashboard: Sending headers to /api/bot/status:", JSON.stringify(headers));
 
-            if (statusData.success) {
-                updateBotStatusUI(statusData.isActive);
-            } else {
-                actionMessageEl.textContent = `Error: ${statusData.message}`;
-                botStatusEl.textContent = "Error";
+                const statusRes = await fetch(`${API_BASE_URL}/api/bot/status`, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!statusRes.ok) {
+                    if (statusRes.status === 401) {
+                        actionMessageEl.textContent = "Session potentially expired or not fully established. Try logging in again.";
+                        return;
+                    }
+                    const errorData = await statusRes.json().catch(() => ({ message: statusRes.statusText }));
+                    throw new Error(`Failed to fetch status: ${errorData.message || statusRes.statusText}`);
+                }
+                const statusData = await statusRes.json();
+
+                if (statusData.success) {
+                    updateBotStatusUI(statusData.isActive);
+                } else {
+                    actionMessageEl.textContent = `Error: ${statusData.message}`;
+                    botStatusEl.textContent = "Error";
+                }
+            } catch (error) {
+                console.error('Error fetching bot status:', error);
+                actionMessageEl.textContent = 'Failed to load bot status. ' + error.message;
+                botStatusEl.textContent = 'Error';
             }
-        } catch (error) {
-            console.error('Error initializing dashboard:', error);
-            actionMessageEl.textContent = 'Failed to load dashboard data. Refresh or try logging in again.';
-            botStatusEl.textContent = 'Error';
+        } else {
+            // Not logged in or info missing, redirect to index.html
+            window.location.href = 'index.html';
         }
     }
 
@@ -88,9 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     addBotBtn.addEventListener('click', async () => {
+        if (!appSessionToken) {
+            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            return;
+        }
         actionMessageEl.textContent = 'Requesting bot to join...';
         try {
-            const res = await fetch(`${API_BASE_URL}/api/bot/add`, { method: 'POST', credentials: 'include' });
+            const res = await fetch(`${API_BASE_URL}/api/bot/add`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             const data = await res.json();
             actionMessageEl.textContent = data.message;
             if (data.success) {
@@ -103,9 +113,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     removeBotBtn.addEventListener('click', async () => {
+        if (!appSessionToken) {
+            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            return;
+        }
         actionMessageEl.textContent = 'Requesting bot to leave...';
         try {
-            const res = await fetch(`${API_BASE_URL}/api/bot/remove`, { method: 'POST', credentials: 'include' });
+            const res = await fetch(`${API_BASE_URL}/api/bot/remove`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             const data = await res.json();
             actionMessageEl.textContent = data.message;
             if (data.success) {
@@ -117,17 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    logoutLink.addEventListener('click', async (e) => {
+    logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
-        actionMessageEl.textContent = 'Logging out...';
-        try {
-            // Call the backend logout to clear any server-side session if you implement one.
-            // For cookie-based, just redirecting to the function that clears them is enough.
-            window.location.href = `${API_BASE_URL}/auth/logout`;
-        } catch (error) {
-            console.error('Error logging out:', error);
-            actionMessageEl.textContent = 'Logout failed.';
-        }
+        localStorage.removeItem('twitch_user_login');
+        localStorage.removeItem('twitch_user_id');
+        localStorage.removeItem('app_session_token'); // Clear JWT
+        appSessionToken = null; // Clear in-memory token
+        // Optionally call a backend /auth/logout endpoint
+        window.location.href = 'index.html';
     });
 
     initializeDashboard();

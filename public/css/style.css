@@ -33,6 +33,7 @@ h1 {
     font-size: 3rem;
     margin-bottom: 24px;
     font-weight: 700;
+    line-height: 1.2;
 }
 
 p {
@@ -170,7 +171,7 @@ a:not(.button):active {
     .container {
         background-color: #1e1e1e;
         border-color: #ffffff;
-        box-shadow: 8px 8px 0 #ffffff;
+        box-shadow: 8px 8px 0 rgba(255, 255, 255, 0.33);
     }
 
     h1 {

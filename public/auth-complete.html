@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Processing Authentication...</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="web-ui">
+    <div class="ui-container">
+        <h1>Processing Login...</h1>
+        <p id="auth-message">Please wait.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageEl = document.getElementById('auth-message');
+            const queryParams = new URLSearchParams(window.location.search);
+
+            const userLogin = queryParams.get('user_login');
+            const userId = queryParams.get('user_id');
+            const receivedState = queryParams.get('state');
+            const sessionToken = queryParams.get('session_token'); // Retrieve session token
+
+            const storedState = sessionStorage.getItem('oauth_csrf_state');
+            sessionStorage.removeItem('oauth_csrf_state'); // Clean up
+
+            if (!receivedState || !storedState || receivedState !== storedState) {
+                console.error("CSRF state mismatch. Received:", receivedState, "Stored:", storedState);
+                messageEl.textContent = "Login failed: Invalid state. This could be a security issue or a browser problem. Please try logging in again from the main page.";
+                // Optionally redirect to index.html after a delay
+                setTimeout(() => { window.location.href = 'index.html'; }, 5000);
+                return;
+            }
+
+            if (userLogin && userId && receivedState === storedState) { // Check state match
+                // Store user info more permanently (e.g., localStorage or a new cookie set by JS)
+                localStorage.setItem('twitch_user_login', userLogin);
+                localStorage.setItem('twitch_user_id', userId);
+
+                if (sessionToken) {
+                    localStorage.setItem('app_session_token', sessionToken);
+                    console.log("App session token stored in localStorage:", sessionToken);
+                } else {
+                    console.warn("No session_token received in auth-complete.html query params!");
+                    messageEl.textContent = "Login complete, but session token missing. API calls may fail. Please try logging in again.";
+                    // Don't redirect immediately if token is missing, let user see message
+                    return;
+                }
+
+                messageEl.textContent = `Welcome, ${userLogin}! Redirecting to dashboard...`;
+                window.location.href = 'dashboard.html';
+            } else {
+                messageEl.textContent = "Login failed: Missing user information from callback. Please try again.";
+                setTimeout(() => { window.location.href = 'index.html'; }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

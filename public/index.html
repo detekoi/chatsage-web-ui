@@ -3,16 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>ChatSage Bot Management</title>
-    <link rel="stylesheet" href="reset.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Cabin+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="staticCanvas" style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1;"></canvas>
     <div class="container">
         <h1>Welcome to ChatSage Management</h1>
         <p>Add or remove ChatSage from your Twitch channel.</p>
-        <a href="https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/webUi/auth/twitch/redirect" class="button twitch-login">Login with Twitch to Manage Bot</a>
+        <a href="#" id="twitchLoginBtn" class="ui-button twitch-login-button">Login with Twitch</a>
+        <p id="loginError" style="color:red;"></p>
     </div>
     <script src="static-background.js"></script>
+    <script>
+        document.getElementById('twitchLoginBtn').addEventListener('click', async (event) => {
+            event.preventDefault();
+            const loginErrorEl = document.getElementById('loginError');
+            loginErrorEl.textContent = '';
+            try {
+                // Adjust API_BASE_URL if needed, or hardcode for this page
+                const apiBaseUrl = 'http://127.0.0.1:5001/streamsage-bot/us-central1/webUi'; // Emulator URL
+                // const apiBaseUrl = 'https://your-ngrok-url.ngrok-free.app/streamsage-bot/us-central1/webUi'; // When using ngrok directly for initial hit
+                // const apiBaseUrl = 'https://your-live-function-url/webUi'; // For production
+
+                const response = await fetch(`${apiBaseUrl}/auth/twitch/initiate`);
+                if (!response.ok) {
+                    throw new Error(`Failed to initiate auth: ${response.statusText}`);
+                }
+                const data = await response.json();
+
+                if (data.success && data.twitchAuthUrl && data.state) {
+                    sessionStorage.setItem('oauth_csrf_state', data.state); // Store state
+                    window.location.href = data.twitchAuthUrl;       // Redirect to Twitch
+                } else {
+                    console.error("Failed to get auth URL or state from backend:", data.error);
+                    loginErrorEl.textContent = data.error || "Could not initiate login with Twitch.";
+                }
+            } catch (error) {
+                console.error("Error during login initiation:", error);
+                loginErrorEl.textContent = "Error initiating login. Check console.";
+            }
+        });
+    </script>
 </body>
 </html>
