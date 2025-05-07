@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutLink = document.getElementById('logout-link');
 
     // IMPORTANT: Configure this to your deployed Cloud Function URL
-    const API_BASE_URL = 'http://127.0.0.1:5001/streamsage-bot/us-central1/webUi';
+    const API_BASE_URL = 'https://us-central1-streamsage-bot.cloudfunctions.net/webUi';
     let appSessionToken = null; // Variable to hold the token
     let loggedInUser = null;
 
