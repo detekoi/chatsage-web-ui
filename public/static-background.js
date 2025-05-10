@@ -13,30 +13,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Configurable Parameters ---
     // Basic static effect configuration
     const config = {
-        pixelSize: 1,       // Minimum pixel size for finest static
-        density: 0.8,       // Base density for normal mode (increased to match default background)
-        baseAlpha: 0.85,    // Base alpha for normal mode (increased slightly)
+        pixelSize: 1.25,       // Keep 1px for authentic fine-grained static
+        density: 1,      // Increased from original 0.8 for more dense static
+        baseAlpha: 0.85,    // Base alpha for normal mode
         alphaVariance: 0.25, // Alpha variance for normal mode
 
         // Color ranges (0-255) - Enhanced contrast
         darkIntensityMin: 30,  // Brighter dots on dark bg
         darkIntensityMax: 100, // Wider range for better visibility
-        lightIntensityMin: 135, // Darker dots on light bg (increased contrast)
+        lightIntensityMin: 135, // Darker dots on light bg
         lightIntensityMax: 200, // Wider range for better visibility
         
         // Frame timing
-        frameInterval: 55, // Milliseconds between frames (~18fps) - Increased interval to reduce redraw frequency
+        frameInterval: 40, // Slightly increased from original for performance
+        
+        // Use partial redraw to improve performance
+        usePartialRedraw: true,
+        partialRedrawRatio: 0.4, // Redraw 40% of the static per frame
+        maxStoredFrames: 5, // Store this many frames for cycling
+        
+        // Static calculation divisor (lower = more dots)
+        staticDivisor: 42, // Reduced from 50 for higher density
         
         // Effect state tracking
         effectState: 'normal', // Can be 'normal', 'intensifying', 'intense', 'fading'
         
         // Intense mode parameters (what we transition to)
-        intenseDensity: 1.5,    // Lowered density for intense mode to reduce load
-        intenseColor: [200, 120, 255], // More vibrant purple magic color
+        intenseDensity: 1.3,    // Reduced from 1.5 for better performance
+        intenseColor: [200, 120, 255], // Purple magic color
         
         // Transition parameters
         transitionProgress: 0,   // Progress from 0-1
-        transitionSpeed: 0.012,  // How much to increment per frame (lower = smoother)
+        transitionSpeed: 0.012,  // How much to increment per frame
         
         // Effect parameters that will be dynamically calculated
         currentDensity: 0.66,   // Will be updated during transitions
@@ -44,16 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     // -----------------------------
 
-     let lastFrameTime = 0; // Needed only if using frameInterval
-
+    let lastFrameTime = 0;
+    
+    // Store previous frames of static
+    let staticPixels = [];
+    
     function resizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        
+        // Reset static pixels cache when resizing
+        staticPixels = [];
     }
 
-    function drawStatic(timestamp) { // timestamp is only needed if using frameInterval
-
-        // --- Optional Frame Rate Limiting ---
+    function drawStatic(timestamp) {
+        // --- Frame Rate Limiting ---
         if (timestamp - lastFrameTime < config.frameInterval) {
             animationFrameId = requestAnimationFrame(drawStatic);
             return;
@@ -66,79 +79,268 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update the effect state and transition progress
         updateEffectState();
         
-        // APPROACH: Draw two layers of static
-        // 1. Base layer - always present (regular static)
-        // 2. Effect layer - varies with transitions (colored static)
-        
-        // BASE LAYER: Always draw the normal static first
-        const baseStaticDots = Math.floor((canvas.width * canvas.height) / 50 * config.density);
-        for (let i = 0; i < baseStaticDots; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            
-            // Always use the normal static appearance for the base layer
-            let intensity;
-            if (isDarkMode) {
-                intensity = config.darkIntensityMin + Math.random() * (config.darkIntensityMax - config.darkIntensityMin);
-            } else {
-                intensity = config.lightIntensityMin + Math.random() * (config.lightIntensityMax - config.lightIntensityMin);
-            }
-            intensity = Math.floor(intensity);
-            
-            const alpha = config.baseAlpha + (Math.random() - 0.5) * config.alphaVariance;
-            
-            ctx.fillStyle = `rgba(${intensity}, ${intensity}, ${intensity}, ${alpha})`;
-            ctx.fillRect(x, y, config.pixelSize, config.pixelSize);
+        // Draw base static layer - either full redraw or partial
+        if (config.usePartialRedraw) {
+            drawPartialStatic();
+        } else {
+            drawFullStatic();
         }
         
-        // EFFECT LAYER: Only if we're not in normal state
+        // Draw effect layer if needed
         if (config.effectState !== 'normal' && config.transitionProgress > 0) {
-            // Calculate intensity dots - these have color and vary with transition
-            // Adjust density based on dark mode - less intense in dark mode
-            // Increased divisor to reduce number of effect dots
-            const densityMultiplier = isDarkMode ? 50 : 40; // Higher divisor = fewer dots
-            const effectDots = Math.floor((canvas.width * canvas.height) / densityMultiplier *
-                (config.intenseDensity - config.density) * config.transitionProgress);
-
-            // Draw dots with adjusted size for dark mode
-            for (let i = 0; i < effectDots; i++) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height;
-                
-                // Get special effect color (purple/magic)
-                const { r, g, b, alpha } = calculateEffectColor();
-                
-                // Smaller dots and fewer large ones in dark mode
-                const largeThreshold = isDarkMode ? 0.95 : 0.9; // 5% large dots in dark mode vs 10% in light
-                const dotSize = Math.random() > largeThreshold ? config.pixelSize * 2 : config.pixelSize;
-                
-                // Lower alpha for dark mode
-                const effectiveAlpha = isDarkMode ? alpha * 0.8 : alpha;
-                
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${effectiveAlpha})`;
-                ctx.fillRect(x, y, dotSize, dotSize);
-            }
-            
-            // Add some extra bright sparkles for additional visual impact - fewer in dark mode
-            // Increased divisor significantly to reduce sparkle count
-            const sparkleMultiplier = isDarkMode ? 4000 : 3000; // Higher divisor = fewer sparkles
-            const sparkleCount = Math.floor((canvas.width * canvas.height) / sparkleMultiplier * config.transitionProgress);
-            
-            for (let i = 0; i < sparkleCount; i++) {
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height;
-                
-                // Lower opacity sparkles in dark mode
-                const sparkleAlpha = isDarkMode ? 0.5 * config.transitionProgress : 0.7 * config.transitionProgress;
-                
-                // Always use white for these special sparkles
-                ctx.fillStyle = `rgba(255, 255, 255, ${sparkleAlpha})`;
-                ctx.fillRect(x, y, config.pixelSize * 2, config.pixelSize * 2);
-            }
+            drawEffectLayer();
         }
         
         // Request the next frame
         animationFrameId = requestAnimationFrame(drawStatic);
+    }
+    
+    // Function to draw full static pattern (original approach but optimized)
+    function drawFullStatic() {
+        // Calculate number of static dots based on screen size with slight reduction
+        const screenRatio = Math.min(1.0, (canvas.width * canvas.height) / (1920 * 1080));
+        const baseStaticDots = Math.floor((canvas.width * canvas.height) / config.staticDivisor * config.density * screenRatio);
+        
+        // Batch draw by intensity for fewer state changes
+        const dotsByIntensity = {};
+        
+        // Generate random dots and group by intensity
+        for (let i = 0; i < baseStaticDots; i++) {
+            const x = Math.floor(Math.random() * canvas.width);
+            const y = Math.floor(Math.random() * canvas.height);
+            
+            // Use integer intensity values for better batching
+            let intensity;
+            if (isDarkMode) {
+                intensity = Math.floor(config.darkIntensityMin + Math.random() * (config.darkIntensityMax - config.darkIntensityMin));
+            } else {
+                intensity = Math.floor(config.lightIntensityMin + Math.random() * (config.lightIntensityMax - config.lightIntensityMin));
+            }
+            
+            const alpha = config.baseAlpha + (Math.random() - 0.5) * config.alphaVariance;
+            
+            // Group by intensity for batch rendering
+            if (!dotsByIntensity[intensity]) {
+                dotsByIntensity[intensity] = {
+                    coords: [],
+                    alpha: alpha
+                };
+            }
+            
+            dotsByIntensity[intensity].coords.push([x, y]);
+        }
+        
+        // Draw each intensity group in a batch
+        for (const intensity in dotsByIntensity) {
+            const dots = dotsByIntensity[intensity];
+            ctx.fillStyle = `rgba(${intensity}, ${intensity}, ${intensity}, ${dots.alpha})`;
+            
+            for (const [x, y] of dots.coords) {
+                ctx.fillRect(x, y, config.pixelSize, config.pixelSize);
+            }
+        }
+    }
+    
+    // Function for partial redraw of static (more efficient)
+    function drawPartialStatic() {
+        // If we don't have enough stored frames, create a new one
+        if (staticPixels.length < config.maxStoredFrames) {
+            // Generate a new frame of static
+            const newFrame = generateStaticFrame();
+            staticPixels.push(newFrame);
+            
+            // Draw all stored frames
+            for (const frame of staticPixels) {
+                drawStaticFrame(frame);
+            }
+        } else {
+            // We have enough frames, so cycle them and update one
+            // Remove oldest frame
+            staticPixels.shift();
+            
+            // Generate new frame with partial coverage
+            const partialFrame = generatePartialStaticFrame();
+            staticPixels.push(partialFrame);
+            
+            // Draw all stored frames
+            for (const frame of staticPixels) {
+                drawStaticFrame(frame);
+            }
+        }
+    }
+    
+    // Generate a full frame of static dots
+    function generateStaticFrame() {
+        // Calculate number of static dots with slight ratio applied for large screens
+        const screenRatio = Math.min(1.0, (canvas.width * canvas.height) / (1920 * 1080));
+        const dotsPerFrame = Math.floor((canvas.width * canvas.height) / config.staticDivisor * (config.density / config.maxStoredFrames) * screenRatio);
+        
+        // Group dots by intensity for efficient drawing
+        const frameData = {};
+        
+        for (let i = 0; i < dotsPerFrame; i++) {
+            const x = Math.floor(Math.random() * canvas.width);
+            const y = Math.floor(Math.random() * canvas.height);
+            
+            // Use integer intensity values
+            let intensity;
+            if (isDarkMode) {
+                intensity = Math.floor(config.darkIntensityMin + Math.random() * (config.darkIntensityMax - config.darkIntensityMin));
+            } else {
+                intensity = Math.floor(config.lightIntensityMin + Math.random() * (config.lightIntensityMax - config.lightIntensityMin));
+            }
+            
+            const alpha = config.baseAlpha + (Math.random() - 0.5) * config.alphaVariance;
+            
+            // Ensure we have an entry for this intensity
+            if (!frameData[intensity]) {
+                frameData[intensity] = {
+                    alpha: alpha,
+                    pixels: []
+                };
+            }
+            
+            frameData[intensity].pixels.push([x, y]);
+        }
+        
+        return frameData;
+    }
+    
+    // Generate a partial frame for incremental updates
+    function generatePartialStaticFrame() {
+        // Calculate number of static dots based on the partial redraw ratio
+        const screenRatio = Math.min(1.0, (canvas.width * canvas.height) / (1920 * 1080));
+        const dotsPerPartialFrame = Math.floor(
+            (canvas.width * canvas.height) / config.staticDivisor * 
+            (config.density / config.maxStoredFrames) * 
+            config.partialRedrawRatio * 
+            screenRatio
+        );
+        
+        // Group dots by intensity for efficient drawing
+        const frameData = {};
+        
+        for (let i = 0; i < dotsPerPartialFrame; i++) {
+            const x = Math.floor(Math.random() * canvas.width);
+            const y = Math.floor(Math.random() * canvas.height);
+            
+            // Use integer intensity values
+            let intensity;
+            if (isDarkMode) {
+                intensity = Math.floor(config.darkIntensityMin + Math.random() * (config.darkIntensityMax - config.darkIntensityMin));
+            } else {
+                intensity = Math.floor(config.lightIntensityMin + Math.random() * (config.lightIntensityMax - config.lightIntensityMin));
+            }
+            
+            const alpha = config.baseAlpha + (Math.random() - 0.5) * config.alphaVariance;
+            
+            // Ensure we have an entry for this intensity
+            if (!frameData[intensity]) {
+                frameData[intensity] = {
+                    alpha: alpha,
+                    pixels: []
+                };
+            }
+            
+            frameData[intensity].pixels.push([x, y]);
+        }
+        
+        return frameData;
+    }
+    
+    // Draw a frame of static dots
+    function drawStaticFrame(frameData) {
+        // Draw each intensity group in a batch
+        for (const intensity in frameData) {
+            const group = frameData[intensity];
+            ctx.fillStyle = `rgba(${intensity}, ${intensity}, ${intensity}, ${group.alpha})`;
+            
+            for (const [x, y] of group.pixels) {
+                ctx.fillRect(x, y, config.pixelSize, config.pixelSize);
+            }
+        }
+    }
+    
+    // Draw the effect layer (special effects, sparkles, etc.)
+    function drawEffectLayer() {
+        // Optimize effect layer drawing
+        const screenRatio = Math.min(1.0, (canvas.width * canvas.height) / (1920 * 1080));
+        
+        // Draw fewer effect dots by using this multiplier
+        const densityMultiplier = isDarkMode ? 60 : 50; // Higher values = fewer dots
+        const maxEffectDots = Math.floor(
+            (canvas.width * canvas.height) / densityMultiplier *
+            (config.intenseDensity - config.density) * 
+            config.transitionProgress * 
+            screenRatio
+        );
+
+        // Limit maximum dots for very large screens
+        const effectDots = Math.min(maxEffectDots, 7000); // Increased from 5000 to match higher density
+
+        // Batch similar colors together to reduce state changes
+        const effectColors = {
+            purple: [],  // Main effect color
+            cyan: [],    // Accent color
+            white: []    // Sparkles
+        };
+        
+        // Calculate dots and store positions by color
+        for (let i = 0; i < effectDots; i++) {
+            const x = Math.floor(Math.random() * canvas.width);
+            const y = Math.floor(Math.random() * canvas.height);
+            
+            // Add some colorful variation
+            const colorRoll = Math.random();
+            
+            // Determine dot type based on probability (keep original feel)
+            if (colorRoll > (isDarkMode ? 0.93 : 0.9)) {
+                effectColors.white.push([x, y]);
+            } else if (colorRoll > (isDarkMode ? 0.9 : 0.85)) {
+                effectColors.cyan.push([x, y]);
+            } else {
+                effectColors.purple.push([x, y]);
+            }
+        }
+        
+        // Draw main purple dots
+        if (effectColors.purple.length > 0) {
+            const colorIntensity = isDarkMode ? 0.85 : 1.0;
+            const r = Math.floor(config.intenseColor[0] * colorIntensity);
+            const g = Math.floor(config.intenseColor[1] * colorIntensity);
+            const b = Math.floor(config.intenseColor[2] * colorIntensity);
+            const baseAlpha = isDarkMode ? 0.75 : 0.9;
+            const alpha = baseAlpha * config.transitionProgress;
+            
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            
+            for (const [x, y] of effectColors.purple) {
+                // Keep 5% chance of larger dots for visual interest
+                const dotSize = Math.random() > 0.95 ? 2 : 1;
+                ctx.fillRect(x, y, dotSize, dotSize);
+            }
+        }
+        
+        // Draw cyan accent dots
+        if (effectColors.cyan.length > 0) {
+            const alpha = ((isDarkMode ? 0.6 : 0.8)) * config.transitionProgress;
+            ctx.fillStyle = `rgba(150, 230, 255, ${alpha})`;
+            
+            for (const [x, y] of effectColors.cyan) {
+                ctx.fillRect(x, y, config.pixelSize, config.pixelSize);
+            }
+        }
+        
+        // Draw white sparkles
+        if (effectColors.white.length > 0) {
+            const alpha = (isDarkMode ? 0.6 : 0.8) * config.transitionProgress;
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+            
+            for (const [x, y] of effectColors.white) {
+                // Keep white sparkles as 2px for visual pop
+                ctx.fillRect(x, y, 2, 2);
+            }
+        }
     }
     
     // Helper function to update the effect state and transition progress
@@ -166,9 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     config.effectState = 'normal'; // Switch to normal state
                 }
                 break;
-                
-            // For 'normal' and 'intense' states, no progress updates needed
-            // They are stable states representing the two extremes
         }
         
         // Update the current parameters based on transition progress
@@ -184,7 +383,6 @@ document.addEventListener('DOMContentLoaded', () => {
             1 - Math.pow(-2 * config.transitionProgress + 2, 2) / 2;
             
         // Set minimum density to never go below 90% of normal density
-        // This ensures we never have a completely empty screen
         const minDensity = config.density * 0.9;
         
         // Calculate current density with easing and minimum
@@ -197,76 +395,23 @@ document.addEventListener('DOMContentLoaded', () => {
         config.currentColorMix = easeInOut;
     }
     
-    // Helper function to calculate the special effect color (used for magic/intense state)
-    function calculateEffectColor() {
-        // Calculate the intense color with some variation - adjust based on dark mode
-        // Less vibrant colors in dark mode
-        const colorIntensity = isDarkMode ? 0.85 : 1.0;
-        
-        // Apply dark mode adjustments to colors
-        const intenseR = (config.intenseColor[0] * colorIntensity) + (Math.random() * 40 - 20);
-        const intenseG = (config.intenseColor[1] * colorIntensity) + (Math.random() * 30 - 15);
-        const intenseB = (config.intenseColor[2] * colorIntensity) + (Math.random() * 20 - 10);
-        
-        let r, g, b, alpha;
-        
-        // Add some colorful variation
-        const colorRoll = Math.random();
-        
-        // White sparkles (less in dark mode)
-        if (colorRoll > (isDarkMode ? 0.93 : 0.9)) { // 7% chance in dark mode vs 10% in light
-            r = g = b = 255;
-            // Dimmer white sparkles in dark mode
-            alpha = Math.random() * (isDarkMode ? 0.7 : 0.95) * config.transitionProgress;
-        }
-        // Cyan accent sparkles (fewer in dark mode)
-        else if (colorRoll > (isDarkMode ? 0.9 : 0.85)) { // 3% chance in dark mode vs 5% in light
-            r = 100 + Math.random() * 50;
-            g = 220 + Math.random() * 35;
-            b = 255;
-            // Dimmer cyan sparkles in dark mode
-            alpha = ((isDarkMode ? 0.6 : 0.8) + Math.random() * 0.2) * config.transitionProgress;
-        }
-        // Main purple/magic color
-        else {
-            // Use the intense colors with adjusted alpha based on mode
-            r = intenseR;
-            g = intenseG;
-            b = intenseB;
-            // Lower alpha for dark mode
-            const baseAlpha = isDarkMode ? 0.75 : 0.9;
-            alpha = (baseAlpha + (Math.random() * 0.1 - 0.05)) * config.transitionProgress;
-        }
-        
-        // Ensure values are in valid range
-        r = Math.min(255, Math.max(0, Math.floor(r)));
-        g = Math.min(255, Math.max(0, Math.floor(g)));
-        b = Math.min(255, Math.max(0, Math.floor(b)));
-        
-        return { r, g, b, alpha };
-    }
-
     // Function to update the mode based on the media query
     function updateMode(event) {
         isDarkMode = event.matches;
-        // Optionally redraw immediately or wait for the next animation frame
-        // requestAnimationFrame(drawStatic); // Uncomment for immediate redraw on theme change
+        
+        // Reset static pixels cache for new theme
+        staticPixels = [];
     }
     
-    // Keep track of automatic state changes
-    let autoChangeTimeout = null;
-    
-    // Function to trigger the intensifying effect (NEUTRALIZED FOR BACKGROUND)
+    // Function to trigger the intensifying effect (keep as-is for gemini-mascot.js)
     function enableMagicMode() {
-        // console.log("Background magic mode trigger received, but effect is disabled.");
         // Keep the background in the normal state
         config.effectState = 'normal';
         config.transitionProgress = 0;
     }
     
-    // Function to trigger the fading effect (ENSURES BACKGROUND IS NORMAL)
+    // Function to trigger the fading effect (keep as-is for gemini-mascot.js)
     function disableMagicMode() {
-        // console.log("Background magic mode disable trigger received.");
         // Always ensure the background returns to/stays in the normal state
         config.effectState = 'normal';
         config.transitionProgress = 0;
@@ -285,7 +430,52 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize current parameters (density, etc.)
     updateCurrentParameters();
     
+    // Use performance data to adapt settings
+    // This function is initially empty but will gather data as the animation runs
+    let performanceData = {
+        frameTimes: [],
+        maxFrameTimes: 20, // Keep track of the last 20 frames
+        slowFrameThreshold: 50, // ms, consider a frame "slow" if it takes more than this
+        slowFrameCount: 0,
+        adaptationThreshold: 5, // adapt after this many slow frames
+        
+        // Add a frame timing
+        addFrameTime: function(duration) {
+            this.frameTimes.push(duration);
+            if (this.frameTimes.length > this.maxFrameTimes) {
+                this.frameTimes.shift(); // Remove oldest
+            }
+            
+            // Check if this was a slow frame
+            if (duration > this.slowFrameThreshold) {
+                this.slowFrameCount++;
+                
+                // If we've had too many slow frames, adapt
+                if (this.slowFrameCount >= this.adaptationThreshold) {
+                    this.adaptSettings();
+                    this.slowFrameCount = 0; // Reset counter
+                }
+            }
+        },
+        
+        // Adapt settings based on performance
+        adaptSettings: function() {
+            // Calculate average frame time
+            const avgFrameTime = this.frameTimes.reduce((sum, time) => sum + time, 0) / this.frameTimes.length;
+            
+            // If average frame time is too high, reduce density
+            if (avgFrameTime > this.slowFrameThreshold) {
+                // Only adapt if density is still high
+                if (config.density > 0.6) {
+                    config.density *= 0.9; // Reduce by 10%
+                    config.staticDivisor *= 1.1; // Increase divisor by 10%
+                }
+            }
+        }
+    };
+
     // Start the animation
+    lastFrameTime = performance.now();
     animationFrameId = requestAnimationFrame(drawStatic);
     
     // Expose functions to window for other scripts to use
@@ -312,13 +502,13 @@ document.addEventListener('DOMContentLoaded', () => {
      // Initialize isDarkMode based on current state
     isDarkMode = darkModeMediaQuery.matches;
 
-
     // Optional: Stop animation when tab is not visible (performance)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
             cancelAnimationFrame(animationFrameId);
         } else {
             // Restart the animation loop
+            lastFrameTime = performance.now();
             animationFrameId = requestAnimationFrame(drawStatic);
         }
     });
