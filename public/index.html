@@ -11,15 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Cabin+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script
     src="https://app.rybbit.io/api/script.js"
-    site-id="107"
+    data-site-id="102"
+    data-skip-patterns='["sigr.io"]'
     defer
-  ></script>
+></script>
 </head>
 <body>
     <canvas id="staticCanvas" style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1;"></canvas>
     <div class="container">
         <h1>Chat, meet Sage.</h1>
-        <p>Add or remove ChatSage from your Twitch channel.</p>
+        <p>Add or remove <a href="https://github.com/detekoi/chatsage" target="_blank">ChatSage</a> from your Twitch channel.</p>
         <a href="#" id="twitchLoginBtn" class="button twitch-login">Login with Twitch</a>
         <p id="loginError" style="color:red;"></p>
     </div>
