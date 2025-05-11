@@ -20,6 +20,43 @@
         body { border-top: 16px solid #ffa100; }
       }
     </style>
+      <script>
+        // 1. Array of SPAM DOMAINS to block
+        const spamDomains = [
+          "sigr.io",
+          "semalt.com",
+          "buttons-for-website.com",
+          "4webmasters.org",
+          // Add more as you discover them
+        ];
+      
+        // 2. Get the referrer URL
+        const referrer = document.referrer;
+      
+        let isSpam = false;
+      
+        // 3. Check if the referrer CONTAINS any of our spam domains
+        for (const spamDomain of spamDomains) {
+          if (referrer.includes(spamDomain)) {
+            isSpam = true;
+            break;
+          }
+        }
+      
+        // 4. If the referrer is NOT a spam domain, THEN add the Rybbit tracking script
+        if (!isSpam) {
+          const rybbitScript = document.createElement("script");
+          rybbitScript.src = "https://app.rybbit.io/api/script.js";
+          rybbitScript.dataset.siteId = "107"; 
+          rybbitScript.setAttribute("defer", "true");
+          document.head.appendChild(rybbitScript);
+        }
+      
+        // 5. (Optional) Log the referrer for debugging
+        if (isSpam) {
+          console.warn("Spam referrer blocked:", referrer);
+        }
+      </script>
   </head>
   <body>
     <div id="message">
