@@ -129,9 +129,9 @@ app.get("/auth/twitch/initiate", (req, res) => {
   res.cookie("twitch_oauth_state", state, {
     signed: true,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Use true in production
+    secure: true,
     maxAge: 300000, // 5 minutes
-    sameSite: "Lax",
+    sameSite: "None",
   });
   const params = new URLSearchParams({
     client_id: currentTwitchClientId,
