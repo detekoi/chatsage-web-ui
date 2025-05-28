@@ -42,7 +42,8 @@ ChatSage Bot Management is a web application that allows Twitch streamers to man
     * Enable Firestore and Authentication.
     * Configure Firebase Hosting and Cloud Functions.
 3.  **Environment Variables:**
-    * Create `.env` files (e.g., `.env.streamsage-bot` for deployed, `.env` for local emulator) in the `functions` directory with the necessary configuration for Twitch Client ID, Client Secret, Callback URL, Frontend URL, JWT Secret Key, and Session Cookie Secret.
+    * **For Local Development (Firebase Emulator):** Create a `.env.<YOUR_PROJECT_ID>` file (e.g., `.env.streamsage-bot`) in the `functions` directory. Add your variables here (e.g., `TWITCH_CLIENT_ID=your_local_test_id`). The Firebase Emulator will load these automatically when running locally.
+    * **For Deployed Functions (Live Environment):** Environment variables must be set directly in the Google Cloud Console for your Cloud Function. Navigate to your function in GCP, edit it, and add the variables under "Runtime environment variables." (Note: `.env` files are not deployed with the function code for runtime configuration).
 4.  **Install Dependencies:**
     * Navigate to the `functions` directory.
     * Run `npm install` to install backend dependencies.
