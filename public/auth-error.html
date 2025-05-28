@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authentication Error - ChatVibes</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Cabin+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script
+    src="https://app.rybbit.io/api/script.js"
+    data-site-id="107"
+    defer
+></script>
+    <script>
+        // Optional: Script to display error details from URL parameters
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            const errorDescription = params.get('error_description');
+            const errorMessageEl = document.getElementById('error-message-details');
+            const errorTitleEl = document.getElementById('error-title');
+
+            if (errorMessageEl) {
+                if (errorDescription) {
+                    errorMessageEl.textContent = decodeURIComponent(errorDescription);
+                } else if (error) {
+                    errorMessageEl.textContent = `Error code: ${decodeURIComponent(error)}`;
+                } else {
+                    errorMessageEl.textContent = "An unspecified error occurred.";
+                }
+            }
+            
+            if (errorTitleEl && error === 'access_denied') {
+                errorTitleEl.textContent = "Authentication Denied";
+            }
+        });
+    </script>
+</head>
+<body>
+    <canvas id="staticCanvas" style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1;"></canvas>
+    <div class="container">
+        <h1 id="error-title">Authentication Failed</h1>
+        <p>Sorry, there was a problem during the Twitch authentication process.</p>
+        <p id="error-message-details" style="color:red; margin-bottom:20px;">Loading error details...</p>
+        <a href="index.html" class="button">Try Logging In Again</a>
+    </div>
+    <script src="static-background.js"></script>
+</body>
+</html>
