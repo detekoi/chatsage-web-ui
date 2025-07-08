@@ -1,0 +1,19 @@
+{
+    "root": true,
+    "env": {
+      "node": true,
+      "es2021": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2021,
+      "sourceType": "script"
+    },
+    "rules": {
+      "indent": ["error", 2],
+      "comma-dangle": ["error", "always-multiline"],
+      "semi": ["error", "always"],
+      "quotes": ["error", "double"],
+      "no-unused-vars": ["warn"],
+      "no-console": ["off"]
+    }
+  }

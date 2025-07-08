@@ -176,57 +176,42 @@ app.get("/auth/twitch/initiate", (req, res) => {
 app.get("/auth/twitch/callback", async (req, res) => {
   console.log("--- /auth/twitch/callback HIT ---");
   console.log("Callback Request Query Params:", JSON.stringify(req.query));
-  const {code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription} = req.query;
-  const originalOauthState = req.signedCookies.twitch_oauth_state;
+  const { code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription } = req.query;
 
-  res.clearCookie("twitch_oauth_state"); // Clear state cookie once used or if error
+  // Clear any state-related cookies that might have been set
+  res.clearCookie("twitch_oauth_state");
+  res.clearCookie("twitch_oauth_state_lax");
+  if (req.session) {
+    delete req.session.twitch_oauth_state;
+  }
 
   if (twitchError) {
     console.error(`Twitch OAuth explicit error: ${twitchError} - ${twitchErrorDescription}`);
     return redirectToFrontendWithError(res, twitchError, twitchErrorDescription, twitchQueryState);
   }
 
-  // Try to get state from multiple sources
-  let matchedState = false;
-
-  if (originalOauthState && originalOauthState === twitchQueryState) {
-    console.log("State matched from primary cookie.");
-    matchedState = true;
-  } else {
-    // Try alternative sources
-    const altOauthState = req.signedCookies.twitch_oauth_state_lax;
-    if (altOauthState && altOauthState === twitchQueryState) {
-      console.log("State matched from alternative Lax cookie.");
-      matchedState = true;
-    } else if (req.session && req.session.twitch_oauth_state === twitchQueryState) {
-      console.log("State matched from session.");
-      matchedState = true;
-    } else {
-      console.warn("Original OAuth state cookie missing or mismatched. This can happen due to cross-site cookies being blocked.");
-      console.warn("For testing purposes, we will skip this check.");
-      // For testing, allow it to proceed anyway
-      // IMPORTANT: In production, the following line should be removed or guarded by an environment flag
-      matchedState = true; // TESTING ONLY - BYPASSING STATE CHECK
-    }
-  }
-
-  if (!matchedState) {
-    console.error(`State verification failed. Received: ${twitchQueryState}`);
-    return res.status(400).send("Authentication verification failed. Please try logging in again.");
-  }
+  // The client-side (in auth-complete.html) is now responsible for state validation
+  // against sessionStorage. We will proceed with the code exchange.
+  // The original server-side check is removed due to browser cross-site cookie restrictions.
 
   try {
-    console.log("Exchanging code for token. Callback redirect_uri used for exchange:", CALLBACK_REDIRECT_URI_CONFIG); // This is from .env
-    const tokenResponse = await axios.post(TWITCH_TOKEN_URL, null, {
-      params: {
-        client_id: TWITCH_CLIENT_ID, // from .env
-        client_secret: TWITCH_CLIENT_SECRET, // from .env
+    console.log("Exchanging code for token. Callback redirect_uri used for exchange:", CALLBACK_REDIRECT_URI_CONFIG);
+    const tokenResponse = await axios.post(
+      TWITCH_TOKEN_URL,
+      new URLSearchParams({
+        client_id: TWITCH_CLIENT_ID,
+        client_secret: TWITCH_CLIENT_SECRET,
         code: code,
         grant_type: "authorization_code",
-        redirect_uri: CALLBACK_REDIRECT_URI_CONFIG, // from .env
+        redirect_uri: CALLBACK_REDIRECT_URI_CONFIG,
+      }).toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-    });
-    const {access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn} = tokenResponse.data;
+    );
+    const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokenResponse.data;
     console.log("Access token and refresh token received from Twitch.");
 
     if (!accessToken || !refreshToken) {
@@ -708,7 +693,7 @@ async function refreshTwitchToken(currentRefreshToken) {
       };
 
       console.error(`[refreshTwitchToken] Error refreshing token on attempt ${attempt}:`,
-          JSON.stringify(errorDetails, null, 2));
+        JSON.stringify(errorDetails, null, 2));
 
       // Determine if this error is retryable
       let isRetryable = false;
