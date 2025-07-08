@@ -29,13 +29,26 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 
 const {Firestore, FieldValue} = require("@google-cloud/firestore");
+const {SecretManagerServiceClient} = require("@google-cloud/secret-manager");
 let db;
+let secretManagerClient;
 try {
   db = new Firestore();
-  console.log("[CloudFunctions] Firestore client initialized.");
+  secretManagerClient = new SecretManagerServiceClient();
+  console.log("[CloudFunctions] Firestore and Secret Manager clients initialized.");
 } catch (e) {
-  console.error("[CloudFunctions] Firestore client init error:", e);
+  console.error("[CloudFunctions] Client init error:", e);
 }
+
+// Helper to get GCP project ID for Secret Manager
+function getProjectId() {
+  const projectId = process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
+  if (!projectId) {
+    throw new Error("GCP project ID not found in environment variables.");
+  }
+  return projectId;
+}
+
 
 const CHANNELS_COLLECTION = "managedChannels";
 
@@ -259,20 +272,48 @@ app.get("/auth/twitch/callback", async (req, res) => {
       if (db) {
         const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
         try {
+          // --- Secret Manager logic for refresh token ---
+          const projectId = getProjectId();
+          const secretId = `twitch-refresh-token-${twitchUser.id}`;
+          let secretName = `projects/${projectId}/secrets/${secretId}`;
+          let versionName;
+          // Try to create the secret if it doesn't exist
+          try {
+            await secretManagerClient.getSecret({ name: secretName });
+            console.log(`[AuthCallback] Secret already exists for user ${twitchUser.login}`);
+          } catch (err) {
+            if (err.code === 5) { // Not found
+              const [secret] = await secretManagerClient.createSecret({
+                parent: `projects/${projectId}`,
+                secretId,
+                replication: { automatic: {} },
+              });
+              secretName = secret.name;
+              console.log(`[AuthCallback] Created new secret for user ${twitchUser.login}`);
+            } else {
+              throw err;
+            }
+          }
+          // Always add a new version (rotate)
+          const [version] = await secretManagerClient.addSecretVersion({
+            parent: secretName,
+            payload: { data: Buffer.from(refreshToken, "utf8") },
+          });
+          versionName = version.name;
+          console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
+
           await userDocRef.set({
             twitchAccessToken: accessToken,
-            twitchRefreshToken: refreshToken, // Encrypt this in a real production system if desired
+            refreshTokenSecretPath: versionName, // Store the path to the secret version
             twitchAccessTokenExpiresAt: accessTokenExpiresAt,
             twitchUserId: twitchUser.id,
             displayName: twitchUser.displayName,
-            // Preserve other fields by merging, or set them if this is the first time
             lastLoginAt: FieldValue.serverTimestamp(),
-            // Clear any previous error flags or re-auth requirements
             needsTwitchReAuth: false,
             lastTokenError: null,
             lastTokenErrorAt: null,
           }, {merge: true});
-          console.log(`Twitch tokens stored for user ${twitchUser.login}`);
+          console.log(`Twitch access token and secret path stored for user ${twitchUser.login}`);
 
           // Now validate the tokens are working by attempting to use them
           try {
@@ -544,32 +585,30 @@ app.post("/api/auth/refresh", authenticateApiRequest, async (req, res) => {
     }
 
     const userData = userDoc.data();
-    const {twitchRefreshToken} = userData;
-
-    if (!twitchRefreshToken) {
-      console.warn(`[API /auth/refresh] No refresh token found for ${userLogin}.`);
+    const {refreshTokenSecretPath} = userData;
+    if (!refreshTokenSecretPath) {
+      console.warn(`[API /auth/refresh] No refresh token secret path found for ${userLogin}.`);
       return res.status(400).json({
         success: false,
         needsReAuth: true,
         message: "No refresh token available. Please re-authenticate with Twitch.",
       });
     }
-
+    // Fetch refresh token from Secret Manager
+    const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
+    const twitchRefreshToken = version.payload.data.toString("utf8");
     // Attempt to refresh the token
     const newTokens = await refreshTwitchToken(twitchRefreshToken);
     const newExpiresAt = new Date(Date.now() + newTokens.expiresIn * 1000);
-
     // Update the tokens in Firestore
     await userDocRef.update({
       twitchAccessToken: newTokens.accessToken,
-      twitchRefreshToken: newTokens.refreshToken || twitchRefreshToken,
       twitchAccessTokenExpiresAt: newExpiresAt,
       lastTokenRefreshAt: FieldValue.serverTimestamp(),
       needsTwitchReAuth: false,
       lastTokenError: null,
       lastTokenErrorAt: null,
     });
-
     console.log(`[API /auth/refresh] Successfully refreshed token for ${userLogin}`);
     return res.json({
       success: true,
@@ -759,56 +798,46 @@ async function getValidTwitchTokenForUser(userLogin) {
     console.error("[getValidTwitchTokenForUser] Firestore (db) not initialized!");
     throw new Error("Firestore not available.");
   }
-
   const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userLogin);
   const userDoc = await userDocRef.get();
-
   if (!userDoc.exists) {
     console.warn(`[getValidTwitchTokenForUser] User document for ${userLogin} not found.`);
     throw new Error("User not found or not authenticated with Twitch.");
   }
-
   const userData = userDoc.data();
-  const {twitchAccessToken, twitchRefreshToken, twitchAccessTokenExpiresAt} = userData;
-
+  const {twitchAccessToken, refreshTokenSecretPath, twitchAccessTokenExpiresAt} = userData;
   // Token buffer - consider tokens invalid 5 minutes before actual expiry
   const TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000;
-
-  // Check if token is valid for at least 5 more minutes
   if (twitchAccessToken && twitchAccessTokenExpiresAt) {
-    // Handle both Firestore Timestamp objects and regular Date strings
     const expiryDate = typeof twitchAccessTokenExpiresAt.toDate === "function" ?
       twitchAccessTokenExpiresAt.toDate() :
       new Date(twitchAccessTokenExpiresAt);
-
     if (expiryDate > new Date(Date.now() + TOKEN_EXPIRY_BUFFER_MS)) {
       console.log(`[getValidTwitchTokenForUser] Using existing valid access token for ${userLogin}.`);
       return twitchAccessToken;
     }
   }
-
-  if (!twitchRefreshToken) {
-    console.warn(`[getValidTwitchTokenForUser] No refresh token found for ${userLogin}. Re-authentication required.`);
+  if (!refreshTokenSecretPath) {
+    console.warn(`[getValidTwitchTokenForUser] No refresh token secret path found for ${userLogin}. Re-authentication required.`);
     throw new Error("Refresh token not available. User needs to re-authenticate.");
   }
-
   console.log(`[getValidTwitchTokenForUser] Access token for ${userLogin} expired or missing. Attempting refresh.`);
   try {
-    const newTokens = await refreshTwitchToken(twitchRefreshToken);
+    // Fetch refresh token from Secret Manager
+    const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
+    const currentRefreshToken = version.payload.data.toString("utf8");
+    const newTokens = await refreshTwitchToken(currentRefreshToken);
     const newExpiresAt = new Date(Date.now() + newTokens.expiresIn * 1000);
-
     await userDocRef.update({
       twitchAccessToken: newTokens.accessToken,
-      twitchRefreshToken: newTokens.refreshToken || twitchRefreshToken, // Update if a new one is provided
       twitchAccessTokenExpiresAt: newExpiresAt,
       lastTokenRefreshAt: FieldValue.serverTimestamp(),
-      needsTwitchReAuth: false, // Clear any previous re-auth flags
+      needsTwitchReAuth: false,
     });
-    console.log(`[getValidTwitchTokenForUser] Successfully refreshed and stored new tokens for ${userLogin}.`);
+    console.log(`[getValidTwitchTokenForUser] Successfully refreshed and stored new access token for ${userLogin}.`);
     return newTokens.accessToken;
   } catch (error) {
     console.error(`[getValidTwitchTokenForUser] Failed to refresh token for ${userLogin}:`, error.message);
-    // If refresh fails, it might be due to revoked access or invalid refresh token
     try {
       await userDocRef.update({
         twitchAccessToken: null,
@@ -821,7 +850,6 @@ async function getValidTwitchTokenForUser(userLogin) {
     } catch (updateError) {
       console.error(`[getValidTwitchTokenForUser] Failed to update user document for ${userLogin}:`, updateError.message);
     }
-
     throw new Error("Failed to obtain a valid Twitch token. User may need to re-authenticate.");
   }
 }
