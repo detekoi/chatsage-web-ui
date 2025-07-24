@@ -959,6 +959,16 @@ footer a:active {
   .header-mascot-area {
      width: 350px; /* Increased mascot area width for tablet */
   }
+  
+  /* Dashboard mobile improvements */
+  #commands-list {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-small);
+  }
+  
+  .command-item {
+    padding: var(--spacing-small);
+  }
 }
 
 @media (max-width: 575px) {
