@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeBotBtn = document.getElementById('remove-bot-btn');
     const actionMessageEl = document.getElementById('action-message');
     const logoutLink = document.getElementById('logout-link');
+    const commandsSectionEl = document.getElementById('commands-section');
+    const commandsLoadingEl = document.getElementById('commands-loading');
+    const commandsListEl = document.getElementById('commands-list');
 
     // IMPORTANT: Configure this to your deployed Cloud Function URL
     const API_BASE_URL = 'https://us-central1-streamsage-bot.cloudfunctions.net/webUi';
@@ -57,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
+                    // Load command settings after bot status is loaded
+                    await loadCommandSettings();
                 } else {
                     actionMessageEl.textContent = `Error: ${statusData.message}`;
                     botStatusEl.textContent = "Error";
@@ -78,13 +83,133 @@ document.addEventListener('DOMContentLoaded', () => {
             botStatusEl.className = 'status-active';
             addBotBtn.style.display = 'none';
             removeBotBtn.style.display = 'inline-block';
+            // Show commands section when bot is active
+            commandsSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
             botStatusEl.className = 'status-inactive';
             addBotBtn.style.display = 'inline-block';
             removeBotBtn.style.display = 'none';
+            // Show commands section even when inactive for pre-configuration
+            commandsSectionEl.style.display = 'block';
         }
         actionMessageEl.textContent = ''; // Clear previous messages
+    }
+
+    async function loadCommandSettings() {
+        if (!appSessionToken) {
+            console.warn("No session token available for loading command settings");
+            return;
+        }
+
+        commandsLoadingEl.style.display = 'block';
+        commandsListEl.innerHTML = '';
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/commands`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`Failed to fetch commands: ${res.statusText}`);
+            }
+
+            const data = await res.json();
+            commandsLoadingEl.style.display = 'none';
+
+            if (data.success && data.commands) {
+                renderCommandsList(data.commands);
+            } else {
+                commandsListEl.innerHTML = '<p style="color: #ff6b6b;">Failed to load command settings.</p>';
+            }
+        } catch (error) {
+            console.error('Error loading command settings:', error);
+            commandsLoadingEl.style.display = 'none';
+            commandsListEl.innerHTML = '<p style="color: #ff6b6b;">Error loading command settings.</p>';
+        }
+    }
+
+    function renderCommandsList(commands) {
+        commandsListEl.innerHTML = '';
+        
+        commands.forEach(cmd => {
+            const commandDiv = document.createElement('div');
+            commandDiv.className = 'command-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `cmd-${cmd.primaryName}`;
+            checkbox.checked = cmd.enabled;
+            checkbox.dataset.command = cmd.primaryName;
+            
+            // Special handling for help command
+            if (cmd.primaryName === 'help') {
+                checkbox.disabled = true;
+                checkbox.title = 'The help command cannot be disabled';
+            }
+            
+            const label = document.createElement('label');
+            label.htmlFor = `cmd-${cmd.primaryName}`;
+            label.textContent = `!${cmd.name}`;
+            
+            if (cmd.primaryName === 'help') {
+                label.title = 'The help command cannot be disabled';
+            }
+            
+            checkbox.addEventListener('change', async function() {
+                await toggleCommand(cmd.primaryName, this.checked, this);
+            });
+            
+            commandDiv.appendChild(checkbox);
+            commandDiv.appendChild(label);
+            commandsListEl.appendChild(commandDiv);
+        });
+    }
+
+    async function toggleCommand(commandName, enabled, checkboxEl) {
+        if (!appSessionToken) {
+            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            checkboxEl.checked = !enabled; // Revert checkbox
+            return;
+        }
+
+        const originalState = checkboxEl.checked;
+        checkboxEl.disabled = true; // Disable during request
+        
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/commands`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    command: commandName, 
+                    enabled: enabled 
+                })
+            });
+
+            const data = await res.json();
+            
+            if (data.success) {
+                actionMessageEl.textContent = `Command !${commandName} ${enabled ? 'enabled' : 'disabled'}.`;
+                actionMessageEl.style.color = '#4ecdc4';
+            } else {
+                actionMessageEl.textContent = data.message || 'Error updating command settings.';
+                actionMessageEl.style.color = '#ff6b6b';
+                checkboxEl.checked = !enabled; // Revert on error
+            }
+        } catch (error) {
+            console.error('Error toggling command:', error);
+            actionMessageEl.textContent = 'Failed to update command settings.';
+            actionMessageEl.style.color = '#ff6b6b';
+            checkboxEl.checked = !enabled; // Revert on error
+        } finally {
+            checkboxEl.disabled = false; // Re-enable checkbox
+        }
     }
 
     addBotBtn.addEventListener('click', async () => {
@@ -105,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.textContent = data.message;
             if (data.success) {
                 updateBotStatusUI(true);
+                await loadCommandSettings();
             }
         } catch (error) {
             console.error('Error adding bot:', error);
@@ -130,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.textContent = data.message;
             if (data.success) {
                 updateBotStatusUI(false);
+                await loadCommandSettings();
             }
         } catch (error) {
             console.error('Error removing bot:', error);

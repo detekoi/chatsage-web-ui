@@ -509,6 +509,106 @@ app.post("/api/bot/remove", authenticateApiRequest, async (req, res) => {
   }
 });
 
+// GET /api/commands - Fetch command states for the authenticated user's channel
+app.get("/api/commands", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  if (!db) {
+    console.error("[API /commands GET] Firestore (db) not initialized!");
+    return res.status(500).json({success: false, message: "Firestore not available."});
+  }
+
+  try {
+    // All available commands (matching the bot's command list)
+    const ALL_COMMANDS = [
+      { name: "help", aliases: ["commands"] },
+      { name: "ping", aliases: [] },
+      { name: "game", aliases: [] },
+      { name: "ask", aliases: ["sage"] },
+      { name: "search", aliases: [] },
+      { name: "translate", aliases: [] },
+      { name: "geo", aliases: [] },
+      { name: "trivia", aliases: [] },
+      { name: "riddle", aliases: [] },
+      { name: "botlang", aliases: [] },
+      { name: "lurk", aliases: [] },
+    ];
+
+    // Fetch disabled commands for this channel
+    const docRef = db.collection("channelCommands").doc(channelLogin);
+    const docSnap = await docRef.get();
+    const disabledCommands = docSnap.exists && docSnap.data().disabledCommands ? docSnap.data().disabledCommands : [];
+
+    // Build response with command status
+    const commands = ALL_COMMANDS.map(cmd => ({
+      name: cmd.aliases.length > 0 ? `${cmd.name} (${cmd.aliases.map(a => `!${a}`).join(", ")})` : cmd.name,
+      primaryName: cmd.name,
+      enabled: !disabledCommands.includes(cmd.name),
+    }));
+
+    console.log(`[API /commands GET] Retrieved command states for ${channelLogin}: ${disabledCommands.length} disabled commands`);
+    res.json({
+      success: true,
+      commands: commands,
+    });
+  } catch (error) {
+    console.error(`[API /commands GET] Error fetching command states for ${channelLogin}:`, error);
+    res.status(500).json({success: false, message: "Error fetching command settings."});
+  }
+});
+
+// POST /api/commands - Toggle command state for the authenticated user's channel
+app.post("/api/commands", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  const { command, enabled } = req.body;
+
+  if (!db) {
+    console.error("[API /commands POST] Firestore (db) not initialized!");
+    return res.status(500).json({success: false, message: "Firestore not available."});
+  }
+
+  if (!command || typeof enabled !== "boolean") {
+    return res.status(400).json({success: false, message: "Invalid request body. 'command' and 'enabled' are required."});
+  }
+
+  // Validate command name
+  const validCommands = ["help", "ping", "game", "ask", "search", "translate", "geo", "trivia", "riddle", "botlang", "lurk"];
+  if (!validCommands.includes(command)) {
+    return res.status(400).json({success: false, message: "Invalid command name."});
+  }
+
+  // Prevent disabling critical commands
+  if (command === "help" && !enabled) {
+    return res.status(400).json({success: false, message: "The help command cannot be disabled."});
+  }
+
+  try {
+    const docRef = db.collection("channelCommands").doc(channelLogin);
+    
+    if (enabled) {
+      // Enable command by removing from disabled list
+      await docRef.set({ 
+        disabledCommands: FieldValue.arrayRemove(command),
+        channelName: channelLogin, 
+      }, { merge: true });
+    } else {
+      // Disable command by adding to disabled list
+      await docRef.set({ 
+        disabledCommands: FieldValue.arrayUnion(command),
+        channelName: channelLogin, 
+      }, { merge: true });
+    }
+
+    console.log(`[API /commands POST] Command '${command}' ${enabled ? "enabled" : "disabled"} for ${channelLogin}`);
+    res.json({
+      success: true,
+      message: `Command '${command}' ${enabled ? "enabled" : "disabled"} successfully.`,
+    });
+  } catch (error) {
+    console.error(`[API /commands POST] Error toggling command '${command}' for ${channelLogin}:`, error);
+    res.status(500).json({success: false, message: "Error updating command settings."});
+  }
+});
+
 // Logout Route
 app.get("/auth/logout", (req, res) => {
   console.log("Logout requested. Client should clear its token.");
