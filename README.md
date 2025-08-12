@@ -57,6 +57,5 @@ ChatSage Bot Management is a web application that allows Twitch streamers to man
 3.  Once authenticated, you will be redirected to the dashboard.
 4.  On the dashboard, you can:
     * View the current status of the ChatSage bot for your channel.
-    * Add the bot to your channel if it's not already active.
-    * Remove the bot from your channel if it is active.
+    * Approved users can add or remove the bot on their channel.
     * Logout from the application.

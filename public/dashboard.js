@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const commandsLoadingEl = document.getElementById('commands-loading');
     const commandsListEl = document.getElementById('commands-list');
 
-    // IMPORTANT: Configure this to your deployed Cloud Function URL
-    const API_BASE_URL = 'https://us-central1-streamsage-bot.cloudfunctions.net/webUi';
+    // IMPORTANT: Configure this to your deployed Cloud Run Function URL
+    const API_BASE_URL = 'https://webui-zpqjdsguqa-uc.a.run.app';
     let appSessionToken = null; // Variable to hold the token
     let loggedInUser = null;
 

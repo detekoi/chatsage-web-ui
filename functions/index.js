@@ -64,11 +64,7 @@ const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION = "1h";
 const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
-// Optional allow-list: ALLOWED_CHANNELS or ALLOWED_CHANNELS_SECRET_NAME (CSV)
-const ALLOWED_CHANNELS_ENV = (process.env.ALLOWED_CHANNELS || "")
-  .split(",")
-  .map((c) => c.trim().toLowerCase())
-  .filter(Boolean);
+// Allow-list is defined strictly via Secret Manager path in ALLOWED_CHANNELS_SECRET_NAME
 const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 
 if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET || !CALLBACK_REDIRECT_URI_CONFIG || !FRONTEND_URL_CONFIG || !JWT_SECRET || !SESSION_SECRET_FOR_COOKIE_PARSER) {
@@ -94,30 +90,40 @@ app.use(cookieParser(SESSION_SECRET_FOR_COOKIE_PARSER));
 
 // Improved CORS Middleware
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    FRONTEND_URL_CONFIG, // This will be the live URL from .env.streamsage-bot when deployed or local from .env when emulated
-    "http://127.0.0.1:5002", // Keep for local emulator access
-    "http://localhost:5002", // Keep for local emulator access
-  ].filter(Boolean);
-
   const origin = req.headers.origin;
-  console.log(`CORS Check: Request Origin: ${origin}, Allowed Production Frontend URL: ${FRONTEND_URL_CONFIG}`);
 
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    console.log(`CORS Check: Origin ${origin} is allowed.`);
-  } else {
-    if (origin) {
-      console.warn(`CORS Check: Origin ${origin} is NOT in allowed list: ${allowedOrigins.join(", ")}`);
+  // Build allowed origins list
+  const allowedOrigins = new Set(["http://127.0.0.1:5002", "http://localhost:5002"]);
+  if (FRONTEND_URL_CONFIG) {
+    try {
+      const url = new URL(FRONTEND_URL_CONFIG);
+      allowedOrigins.add(`${url.protocol}//${url.host}`);
+      // If using Firebase Hosting defaults, include both web.app and firebaseapp.com variants
+      if (url.host.endsWith(".web.app")) {
+        const altHost = url.host.replace(/\.web\.app$/, ".firebaseapp.com");
+        allowedOrigins.add(`${url.protocol}//${altHost}`);
+      } else if (url.host.endsWith(".firebaseapp.com")) {
+        const altHost = url.host.replace(/\.firebaseapp\.com$/, ".web.app");
+        allowedOrigins.add(`${url.protocol}//${altHost}`);
+      }
+    } catch (e) {
+      console.warn("CORS: FRONTEND_URL is not a valid URL:", FRONTEND_URL_CONFIG);
     }
+  } else {
+    // If FRONTEND_URL not configured, be permissive to avoid breaking the UI, but echo the specific origin
+    if (origin) allowedOrigins.add(origin);
   }
 
+  console.log(`CORS Check: Origin: ${origin} | Allowed: ${Array.from(allowedOrigins).join(", ")}`);
+
+  if (origin && allowedOrigins.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
   if (req.method === "OPTIONS") {
-    console.log(`CORS Check: Responding to OPTIONS request for origin: ${origin}`);
     return res.sendStatus(204);
   }
   next();
@@ -127,6 +133,46 @@ const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/authorize";
 const TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 const TWITCH_VALIDATE_URL = "https://id.twitch.tv/oauth2/validate";
 
+
+// Normalize a Secret Manager reference to a Secret Version path
+// Accepts:
+// - full version path: projects/{project}/secrets/{secret}/versions/{version}
+// - secret path without version: projects/{project}/secrets/{secret}
+// - bare secret id: {secret}
+// Returns a version path using "latest" when no version provided
+function normalizeSecretVersionPath(secretInput) {
+  if (!secretInput) return secretInput;
+  if (secretInput.includes("/versions/")) return secretInput;
+  if (secretInput.startsWith("projects/")) {
+    return `${secretInput}/versions/latest`;
+  }
+  const projectId = getProjectId();
+  return `projects/${projectId}/secrets/${secretInput}/versions/latest`;
+}
+
+// Load allow-listed channels strictly from the secret specified by ALLOWED_CHANNELS_SECRET_NAME.
+// If the secret is missing or unreadable, deny all (no implicit fallbacks).
+async function getAllowedChannelsList() {
+  try {
+    if (!ALLOWED_CHANNELS_SECRET_NAME) {
+      console.error("[AllowList] ALLOWED_CHANNELS_SECRET_NAME is not set. Denying all by default.");
+      return [];
+    }
+    const name = normalizeSecretVersionPath(ALLOWED_CHANNELS_SECRET_NAME);
+    const [version] = await secretManagerClient.accessSecretVersion({ name });
+    const secretCsv = version.payload.data.toString("utf8");
+    const list = secretCsv
+      .split(",")
+      .map((c) => c.trim().toLowerCase())
+      .filter(Boolean);
+    console.log(`[AllowList] Loaded ${list.length} entries from ALLOWED_CHANNELS_SECRET_NAME.`);
+    return list;
+  } catch (e) {
+    console.error("[AllowList] Error loading allow-list from Secret Manager:", e.message);
+    // On error, deny all
+    return [];
+  }
+}
 
 // Route: /auth/twitch/initiate
 app.get("/auth/twitch/initiate", (req, res) => {
@@ -274,74 +320,72 @@ app.get("/auth/twitch/callback", async (req, res) => {
 
       console.log(`Redirecting to frontend auth-complete page: ${frontendAuthCompleteUrl.toString()}`);
 
-      // Store tokens in Firestore
-      if (db) {
-        const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
-        try {
-          // --- Secret Manager logic for refresh token ---
-          const projectId = getProjectId();
-          const secretId = `twitch-refresh-token-${twitchUser.id}`;
-          let secretName = `projects/${projectId}/secrets/${secretId}`;
-          let versionName;
-          // Try to create the secret if it doesn't exist
-          try {
-            await secretManagerClient.getSecret({ name: secretName });
-            console.log(`[AuthCallback] Secret already exists for user ${twitchUser.login}`);
-          } catch (err) {
-            if (err.code === 5) { // Not found
-              const [secret] = await secretManagerClient.createSecret({
-                parent: `projects/${projectId}`,
-                secretId,
-                replication: { automatic: {} },
-              });
-              secretName = secret.name;
-              console.log(`[AuthCallback] Created new secret for user ${twitchUser.login}`);
-            } else {
-              throw err;
-            }
-          }
-          // Always add a new version (rotate)
-          const [version] = await secretManagerClient.addSecretVersion({
-            parent: secretName,
-            payload: { data: Buffer.from(refreshToken, "utf8") },
-          });
-          versionName = version.name;
-          console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
-
-          await userDocRef.set({
-            twitchAccessToken: accessToken,
-            refreshTokenSecretPath: versionName, // Store the path to the secret version
-            twitchAccessTokenExpiresAt: accessTokenExpiresAt,
-            twitchUserId: twitchUser.id,
-            displayName: twitchUser.displayName,
-            lastLoginAt: FieldValue.serverTimestamp(),
-            needsTwitchReAuth: false,
-            lastTokenError: null,
-            lastTokenErrorAt: null,
-          }, {merge: true});
-          console.log(`Twitch access token and secret path stored for user ${twitchUser.login}`);
-
-          // Now validate the tokens are working by attempting to use them
-          try {
-            // Use the validate endpoint to ensure the tokens work properly
-            await axios.get(TWITCH_VALIDATE_URL, {
-              headers: {
-                Authorization: `OAuth ${accessToken}`,
-              },
-            });
-            console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
-          } catch (validateError) {
-            console.error(`Failed to validate new tokens for ${twitchUser.login}:`, validateError.message);
-            // We'll continue the auth flow anyway since we already got tokens, but log the validation failure
-          }
-        } catch (dbError) {
-          console.error(`Error storing Twitch tokens for ${twitchUser.login}:`, dbError);
-          // Decide if this is a fatal error for the auth flow or just log and continue
-          // For now, we'll log and continue, but you might want to send an error response.
-        }
-      } else {
+      // Store tokens in Secret Manager and Firestore BEFORE redirecting
+      if (!db) {
         console.error("Firestore (db) not initialized. Cannot store Twitch tokens.");
-        // This is a server configuration issue, likely fatal for storing tokens.
+        return redirectToFrontendWithError(res, "token_store_failed", "Server configuration error: database unavailable.", twitchQueryState);
+      }
+      const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
+      try {
+        // --- Secret Manager logic for refresh token ---
+        const projectId = getProjectId();
+        const secretId = `twitch-refresh-token-${twitchUser.id}`;
+        let secretName = `projects/${projectId}/secrets/${secretId}`;
+        let versionName;
+        // Try to create the secret if it doesn't exist
+        try {
+          console.log(`[AuthCallback] Checking for secret existence: ${secretName}`);
+          await secretManagerClient.getSecret({ name: secretName });
+          console.log(`[AuthCallback] Secret already exists for user ${twitchUser.login}`);
+        } catch (err) {
+          if (err.code === 5) { // Not found
+            console.log(`[AuthCallback] Secret not found. Creating secret: ${secretName}`);
+            const [secret] = await secretManagerClient.createSecret({
+              parent: `projects/${projectId}`,
+              secretId,
+              secret: { replication: { automatic: {} } },
+            });
+            secretName = secret.name;
+            console.log(`[AuthCallback] Created new secret for user ${twitchUser.login}`);
+          } else {
+            throw err;
+          }
+        }
+        // Always add a new version (rotate)
+        const tokenBytes = Buffer.from(refreshToken || "", "utf8");
+        console.log(`[AuthCallback] Adding secret version. parent=${secretName}, refreshToken.length=${refreshToken ? refreshToken.length : 0}, tokenBytesLength=${tokenBytes.length}`);
+        const [version] = await secretManagerClient.addSecretVersion({
+          parent: secretName,
+          payload: { data: tokenBytes },
+        });
+        versionName = version.name;
+        console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
+
+        await userDocRef.set({
+          twitchAccessToken: accessToken,
+          refreshTokenSecretPath: versionName, // Store the path to the secret version
+          twitchAccessTokenExpiresAt: accessTokenExpiresAt,
+          twitchUserId: twitchUser.id,
+          displayName: twitchUser.displayName,
+          lastLoginAt: FieldValue.serverTimestamp(),
+          needsTwitchReAuth: false,
+          lastTokenError: null,
+          lastTokenErrorAt: null,
+        }, {merge: true});
+        console.log(`Twitch access token and secret path stored for user ${twitchUser.login}`);
+
+        // Now validate the tokens are working by attempting to use them
+        try {
+          await axios.get(TWITCH_VALIDATE_URL, {
+            headers: { Authorization: `OAuth ${accessToken}` },
+          });
+          console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
+        } catch (validateError) {
+          console.error(`Failed to validate new tokens for ${twitchUser.login}:`, validateError.message);
+        }
+      } catch (dbError) {
+        console.error(`Error storing Twitch tokens for ${twitchUser.login}:`, dbError);
+        return redirectToFrontendWithError(res, "token_store_failed", "Failed to securely store Twitch credentials. Please try again.", twitchQueryState);
       }
 
       return res.redirect(frontendAuthCompleteUrl.toString());
@@ -447,32 +491,16 @@ app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
 
   // Enforce allow-list if configured (check BEFORE token validation to return accurate errors)
   try {
-    let isAllowed = false;
-    if (ALLOWED_CHANNELS_ENV && ALLOWED_CHANNELS_ENV.length > 0) {
-      isAllowed = ALLOWED_CHANNELS_ENV.includes(channelLogin.toLowerCase());
-    } else if (ALLOWED_CHANNELS_SECRET_NAME) {
-      try {
-        const [version] = await secretManagerClient.accessSecretVersion({ name: ALLOWED_CHANNELS_SECRET_NAME });
-        const secretCsv = version.payload.data.toString("utf8");
-        const allowedList = secretCsv
-          .split(",")
-          .map((c) => c.trim().toLowerCase())
-          .filter(Boolean);
-        isAllowed = allowedList.includes(channelLogin.toLowerCase());
-      } catch (secretErr) {
-        console.error("[API /add] Error loading ALLOWED_CHANNELS from Secret Manager:", secretErr.message);
-      }
-    }
-    if (ALLOWED_CHANNELS_ENV.length > 0 || ALLOWED_CHANNELS_SECRET_NAME) {
-      if (!isAllowed) {
-        console.warn(`[API /add] Channel ${channelLogin} is not in ALLOWED_CHANNELS. Rejecting self-serve activation.`);
-        return res.status(403).json({
-          success: false,
-          code: "not_allowed",
-          message: "This channel is not permitted to add the bot.",
-          details: "Access to the cloud version of ChatSage is invite-only. If you'd like access, please contact the administrator via https://detekoi.github.io/#contact-me",
-        });
-      }
+    const allowedList = await getAllowedChannelsList();
+    const isAllowed = allowedList.includes(channelLogin.toLowerCase());
+    if (!isAllowed) {
+      console.warn(`[API /add] Channel ${channelLogin} is not allow-listed. Rejecting self-serve activation.`);
+      return res.status(403).json({
+        success: false,
+        code: "not_allowed",
+        message: "This channel is not permitted to add the bot.",
+        details: "Access to the cloud version of ChatSage is invite-only. If you'd like access, please contact the administrator via https://detekoi.github.io/#contact-me",
+      });
     }
   } catch (allowErr) {
     console.error("[API /add] Error during allow-list check:", allowErr.message);
