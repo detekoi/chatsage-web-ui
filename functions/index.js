@@ -64,6 +64,12 @@ const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION = "1h";
 const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
+// Optional allow-list: ALLOWED_CHANNELS or ALLOWED_CHANNELS_SECRET_NAME (CSV)
+const ALLOWED_CHANNELS_ENV = (process.env.ALLOWED_CHANNELS || "")
+  .split(",")
+  .map((c) => c.trim().toLowerCase())
+  .filter(Boolean);
+const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 
 if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET || !CALLBACK_REDIRECT_URI_CONFIG || !FRONTEND_URL_CONFIG || !JWT_SECRET || !SESSION_SECRET_FOR_COOKIE_PARSER) {
   console.error("CRITICAL: One or more environment variables are missing. Check .env files and deployment configuration.");
@@ -439,7 +445,41 @@ app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
     return res.status(500).json({success: false, message: "Firestore not available."});
   }
 
-  // First check if we have valid Twitch tokens for this user
+  // Enforce allow-list if configured (check BEFORE token validation to return accurate errors)
+  try {
+    let isAllowed = false;
+    if (ALLOWED_CHANNELS_ENV && ALLOWED_CHANNELS_ENV.length > 0) {
+      isAllowed = ALLOWED_CHANNELS_ENV.includes(channelLogin.toLowerCase());
+    } else if (ALLOWED_CHANNELS_SECRET_NAME) {
+      try {
+        const [version] = await secretManagerClient.accessSecretVersion({ name: ALLOWED_CHANNELS_SECRET_NAME });
+        const secretCsv = version.payload.data.toString("utf8");
+        const allowedList = secretCsv
+          .split(",")
+          .map((c) => c.trim().toLowerCase())
+          .filter(Boolean);
+        isAllowed = allowedList.includes(channelLogin.toLowerCase());
+      } catch (secretErr) {
+        console.error("[API /add] Error loading ALLOWED_CHANNELS from Secret Manager:", secretErr.message);
+      }
+    }
+    if (ALLOWED_CHANNELS_ENV.length > 0 || ALLOWED_CHANNELS_SECRET_NAME) {
+      if (!isAllowed) {
+        console.warn(`[API /add] Channel ${channelLogin} is not in ALLOWED_CHANNELS. Rejecting self-serve activation.`);
+        return res.status(403).json({
+          success: false,
+          code: "not_allowed",
+          message: "This channel is not permitted to add the bot.",
+          details: "Access to the cloud version of ChatSage is invite-only. If you'd like access, please contact the administrator via https://detekoi.github.io/#contact-me",
+        });
+      }
+    }
+  } catch (allowErr) {
+    console.error("[API /add] Error during allow-list check:", allowErr.message);
+    return res.status(500).json({ success: false, message: "Server error during allow-list verification." });
+  }
+
+  // After allow-list passes, check if we have valid Twitch tokens for this user
   try {
     await getValidTwitchTokenForUser(channelLogin);
     console.log(`[API /add] Verified valid Twitch token for ${channelLogin}`);
