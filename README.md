@@ -2,12 +2,14 @@
 
 ## Description
 
-ChatSage Bot Management is a web application that allows Twitch streamers to manage the ChatSage bot for their channel. Users can log in with their Twitch account to add or remove the bot, and view its current status. The application features a dynamic, animated background.
+ChatSage Bot Management is a web application that allows approved Twitch streamers to manage the ChatSage bot for their channel. Users can log in with their Twitch account to add or remove the bot, and view its current status. The application features a dynamic, animated background.
+
+> **Important:** Access to ChatSage is currently invite-only. The management interface will show an access denied message for unapproved channels. If you'd like to request access, please contact me via [this contact form](https://detekoi.github.io/#contact-me).
 
 ## Features
 
 * **Twitch Authentication:** Users can log in securely using their Twitch account.
-* **Bot Management:** Add or remove the ChatSage bot from your Twitch channel through a simple interface.
+* **Bot Management:** Add or remove the ChatSage bot from your Twitch channel through a simple interface (for approved channels only).
 * **Bot Status:** View the current status (active/inactive) of the bot for your channel.
 * **Dynamic Background:** An animated static-like background enhances the user interface.
 * **Firebase Integration:** Utilizes Firebase for backend functions and hosting.
@@ -52,10 +54,12 @@ ChatSage Bot Management is a web application that allows Twitch streamers to man
 
 ## Usage
 
+**Note:** Access is restricted to approved channels only. If your channel is not on the allow-list, you'll see an access denied message. [Request access via this contact form](https://detekoi.github.io/#contact-me).
+
 1.  Access the hosted application URL.
 2.  Click on the "Login with Twitch" button to authenticate.
 3.  Once authenticated, you will be redirected to the dashboard.
-4.  On the dashboard, you can:
+4.  On the dashboard (for approved channels), you can:
     * View the current status of the ChatSage bot for your channel.
-    * Approved users can add or remove the bot on their channel.
+    * Add or remove the bot from your channel.
     * Logout from the application.
