@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const commandsSectionEl = document.getElementById('commands-section');
     const commandsLoadingEl = document.getElementById('commands-loading');
     const commandsListEl = document.getElementById('commands-list');
+    const autoSectionEl = document.getElementById('auto-chat-section');
+    const autoLoadingEl = document.getElementById('auto-chat-loading');
+    const autoModeEl = document.getElementById('auto-mode');
+    const autoFreqEl = document.getElementById('auto-frequency');
+    const autoCatGreetingsEl = document.getElementById('auto-cat-greetings');
+    const autoCatFactsEl = document.getElementById('auto-cat-facts');
+    const autoCatQuestionsEl = document.getElementById('auto-cat-questions');
+    // Auto-chat now auto-saves; no dedicated button or per-section message
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://webui-zpqjdsguqa-uc.a.run.app';
@@ -60,8 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
-                    // Load command settings after bot status is loaded
-                    await loadCommandSettings();
+                    // Load command and auto-chat settings after bot status is loaded
+                    await Promise.all([loadCommandSettings(), loadAutoChatSettings()]);
                 } else {
                     actionMessageEl.textContent = `Error: ${statusData.message}`;
                     botStatusEl.textContent = "Error";
@@ -83,15 +91,17 @@ document.addEventListener('DOMContentLoaded', () => {
             botStatusEl.className = 'status-active';
             addBotBtn.style.display = 'none';
             removeBotBtn.style.display = 'inline-block';
-            // Show commands section when bot is active
+            // Show settings sections when bot is active
             commandsSectionEl.style.display = 'block';
+            autoSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
             botStatusEl.className = 'status-inactive';
             addBotBtn.style.display = 'inline-block';
             removeBotBtn.style.display = 'none';
-            // Show commands section even when inactive for pre-configuration
+            // Show settings even when inactive for pre-configuration
             commandsSectionEl.style.display = 'block';
+            autoSectionEl.style.display = 'block';
         }
         actionMessageEl.textContent = ''; // Clear previous messages
     }
@@ -131,6 +141,89 @@ document.addEventListener('DOMContentLoaded', () => {
             commandsListEl.innerHTML = '<p style="color: #ff6b6b;">Error loading command settings.</p>';
         }
     }
+
+    async function loadAutoChatSettings() {
+        if (!appSessionToken) return;
+        autoLoadingEl.style.display = 'block';
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+            const data = await res.json();
+            autoLoadingEl.style.display = 'none';
+            if (data.success && data.config) {
+                const cfg = data.config;
+                autoModeEl.value = cfg.mode || 'off';
+                autoFreqEl.value = cfg.frequencyMinutes || 15;
+                autoCatGreetingsEl.checked = cfg.categories?.greetings !== false;
+                autoCatFactsEl.checked = cfg.categories?.facts !== false;
+                autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
+            } else {
+                actionMessageEl.textContent = 'Failed to load auto-chat settings.';
+                actionMessageEl.style.color = '#ff6b6b';
+            }
+        } catch (e) {
+            console.error('Error loading auto-chat:', e);
+            autoLoadingEl.style.display = 'none';
+            actionMessageEl.textContent = 'Error loading auto-chat settings.';
+            actionMessageEl.style.color = '#ff6b6b';
+        }
+    }
+
+    let autoSaveRequestId = 0;
+    async function saveAutoChatSettings() {
+        if (!appSessionToken) return;
+        const currentRequestId = ++autoSaveRequestId;
+        actionMessageEl.textContent = 'Saving auto-chat...';
+        try {
+            const body = {
+                mode: autoModeEl.value,
+                frequencyMinutes: parseInt(autoFreqEl.value, 10),
+                categories: {
+                    greetings: !!autoCatGreetingsEl.checked,
+                    facts: !!autoCatFactsEl.checked,
+                    questions: !!autoCatQuestionsEl.checked,
+                }
+            };
+            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (currentRequestId === autoSaveRequestId) {
+                if (data.success) {
+                    actionMessageEl.textContent = 'Auto-chat settings saved.';
+                    actionMessageEl.style.color = '#4ecdc4';
+                } else {
+                    actionMessageEl.textContent = data.message || 'Failed to save auto-chat settings.';
+                    actionMessageEl.style.color = '#ff6b6b';
+                }
+            }
+        } catch (e) {
+            console.error('Error saving auto-chat:', e);
+            actionMessageEl.textContent = 'Error saving auto-chat settings.';
+            actionMessageEl.style.color = '#ff6b6b';
+        }
+    }
+
+    // Debounced auto-save on any change to auto-chat controls
+    function debounce(fn, delay) {
+        let timerId;
+        return (...args) => {
+            if (timerId) clearTimeout(timerId);
+            timerId = setTimeout(() => fn(...args), delay);
+        };
+    }
+    const debouncedAutoSave = debounce(saveAutoChatSettings, 600);
+    [autoModeEl, autoFreqEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
+        const evt = (el === autoFreqEl) ? 'input' : 'change';
+        el.addEventListener(evt, debouncedAutoSave);
+    });
 
     function renderCommandsList(commands) {
         commandsListEl.innerHTML = '';

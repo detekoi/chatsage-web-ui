@@ -51,6 +51,7 @@ function getProjectId() {
 
 
 const CHANNELS_COLLECTION = "managedChannels";
+const AUTO_CHAT_COLLECTION = "autoChatConfigs";
 
 const app = express();
 
@@ -621,6 +622,66 @@ app.get("/api/commands", authenticateApiRequest, async (req, res) => {
   } catch (error) {
     console.error(`[API /commands GET] Error fetching command states for ${channelLogin}:`, error);
     res.status(500).json({success: false, message: "Error fetching command settings."});
+  }
+});
+
+// --- Auto-Chat Settings API ---
+app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  if (!db) {
+    console.error("[API /auto-chat GET] Firestore (db) not initialized!");
+    return res.status(500).json({success: false, message: "Firestore not available."});
+  }
+  try {
+    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
+    const snap = await docRef.get();
+    const defaultCfg = { mode: "off", frequencyMinutes: 15, categories: { greetings: true, facts: true, questions: true } };
+    const cfg = snap.exists ? { ...defaultCfg, ...snap.data() } : defaultCfg;
+    return res.json({ success: true, config: {
+      mode: (cfg.mode || "off"),
+      frequencyMinutes: Number.isFinite(cfg.frequencyMinutes) ? cfg.frequencyMinutes : 15,
+      categories: {
+        greetings: cfg.categories && cfg.categories.greetings !== false,
+        facts: cfg.categories && cfg.categories.facts !== false,
+        questions: cfg.categories && cfg.categories.questions !== false,
+      },
+    }});
+  } catch (err) {
+    console.error("[API /auto-chat GET] Error:", err);
+    return res.status(500).json({ success: false, message: "Failed to load auto-chat config." });
+  }
+});
+
+app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  if (!db) {
+    console.error("[API /auto-chat POST] Firestore (db) not initialized!");
+    return res.status(500).json({success: false, message: "Firestore not available."});
+  }
+  try {
+    const body = req.body || {};
+    const mode = (body.mode || "").toLowerCase();
+    const validModes = ["off","low","medium","high"];
+    if (mode && !validModes.includes(mode)) {
+      return res.status(400).json({ success: false, message: "Invalid mode." });
+    }
+    const freq = parseInt(body.frequencyMinutes, 10);
+    const categories = body.categories && typeof body.categories === "object" ? body.categories : {};
+    const updates = {};
+    if (mode) updates.mode = mode;
+    if (Number.isFinite(freq) && freq > 0) updates.frequencyMinutes = freq;
+    updates.categories = {
+      greetings: categories.greetings !== false,
+      facts: categories.facts !== false,
+      questions: categories.questions !== false,
+    };
+    updates.channelName = channelLogin;
+    updates.updatedAt = new Date();
+    await db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin).set(updates, { merge: true });
+    return res.json({ success: true, config: updates });
+  } catch (err) {
+    console.error("[API /auto-chat POST] Error:", err);
+    return res.status(500).json({ success: false, message: "Failed to save auto-chat config." });
   }
 });
 

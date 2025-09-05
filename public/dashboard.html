@@ -64,6 +64,27 @@
             <div id="commands-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading command options...</div>
             <div id="commands-list"></div>
         </div>
+        <div id="auto-chat-section" style="display:none; margin-top: 2em;">
+            <h3>Auto-Chat Settings</h3>
+            <div id="auto-chat-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading auto-chat settings...</div>
+            <div class="auto-chat-form">
+                <label for="auto-mode">Mode:</label>
+                <select id="auto-mode">
+                    <option value="off">Off</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <label for="auto-frequency" style="margin-left:1em;">Min gap (minutes):</label>
+                <input id="auto-frequency" type="number" min="1" step="1" value="15" style="width:5em;">
+                <div style="margin-top:0.5em;">
+                    <label><input type="checkbox" id="auto-cat-greetings" checked> Greetings</label>
+                    <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-facts" checked> Facts/Tips</label>
+                    <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-questions" checked> Questions</label>
+                </div>
+                
+            </div>
+        </div>
         <p id="action-message"></p>
         <a href="#" id="logout-link" class="button">Logout</a>
     </div>
