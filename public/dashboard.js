@@ -12,11 +12,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoSectionEl = document.getElementById('auto-chat-section');
     const autoLoadingEl = document.getElementById('auto-chat-loading');
     const autoModeEl = document.getElementById('auto-mode');
-    const autoFreqEl = document.getElementById('auto-frequency');
     const autoCatGreetingsEl = document.getElementById('auto-cat-greetings');
     const autoCatFactsEl = document.getElementById('auto-cat-facts');
     const autoCatQuestionsEl = document.getElementById('auto-cat-questions');
-    // Auto-chat now auto-saves; no dedicated button or per-section message
+    const autoMsgEl = document.getElementById('auto-chat-message');
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://webui-zpqjdsguqa-uc.a.run.app';
@@ -155,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success && data.config) {
                 const cfg = data.config;
                 autoModeEl.value = cfg.mode || 'off';
-                autoFreqEl.value = cfg.frequencyMinutes || 15;
                 autoCatGreetingsEl.checked = cfg.categories?.greetings !== false;
                 autoCatFactsEl.checked = cfg.categories?.facts !== false;
                 autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
@@ -175,11 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function saveAutoChatSettings() {
         if (!appSessionToken) return;
         const currentRequestId = ++autoSaveRequestId;
-        actionMessageEl.textContent = 'Saving auto-chat...';
+        autoMsgEl.textContent = 'Saving auto-chat...';
         try {
             const body = {
                 mode: autoModeEl.value,
-                frequencyMinutes: parseInt(autoFreqEl.value, 10),
                 categories: {
                     greetings: !!autoCatGreetingsEl.checked,
                     facts: !!autoCatFactsEl.checked,
@@ -197,17 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (currentRequestId === autoSaveRequestId) {
                 if (data.success) {
-                    actionMessageEl.textContent = 'Auto-chat settings saved.';
-                    actionMessageEl.style.color = '#4ecdc4';
+                    autoMsgEl.textContent = 'Auto-chat settings saved.';
+                    autoMsgEl.style.color = '#4ecdc4';
                 } else {
-                    actionMessageEl.textContent = data.message || 'Failed to save auto-chat settings.';
-                    actionMessageEl.style.color = '#ff6b6b';
+                    autoMsgEl.textContent = data.message || 'Failed to save auto-chat settings.';
+                    autoMsgEl.style.color = '#ff6b6b';
                 }
             }
         } catch (e) {
             console.error('Error saving auto-chat:', e);
-            actionMessageEl.textContent = 'Error saving auto-chat settings.';
-            actionMessageEl.style.color = '#ff6b6b';
+            autoMsgEl.textContent = 'Error saving auto-chat settings.';
+            autoMsgEl.style.color = '#ff6b6b';
         }
     }
 
@@ -220,10 +217,10 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     const debouncedAutoSave = debounce(saveAutoChatSettings, 600);
-    [autoModeEl, autoFreqEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
-        const evt = (el === autoFreqEl) ? 'input' : 'change';
-        el.addEventListener(evt, debouncedAutoSave);
+    [autoModeEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
+        el.addEventListener('change', debouncedAutoSave);
     });
+    // No explicit save button; changes are auto-saved
 
     function renderCommandsList(commands) {
         commandsListEl.innerHTML = '';

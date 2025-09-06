@@ -635,11 +635,10 @@ app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   try {
     const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
     const snap = await docRef.get();
-    const defaultCfg = { mode: "off", frequencyMinutes: 15, categories: { greetings: true, facts: true, questions: true } };
+    const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true } };
     const cfg = snap.exists ? { ...defaultCfg, ...snap.data() } : defaultCfg;
     return res.json({ success: true, config: {
       mode: (cfg.mode || "off"),
-      frequencyMinutes: Number.isFinite(cfg.frequencyMinutes) ? cfg.frequencyMinutes : 15,
       categories: {
         greetings: cfg.categories && cfg.categories.greetings !== false,
         facts: cfg.categories && cfg.categories.facts !== false,
@@ -665,11 +664,9 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
     if (mode && !validModes.includes(mode)) {
       return res.status(400).json({ success: false, message: "Invalid mode." });
     }
-    const freq = parseInt(body.frequencyMinutes, 10);
     const categories = body.categories && typeof body.categories === "object" ? body.categories : {};
     const updates = {};
     if (mode) updates.mode = mode;
-    if (Number.isFinite(freq) && freq > 0) updates.frequencyMinutes = freq;
     updates.categories = {
       greetings: categories.greetings !== false,
       facts: categories.facts !== false,
