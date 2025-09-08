@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoCatGreetingsEl = document.getElementById('auto-cat-greetings');
     const autoCatFactsEl = document.getElementById('auto-cat-facts');
     const autoCatQuestionsEl = document.getElementById('auto-cat-questions');
+    const autoCatAdsEl = document.getElementById('auto-cat-ads');
     const autoMsgEl = document.getElementById('auto-chat-message');
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
@@ -157,6 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 autoCatGreetingsEl.checked = cfg.categories?.greetings !== false;
                 autoCatFactsEl.checked = cfg.categories?.facts !== false;
                 autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
+                autoCatAdsEl.checked = cfg.categories?.ads === true;
             } else {
                 actionMessageEl.textContent = 'Failed to load auto-chat settings.';
                 actionMessageEl.style.color = '#ff6b6b';
@@ -181,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     greetings: !!autoCatGreetingsEl.checked,
                     facts: !!autoCatFactsEl.checked,
                     questions: !!autoCatQuestionsEl.checked,
+                    ads: !!autoCatAdsEl.checked,
                 }
             };
             const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
@@ -217,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     const debouncedAutoSave = debounce(saveAutoChatSettings, 600);
-    [autoModeEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
+    [autoModeEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl, autoCatAdsEl].forEach(el => {
         el.addEventListener('change', debouncedAutoSave);
     });
     // No explicit save button; changes are auto-saved

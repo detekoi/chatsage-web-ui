@@ -635,7 +635,7 @@ app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   try {
     const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
     const snap = await docRef.get();
-    const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true } };
+    const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true, ads: false } };
     const cfg = snap.exists ? { ...defaultCfg, ...snap.data() } : defaultCfg;
     return res.json({ success: true, config: {
       mode: (cfg.mode || "off"),
@@ -643,6 +643,7 @@ app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
         greetings: cfg.categories && cfg.categories.greetings !== false,
         facts: cfg.categories && cfg.categories.facts !== false,
         questions: cfg.categories && cfg.categories.questions !== false,
+        ads: cfg.categories && cfg.categories.ads === true,
       },
     }});
   } catch (err) {
@@ -671,6 +672,7 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
       greetings: categories.greetings !== false,
       facts: categories.facts !== false,
       questions: categories.questions !== false,
+      ads: categories.ads === true,
     };
     updates.channelName = channelLogin;
     updates.updatedAt = new Date();
