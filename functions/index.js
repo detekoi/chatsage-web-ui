@@ -7,7 +7,7 @@
  *
  * Key features:
  * - Complete Twitch OAuth 2.0 authentication flow
- * - Secure token storage in Firestore
+ * - Secure refresh token storage in Google Secret Manager
  * - Token refresh with retry logic and error handling
  * - Bot management (add/remove)
  * - User authentication state tracking
@@ -280,7 +280,7 @@ app.get("/auth/twitch/callback", async (req, res) => {
         },
       },
     );
-    const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokenResponse.data;
+    const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse.data;
     console.log("Access token and refresh token received from Twitch.");
 
     if (!accessToken || !refreshToken) {
@@ -288,7 +288,6 @@ app.get("/auth/twitch/callback", async (req, res) => {
       throw new Error("Twitch did not return the expected tokens.");
     }
 
-    const accessTokenExpiresAt = new Date(Date.now() + expiresIn * 1000);
 
     const validateResponse = await axios.get(TWITCH_VALIDATE_URL, {
       headers: {Authorization: `OAuth ${accessToken}`},
@@ -366,9 +365,7 @@ app.get("/auth/twitch/callback", async (req, res) => {
         console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
 
         await userDocRef.set({
-          twitchAccessToken: accessToken,
           refreshTokenSecretPath: versionName, // Store the path to the secret version
-          twitchAccessTokenExpiresAt: accessTokenExpiresAt,
           twitchUserId: twitchUser.id,
           displayName: twitchUser.displayName,
           lastLoginAt: FieldValue.serverTimestamp(),
@@ -376,7 +373,7 @@ app.get("/auth/twitch/callback", async (req, res) => {
           lastTokenError: null,
           lastTokenErrorAt: null,
         }, {merge: true});
-        console.log(`Twitch access token and secret path stored for user ${twitchUser.login}`);
+        console.log(`Twitch refresh token secret path stored for user ${twitchUser.login}`);
 
         // Now validate the tokens are working by attempting to use them
         try {
@@ -917,12 +914,9 @@ app.post("/api/auth/refresh", authenticateApiRequest, async (req, res) => {
     const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
     const twitchRefreshToken = version.payload.data.toString("utf8");
     // Attempt to refresh the token
-    const newTokens = await refreshTwitchToken(twitchRefreshToken);
-    const newExpiresAt = new Date(Date.now() + newTokens.expiresIn * 1000);
-    // Update the tokens in Firestore
+    await refreshTwitchToken(twitchRefreshToken);
+    // Update the refresh status in Firestore (no longer storing access tokens)
     await userDocRef.update({
-      twitchAccessToken: newTokens.accessToken,
-      twitchAccessTokenExpiresAt: newExpiresAt,
       lastTokenRefreshAt: FieldValue.serverTimestamp(),
       needsTwitchReAuth: false,
       lastTokenError: null,
@@ -982,8 +976,6 @@ async function clearCachedTokens(userLogin, reason = "Unspecified reason") {
     }
 
     await userDocRef.update({
-      twitchAccessToken: null,
-      twitchAccessTokenExpiresAt: null,
       needsTwitchReAuth: true,
       lastTokenError: reason,
       lastTokenErrorAt: FieldValue.serverTimestamp(),
@@ -1124,43 +1116,28 @@ async function getValidTwitchTokenForUser(userLogin) {
     throw new Error("User not found or not authenticated with Twitch.");
   }
   const userData = userDoc.data();
-  const {twitchAccessToken, refreshTokenSecretPath, twitchAccessTokenExpiresAt} = userData;
-  // Token buffer - consider tokens invalid 5 minutes before actual expiry
-  const TOKEN_EXPIRY_BUFFER_MS = 5 * 60 * 1000;
-  if (twitchAccessToken && twitchAccessTokenExpiresAt) {
-    const expiryDate = typeof twitchAccessTokenExpiresAt.toDate === "function" ?
-      twitchAccessTokenExpiresAt.toDate() :
-      new Date(twitchAccessTokenExpiresAt);
-    if (expiryDate > new Date(Date.now() + TOKEN_EXPIRY_BUFFER_MS)) {
-      console.log(`[getValidTwitchTokenForUser] Using existing valid access token for ${userLogin}.`);
-      return twitchAccessToken;
-    }
-  }
+  const {refreshTokenSecretPath} = userData;
+  // No longer storing access tokens - always refresh from the refresh token
   if (!refreshTokenSecretPath) {
     console.warn(`[getValidTwitchTokenForUser] No refresh token secret path found for ${userLogin}. Re-authentication required.`);
     throw new Error("Refresh token not available. User needs to re-authenticate.");
   }
-  console.log(`[getValidTwitchTokenForUser] Access token for ${userLogin} expired or missing. Attempting refresh.`);
+  console.log(`[getValidTwitchTokenForUser] Refreshing access token for ${userLogin} from refresh token.`);
   try {
     // Fetch refresh token from Secret Manager
     const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
     const currentRefreshToken = version.payload.data.toString("utf8");
     const newTokens = await refreshTwitchToken(currentRefreshToken);
-    const newExpiresAt = new Date(Date.now() + newTokens.expiresIn * 1000);
     await userDocRef.update({
-      twitchAccessToken: newTokens.accessToken,
-      twitchAccessTokenExpiresAt: newExpiresAt,
       lastTokenRefreshAt: FieldValue.serverTimestamp(),
       needsTwitchReAuth: false,
     });
-    console.log(`[getValidTwitchTokenForUser] Successfully refreshed and stored new access token for ${userLogin}.`);
+    console.log(`[getValidTwitchTokenForUser] Successfully refreshed access token for ${userLogin}.`);
     return newTokens.accessToken;
   } catch (error) {
     console.error(`[getValidTwitchTokenForUser] Failed to refresh token for ${userLogin}:`, error.message);
     try {
       await userDocRef.update({
-        twitchAccessToken: null,
-        twitchAccessTokenExpiresAt: null,
         needsTwitchReAuth: true,
         lastTokenError: error.message,
         lastTokenErrorAt: FieldValue.serverTimestamp(),
