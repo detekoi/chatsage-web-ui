@@ -65,6 +65,9 @@ const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
 const JWT_SECRET = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION = "1h";
 const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
+// For EventSub webhook creation for ad breaks (bot callback and shared secret)
+const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL || process.env.PUBLIC_URL; // fallback if shared naming
+const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
 // Allow-list is defined strictly via Secret Manager path in ALLOWED_CHANNELS_SECRET_NAME
 const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 
@@ -221,7 +224,7 @@ app.get("/auth/twitch/initiate", (req, res) => {
     client_id: currentTwitchClientId,
     redirect_uri: currentCallbackRedirectUri, // This will be ngrok or live URL from .env
     response_type: "code",
-    scope: "user:read:email",
+    scope: "user:read:email channel:read:ads",
     state: state,
     force_verify: "true", // Consider "false" for production for better UX
   });
@@ -677,10 +680,98 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
     updates.channelName = channelLogin;
     updates.updatedAt = new Date();
     await db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin).set(updates, { merge: true });
+    
+    // Reconcile ad-break EventSub subscription immediately when setting changes
+    try {
+      if (typeof updates.categories?.ads === "boolean") {
+        await ensureAdBreakSubscription(channelLogin, updates.categories.ads);
+      }
+    } catch (subErr) {
+      console.warn(`[API /auto-chat POST] ensureAdBreakSubscription warning for ${channelLogin}:`, subErr.message);
+      // Do not fail the save; UI will still be updated. Admins can retry.
+    }
     return res.json({ success: true, config: updates });
   } catch (err) {
     console.error("[API /auto-chat POST] Error:", err);
     return res.status(500).json({ success: false, message: "Failed to save auto-chat config." });
+  }
+});
+
+// Helper in web UI backend to call the bot to ensure ad-break EventSub subscriptions
+async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
+  if (!BOT_PUBLIC_URL) {
+    // If the bot public URL is not set here, the bot process itself will reconcile via Firestore listener.
+    return;
+  }
+  try {
+    // Acquire a valid broadcaster user token (has channel:read:ads scope after re-auth)
+    const accessToken = await getValidTwitchTokenForUser(channelLogin);
+    const userDocRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
+    const userDoc = await userDocRef.get();
+    const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
+    if (!userId) return;
+
+    const HELIX_URL = "https://api.twitch.tv/helix";
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      "Client-ID": TWITCH_CLIENT_ID,
+      "Content-Type": "application/json",
+    };
+
+    // List current subs for this broadcaster/type
+    const list = await axios.get(`${HELIX_URL}/eventsub/subscriptions`, { headers });
+    const existing = (list.data && list.data.data ? list.data.data : []).filter(
+      (s) => s.type === "channel.ad_break.begin" && s.condition?.broadcaster_user_id === String(userId),
+    );
+
+    if (adsEnabled) {
+      if (existing.length > 0) return; // already subscribed
+      const body = {
+        type: "channel.ad_break.begin",
+        version: "1",
+        condition: { broadcaster_user_id: String(userId) },
+        transport: {
+          method: "webhook",
+          callback: `${BOT_PUBLIC_URL}/twitch/event`,
+          secret: TWITCH_EVENTSUB_SECRET,
+        },
+      };
+      await axios.post(`${HELIX_URL}/eventsub/subscriptions`, body, { headers });
+      return;
+    } else {
+      // Delete existing
+      for (const sub of existing) {
+        await axios.delete(`${HELIX_URL}/eventsub/subscriptions`, {
+          headers,
+          params: { id: sub.id },
+        });
+      }
+      return;
+    }
+  } catch (e) {
+    throw e;
+  }
+}
+
+// Expose ad schedule to the bot (uses broadcaster user token with channel:read:ads)
+app.get("/api/ads/schedule", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  if (!db) {
+    return res.status(500).json({ success: false, message: "Firestore not available." });
+  }
+  try {
+    const accessToken = await getValidTwitchTokenForUser(channelLogin);
+    const userDoc = await db.collection(CHANNELS_COLLECTION).doc(channelLogin).get();
+    const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
+    if (!userId) return res.status(404).json({ success: false, message: "User not found" });
+    const response = await axios.get("https://api.twitch.tv/helix/channels/ads", {
+      headers: { Authorization: `Bearer ${accessToken}`, "Client-ID": TWITCH_CLIENT_ID },
+      params: { broadcaster_id: String(userId) },
+      timeout: 15000,
+    });
+    return res.json({ success: true, data: response.data });
+  } catch (e) {
+    return res.status(400).json({ success: false, message: e.message });
   }
 });
 
