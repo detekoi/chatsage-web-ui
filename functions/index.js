@@ -68,6 +68,25 @@ const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
 // For EventSub webhook creation for ad breaks (bot callback and shared secret)
 const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL || process.env.PUBLIC_URL; // fallback if shared naming
 const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
+// Internal bot token is provided via a Secret Manager path in WEBUI_INTERNAL_TOKEN
+let INTERNAL_BOT_TOKEN_VALUE = null;
+async function getInternalBotTokenValue() {
+  if (INTERNAL_BOT_TOKEN_VALUE) return INTERNAL_BOT_TOKEN_VALUE;
+  const secretInput = process.env.WEBUI_INTERNAL_TOKEN;
+  if (!secretInput) {
+    throw new Error("WEBUI_INTERNAL_TOKEN is not configured (expected Secret Manager path)");
+  }
+  try {
+    const name = normalizeSecretVersionPath(secretInput);
+    const [version] = await secretManagerClient.accessSecretVersion({ name });
+    INTERNAL_BOT_TOKEN_VALUE = version.payload.data.toString("utf8");
+    if (!INTERNAL_BOT_TOKEN_VALUE) throw new Error("WEBUI_INTERNAL_TOKEN secret is empty");
+    return INTERNAL_BOT_TOKEN_VALUE;
+  } catch (e) {
+    console.error("Failed to load WEBUI_INTERNAL_TOKEN from Secret Manager:", e.message);
+    throw e;
+  }
+}
 // Allow-list is defined strictly via Secret Manager path in ALLOWED_CHANNELS_SECRET_NAME
 const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 
@@ -751,12 +770,20 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
 }
 
 // Expose ad schedule to the bot (uses broadcaster user token with channel:read:ads)
-app.get("/api/ads/schedule", authenticateApiRequest, async (req, res) => {
-  const channelLogin = req.user.login;
-  if (!db) {
-    return res.status(500).json({ success: false, message: "Firestore not available." });
-  }
+// Removed less-secure public schedule route. Only internal route is available.
+
+// Internal bot-only route (uses INTERNAL_BOT_TOKEN). Requires ?channel=
+app.get("/internal/ads/schedule", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    const expected = await getInternalBotTokenValue();
+    if (!token || token !== expected) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const channelLogin = (req.query.channel || '').toString().toLowerCase();
+    if (!channelLogin) return res.status(400).json({ success: false, message: "Missing channel parameter" });
+    if (!db) return res.status(500).json({ success: false, message: "Firestore not available." });
     const accessToken = await getValidTwitchTokenForUser(channelLogin);
     const userDoc = await db.collection(CHANNELS_COLLECTION).doc(channelLogin).get();
     const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
