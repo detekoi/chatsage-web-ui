@@ -775,13 +775,13 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
 // Internal bot-only route (uses INTERNAL_BOT_TOKEN). Requires ?channel=
 app.get("/internal/ads/schedule", async (req, res) => {
   try {
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
     const expected = await getInternalBotTokenValue();
     if (!token || token !== expected) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    const channelLogin = (req.query.channel || '').toString().toLowerCase();
+    const channelLogin = (req.query.channel || "").toString().toLowerCase();
     if (!channelLogin) return res.status(400).json({ success: false, message: "Missing channel parameter" });
     if (!db) return res.status(500).json({ success: false, message: "Firestore not available." });
     const accessToken = await getValidTwitchTokenForUser(channelLogin);
