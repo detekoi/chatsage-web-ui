@@ -802,15 +802,15 @@ app.get("/internal/ads/schedule", async (req, res) => {
 // Internal bot-only route to ensure EventSub ad-break subscription per channel
 app.post("/internal/eventsub/adbreak/ensure", async (req, res) => {
   try {
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
     const expected = await getInternalBotTokenValue();
     if (!token || token !== expected) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    const channelLogin = (req.query.channel || '').toString().toLowerCase();
-    const enabledParam = (req.query.enabled || '').toString().toLowerCase();
-    const enabled = enabledParam === 'true' || enabledParam === '1' || enabledParam === 'yes';
+    const channelLogin = (req.query.channel || "").toString().toLowerCase();
+    const enabledParam = (req.query.enabled || "").toString().toLowerCase();
+    const enabled = enabledParam === "true" || enabledParam === "1" || enabledParam === "yes";
     if (!channelLogin) return res.status(400).json({ success: false, message: "Missing channel parameter" });
     const result = await ensureAdBreakSubscription(channelLogin, enabled);
     return res.json({ success: true, result });
