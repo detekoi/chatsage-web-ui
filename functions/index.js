@@ -793,6 +793,10 @@ app.get("/internal/ads/schedule", async (req, res) => {
       params: { broadcaster_id: String(userId) },
       timeout: 15000,
     });
+    
+    // Log the Twitch API response for debugging
+    console.log(`[AdSchedule] Twitch API response for ${channelLogin}:`, JSON.stringify(response.data, null, 2));
+    
     return res.json({ success: true, data: response.data });
   } catch (e) {
     return res.status(400).json({ success: false, message: e.message });
