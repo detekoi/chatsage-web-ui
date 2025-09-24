@@ -799,7 +799,8 @@ app.get("/internal/ads/schedule", async (req, res) => {
     
     return res.json({ success: true, data: response.data });
   } catch (e) {
-    return res.status(400).json({ success: false, message: e.message });
+    console.error(`[AdSchedule] Error fetching ad schedule for ${channelLogin}:`, e.message, e.response?.data);
+    return res.status(400).json({ success: false, message: e.message, details: e.response?.data });
   }
 });
 
