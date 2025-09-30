@@ -1,180 +1,156 @@
-/**
- * Twitch OAuth 2.0 Authentication and Bot Management API
- *
- * This Firebase Cloud Function provides Twitch OAuth authentication for users
- * who want to add the StreamSage bot to their Twitch channel. It implements
- * the full OAuth flow including token refresh, validation, and management.
- *
- * Key features:
- * - Complete Twitch OAuth 2.0 authentication flow
- * - Secure refresh token storage in Google Secret Manager
- * - Token refresh with retry logic and error handling
- * - Bot management (add/remove)
- * - User authentication state tracking
- *
- * Environment variables required:
- * - TWITCH_CLIENT_ID: Your Twitch application client ID
- * - TWITCH_CLIENT_SECRET: Your Twitch application client secret
- * - CALLBACK_URL: The OAuth callback URL (must match Twitch dev console)
- * - FRONTEND_URL: The URL of your frontend application
- * - JWT_SECRET_KEY: Secret for signing JWT tokens
- * - SESSION_COOKIE_SECRET: Secret for cookie signing
- */
-
-const functions = require("firebase-functions"); // Still needed for exports.webUi
 const express = require("express");
+const functions = require("firebase-functions");
 const axios = require("axios");
 const crypto = require("crypto");
-const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+const { Firestore, FieldValue } = require("@google-cloud/firestore");
+const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 
-const {Firestore, FieldValue} = require("@google-cloud/firestore");
-const {SecretManagerServiceClient} = require("@google-cloud/secret-manager");
+const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
+
+const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
+const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
+
+const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_REDIRECT_URI;
+const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
+
+const TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
+const TWITCH_VALIDATE_URL = "https://id.twitch.tv/oauth2/validate";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_default_secret_key_change_in_production";
+
+const CHANNELS_COLLECTION = "managedChannels";
+const AUTO_CHAT_COLLECTION = "autoChatConfigs";
+
+const WEBUI_INTERNAL_TOKEN = process.env.WEBUI_INTERNAL_TOKEN;
+const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
+const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL;
+const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
+
 let db;
 let secretManagerClient;
 try {
   db = new Firestore();
   secretManagerClient = new SecretManagerServiceClient();
-  console.log("[CloudFunctions] Firestore and Secret Manager clients initialized.");
-} catch (e) {
-  console.error("[CloudFunctions] Client init error:", e);
+  console.log("Firestore and Secret Manager initialized successfully.");
+} catch (initError) {
+  console.error("Failed to initialize Firestore or Secret Manager:", initError);
 }
 
-// Helper to get GCP project ID for Secret Manager
 function getProjectId() {
-  const projectId = process.env.GCLOUD_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
+  const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
   if (!projectId) {
-    throw new Error("GCP project ID not found in environment variables.");
+    throw new Error("GCP project ID not found in environment variables");
   }
   return projectId;
 }
 
+function normalizeSecretVersionPath(secretInput) {
+  if (!secretInput) throw new Error("secretInput is empty");
+  if (secretInput.includes("/versions/")) return secretInput;
+  return `${secretInput}/versions/latest`;
+}
 
-const CHANNELS_COLLECTION = "managedChannels";
-const AUTO_CHAT_COLLECTION = "autoChatConfigs";
-
-const app = express();
-
-// --- Environment Configuration using process.env for 2nd Gen Functions ---
-// These will be loaded from .env files (e.g., .env.streamsage-bot for deployed, .env for local emulator)
-const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
-// The client secret comes from environment variables and should be kept secure
-const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
-const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_URL;
-const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
-const JWT_SECRET = process.env.JWT_SECRET_KEY;
-const JWT_EXPIRATION = "1h";
-const SESSION_SECRET_FOR_COOKIE_PARSER = process.env.SESSION_COOKIE_SECRET;
-// For EventSub webhook creation for ad breaks (bot callback and shared secret)
-const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL || process.env.PUBLIC_URL; // fallback if shared naming
-const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
-// Internal bot token is provided via a Secret Manager path in WEBUI_INTERNAL_TOKEN
-let INTERNAL_BOT_TOKEN_VALUE = null;
 async function getInternalBotTokenValue() {
-  if (INTERNAL_BOT_TOKEN_VALUE) return INTERNAL_BOT_TOKEN_VALUE;
-  const secretInput = process.env.WEBUI_INTERNAL_TOKEN;
+  const secretInput = WEBUI_INTERNAL_TOKEN;
   if (!secretInput) {
     throw new Error("WEBUI_INTERNAL_TOKEN is not configured (expected Secret Manager path)");
   }
   try {
     const name = normalizeSecretVersionPath(secretInput);
     const [version] = await secretManagerClient.accessSecretVersion({ name });
-    INTERNAL_BOT_TOKEN_VALUE = version.payload.data.toString("utf8");
-    if (!INTERNAL_BOT_TOKEN_VALUE) throw new Error("WEBUI_INTERNAL_TOKEN secret is empty");
-    return INTERNAL_BOT_TOKEN_VALUE;
-  } catch (e) {
-    console.error("Failed to load WEBUI_INTERNAL_TOKEN from Secret Manager:", e.message);
-    throw e;
+    return version.payload.data.toString("utf8");
+  } catch (error) {
+    console.error("Error fetching WEBUI_INTERNAL_TOKEN from Secret Manager:", error.message);
+    throw new Error("Failed to fetch internal bot token.");
   }
 }
-// Allow-list is defined strictly via Secret Manager path in ALLOWED_CHANNELS_SECRET_NAME
-const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 
-if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET || !CALLBACK_REDIRECT_URI_CONFIG || !FRONTEND_URL_CONFIG || !JWT_SECRET || !SESSION_SECRET_FOR_COOKIE_PARSER) {
-  console.error("CRITICAL: One or more environment variables are missing. Check .env files and deployment configuration.");
-
-  // Log which specific variables are missing for easier debugging
-  const missingVars = [];
-  if (!TWITCH_CLIENT_ID) missingVars.push("TWITCH_CLIENT_ID");
-  if (!TWITCH_CLIENT_SECRET) missingVars.push("TWITCH_CLIENT_SECRET");
-  if (!CALLBACK_REDIRECT_URI_CONFIG) missingVars.push("CALLBACK_URL");
-  if (!FRONTEND_URL_CONFIG) missingVars.push("FRONTEND_URL");
-  if (!JWT_SECRET) missingVars.push("JWT_SECRET_KEY");
-  if (!SESSION_SECRET_FOR_COOKIE_PARSER) missingVars.push("SESSION_COOKIE_SECRET");
-
-  console.error(`Missing environment variables: ${missingVars.join(", ")}`);
-  console.error("Functions will not work correctly without these variables. Set them in your .env file or in your deployment configuration.");
-
-  // We don't throw an error here as it would prevent the function from initializing at all.
-  // Instead, individual routes will handle missing configuration gracefully.
+function redirectToFrontendWithError(res, errorCode, errorMessage, twitchQueryState) {
+  let errorUrl;
+  try {
+    errorUrl = new URL("/auth-error.html", FRONTEND_URL_CONFIG);
+    errorUrl.searchParams.set("error", errorCode);
+    errorUrl.searchParams.set("error_description", errorMessage);
+    if (twitchQueryState) {
+      try {
+        const parsedState = JSON.parse(twitchQueryState);
+        if (parsedState.frontendRedirect) {
+          errorUrl.searchParams.set("frontendRedirect", parsedState.frontendRedirect);
+        }
+      } catch {
+        // Ignore parse error
+      }
+    }
+  } catch (urlError) {
+    console.error("Error constructing error redirect URL:", urlError);
+    return res.status(500).send("Authentication failed and unable to construct error redirect.");
+  }
+  console.error(`Redirecting to error page: ${errorUrl.toString()}`);
+  return res.redirect(errorUrl.toString());
 }
 
-app.use(cookieParser(SESSION_SECRET_FOR_COOKIE_PARSER));
+function buildTwitchAuthUrl(currentTwitchClientId, currentCallbackRedirectUri, state) {
+  const authUrl = new URL("https://id.twitch.tv/oauth2/authorize");
+  authUrl.searchParams.set("client_id", currentTwitchClientId);
+  authUrl.searchParams.set("redirect_uri", currentCallbackRedirectUri);
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("scope", "user:read:email channel:read:ads");
+  authUrl.searchParams.set("state", state);
+  authUrl.searchParams.set("force_verify", "true");
+  return authUrl;
+}
 
-// Improved CORS Middleware
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  // Build allowed origins list
+// CORS config
+const allowedOriginsSet = (() => {
   const allowedOrigins = new Set(["http://127.0.0.1:5002", "http://localhost:5002"]);
   if (FRONTEND_URL_CONFIG) {
     try {
       const url = new URL(FRONTEND_URL_CONFIG);
       allowedOrigins.add(`${url.protocol}//${url.host}`);
-      // If using Firebase Hosting defaults, include both web.app and firebaseapp.com variants
-      if (url.host.endsWith(".web.app")) {
-        const altHost = url.host.replace(/\.web\.app$/, ".firebaseapp.com");
-        allowedOrigins.add(`${url.protocol}//${altHost}`);
-      } else if (url.host.endsWith(".firebaseapp.com")) {
-        const altHost = url.host.replace(/\.firebaseapp\.com$/, ".web.app");
-        allowedOrigins.add(`${url.protocol}//${altHost}`);
-      }
-    } catch (e) {
-      console.warn("CORS: FRONTEND_URL is not a valid URL:", FRONTEND_URL_CONFIG);
+    } catch {
+      // Ignore parse error
     }
-  } else {
-    // If FRONTEND_URL not configured, be permissive to avoid breaking the UI, but echo the specific origin
-    if (origin) allowedOrigins.add(origin);
   }
+  return allowedOrigins;
+})();
 
-  console.log(`CORS Check: Origin: ${origin} | Allowed: ${Array.from(allowedOrigins).join(", ")}`);
-
-  if (origin && allowedOrigins.has(origin)) {
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOriginsSet.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
   }
   next();
 });
 
-const TWITCH_AUTH_URL = "https://id.twitch.tv/oauth2/authorize";
-const TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
-const TWITCH_VALIDATE_URL = "https://id.twitch.tv/oauth2/validate";
+app.get("/", (req, res) => {
+  res.send("Web UI Cloud Function is running!");
+});
 
+app.get("/test/env", (req, res) => {
+  res.json({
+    twitchClientId: TWITCH_CLIENT_ID ? "Set" : "Not Set",
+    twitchClientSecret: TWITCH_CLIENT_SECRET ? "Set" : "Not Set",
+    callbackRedirectUri: CALLBACK_REDIRECT_URI_CONFIG || "Not Set",
+    frontendUrl: FRONTEND_URL_CONFIG || "Not Set",
+    jwtSecret: JWT_SECRET ? "Set" : "Not Set",
+    webuiInternalToken: WEBUI_INTERNAL_TOKEN ? "Set" : "Not Set",
+    allowedChannelsSecretName: ALLOWED_CHANNELS_SECRET_NAME || "Not Set",
+    botPublicUrl: BOT_PUBLIC_URL || "Not Set",
+    twitchEventsubSecret: TWITCH_EVENTSUB_SECRET ? "Set" : "Not Set",
+  });
+});
 
-// Normalize a Secret Manager reference to a Secret Version path
-// Accepts:
-// - full version path: projects/{project}/secrets/{secret}/versions/{version}
-// - secret path without version: projects/{project}/secrets/{secret}
-// - bare secret id: {secret}
-// Returns a version path using "latest" when no version provided
-function normalizeSecretVersionPath(secretInput) {
-  if (!secretInput) return secretInput;
-  if (secretInput.includes("/versions/")) return secretInput;
-  if (secretInput.startsWith("projects/")) {
-    return `${secretInput}/versions/latest`;
-  }
-  const projectId = getProjectId();
-  return `projects/${projectId}/secrets/${secretInput}/versions/latest`;
-}
-
-// Load allow-listed channels strictly from the secret specified by ALLOWED_CHANNELS_SECRET_NAME.
-// If the secret is missing or unreadable, deny all (no implicit fallbacks).
 async function getAllowedChannelsList() {
   try {
     if (!ALLOWED_CHANNELS_SECRET_NAME) {
@@ -183,218 +159,143 @@ async function getAllowedChannelsList() {
     }
     const name = normalizeSecretVersionPath(ALLOWED_CHANNELS_SECRET_NAME);
     const [version] = await secretManagerClient.accessSecretVersion({ name });
-    const secretCsv = version.payload.data.toString("utf8");
-    const list = secretCsv
-      .split(",")
-      .map((c) => c.trim().toLowerCase())
-      .filter(Boolean);
-    console.log(`[AllowList] Loaded ${list.length} entries from ALLOWED_CHANNELS_SECRET_NAME.`);
-    return list;
-  } catch (e) {
-    console.error("[AllowList] Error loading allow-list from Secret Manager:", e.message);
-    // On error, deny all
+    const csvData = version.payload.data.toString("utf8").trim();
+    if (!csvData) {
+      console.warn("[AllowList] Secret content is empty. Denying all by default.");
+      return [];
+    }
+    const channels = csvData.split(",").map(ch => ch.trim().toLowerCase()).filter(Boolean);
+    console.log(`[AllowList] Loaded ${channels.length} allowed channels from Secret Manager.`);
+    return channels;
+  } catch (error) {
+    console.error("[AllowList] Error fetching allowed channels from Secret Manager:", error.message);
     return [];
   }
 }
 
-// Route: /auth/twitch/initiate
-app.get("/auth/twitch/initiate", (req, res) => {
-  console.log("--- /auth/twitch/initiate HIT ---");
-  // Removed 'conf' variable as it's not used and was from functions.config()
-  const currentTwitchClientId = TWITCH_CLIENT_ID;
-  const currentCallbackRedirectUri = CALLBACK_REDIRECT_URI_CONFIG;
-
-  console.log("TWITCH_CLIENT_ID from env:", currentTwitchClientId);
-  console.log("CALLBACK_REDIRECT_URI_CONFIG from env:", currentCallbackRedirectUri);
-
-
-  if (!currentTwitchClientId || !currentCallbackRedirectUri) {
-    console.error("Config missing for /auth/twitch/initiate: TWITCH_CLIENT_ID or CALLBACK_URL not found in environment variables.");
-    return res.status(500).json({success: false, error: "Server configuration error for Twitch auth."});
-  }
-
-  const state = crypto.randomBytes(16).toString("hex");
-
-  // Try multiple cookie settings approaches to maximize compatibility
-  // First one with SameSite=None for cross-site redirects
-  res.cookie("twitch_oauth_state", state, {
-    signed: true,
-    httpOnly: true,
-    secure: true,
-    maxAge: 300000, // 5 minutes
-    sameSite: "None",
+app.get("/auth/twitch", async (req, res) => {
+  console.log("--- /auth/twitch HIT ---");
+  const frontendRedirect = req.query.redirect || "/";
+  const state = JSON.stringify({
+    frontendRedirect: frontendRedirect,
+    nonce: crypto.randomBytes(16).toString("hex"),
   });
-
-  // Backup cookie with Lax setting
-  res.cookie("twitch_oauth_state_lax", state, {
-    signed: true,
-    httpOnly: true,
-    secure: true,
-    maxAge: 300000, // 5 minutes
-    sameSite: "Lax",
-  });
-
-  // Also store state in session if available
-  if (req.session) {
-    req.session.twitch_oauth_state = state;
-  }
-
-  const params = new URLSearchParams({
-    client_id: currentTwitchClientId,
-    redirect_uri: currentCallbackRedirectUri, // This will be ngrok or live URL from .env
-    response_type: "code",
-    scope: "user:read:email channel:read:ads",
-    state: state,
-    force_verify: "true", // Consider "false" for production for better UX
-  });
-  const twitchAuthUrl = `${TWITCH_AUTH_URL}?${params.toString()}`;
-
-  console.log(`Generated state: ${state}`);
-  console.log(`Twitch Auth URL to be sent to frontend: ${twitchAuthUrl}`);
-
-  // Store the state in the response so the frontend can use it if cookies fail
-  res.json({
-    success: true,
-    twitchAuthUrl: twitchAuthUrl,
-    state: state,
-  });
+  console.log("Generated state for OAuth:", state);
+  console.log("Callback redirect URI used for state generation:", CALLBACK_REDIRECT_URI_CONFIG);
+  const authUrl = buildTwitchAuthUrl(TWITCH_CLIENT_ID, CALLBACK_REDIRECT_URI_CONFIG, state);
+  console.log("Redirecting user to Twitch auth URL:", authUrl.toString());
+  res.redirect(authUrl.toString());
 });
 
-// Route: /auth/twitch/callback
 app.get("/auth/twitch/callback", async (req, res) => {
   console.log("--- /auth/twitch/callback HIT ---");
-  console.log("Callback Request Query Params:", JSON.stringify(req.query));
-  const { code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription } = req.query;
-
-  // Clear any state-related cookies that might have been set
-  res.clearCookie("twitch_oauth_state");
-  res.clearCookie("twitch_oauth_state_lax");
-  if (req.session) {
-    delete req.session.twitch_oauth_state;
+  const code = req.query.code;
+  const twitchQueryState = req.query.state;
+  const error = req.query.error;
+  const errorDescription = req.query.error_description;
+  console.log("Query params:", { code: code ? "present" : "missing", state: twitchQueryState ? "present" : "missing", error, errorDescription });
+  if (error) {
+    console.error("Twitch returned an error:", error, errorDescription || "");
+    return redirectToFrontendWithError(res, error, errorDescription || "Twitch authorization failed.", twitchQueryState);
   }
-
-  if (twitchError) {
-    console.error(`Twitch OAuth explicit error: ${twitchError} - ${twitchErrorDescription}`);
-    return redirectToFrontendWithError(res, twitchError, twitchErrorDescription, twitchQueryState);
+  if (!code || !twitchQueryState) {
+    console.error("Missing code or state in callback query params.");
+    return redirectToFrontendWithError(res, "missing_params", "Missing authorization code or state.", twitchQueryState);
   }
-
-  // The client-side (in auth-complete.html) is now responsible for state validation
-  // against sessionStorage. We will proceed with the code exchange.
-  // The original server-side check is removed due to browser cross-site cookie restrictions.
-
+  let parsedState;
+  try {
+    parsedState = JSON.parse(twitchQueryState);
+    console.log("Parsed state from Twitch callback:", parsedState);
+  } catch (parseError) {
+    console.error("Failed to parse state from Twitch callback:", parseError);
+    return redirectToFrontendWithError(res, "invalid_state", "Invalid OAuth state parameter.", twitchQueryState);
+  }
   try {
     console.log("Exchanging code for token. Callback redirect_uri used for exchange:", CALLBACK_REDIRECT_URI_CONFIG);
     const tokenResponse = await axios.post(
       TWITCH_TOKEN_URL,
-      new URLSearchParams({
-        client_id: TWITCH_CLIENT_ID,
-        client_secret: TWITCH_CLIENT_SECRET,
-        code: code,
-        grant_type: "authorization_code",
-        redirect_uri: CALLBACK_REDIRECT_URI_CONFIG,
-      }).toString(),
+      null,
       {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
+        params: {
+          client_id: TWITCH_CLIENT_ID,
+          client_secret: TWITCH_CLIENT_SECRET,
+          code: code,
+          grant_type: "authorization_code",
+          redirect_uri: CALLBACK_REDIRECT_URI_CONFIG,
         },
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        timeout: 15000,
       },
     );
-    const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse.data;
-    console.log("Access token and refresh token received from Twitch.");
-
+    console.log("Token exchange successful. Validating token and fetching user info...");
+    const accessToken = tokenResponse.data.access_token;
+    const refreshToken = tokenResponse.data.refresh_token;
     if (!accessToken || !refreshToken) {
-      console.error("Missing access_token or refresh_token from Twitch.", tokenResponse.data);
-      throw new Error("Twitch did not return the expected tokens.");
+      throw new Error("Missing access or refresh token from Twitch.");
     }
-
-
     const validateResponse = await axios.get(TWITCH_VALIDATE_URL, {
-      headers: {Authorization: `OAuth ${accessToken}`},
+      headers: { Authorization: `OAuth ${accessToken}` },
+      timeout: 15000,
     });
-
-    if (validateResponse.data && validateResponse.data.user_id) {
+    console.log("Token validated. Fetching Twitch user info...");
+    const userResponse = await axios.get("https://api.twitch.tv/helix/users", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Client-ID": TWITCH_CLIENT_ID,
+      },
+      timeout: 15000,
+    });
+    const twitchUserData = userResponse.data && userResponse.data.data && userResponse.data.data[0];
+    if (twitchUserData) {
       const twitchUser = {
-        id: validateResponse.data.user_id,
-        login: validateResponse.data.login.toLowerCase(),
-        displayName: validateResponse.data.login,
+        id: twitchUserData.id,
+        login: twitchUserData.login,
+        displayName: twitchUserData.display_name,
+        email: twitchUserData.email,
       };
-      console.log(`[AuthCallback] User ${twitchUser.login} authenticated and validated.`);
-
-      if (!JWT_SECRET) { // from .env
-        console.error("JWT_SECRET is not configured in environment variables.");
-        return res.status(500).send("Server configuration error (JWT signing).");
-      }
-
-      const appTokenPayload = {
-        userId: twitchUser.id,
-        userLogin: twitchUser.login,
-        displayName: twitchUser.displayName,
-      };
-      const appSessionToken = jwt.sign(appTokenPayload, JWT_SECRET, {expiresIn: JWT_EXPIRATION});
-      console.log(`Generated app session token for ${twitchUser.login}`);
-
-      const frontendAuthCompleteUrl = new URL(FRONTEND_URL_CONFIG); // from .env
-      frontendAuthCompleteUrl.pathname = "/auth-complete.html";
-      frontendAuthCompleteUrl.searchParams.append("user_login", twitchUser.login);
-      frontendAuthCompleteUrl.searchParams.append("user_id", twitchUser.id);
-      frontendAuthCompleteUrl.searchParams.append("state", twitchQueryState);
-      frontendAuthCompleteUrl.searchParams.append("session_token", appSessionToken);
-
-      console.log(`Redirecting to frontend auth-complete page: ${frontendAuthCompleteUrl.toString()}`);
-
-      // Store tokens in Secret Manager and Firestore BEFORE redirecting
-      if (!db) {
-        console.error("Firestore (db) not initialized. Cannot store Twitch tokens.");
-        return redirectToFrontendWithError(res, "token_store_failed", "Server configuration error: database unavailable.", twitchQueryState);
-      }
+      console.log("Twitch user fetched successfully:", twitchUser.login);
       const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
       try {
-        // --- Secret Manager logic for refresh token ---
         const projectId = getProjectId();
-        const secretId = `twitch-refresh-token-${twitchUser.id}`;
-        let secretName = `projects/${projectId}/secrets/${secretId}`;
+        const secretName = `projects/${projectId}/secrets/twitch-refresh-token-${twitchUser.login}`;
         let versionName;
-        // Try to create the secret if it doesn't exist
         try {
           console.log(`[AuthCallback] Checking for secret existence: ${secretName}`);
           await secretManagerClient.getSecret({ name: secretName });
-          console.log(`[AuthCallback] Secret already exists for user ${twitchUser.login}`);
-        } catch (err) {
-          if (err.code === 5) { // Not found
-            console.log(`[AuthCallback] Secret not found. Creating secret: ${secretName}`);
-            const [secret] = await secretManagerClient.createSecret({
+          console.log(`[AuthCallback] Secret exists: ${secretName}`);
+        } catch (getSecretError) {
+          if (getSecretError.code === 5) {
+            console.log(`[AuthCallback] Secret does not exist. Creating secret: ${secretName}`);
+            await secretManagerClient.createSecret({
               parent: `projects/${projectId}`,
-              secretId,
-              secret: { replication: { automatic: {} } },
+              secretId: `twitch-refresh-token-${twitchUser.login}`,
+              secret: {
+                replication: { automatic: {} },
+              },
             });
-            secretName = secret.name;
-            console.log(`[AuthCallback] Created new secret for user ${twitchUser.login}`);
+            console.log(`[AuthCallback] Secret created: ${secretName}`);
           } else {
-            throw err;
+            throw getSecretError;
           }
         }
-        // Always add a new version (rotate)
-        const tokenBytes = Buffer.from(refreshToken || "", "utf8");
-        console.log(`[AuthCallback] Adding secret version. parent=${secretName}, refreshToken.length=${refreshToken ? refreshToken.length : 0}, tokenBytesLength=${tokenBytes.length}`);
         const [version] = await secretManagerClient.addSecretVersion({
           parent: secretName,
-          payload: { data: tokenBytes },
+          payload: {
+            data: Buffer.from(refreshToken, "utf8"),
+          },
         });
         versionName = version.name;
         console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
-
         await userDocRef.set({
-          refreshTokenSecretPath: versionName, // Store the path to the secret version
+          refreshTokenSecretPath: versionName,
           twitchUserId: twitchUser.id,
           displayName: twitchUser.displayName,
           lastLoginAt: FieldValue.serverTimestamp(),
           needsTwitchReAuth: false,
           lastTokenError: null,
           lastTokenErrorAt: null,
-        }, {merge: true});
+        }, { merge: true });
         console.log(`Twitch refresh token secret path stored for user ${twitchUser.login}`);
-
-        // Now validate the tokens are working by attempting to use them
         try {
           await axios.get(TWITCH_VALIDATE_URL, {
             headers: { Authorization: `OAuth ${accessToken}` },
@@ -407,7 +308,23 @@ app.get("/auth/twitch/callback", async (req, res) => {
         console.error(`Error storing Twitch tokens for ${twitchUser.login}:`, dbError);
         return redirectToFrontendWithError(res, "token_store_failed", "Failed to securely store Twitch credentials. Please try again.", twitchQueryState);
       }
-
+      const jwtPayload = {
+        login: twitchUser.login,
+        userId: twitchUser.id,
+        displayName: twitchUser.displayName,
+        email: twitchUser.email || null,
+      };
+      const sessionToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: "7d" });
+      console.log("JWT session token generated for user:", twitchUser.login);
+      const frontendAuthCompleteUrl = new URL("/auth-complete.html", FRONTEND_URL_CONFIG);
+      frontendAuthCompleteUrl.searchParams.set("token", sessionToken);
+      frontendAuthCompleteUrl.searchParams.set("login", twitchUser.login);
+      frontendAuthCompleteUrl.searchParams.set("userId", twitchUser.id);
+      frontendAuthCompleteUrl.searchParams.set("displayName", twitchUser.displayName);
+      if (parsedState && parsedState.frontendRedirect) {
+        frontendAuthCompleteUrl.searchParams.set("frontendRedirect", parsedState.frontendRedirect);
+      }
+      console.log("Redirecting to auth complete page:", frontendAuthCompleteUrl.toString());
       return res.redirect(frontendAuthCompleteUrl.toString());
     } else {
       console.error("Failed to validate token or get user info from Twitch after token exchange.");
@@ -415,70 +332,45 @@ app.get("/auth/twitch/callback", async (req, res) => {
     }
   } catch (error) {
     console.error("[AuthCallback] Twitch OAuth callback error:", error.response ? JSON.stringify(error.response.data, null, 2) : error.message, error.stack);
-    // Try to redirect to frontend with generic error if possible
     return redirectToFrontendWithError(res, "auth_failed", "Authentication failed with Twitch due to an internal server error.", twitchQueryState);
   }
 });
 
-// JWT Authentication Middleware
 const authenticateApiRequest = (req, res, next) => {
-  console.log(`--- authenticateApiRequest for ${req.path} ---`);
-  const authHeader = req.headers.authorization;
-  console.log("Received Authorization Header:", authHeader);
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    console.warn("API Auth Middleware: Missing or malformed Authorization header.");
-    return res.status(401).json({success: false, message: "Unauthorized: Missing or malformed token."});
-  }
-
-  const token = authHeader.split(" ")[1];
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
   if (!token) {
-    console.warn("API Auth Middleware: Token not found after Bearer prefix.");
-    return res.status(401).json({success: false, message: "Unauthorized: Token not found."});
+    console.error("[authenticateApiRequest] No token provided in Authorization header.");
+    return res.status(401).json({ success: false, message: "Unauthorized: Missing token." });
   }
-  console.log("API Auth Middleware: Token extracted:", token ? "Present" : "MISSING_OR_EMPTY");
-
-  if (!JWT_SECRET) { // from .env
-    console.error("API Auth: JWT_SECRET is not configured. Cannot verify token.");
-    return res.status(500).json({success: false, message: "Server error: Auth misconfiguration."});
-  }
-
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = {
-      id: decoded.userId,
-      login: decoded.userLogin,
+      login: decoded.login,
+      userId: decoded.userId,
       displayName: decoded.displayName,
+      email: decoded.email || null,
     };
-    console.log(`API Auth Middleware: User ${req.user.login} successfully authenticated. Decoded:`, JSON.stringify(decoded));
+    console.log(`[authenticateApiRequest] User authenticated: ${req.user.login}`);
     next();
   } catch (err) {
-    console.warn("API Auth Middleware: JWT verification failed.", err.message, err.name);
-    if (err.name === "TokenExpiredError") {
-      return res.status(401).json({success: false, message: "Unauthorized: Token expired."});
-    }
-    return res.status(401).json({success: false, message: "Unauthorized: Invalid token."});
+    console.error("[authenticateApiRequest] Token verification failed:", err.message);
+    return res.status(401).json({ success: false, message: "Unauthorized: Invalid token." });
   }
 };
 
-// API Routes
 app.get("/api/bot/status", authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /status] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
   try {
-    // Ensure we have a valid Twitch token for this user
     try {
       await getValidTwitchTokenForUser(channelLogin);
-      // Token is valid - proceed
     } catch (tokenError) {
-      // Token refresh failed, but we can still check bot status
       console.warn(`[API /status] Token validation failed for ${channelLogin}, but continuing:`, tokenError.message);
     }
-
     const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
     const docSnap = await docRef.get();
     if (docSnap.exists && docSnap.data().isActive) {
@@ -498,36 +390,33 @@ app.get("/api/bot/status", authenticateApiRequest, async (req, res) => {
     }
   } catch (error) {
     console.error(`[API /status] Error getting status for ${channelLogin}:`, error);
-    res.status(500).json({success: false, message: "Error fetching bot status."});
+    res.status(500).json({ success: false, message: "Error fetching bot status." });
   }
 });
 
 app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
-  const {id: twitchUserId, login: channelLogin, displayName} = req.user;
+  const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /add] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
-  // Enforce allow-list if configured (check BEFORE token validation to return accurate errors)
   try {
     const allowedList = await getAllowedChannelsList();
     const isAllowed = allowedList.includes(channelLogin.toLowerCase());
     if (!isAllowed) {
-      console.warn(`[API /add] Channel ${channelLogin} is not allow-listed. Rejecting self-serve activation.`);
+      console.warn(`[API /add] Channel ${channelLogin} is not on the allow-list.`);
       return res.status(403).json({
         success: false,
-        code: "not_allowed",
-        message: "This channel is not permitted to add the bot.",
-        details: "Access to the cloud version of ChatSage is invite-only. If you'd like access, please contact the administrator via https://detekoi.github.io/#contact-me",
+        message: "Your channel is not on the allow-list. Contact support for access.",
       });
     }
-  } catch (allowErr) {
-    console.error("[API /add] Error during allow-list check:", allowErr.message);
-    return res.status(500).json({ success: false, message: "Server error during allow-list verification." });
+  } catch (error) {
+    console.error(`[API /add] Error checking allow-list for ${channelLogin}:`, error);
+    return res.status(500).json({
+      success: false,
+      message: "Error verifying channel access. Please try again later.",
+    });
   }
-
-  // After allow-list passes, check if we have valid Twitch tokens for this user
   try {
     await getValidTwitchTokenForUser(channelLogin);
     console.log(`[API /add] Verified valid Twitch token for ${channelLogin}`);
@@ -535,29 +424,21 @@ app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
     console.error(`[API /add] Token validation failed for ${channelLogin}:`, tokenError.message);
     return res.status(403).json({
       success: false,
-      needsReAuth: true,
-      message: "Your Twitch authentication has expired. Please reconnect your account.",
+      message: "Twitch authentication required. Please re-authenticate with Twitch.",
     });
   }
-
   const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
   try {
     await docRef.set({
       channelName: channelLogin,
-      twitchUserId: twitchUserId,
-      displayName: displayName || channelLogin,
       isActive: true,
-      addedBy: channelLogin,
       addedAt: FieldValue.serverTimestamp(),
-      lastStatusChange: FieldValue.serverTimestamp(),
-      // Mark as having valid auth
-      needsTwitchReAuth: false,
-    }, {merge: true});
-    console.log(`[API /add] Bot activated for channel: ${channelLogin}`);
-    res.json({success: true, message: `Bot has been requested for ${channelLogin}. It should join shortly!`});
+    }, { merge: true });
+    console.log(`Channel ${channelLogin} activated successfully.`);
+    res.json({ success: true, message: `Bot successfully added to ${channelLogin}.` });
   } catch (error) {
-    console.error(`[API /add] Error activating bot for ${channelLogin}:`, error);
-    res.status(500).json({success: false, message: "Error requesting bot."});
+    console.error(`[API /add] Error adding channel ${channelLogin}:`, error);
+    res.status(500).json({ success: false, message: "Failed to add bot. Please try again." });
   }
 });
 
@@ -565,106 +446,99 @@ app.post("/api/bot/remove", authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /remove] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
-  // Check authentication state, but don't block removal if token is invalid
-  // We always want to allow users to remove the bot even if their auth has expired
   try {
     await getValidTwitchTokenForUser(channelLogin);
     console.log(`[API /remove] Verified valid Twitch token for ${channelLogin}`);
   } catch (tokenError) {
-    // Log but continue - we'll allow removal even with expired tokens
-    console.warn(`[API /remove] Token validation failed for ${channelLogin}, but continuing with removal:`, tokenError.message);
+    console.warn(`[API /remove] Token validation failed for ${channelLogin}, but allowing removal:`, tokenError.message);
   }
-
   const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
   try {
     const docSnap = await docRef.get();
     if (docSnap.exists) {
-      await docRef.update({
-        isActive: false,
-        lastStatusChange: FieldValue.serverTimestamp(),
-      });
-      console.log(`[API /remove] Bot deactivated for channel: ${channelLogin}`);
-      res.json({success: true, message: `Bot has been requested to leave ${channelLogin}.`});
+      await docRef.update({ isActive: false, removedAt: FieldValue.serverTimestamp() });
+      console.log(`Channel ${channelLogin} deactivated successfully.`);
+      res.json({ success: true, message: `Bot successfully removed from ${channelLogin}.` });
     } else {
-      res.json({success: false, message: "Bot was not in your channel."});
+      console.warn(`[API /remove] No document found for ${channelLogin}`);
+      res.json({ success: true, message: `No active bot found for ${channelLogin}.` });
     }
   } catch (error) {
-    console.error(`[API /remove] Error deactivating bot for ${channelLogin}:`, error);
-    res.status(500).json({success: false, message: "Error requesting bot removal."});
+    console.error(`[API /remove] Error removing channel ${channelLogin}:`, error);
+    res.status(500).json({ success: false, message: "Failed to remove bot. Please try again." });
   }
 });
 
-// GET /api/commands - Fetch command states for the authenticated user's channel
 app.get("/api/commands", authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /commands GET] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
   try {
-    // All available commands (matching the bot's command list)
     const ALL_COMMANDS = [
-      { name: "help", aliases: ["commands"] },
-      { name: "ping", aliases: [] },
-      { name: "game", aliases: [] },
-      { name: "ask", aliases: ["sage"] },
-      { name: "search", aliases: [] },
-      { name: "translate", aliases: [] },
-      { name: "geo", aliases: [] },
-      { name: "trivia", aliases: [] },
-      { name: "riddle", aliases: [] },
-      { name: "botlang", aliases: [] },
-      { name: "lurk", aliases: [] },
+      "ask", "auto", "geo", "riddle", "trivia", "triviaq", "triviaa", "triviaend",
+      "lurk", "back", "xp", "botlang", "userlang"
     ];
-
-    // Fetch disabled commands for this channel
     const docRef = db.collection("channelCommands").doc(channelLogin);
-    const docSnap = await docRef.get();
-    const disabledCommands = docSnap.exists && docSnap.data().disabledCommands ? docSnap.data().disabledCommands : [];
-
-    // Build response with command status
-    const commands = ALL_COMMANDS.map(cmd => ({
-      name: cmd.aliases.length > 0 ? `${cmd.name} (${cmd.aliases.map(a => `!${a}`).join(", ")})` : cmd.name,
-      primaryName: cmd.name,
-      enabled: !disabledCommands.includes(cmd.name),
+    const snap = await docRef.get();
+    const settings = snap.exists ? snap.data() : {};
+    const commandSettings = ALL_COMMANDS.map(cmd => ({
+      command: cmd,
+      enabled: settings[cmd] !== false,
     }));
-
-    console.log(`[API /commands GET] Retrieved command states for ${channelLogin}: ${disabledCommands.length} disabled commands`);
-    res.json({
-      success: true,
-      commands: commands,
-    });
-  } catch (error) {
-    console.error(`[API /commands GET] Error fetching command states for ${channelLogin}:`, error);
-    res.status(500).json({success: false, message: "Error fetching command settings."});
+    return res.json({ success: true, commands: commandSettings });
+  } catch (err) {
+    console.error("[API /commands GET] Error:", err);
+    return res.status(500).json({ success: false, message: "Error fetching command settings." });
   }
 });
 
-// --- Auto-Chat Settings API ---
+app.post("/api/commands", authenticateApiRequest, async (req, res) => {
+  const channelLogin = req.user.login;
+  if (!db) {
+    console.error("[API /commands POST] Firestore (db) not initialized!");
+    return res.status(500).json({ success: false, message: "Firestore not available." });
+  }
+  try {
+    const { command, enabled } = req.body;
+    if (!command || typeof enabled !== "boolean") {
+      return res.status(400).json({ success: false, message: "Invalid command or enabled value." });
+    }
+    const docRef = db.collection("channelCommands").doc(channelLogin);
+    await docRef.set({ [command]: enabled }, { merge: true });
+    console.log(`[API /commands POST] Updated ${command} = ${enabled} for ${channelLogin}`);
+    return res.json({ success: true, message: `Command ${command} updated successfully.` });
+  } catch (err) {
+    console.error("[API /commands POST] Error:", err);
+    return res.status(500).json({ success: false, message: "Error updating command settings." });
+  }
+});
+
 app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /auto-chat GET] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
   try {
     const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
     const snap = await docRef.get();
     const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true, ads: false } };
     const cfg = snap.exists ? { ...defaultCfg, ...snap.data() } : defaultCfg;
-    return res.json({ success: true, config: {
-      mode: (cfg.mode || "off"),
-      categories: {
-        greetings: cfg.categories && cfg.categories.greetings !== false,
-        facts: cfg.categories && cfg.categories.facts !== false,
-        questions: cfg.categories && cfg.categories.questions !== false,
-        ads: cfg.categories && cfg.categories.ads === true,
-      },
-    }});
+    return res.json({
+      success: true, config: {
+        mode: (cfg.mode || "off"),
+        categories: {
+          greetings: cfg.categories && cfg.categories.greetings !== false,
+          facts: cfg.categories && cfg.categories.facts !== false,
+          questions: cfg.categories && cfg.categories.questions !== false,
+          ads: cfg.categories && cfg.categories.ads === true,
+        },
+      }
+    });
   } catch (err) {
     console.error("[API /auto-chat GET] Error:", err);
     return res.status(500).json({ success: false, message: "Failed to load auto-chat config." });
@@ -675,12 +549,12 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /auto-chat POST] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
   try {
     const body = req.body || {};
     const mode = (body.mode || "").toLowerCase();
-    const validModes = ["off","low","medium","high"];
+    const validModes = ["off", "low", "medium", "high"];
     if (mode && !validModes.includes(mode)) {
       return res.status(400).json({ success: false, message: "Invalid mode." });
     }
@@ -696,15 +570,12 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
     updates.channelName = channelLogin;
     updates.updatedAt = new Date();
     await db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin).set(updates, { merge: true });
-    
-    // Reconcile ad-break EventSub subscription immediately when setting changes
     try {
       if (typeof updates.categories?.ads === "boolean") {
         await ensureAdBreakSubscription(channelLogin, updates.categories.ads);
       }
     } catch (subErr) {
       console.warn(`[API /auto-chat POST] ensureAdBreakSubscription warning for ${channelLogin}:`, subErr.message);
-      // Do not fail the save; UI will still be updated. Admins can retry.
     }
     return res.json({ success: true, config: updates });
   } catch (err) {
@@ -713,35 +584,28 @@ app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   }
 });
 
-// Helper in web UI backend to call the bot to ensure ad-break EventSub subscriptions
 async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
   if (!BOT_PUBLIC_URL) {
-    // If the bot public URL is not set here, the bot process itself will reconcile via Firestore listener.
     return;
   }
   try {
-    // Acquire a valid broadcaster user token (has channel:read:ads scope after re-auth)
     const accessToken = await getValidTwitchTokenForUser(channelLogin);
     const userDocRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
     const userDoc = await userDocRef.get();
     const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
     if (!userId) return;
-
     const HELIX_URL = "https://api.twitch.tv/helix";
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       "Client-ID": TWITCH_CLIENT_ID,
       "Content-Type": "application/json",
     };
-
-    // List current subs for this broadcaster/type
     const list = await axios.get(`${HELIX_URL}/eventsub/subscriptions`, { headers });
     const existing = (list.data && list.data.data ? list.data.data : []).filter(
       (s) => s.type === "channel.ad_break.begin" && s.condition?.broadcaster_user_id === String(userId),
     );
-
     if (adsEnabled) {
-      if (existing.length > 0) return; // already subscribed
+      if (existing.length > 0) return;
       const body = {
         type: "channel.ad_break.begin",
         version: "1",
@@ -755,7 +619,6 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
       await axios.post(`${HELIX_URL}/eventsub/subscriptions`, body, { headers });
       return;
     } else {
-      // Delete existing
       for (const sub of existing) {
         await axios.delete(`${HELIX_URL}/eventsub/subscriptions`, {
           headers,
@@ -769,9 +632,6 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
   }
 }
 
-// Expose ad schedule to the bot (uses broadcaster user token with channel:read:ads)
-// Removed less-secure public schedule route. Only internal route is available.
-
 // Internal bot-only route (uses INTERNAL_BOT_TOKEN). Requires ?channel=
 app.get("/internal/ads/schedule", async (req, res) => {
   try {
@@ -779,15 +639,36 @@ app.get("/internal/ads/schedule", async (req, res) => {
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
     const expected = await getInternalBotTokenValue();
     if (!token || token !== expected) {
+      console.error("[AdSchedule] Unauthorized request - invalid internal token");
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
+    
     const channelLogin = (req.query.channel || "").toString().toLowerCase();
-    if (!channelLogin) return res.status(400).json({ success: false, message: "Missing channel parameter" });
-    if (!db) return res.status(500).json({ success: false, message: "Firestore not available." });
+    if (!channelLogin) {
+      console.error("[AdSchedule] Missing channel parameter in request");
+      return res.status(400).json({ success: false, message: "Missing channel parameter" });
+    }
+    if (!db) {
+      console.error("[AdSchedule] Firestore not initialized");
+      return res.status(500).json({ success: false, message: "Firestore not available." });
+    }
+    
+    console.log(`[AdSchedule] Fetching ad schedule for channel: ${channelLogin}`);
+    
+    // Get valid access token (refreshes if needed)
     const accessToken = await getValidTwitchTokenForUser(channelLogin);
+    
+    // Get user ID
     const userDoc = await db.collection(CHANNELS_COLLECTION).doc(channelLogin).get();
     const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
-    if (!userId) return res.status(404).json({ success: false, message: "User not found" });
+    if (!userId) {
+      console.error(`[AdSchedule] No twitchUserId found for ${channelLogin}`);
+      return res.status(404).json({ success: false, message: "User not found or missing Twitch user ID" });
+    }
+    
+    console.log(`[AdSchedule] Calling Twitch API for broadcaster_id: ${userId}`);
+    
+    // Call Twitch API
     const response = await axios.get("https://api.twitch.tv/helix/channels/ads", {
       headers: { Authorization: `Bearer ${accessToken}`, "Client-ID": TWITCH_CLIENT_ID },
       params: { broadcaster_id: String(userId) },
@@ -799,106 +680,92 @@ app.get("/internal/ads/schedule", async (req, res) => {
     
     return res.json({ success: true, data: response.data });
   } catch (e) {
-    console.error(`[AdSchedule] Error fetching ad schedule for ${channelLogin}:`, e.message, e.response?.data);
-    return res.status(400).json({ success: false, message: e.message, details: e.response?.data });
+    // Enhanced error logging - extract channel from query if available
+    const channelLogin = (req.query?.channel || "unknown").toString().toLowerCase();
+    const errorDetails = {
+      channel: channelLogin,
+      message: e.message,
+      twitchApiError: e.response?.data,
+      status: e.response?.status,
+      stack: e.stack,
+    };
+    console.error(`[AdSchedule] Error fetching ad schedule:`, JSON.stringify(errorDetails, null, 2));
+    
+    // Return appropriate status code
+    const statusCode = e.response?.status || 500;
+    return res.status(statusCode).json({ 
+      success: false, 
+      message: e.message, 
+      details: e.response?.data 
+    });
   }
 });
 
-// Internal bot-only route to ensure EventSub ad-break subscription per channel
 app.post("/internal/eventsub/adbreak/ensure", async (req, res) => {
   try {
     const authHeader = req.headers.authorization || "";
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
     const expected = await getInternalBotTokenValue();
     if (!token || token !== expected) {
+      console.error("[EventSub /adbreak/ensure] Unauthorized");
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    const channelLogin = (req.query.channel || "").toString().toLowerCase();
-    const enabledParam = (req.query.enabled || "").toString().toLowerCase();
-    const enabled = enabledParam === "true" || enabledParam === "1" || enabledParam === "yes";
-    if (!channelLogin) return res.status(400).json({ success: false, message: "Missing channel parameter" });
-    const result = await ensureAdBreakSubscription(channelLogin, enabled);
-    return res.json({ success: true, result });
-  } catch (e) {
-    return res.status(400).json({ success: false, message: e.message });
-  }
-});
-
-// POST /api/commands - Toggle command state for the authenticated user's channel
-app.post("/api/commands", authenticateApiRequest, async (req, res) => {
-  const channelLogin = req.user.login;
-  const { command, enabled } = req.body;
-
-  if (!db) {
-    console.error("[API /commands POST] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
-  }
-
-  if (!command || typeof enabled !== "boolean") {
-    return res.status(400).json({success: false, message: "Invalid request body. 'command' and 'enabled' are required."});
-  }
-
-  // Validate command name
-  const validCommands = ["help", "ping", "game", "ask", "search", "translate", "geo", "trivia", "riddle", "botlang", "lurk"];
-  if (!validCommands.includes(command)) {
-    return res.status(400).json({success: false, message: "Invalid command name."});
-  }
-
-  // Prevent disabling critical commands
-  if (command === "help" && !enabled) {
-    return res.status(400).json({success: false, message: "The help command cannot be disabled."});
-  }
-
-  try {
-    const docRef = db.collection("channelCommands").doc(channelLogin);
-    
-    if (enabled) {
-      // Enable command by removing from disabled list
-      await docRef.set({ 
-        disabledCommands: FieldValue.arrayRemove(command),
-        channelName: channelLogin, 
-      }, { merge: true });
-    } else {
-      // Disable command by adding to disabled list
-      await docRef.set({ 
-        disabledCommands: FieldValue.arrayUnion(command),
-        channelName: channelLogin, 
-      }, { merge: true });
+    const { channelLogin, adsEnabled } = req.body;
+    if (!channelLogin) {
+      return res.status(400).json({ success: false, message: "Missing channelLogin" });
     }
-
-    console.log(`[API /commands POST] Command '${command}' ${enabled ? "enabled" : "disabled"} for ${channelLogin}`);
-    res.json({
-      success: true,
-      message: `Command '${command}' ${enabled ? "enabled" : "disabled"} successfully.`,
-    });
-  } catch (error) {
-    console.error(`[API /commands POST] Error toggling command '${command}' for ${channelLogin}:`, error);
-    res.status(500).json({success: false, message: "Error updating command settings."});
+    await ensureAdBreakSubscription(channelLogin, adsEnabled === true);
+    return res.json({ success: true, message: `EventSub ad-break subscription updated for ${channelLogin}` });
+  } catch (e) {
+    console.error("[EventSub /adbreak/ensure] Error:", e.message);
+    return res.status(500).json({ success: false, message: e.message });
   }
 });
 
-// Logout Route
-app.get("/auth/logout", (req, res) => {
-  console.log("Logout requested. Client should clear its token.");
-  res.redirect(FRONTEND_URL_CONFIG); // from .env
+app.post("/internal/commands/save", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    const expected = await getInternalBotTokenValue();
+    if (!token || token !== expected) {
+      console.error("[Internal /commands/save] Unauthorized");
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    const { channelLogin, commandSettings } = req.body;
+    if (!channelLogin || typeof commandSettings !== "object") {
+      return res.status(400).json({ success: false, message: "Invalid request body" });
+    }
+    if (!db) {
+      return res.status(500).json({ success: false, message: "Firestore not available." });
+    }
+    const docRef = db.collection("channelCommands").doc(channelLogin);
+    const updates = {};
+    for (const cmd of Object.keys(commandSettings)) {
+      updates[cmd] = commandSettings[cmd];
+    }
+    updates.lastUpdatedAt = FieldValue.serverTimestamp();
+    await docRef.set(updates, { merge: true });
+    console.log(`[Internal /commands/save] Saved command settings for ${channelLogin}`);
+    return res.json({ success: true, message: "Command settings saved successfully." });
+  } catch (error) {
+    console.error("[Internal /commands/save] Error:", error);
+    return res.status(500).json({ success: false, message: "Error saving command settings." });
+  }
 });
 
-// API route to check auth status and refresh token if needed
+app.get("/logout", (req, res) => {
+  res.redirect(FRONTEND_URL_CONFIG);
+});
+
 app.get("/api/auth/status", authenticateApiRequest, async (req, res) => {
   const userLogin = req.user.login;
   console.log(`[API /auth/status] Checking auth status for ${userLogin}`);
-
   if (!db) {
     console.error("[API /auth/status] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
   try {
-    // Attempt to get a valid token, which will refresh if needed
-    // Token is valid if this doesn't throw an error
     await getValidTwitchTokenForUser(userLogin);
-
-    // If we get here, token is valid (either existing or refreshed)
     return res.json({
       success: true,
       isAuthenticated: true,
@@ -907,16 +774,12 @@ app.get("/api/auth/status", authenticateApiRequest, async (req, res) => {
     });
   } catch (error) {
     console.error(`[API /auth/status] Error getting valid token for ${userLogin}:`, error.message);
-
-    // Check if this is a critical auth error that requires re-auth
     const needsReAuth = error.message.includes("re-authenticate") ||
-                         error.message.includes("Refresh token not available") ||
-                         error.message.includes("User not found");
-
-    // User exists and is authenticated with our app (JWT), but Twitch tokens are invalid
+      error.message.includes("Refresh token not available") ||
+      error.message.includes("User not found");
     return res.status(403).json({
       success: false,
-      isAuthenticated: true, // JWT is valid, but Twitch tokens aren't
+      isAuthenticated: true,
       needsReAuth: needsReAuth,
       message: needsReAuth ?
         "Twitch authentication required. Please re-authenticate with Twitch." :
@@ -925,137 +788,78 @@ app.get("/api/auth/status", authenticateApiRequest, async (req, res) => {
   }
 });
 
-// API route to force token refresh
 app.post("/api/auth/refresh", authenticateApiRequest, async (req, res) => {
   const userLogin = req.user.login;
-  console.log(`[API /auth/refresh] Manual token refresh requested for ${userLogin}`);
-
+  console.log(`[API /auth/refresh] Forcing token refresh for ${userLogin}`);
   if (!db) {
     console.error("[API /auth/refresh] Firestore (db) not initialized!");
-    return res.status(500).json({success: false, message: "Firestore not available."});
+    return res.status(500).json({ success: false, message: "Firestore not available." });
   }
-
   try {
-    // Clear any cached tokens to force a fresh refresh
     await clearCachedTokens(userLogin, "Manual refresh requested by user");
-
-    // Try to get a fresh token
-    const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userLogin);
-    const userDoc = await userDocRef.get();
-
-    if (!userDoc.exists) {
-      console.warn(`[API /auth/refresh] User document for ${userLogin} not found.`);
-      return res.status(404).json({
-        success: false,
-        needsReAuth: true,
-        message: "User not found. Please re-authenticate with Twitch.",
-      });
+    const accessToken = await getValidTwitchTokenForUser(userLogin);
+    if (!accessToken) {
+      throw new Error("Failed to obtain access token after refresh.");
     }
-
-    const userData = userDoc.data();
-    const {refreshTokenSecretPath} = userData;
-    if (!refreshTokenSecretPath) {
-      console.warn(`[API /auth/refresh] No refresh token secret path found for ${userLogin}.`);
-      return res.status(400).json({
-        success: false,
-        needsReAuth: true,
-        message: "No refresh token available. Please re-authenticate with Twitch.",
-      });
-    }
-    // Fetch refresh token from Secret Manager
-    const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
-    const twitchRefreshToken = version.payload.data.toString("utf8");
-    // Attempt to refresh the token
-    await refreshTwitchToken(twitchRefreshToken);
-    // Update the refresh status in Firestore (no longer storing access tokens)
-    await userDocRef.update({
-      lastTokenRefreshAt: FieldValue.serverTimestamp(),
-      needsTwitchReAuth: false,
-      lastTokenError: null,
-      lastTokenErrorAt: null,
-    });
     console.log(`[API /auth/refresh] Successfully refreshed token for ${userLogin}`);
     return res.json({
       success: true,
-      message: "Twitch authentication refreshed successfully.",
+      message: "Twitch authentication successfully refreshed.",
     });
   } catch (error) {
-    console.error(`[API /auth/refresh] Failed to refresh token for ${userLogin}:`, error.message);
-    return res.status(401).json({
+    console.error(`[API /auth/refresh] Error refreshing token for ${userLogin}:`, error.message);
+    const needsReAuth = error.message.includes("re-authenticate") ||
+      error.message.includes("Refresh token not available") ||
+      error.message.includes("User not found");
+    return res.status(403).json({
       success: false,
-      needsReAuth: true,
-      message: "Failed to refresh Twitch authentication. Please re-authenticate.",
-      error: error.message,
+      needsReAuth: needsReAuth,
+      message: needsReAuth ?
+        "Twitch re-authentication required. Please log in with Twitch again." :
+        "Error refreshing Twitch authentication.",
     });
   }
 });
 
-// Helper to redirect to frontend with error parameters
-const redirectToFrontendWithError = (res, error, errorDescription, state) => {
-  const frontendErrorUrl = new URL(FRONTEND_URL_CONFIG);
-  frontendErrorUrl.pathname = "/auth-error.html"; // Or your preferred error page
-  if (error) frontendErrorUrl.searchParams.append("error", error);
-  if (errorDescription) frontendErrorUrl.searchParams.append("error_description", errorDescription);
-  if (state) frontendErrorUrl.searchParams.append("state", state); // Pass original state back if available
-  console.warn(`Redirecting to frontend error page: ${frontendErrorUrl.toString()}`);
-  return res.redirect(frontendErrorUrl.toString());
-};
-
-/**
- * Clears cached Twitch tokens for a user and marks them as requiring re-authentication
- * @param {string} userLogin - The Twitch channel/login name
- * @param {string} reason - Reason for clearing the tokens (for logging)
- * @return {Promise<boolean>} True if successful, false otherwise
- */
 async function clearCachedTokens(userLogin, reason = "Unspecified reason") {
   if (!db) {
     console.error("[clearCachedTokens] Firestore (db) not initialized!");
     return false;
   }
-
+  
   if (!userLogin) {
     console.error("[clearCachedTokens] No userLogin provided");
     return false;
   }
-
+  
   try {
     const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userLogin);
     const userDoc = await userDocRef.get();
-
     if (!userDoc.exists) {
       console.warn(`[clearCachedTokens] User document for ${userLogin} not found.`);
       return false;
     }
-
     await userDocRef.update({
       needsTwitchReAuth: true,
-      lastTokenError: reason,
-      lastTokenErrorAt: FieldValue.serverTimestamp(),
+      lastTokenClearReason: reason,
+      lastTokenClearAt: FieldValue.serverTimestamp(),
     });
-
-    console.log(`[clearCachedTokens] Successfully cleared tokens for ${userLogin}. Reason: ${reason}`);
+    console.log(`[clearCachedTokens] Cleared cached tokens for ${userLogin}. Reason: ${reason}`);
     return true;
   } catch (error) {
-    console.error(`[clearCachedTokens] Error clearing tokens for ${userLogin}:`, error.message);
+    console.error(`[clearCachedTokens] Failed to clear tokens for ${userLogin}:`, error.message);
     return false;
   }
 }
 
-/**
- * Refreshes a Twitch token using the refresh token with retry logic
- * @param {string} currentRefreshToken - The refresh token to use
- * @return {Promise<Object>} The new tokens and expiration
- */
 async function refreshTwitchToken(currentRefreshToken) {
   if (!TWITCH_CLIENT_ID || !TWITCH_CLIENT_SECRET) {
     console.error("Twitch client ID or secret not configured for token refresh.");
     throw new Error("Server configuration error for Twitch token refresh.");
   }
-
   const MAX_RETRY_ATTEMPTS = 3;
-  const RETRY_DELAY_MS = 5000; // 5 seconds between retries
+  const RETRY_DELAY_MS = 5000;
   let lastError = null;
-
   for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
     console.log(`Attempting to refresh Twitch token (Attempt ${attempt}/${MAX_RETRY_ATTEMPTS})`);
     try {
@@ -1069,93 +873,41 @@ async function refreshTwitchToken(currentRefreshToken) {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        timeout: 15000, // 15 second timeout
+        timeout: 15000,
       });
-
       if (response.status === 200 && response.data && response.data.access_token) {
         console.log(`Successfully refreshed Twitch token on attempt ${attempt}.`);
         return {
           accessToken: response.data.access_token,
-          refreshToken: response.data.refresh_token || currentRefreshToken, // Twitch might issue a new refresh token or keep the old one
+          refreshToken: response.data.refresh_token || currentRefreshToken,
           expiresIn: response.data.expires_in,
         };
       } else {
-        // Should not happen if status is 200, but treat as an error
         lastError = new Error(`Failed to fetch token, unexpected response structure. Status: ${response.status}`);
         console.warn(`Attempt ${attempt} failed: ${lastError.message}`);
       }
     } catch (error) {
       lastError = error;
-      const errorDetails = {
-        message: error.message,
-        code: error.code || "UNKNOWN",
-        status: error.response && error.response.status,
-        responseData: error.response && error.response.data,
-        attempt: `${attempt}/${MAX_RETRY_ATTEMPTS}`,
-      };
-
-      console.error(`[refreshTwitchToken] Error refreshing token on attempt ${attempt}:`,
-        JSON.stringify(errorDetails, null, 2));
-
-      // Determine if this error is retryable
-      let isRetryable = false;
-
-      if (error.code === "ECONNABORTED" || error.code === "ETIMEDOUT") {
-        // Timeout errors are retryable
-        isRetryable = true;
-        console.warn(`Attempt ${attempt} timed out. Will retry if attempts remain.`);
-      } else if (error.response) {
-        if (error.response.status >= 500) {
-          // Server errors are retryable
-          isRetryable = true;
-          console.warn(`Attempt ${attempt} failed with server error ${error.response.status}. Will retry if attempts remain.`);
-        } else if (error.response.status === 429) {
-          // Rate limiting is retryable
-          isRetryable = true;
-          console.warn(`Attempt ${attempt} rate limited (429). Will retry after delay.`);
-        } else if (error.response.status === 400 || error.response.status === 401 || error.response.status === 403) {
-          // Auth errors are NOT retryable - likely a bad refresh token or client credentials
-          console.warn(`Refresh token is likely invalid or revoked (${error.response.status}). User needs to re-authenticate.`);
-          isRetryable = false;
-        }
-      } else if (error.request) {
-        // Network errors with no response are retryable
-        isRetryable = true;
-        console.warn(`Attempt ${attempt} failed with network error. Will retry if attempts remain.`);
+      const statusCode = error.response?.status;
+      const errorData = error.response?.data;
+      console.error(`Attempt ${attempt} failed with error:`, error.message, errorData);
+      if (statusCode === 400 || statusCode === 401) {
+        console.error("Token refresh failed due to invalid refresh token. User needs to re-authenticate.");
+        throw new Error("Refresh token is invalid or expired. User needs to re-authenticate.");
       }
-
-      // If retryable and not the last attempt, wait and try again
-      if (isRetryable && attempt < MAX_RETRY_ATTEMPTS) {
-        console.info(`Waiting ${RETRY_DELAY_MS/1000} seconds before retry attempt ${attempt + 1}...`);
-        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
-        continue;
+      if (attempt < MAX_RETRY_ATTEMPTS) {
+        console.log(`Retrying in ${RETRY_DELAY_MS / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
       }
-
-      // If not retryable or last attempt, break out
-      break;
     }
   }
-
-  // If we get here, all retries failed
-  let finalErrorMessage = `Failed to refresh Twitch token after ${MAX_RETRY_ATTEMPTS} attempts.`;
-  if (lastError) {
-    if (lastError.response) {
-      finalErrorMessage += ` Status: ${lastError.response.status}, Data: ${JSON.stringify(lastError.response.data)}`;
-      if (lastError.response.status === 400 || lastError.response.status === 401 || lastError.response.status === 403) {
-        finalErrorMessage += " User needs to re-authenticate or client credentials are invalid.";
-      }
-    } else {
-      finalErrorMessage += ` Error: ${lastError.message}`;
-    }
-  }
+  const finalErrorMessage = lastError?.response?.data?.message ||
+    lastError?.message ||
+    "Failed to refresh Twitch token after multiple attempts.";
+  console.error("All refresh attempts failed. Final error:", finalErrorMessage);
   throw new Error(finalErrorMessage);
 }
 
-/**
- * Gets a valid Twitch access token for a user, refreshing if necessary
- * @param {string} userLogin - The user's login name
- * @return {Promise<string>} A valid access token
- */
 async function getValidTwitchTokenForUser(userLogin) {
   if (!db) {
     console.error("[getValidTwitchTokenForUser] Firestore (db) not initialized!");
@@ -1168,15 +920,13 @@ async function getValidTwitchTokenForUser(userLogin) {
     throw new Error("User not found or not authenticated with Twitch.");
   }
   const userData = userDoc.data();
-  const {refreshTokenSecretPath} = userData;
-  // No longer storing access tokens - always refresh from the refresh token
+  const { refreshTokenSecretPath } = userData;
   if (!refreshTokenSecretPath) {
     console.warn(`[getValidTwitchTokenForUser] No refresh token secret path found for ${userLogin}. Re-authentication required.`);
     throw new Error("Refresh token not available. User needs to re-authenticate.");
   }
   console.log(`[getValidTwitchTokenForUser] Refreshing access token for ${userLogin} from refresh token.`);
   try {
-    // Fetch refresh token from Secret Manager
     const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
     const currentRefreshToken = version.payload.data.toString("utf8");
     const newTokens = await refreshTwitchToken(currentRefreshToken);
@@ -1203,3 +953,4 @@ async function getValidTwitchTokenForUser(userLogin) {
 }
 
 exports.webUi = functions.https.onRequest(app);
+
