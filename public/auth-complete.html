@@ -59,11 +59,13 @@
             const userId = queryParams.get('user_id');
             const sessionToken = queryParams.get('session_token');
 
-            // Server has already validated the OAuth state, so we don't need to check it here
+            // Server has already validated the OAuth state
             console.log("Processing authentication for user:", userLogin);
 
             if (userLogin && userId && sessionToken) {
                 // Store user info and session token
+                // Note: Due to cross-origin setup (Firebase Hosting + Cloud Run),
+                // we use localStorage with Authorization header instead of HTTP-only cookies
                 localStorage.setItem('twitch_user_login', userLogin);
                 localStorage.setItem('twitch_user_id', userId);
                 localStorage.setItem('app_session_token', sessionToken);

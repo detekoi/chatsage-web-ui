@@ -4,6 +4,8 @@ const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const rateLimit = require("express-rate-limit");
+const validator = require("validator");
 const { Firestore, FieldValue } = require("@google-cloud/firestore");
 const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 
@@ -21,7 +23,7 @@ const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
 const TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 const TWITCH_VALIDATE_URL = "https://id.twitch.tv/oauth2/validate";
 
-const JWT_SECRET = process.env.JWT_SECRET_KEY || "your_default_secret_key_change_in_production";
+const JWT_SECRET = process.env.JWT_SECRET_KEY;
 
 const CHANNELS_COLLECTION = "managedChannels";
 const AUTO_CHAT_COLLECTION = "autoChatConfigs";
@@ -30,6 +32,7 @@ const WEBUI_INTERNAL_TOKEN = process.env.WEBUI_INTERNAL_TOKEN;
 const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL;
 const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 let db;
 let secretManagerClient;
@@ -40,6 +43,37 @@ try {
 } catch (initError) {
   console.error("Failed to initialize Firestore or Secret Manager:", initError);
 }
+
+// Input sanitization helper
+function sanitizeUsername(username) {
+  if (!username || typeof username !== "string") {
+    throw new Error("Invalid username");
+  }
+  const trimmed = username.trim().toLowerCase();
+  // Twitch usernames: 4-25 characters, alphanumeric + underscore
+  if (!validator.isAlphanumeric(trimmed.replace(/_/g, "")) || trimmed.length < 4 || trimmed.length > 25) {
+    throw new Error("Invalid username format");
+  }
+  return validator.escape(trimmed);
+}
+
+// Rate limiting for auth endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  message: "Too many authentication attempts, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Rate limiting for API endpoints
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 60, // Limit each IP to 60 requests per minute
+  message: "Too many requests, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 function getProjectId() {
   const projectId = process.env.GCLOUD_PROJECT || process.env.GCP_PROJECT || process.env.GOOGLE_CLOUD_PROJECT;
@@ -127,6 +161,24 @@ app.use((req, res, next) => {
   }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
+  // Security headers
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+  
+  // Content Security Policy
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://app.rybbit.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://webui-zpqjdsguqa-uc.a.run.app https://api.twitch.tv; frame-ancestors 'none';",
+  );
+  
+  if (IS_PRODUCTION) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  }
+  
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);
   }
@@ -173,7 +225,7 @@ async function getAllowedChannelsList() {
   }
 }
 
-app.get("/auth/twitch", async (req, res) => {
+app.get("/auth/twitch", authLimiter, async (req, res) => {
   console.log("--- /auth/twitch HIT ---");
   const frontendRedirect = req.query.redirect || "/";
   const state = JSON.stringify({
@@ -187,7 +239,7 @@ app.get("/auth/twitch", async (req, res) => {
   res.redirect(authUrl.toString());
 });
 
-app.get("/auth/twitch/callback", async (req, res) => {
+app.get("/auth/twitch/callback", authLimiter, async (req, res) => {
   console.log("--- /auth/twitch/callback HIT ---");
   console.log("Callback Request Query Params:", JSON.stringify(req.query));
   const { code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription } = req.query;
@@ -380,7 +432,11 @@ app.get("/auth/twitch/callback", async (req, res) => {
         return redirectToFrontendWithError(res, "token_store_failed", "Failed to securely store Twitch credentials. Please try again.", twitchQueryState);
       }
 
-      // Token storage successful, now construct redirect URL
+      // Token storage successful
+      // Note: Due to cross-origin limitations (Firebase Hosting vs Cloud Run),
+      // we send the token in URL for the client to store. This is a known limitation
+      // of the current architecture. For same-domain setup, use HTTP-only cookies instead.
+      
       const frontendAuthCompleteUrl = new URL(FRONTEND_URL_CONFIG);
       frontendAuthCompleteUrl.pathname = "/auth-complete.html";
       frontendAuthCompleteUrl.searchParams.append("user_login", twitchUser.login);
@@ -401,16 +457,26 @@ app.get("/auth/twitch/callback", async (req, res) => {
 });
 
 const authenticateApiRequest = (req, res, next) => {
+  // Due to cross-origin setup (Firebase Hosting + Cloud Run), we primarily use Authorization header
+  // Cookie-based auth would work for same-domain deployments
   const authHeader = req.headers.authorization || "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  
   if (!token) {
     console.error("[authenticateApiRequest] No token provided in Authorization header.");
     return res.status(401).json({ success: false, message: "Unauthorized: Missing token." });
   }
+  
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Validate required fields
+    if (!decoded.login || !decoded.userId) {
+      throw new Error("Invalid token payload");
+    }
+    
     req.user = {
-      login: decoded.login,
+      login: sanitizeUsername(decoded.login),
       userId: decoded.userId,
       displayName: decoded.displayName,
       email: decoded.email || null,
@@ -423,7 +489,7 @@ const authenticateApiRequest = (req, res, next) => {
   }
 };
 
-app.get("/api/bot/status", authenticateApiRequest, async (req, res) => {
+app.get("/api/bot/status", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /status] Firestore (db) not initialized!");
@@ -458,7 +524,7 @@ app.get("/api/bot/status", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
+app.post("/api/bot/add", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /add] Firestore (db) not initialized!");
@@ -506,7 +572,7 @@ app.post("/api/bot/add", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.post("/api/bot/remove", authenticateApiRequest, async (req, res) => {
+app.post("/api/bot/remove", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /remove] Firestore (db) not initialized!");
@@ -535,7 +601,7 @@ app.post("/api/bot/remove", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.get("/api/commands", authenticateApiRequest, async (req, res) => {
+app.get("/api/commands", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /commands GET] Firestore (db) not initialized!");
@@ -564,7 +630,7 @@ app.get("/api/commands", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.post("/api/commands", authenticateApiRequest, async (req, res) => {
+app.post("/api/commands", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /commands POST] Firestore (db) not initialized!");
@@ -602,7 +668,7 @@ app.post("/api/commands", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
+app.get("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /auto-chat GET] Firestore (db) not initialized!");
@@ -630,7 +696,7 @@ app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.post("/api/auto-chat", authenticateApiRequest, async (req, res) => {
+app.post("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) => {
   const channelLogin = req.user.login;
   if (!db) {
     console.error("[API /auto-chat POST] Firestore (db) not initialized!");
@@ -839,10 +905,16 @@ app.post("/internal/commands/save", async (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
+  res.clearCookie("session_token", { path: "/" });
   res.redirect(FRONTEND_URL_CONFIG);
 });
 
-app.get("/api/auth/status", authenticateApiRequest, async (req, res) => {
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("session_token", { path: "/" });
+  res.json({ success: true, message: "Logged out successfully." });
+});
+
+app.get("/api/auth/status", apiLimiter, authenticateApiRequest, async (req, res) => {
   const userLogin = req.user.login;
   console.log(`[API /auth/status] Checking auth status for ${userLogin}`);
   if (!db) {
@@ -873,7 +945,7 @@ app.get("/api/auth/status", authenticateApiRequest, async (req, res) => {
   }
 });
 
-app.post("/api/auth/refresh", authenticateApiRequest, async (req, res) => {
+app.post("/api/auth/refresh", apiLimiter, authenticateApiRequest, async (req, res) => {
   const userLogin = req.user.login;
   console.log(`[API /auth/refresh] Forcing token refresh for ${userLogin}`);
   if (!db) {

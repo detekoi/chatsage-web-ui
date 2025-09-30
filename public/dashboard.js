@@ -20,13 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://webui-zpqjdsguqa-uc.a.run.app';
-    let appSessionToken = null; // Variable to hold the token
+    let appSessionToken = null;
     let loggedInUser = null;
 
     async function initializeDashboard() {
         appSessionToken = localStorage.getItem('app_session_token');
-        console.log("Dashboard: Loaded app_session_token from localStorage:", appSessionToken); // Log what's loaded
-
         const userLoginFromStorage = localStorage.getItem('twitch_user_login');
         const userIdFromStorage = localStorage.getItem('twitch_user_id');
 
@@ -37,23 +35,20 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.textContent = '';
 
             if (!appSessionToken) {
-                console.warn("No session token found, API calls might fail authentication.");
+                console.warn("No session token found, redirecting to login");
                 actionMessageEl.textContent = "Authentication token missing. Please log in again.";
-                // Optionally redirect to login if token is essential
-                // window.location.href = 'index.html';
+                setTimeout(() => window.location.href = 'index.html', 2000);
                 return;
             }
 
             try {
-                const headers = {};
-                if (appSessionToken) {
-                    headers['Authorization'] = `Bearer ${appSessionToken}`;
-                }
-                console.log("Dashboard: Sending headers to /api/bot/status:", JSON.stringify(headers));
+                console.log("Dashboard: Sending request to /api/bot/status with Authorization header");
 
                 const statusRes = await fetch(`${API_BASE_URL}/api/bot/status`, {
                     method: 'GET',
-                    headers: headers
+                    headers: {
+                        'Authorization': `Bearer ${appSessionToken}`
+                    }
                 });
 
                 if (!statusRes.ok) {
@@ -107,11 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadCommandSettings() {
-        if (!appSessionToken) {
-            console.warn("No session token available for loading command settings");
-            return;
-        }
-
+        if (!appSessionToken) return;
+        
         commandsLoadingEl.style.display = 'block';
         commandsListEl.innerHTML = '';
 
@@ -144,11 +136,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadAutoChatSettings() {
         if (!appSessionToken) return;
+        
         autoLoadingEl.style.display = 'block';
         try {
             const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`
+                }
             });
             const data = await res.json();
             autoLoadingEl.style.display = 'none';
@@ -174,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let autoSaveRequestId = 0;
     async function saveAutoChatSettings() {
         if (!appSessionToken) return;
+        
         const currentRequestId = ++autoSaveRequestId;
         autoMsgEl.textContent = 'Saving auto-chat...';
         try {
@@ -265,10 +261,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function toggleCommand(commandName, enabled, checkboxEl) {
         if (!appSessionToken) {
             actionMessageEl.textContent = "Authentication token missing. Please log in again.";
-            checkboxEl.checked = !enabled; // Revert checkbox
+            checkboxEl.checked = !enabled;
             return;
         }
-
+        
         const originalState = checkboxEl.checked;
         checkboxEl.disabled = true; // Disable during request
         
@@ -310,6 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.textContent = "Authentication token missing. Please log in again.";
             return;
         }
+        
         actionMessageEl.textContent = 'Requesting bot to join...';
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/add`, {
@@ -336,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.textContent = "Authentication token missing. Please log in again.";
             return;
         }
+        
         actionMessageEl.textContent = 'Requesting bot to leave...';
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/remove`, {
@@ -359,11 +357,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
+        
+        // Clear localStorage
         localStorage.removeItem('twitch_user_login');
         localStorage.removeItem('twitch_user_id');
-        localStorage.removeItem('app_session_token'); // Clear JWT
-        appSessionToken = null; // Clear in-memory token
-        // Optionally call a backend /auth/logout endpoint
+        localStorage.removeItem('app_session_token');
+        appSessionToken = null;
+        
+        // Redirect to login
         window.location.href = 'index.html';
     });
 
