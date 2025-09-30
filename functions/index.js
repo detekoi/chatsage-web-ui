@@ -173,66 +173,6 @@ async function getAllowedChannelsList() {
   }
 }
 
-app.get("/auth/twitch/initiate", (req, res) => {
-  console.log("--- /auth/twitch/initiate HIT ---");
-  const currentTwitchClientId = TWITCH_CLIENT_ID;
-  const currentCallbackRedirectUri = CALLBACK_REDIRECT_URI_CONFIG;
-
-  console.log("TWITCH_CLIENT_ID from env:", currentTwitchClientId);
-  console.log("CALLBACK_REDIRECT_URI_CONFIG from env:", currentCallbackRedirectUri);
-
-  if (!currentTwitchClientId || !currentCallbackRedirectUri) {
-    console.error("Config missing for /auth/twitch/initiate: TWITCH_CLIENT_ID or CALLBACK_URL not found in environment variables.");
-    return res.status(500).json({success: false, error: "Server configuration error for Twitch auth."});
-  }
-
-  const state = crypto.randomBytes(16).toString("hex");
-
-  // Try multiple cookie settings approaches to maximize compatibility
-  // First one with SameSite=None for cross-site redirects
-  res.cookie("twitch_oauth_state", state, {
-    signed: true,
-    httpOnly: true,
-    secure: true,
-    maxAge: 300000, // 5 minutes
-    sameSite: "None",
-  });
-
-  // Backup cookie with Lax setting
-  res.cookie("twitch_oauth_state_lax", state, {
-    signed: true,
-    httpOnly: true,
-    secure: true,
-    maxAge: 300000, // 5 minutes
-    sameSite: "Lax",
-  });
-
-  // Also store state in session if available
-  if (req.session) {
-    req.session.twitch_oauth_state = state;
-  }
-
-  const params = new URLSearchParams({
-    client_id: currentTwitchClientId,
-    redirect_uri: currentCallbackRedirectUri, // This will be ngrok or live URL from .env
-    response_type: "code",
-    scope: "user:read:email channel:read:ads",
-    state: state,
-    force_verify: "true", // Consider "false" for production for better UX
-  });
-  const twitchAuthUrl = `https://id.twitch.tv/oauth2/authorize?${params.toString()}`;
-
-  console.log(`Generated state: ${state}`);
-  console.log(`Twitch Auth URL to be sent to frontend: ${twitchAuthUrl}`);
-
-  // Store the state in the response so the frontend can use it if cookies fail
-  res.json({
-    success: true,
-    twitchAuthUrl: twitchAuthUrl,
-    state: state,
-  });
-});
-
 app.get("/auth/twitch", async (req, res) => {
   console.log("--- /auth/twitch HIT ---");
   const frontendRedirect = req.query.redirect || "/";
@@ -252,21 +192,28 @@ app.get("/auth/twitch/callback", async (req, res) => {
   console.log("Callback Request Query Params:", JSON.stringify(req.query));
   const { code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription } = req.query;
 
-  // Clear any state-related cookies that might have been set
-  res.clearCookie("twitch_oauth_state");
-  res.clearCookie("twitch_oauth_state_lax");
-  if (req.session) {
-    delete req.session.twitch_oauth_state;
-  }
-
   if (twitchError) {
     console.error(`Twitch OAuth explicit error: ${twitchError} - ${twitchErrorDescription}`);
     return redirectToFrontendWithError(res, twitchError, twitchErrorDescription, twitchQueryState);
   }
 
-  // The client-side (in auth-complete.html) is now responsible for state validation
-  // against sessionStorage. We will proceed with the code exchange.
-  // The original server-side check is removed due to browser cross-site cookie restrictions.
+  // Validate state parameter (CSRF protection)
+  if (!twitchQueryState) {
+    console.error("[OAuth] Missing state parameter in callback");
+    return redirectToFrontendWithError(res, "invalid_request", "Missing state parameter", null);
+  }
+
+  let parsedState;
+  try {
+    parsedState = JSON.parse(twitchQueryState);
+    if (!parsedState.nonce || !parsedState.frontendRedirect) {
+      throw new Error("Invalid state structure");
+    }
+    console.log("[OAuth] State validated successfully:", { nonce: parsedState.nonce.substring(0, 8) + "..." });
+  } catch (stateError) {
+    console.error("[OAuth] State validation failed:", stateError.message);
+    return redirectToFrontendWithError(res, "invalid_state", "State validation failed - possible CSRF attack", twitchQueryState);
+  }
   try {
     console.log("Exchanging code for token. Callback redirect_uri used for exchange:", CALLBACK_REDIRECT_URI_CONFIG);
     const tokenResponse = await axios.post(
@@ -290,8 +237,8 @@ app.get("/auth/twitch/callback", async (req, res) => {
     if (!accessToken || !refreshToken) {
       throw new Error("Missing access or refresh token from Twitch.");
     }
-    const validateResponse = await axios.get(TWITCH_VALIDATE_URL, {
-      headers: { Authorization: `OAuth ${accessToken}` },
+    await axios.get(TWITCH_VALIDATE_URL, {
+      headers: { Authorization: `Bearer ${accessToken}` },
       timeout: 15000,
     });
     console.log("Token validated. Fetching Twitch user info...");
@@ -355,7 +302,7 @@ app.get("/auth/twitch/callback", async (req, res) => {
         console.log(`Twitch refresh token secret path stored for user ${twitchUser.login}`);
         try {
           await axios.get(TWITCH_VALIDATE_URL, {
-            headers: { Authorization: `OAuth ${accessToken}` },
+            headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
         } catch (validateError) {
@@ -422,7 +369,7 @@ app.get("/auth/twitch/callback", async (req, res) => {
         // Now validate the tokens are working by attempting to use them
         try {
           await axios.get(TWITCH_VALIDATE_URL, {
-            headers: { Authorization: `OAuth ${accessToken}` },
+            headers: { Authorization: `Bearer ${accessToken}` },
           });
           console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
         } catch (validateError) {
@@ -596,15 +543,19 @@ app.get("/api/commands", authenticateApiRequest, async (req, res) => {
   }
   try {
     const ALL_COMMANDS = [
-      "ask", "auto", "geo", "riddle", "trivia", "triviaq", "triviaa", "triviaend",
-      "lurk", "back", "xp", "botlang", "userlang"
+      "ask", "search", "game", "translate", "help", "lurk",
+      "geo", "riddle", "trivia",
+      "botlang", "auto", "disable", "enable", "ping",
     ];
     const docRef = db.collection("channelCommands").doc(channelLogin);
     const snap = await docRef.get();
-    const settings = snap.exists ? snap.data() : {};
+    const data = snap.exists ? snap.data() : {};
+    const disabledCommands = data.disabledCommands || [];
+    
     const commandSettings = ALL_COMMANDS.map(cmd => ({
-      command: cmd,
-      enabled: settings[cmd] !== false,
+      primaryName: cmd,
+      name: cmd,
+      enabled: !disabledCommands.includes(cmd),
     }));
     return res.json({ success: true, commands: commandSettings });
   } catch (err) {
@@ -624,10 +575,27 @@ app.post("/api/commands", authenticateApiRequest, async (req, res) => {
     if (!command || typeof enabled !== "boolean") {
       return res.status(400).json({ success: false, message: "Invalid command or enabled value." });
     }
+    
     const docRef = db.collection("channelCommands").doc(channelLogin);
-    await docRef.set({ [command]: enabled }, { merge: true });
-    console.log(`[API /commands POST] Updated ${command} = ${enabled} for ${channelLogin}`);
-    return res.json({ success: true, message: `Command ${command} updated successfully.` });
+    
+    // Use array operations to match bot's expected structure
+    if (enabled) {
+      // Enable command by removing from disabledCommands array
+      await docRef.set({ 
+        disabledCommands: FieldValue.arrayRemove(command),
+        channelName: channelLogin,
+      }, { merge: true });
+      console.log(`[API /commands POST] Enabled ${command} for ${channelLogin} (removed from disabledCommands)`);
+    } else {
+      // Disable command by adding to disabledCommands array
+      await docRef.set({ 
+        disabledCommands: FieldValue.arrayUnion(command),
+        channelName: channelLogin,
+      }, { merge: true });
+      console.log(`[API /commands POST] Disabled ${command} for ${channelLogin} (added to disabledCommands)`);
+    }
+    
+    return res.json({ success: true, message: `Command ${command} ${enabled ? "enabled" : "disabled"} successfully.` });
   } catch (err) {
     console.error("[API /commands POST] Error:", err);
     return res.status(500).json({ success: false, message: "Error updating command settings." });
@@ -654,7 +622,7 @@ app.get("/api/auto-chat", authenticateApiRequest, async (req, res) => {
           questions: cfg.categories && cfg.categories.questions !== false,
           ads: cfg.categories && cfg.categories.ads === true,
         },
-      }
+      },
     });
   } catch (err) {
     console.error("[API /auto-chat GET] Error:", err);
@@ -806,14 +774,14 @@ app.get("/internal/ads/schedule", async (req, res) => {
       status: e.response?.status,
       stack: e.stack,
     };
-    console.error(`[AdSchedule] Error fetching ad schedule:`, JSON.stringify(errorDetails, null, 2));
+    console.error("[AdSchedule] Error fetching ad schedule:", JSON.stringify(errorDetails, null, 2));
     
     // Return appropriate status code
     const statusCode = e.response?.status || 500;
     return res.status(statusCode).json({ 
       success: false, 
       message: e.message, 
-      details: e.response?.data 
+      details: e.response?.data,
     });
   }
 });
@@ -994,6 +962,19 @@ async function refreshTwitchToken(currentRefreshToken) {
       });
       if (response.status === 200 && response.data && response.data.access_token) {
         console.log(`Successfully refreshed Twitch token on attempt ${attempt}.`);
+        
+        // Validate the refreshed token
+        try {
+          await axios.get(TWITCH_VALIDATE_URL, {
+            headers: { Authorization: `Bearer ${response.data.access_token}` },
+            timeout: 15000,
+          });
+          console.log(`Refreshed token validated successfully on attempt ${attempt}.`);
+        } catch (validateError) {
+          console.error(`Failed to validate refreshed token on attempt ${attempt}:`, validateError.message);
+          throw new Error("Refreshed token validation failed");
+        }
+        
         return {
           accessToken: response.data.access_token,
           refreshToken: response.data.refresh_token || currentRefreshToken,

@@ -60,31 +60,11 @@
     </div>
     <script src="static-background.js"></script>
     <script>
-        document.getElementById('twitchLoginBtn').addEventListener('click', async (event) => {
+        document.getElementById('twitchLoginBtn').addEventListener('click', (event) => {
             event.preventDefault();
-            const loginErrorEl = document.getElementById('loginError');
-            loginErrorEl.textContent = '';
-            try {
-                // Use the live Cloud Run URL of the deployed function
-                const apiBaseUrl = 'https://webui-zpqjdsguqa-uc.a.run.app';
-
-                const response = await fetch(`${apiBaseUrl}/auth/twitch/initiate`);
-                if (!response.ok) {
-                    throw new Error(`Failed to initiate auth: ${response.statusText}`);
-                }
-                const data = await response.json();
-
-                if (data.success && data.twitchAuthUrl && data.state) {
-                    sessionStorage.setItem('oauth_csrf_state', data.state); // Store state
-                    window.location.href = data.twitchAuthUrl;       // Redirect to Twitch
-                } else {
-                    console.error("Failed to get auth URL or state from backend:", data.error);
-                    loginErrorEl.textContent = data.error || "Could not initiate login with Twitch.";
-                }
-            } catch (error) {
-                console.error("Error during login initiation:", error);
-                loginErrorEl.textContent = "Error initiating login. Check console.";
-            }
+            // Redirect directly to the auth endpoint
+            const apiBaseUrl = 'https://webui-zpqjdsguqa-uc.a.run.app';
+            window.location.href = `${apiBaseUrl}/auth/twitch`;
         });
     </script>
 </body>
