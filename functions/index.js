@@ -15,13 +15,13 @@ app.use(cookieParser());
 const TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID;
 const TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET;
 
-const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_REDIRECT_URI;
+const CALLBACK_REDIRECT_URI_CONFIG = process.env.CALLBACK_URL;
 const FRONTEND_URL_CONFIG = process.env.FRONTEND_URL;
 
 const TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token";
 const TWITCH_VALIDATE_URL = "https://id.twitch.tv/oauth2/validate";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_default_secret_key_change_in_production";
+const JWT_SECRET = process.env.JWT_SECRET_KEY || "your_default_secret_key_change_in_production";
 
 const CHANNELS_COLLECTION = "managedChannels";
 const AUTO_CHAT_COLLECTION = "autoChatConfigs";
@@ -173,6 +173,66 @@ async function getAllowedChannelsList() {
   }
 }
 
+app.get("/auth/twitch/initiate", (req, res) => {
+  console.log("--- /auth/twitch/initiate HIT ---");
+  const currentTwitchClientId = TWITCH_CLIENT_ID;
+  const currentCallbackRedirectUri = CALLBACK_REDIRECT_URI_CONFIG;
+
+  console.log("TWITCH_CLIENT_ID from env:", currentTwitchClientId);
+  console.log("CALLBACK_REDIRECT_URI_CONFIG from env:", currentCallbackRedirectUri);
+
+  if (!currentTwitchClientId || !currentCallbackRedirectUri) {
+    console.error("Config missing for /auth/twitch/initiate: TWITCH_CLIENT_ID or CALLBACK_URL not found in environment variables.");
+    return res.status(500).json({success: false, error: "Server configuration error for Twitch auth."});
+  }
+
+  const state = crypto.randomBytes(16).toString("hex");
+
+  // Try multiple cookie settings approaches to maximize compatibility
+  // First one with SameSite=None for cross-site redirects
+  res.cookie("twitch_oauth_state", state, {
+    signed: true,
+    httpOnly: true,
+    secure: true,
+    maxAge: 300000, // 5 minutes
+    sameSite: "None",
+  });
+
+  // Backup cookie with Lax setting
+  res.cookie("twitch_oauth_state_lax", state, {
+    signed: true,
+    httpOnly: true,
+    secure: true,
+    maxAge: 300000, // 5 minutes
+    sameSite: "Lax",
+  });
+
+  // Also store state in session if available
+  if (req.session) {
+    req.session.twitch_oauth_state = state;
+  }
+
+  const params = new URLSearchParams({
+    client_id: currentTwitchClientId,
+    redirect_uri: currentCallbackRedirectUri, // This will be ngrok or live URL from .env
+    response_type: "code",
+    scope: "user:read:email channel:read:ads",
+    state: state,
+    force_verify: "true", // Consider "false" for production for better UX
+  });
+  const twitchAuthUrl = `https://id.twitch.tv/oauth2/authorize?${params.toString()}`;
+
+  console.log(`Generated state: ${state}`);
+  console.log(`Twitch Auth URL to be sent to frontend: ${twitchAuthUrl}`);
+
+  // Store the state in the response so the frontend can use it if cookies fail
+  res.json({
+    success: true,
+    twitchAuthUrl: twitchAuthUrl,
+    state: state,
+  });
+});
+
 app.get("/auth/twitch", async (req, res) => {
   console.log("--- /auth/twitch HIT ---");
   const frontendRedirect = req.query.redirect || "/";
@@ -189,27 +249,24 @@ app.get("/auth/twitch", async (req, res) => {
 
 app.get("/auth/twitch/callback", async (req, res) => {
   console.log("--- /auth/twitch/callback HIT ---");
-  const code = req.query.code;
-  const twitchQueryState = req.query.state;
-  const error = req.query.error;
-  const errorDescription = req.query.error_description;
-  console.log("Query params:", { code: code ? "present" : "missing", state: twitchQueryState ? "present" : "missing", error, errorDescription });
-  if (error) {
-    console.error("Twitch returned an error:", error, errorDescription || "");
-    return redirectToFrontendWithError(res, error, errorDescription || "Twitch authorization failed.", twitchQueryState);
+  console.log("Callback Request Query Params:", JSON.stringify(req.query));
+  const { code, state: twitchQueryState, error: twitchError, error_description: twitchErrorDescription } = req.query;
+
+  // Clear any state-related cookies that might have been set
+  res.clearCookie("twitch_oauth_state");
+  res.clearCookie("twitch_oauth_state_lax");
+  if (req.session) {
+    delete req.session.twitch_oauth_state;
   }
-  if (!code || !twitchQueryState) {
-    console.error("Missing code or state in callback query params.");
-    return redirectToFrontendWithError(res, "missing_params", "Missing authorization code or state.", twitchQueryState);
+
+  if (twitchError) {
+    console.error(`Twitch OAuth explicit error: ${twitchError} - ${twitchErrorDescription}`);
+    return redirectToFrontendWithError(res, twitchError, twitchErrorDescription, twitchQueryState);
   }
-  let parsedState;
-  try {
-    parsedState = JSON.parse(twitchQueryState);
-    console.log("Parsed state from Twitch callback:", parsedState);
-  } catch (parseError) {
-    console.error("Failed to parse state from Twitch callback:", parseError);
-    return redirectToFrontendWithError(res, "invalid_state", "Invalid OAuth state parameter.", twitchQueryState);
-  }
+
+  // The client-side (in auth-complete.html) is now responsible for state validation
+  // against sessionStorage. We will proceed with the code exchange.
+  // The original server-side check is removed due to browser cross-site cookie restrictions.
   try {
     console.log("Exchanging code for token. Callback redirect_uri used for exchange:", CALLBACK_REDIRECT_URI_CONFIG);
     const tokenResponse = await axios.post(
@@ -316,15 +373,75 @@ app.get("/auth/twitch/callback", async (req, res) => {
       };
       const sessionToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: "7d" });
       console.log("JWT session token generated for user:", twitchUser.login);
-      const frontendAuthCompleteUrl = new URL("/auth-complete.html", FRONTEND_URL_CONFIG);
-      frontendAuthCompleteUrl.searchParams.set("token", sessionToken);
-      frontendAuthCompleteUrl.searchParams.set("login", twitchUser.login);
-      frontendAuthCompleteUrl.searchParams.set("userId", twitchUser.id);
-      frontendAuthCompleteUrl.searchParams.set("displayName", twitchUser.displayName);
-      if (parsedState && parsedState.frontendRedirect) {
-        frontendAuthCompleteUrl.searchParams.set("frontendRedirect", parsedState.frontendRedirect);
+      try {
+        // --- Secret Manager logic for refresh token ---
+        const projectId = getProjectId();
+        const secretId = `twitch-refresh-token-${twitchUser.id}`;
+        let secretName = `projects/${projectId}/secrets/${secretId}`;
+        let versionName;
+        // Try to create the secret if it doesn't exist
+        try {
+          console.log(`[AuthCallback] Checking for secret existence: ${secretName}`);
+          await secretManagerClient.getSecret({ name: secretName });
+          console.log(`[AuthCallback] Secret already exists for user ${twitchUser.login}`);
+        } catch (err) {
+          if (err.code === 5) { // Not found
+            console.log(`[AuthCallback] Secret not found. Creating secret: ${secretName}`);
+            const [secret] = await secretManagerClient.createSecret({
+              parent: `projects/${projectId}`,
+              secretId,
+              secret: { replication: { automatic: {} } },
+            });
+            secretName = secret.name;
+            console.log(`[AuthCallback] Created new secret for user ${twitchUser.login}`);
+          } else {
+            throw err;
+          }
+        }
+        // Always add a new version (rotate)
+        const tokenBytes = Buffer.from(refreshToken || "", "utf8");
+        console.log(`[AuthCallback] Adding secret version. parent=${secretName}, refreshToken.length=${refreshToken ? refreshToken.length : 0}, tokenBytesLength=${tokenBytes.length}`);
+        const [version] = await secretManagerClient.addSecretVersion({
+          parent: secretName,
+          payload: { data: tokenBytes },
+        });
+        versionName = version.name;
+        console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
+
+        await userDocRef.set({
+          refreshTokenSecretPath: versionName, // Store the path to the secret version
+          twitchUserId: twitchUser.id,
+          displayName: twitchUser.displayName,
+          lastLoginAt: FieldValue.serverTimestamp(),
+          needsTwitchReAuth: false,
+          lastTokenError: null,
+          lastTokenErrorAt: null,
+        }, {merge: true});
+        console.log(`Twitch refresh token secret path stored for user ${twitchUser.login}`);
+
+        // Now validate the tokens are working by attempting to use them
+        try {
+          await axios.get(TWITCH_VALIDATE_URL, {
+            headers: { Authorization: `OAuth ${accessToken}` },
+          });
+          console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
+        } catch (validateError) {
+          console.error(`Failed to validate new tokens for ${twitchUser.login}:`, validateError.message);
+        }
+      } catch (dbError) {
+        console.error(`Error storing Twitch tokens for ${twitchUser.login}:`, dbError);
+        return redirectToFrontendWithError(res, "token_store_failed", "Failed to securely store Twitch credentials. Please try again.", twitchQueryState);
       }
-      console.log("Redirecting to auth complete page:", frontendAuthCompleteUrl.toString());
+
+      // Token storage successful, now construct redirect URL
+      const frontendAuthCompleteUrl = new URL(FRONTEND_URL_CONFIG);
+      frontendAuthCompleteUrl.pathname = "/auth-complete.html";
+      frontendAuthCompleteUrl.searchParams.append("user_login", twitchUser.login);
+      frontendAuthCompleteUrl.searchParams.append("user_id", twitchUser.id);
+      frontendAuthCompleteUrl.searchParams.append("state", twitchQueryState);
+      frontendAuthCompleteUrl.searchParams.append("session_token", sessionToken);
+
+      console.log(`Redirecting to frontend auth-complete page: ${frontendAuthCompleteUrl.toString()}`);
       return res.redirect(frontendAuthCompleteUrl.toString());
     } else {
       console.error("Failed to validate token or get user info from Twitch after token exchange.");
