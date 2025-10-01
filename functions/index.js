@@ -36,6 +36,9 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 let db;
 let secretManagerClient;
+
+// In-memory token cache to avoid unnecessary refreshes
+const tokenCache = new Map(); // userLogin -> { token, expiresAt }
 try {
   db = new Firestore();
   secretManagerClient = new SecretManagerServiceClient();
@@ -1083,6 +1086,14 @@ async function getValidTwitchTokenForUser(userLogin) {
     console.error("[getValidTwitchTokenForUser] Firestore (db) not initialized!");
     throw new Error("Firestore not available.");
   }
+  
+  // Check cache first - if token exists and not expired, use it
+  const cached = tokenCache.get(userLogin);
+  if (cached && cached.expiresAt > Date.now()) {
+    console.log(`[getValidTwitchTokenForUser] Using cached token for ${userLogin} (expires in ${Math.floor((cached.expiresAt - Date.now()) / 1000)}s)`);
+    return cached.token;
+  }
+  
   const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userLogin);
   const userDoc = await userDocRef.get();
   if (!userDoc.exists) {
@@ -1100,6 +1111,15 @@ async function getValidTwitchTokenForUser(userLogin) {
     const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
     const currentRefreshToken = version.payload.data.toString("utf8");
     const newTokens = await refreshTwitchToken(currentRefreshToken);
+    
+    // Cache the new token (with 5 minute buffer before actual expiry)
+    const expiresAt = Date.now() + ((newTokens.expiresIn - 300) * 1000);
+    tokenCache.set(userLogin, {
+      token: newTokens.accessToken,
+      expiresAt,
+    });
+    console.log(`[getValidTwitchTokenForUser] Cached new token for ${userLogin} (expires in ${newTokens.expiresIn}s)`);
+    
     await userDocRef.update({
       lastTokenRefreshAt: FieldValue.serverTimestamp(),
       needsTwitchReAuth: false,
@@ -1108,6 +1128,8 @@ async function getValidTwitchTokenForUser(userLogin) {
     return newTokens.accessToken;
   } catch (error) {
     console.error(`[getValidTwitchTokenForUser] Failed to refresh token for ${userLogin}:`, error.message);
+    // Clear cache on error
+    tokenCache.delete(userLogin);
     try {
       await userDocRef.update({
         needsTwitchReAuth: true,
