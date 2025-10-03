@@ -1110,20 +1110,66 @@ async function getValidTwitchTokenForUser(userLogin) {
   try {
     const [version] = await secretManagerClient.accessSecretVersion({ name: refreshTokenSecretPath });
     const currentRefreshToken = version.payload.data.toString("utf8");
+
+    console.log(`[getValidTwitchTokenForUser] Current refresh token for ${userLogin}: ${currentRefreshToken.substring(0, 8)}...${currentRefreshToken.substring(currentRefreshToken.length - 8)}`);
+
     const newTokens = await refreshTwitchToken(currentRefreshToken);
-    
-    // Cache the new token (with 5 minute buffer before actual expiry)
+
+    // CRITICAL: Twitch rotates refresh tokens on every use
+    // We MUST save the new refresh token back to Secret Manager
+    if (newTokens.refreshToken && newTokens.refreshToken !== currentRefreshToken) {
+      console.log(`[getValidTwitchTokenForUser] 🔄 Refresh token rotated by Twitch for ${userLogin}`);
+      console.log(`[getValidTwitchTokenForUser] Old token: ${currentRefreshToken.substring(0, 8)}...${currentRefreshToken.substring(currentRefreshToken.length - 8)}`);
+      console.log(`[getValidTwitchTokenForUser] New token: ${newTokens.refreshToken.substring(0, 8)}...${newTokens.refreshToken.substring(newTokens.refreshToken.length - 8)}`);
+
+      try {
+        // Extract the secret name (without version) from the path
+        const secretName = refreshTokenSecretPath.split("/versions/")[0];
+
+        // Add new version to Secret Manager
+        const [newVersion] = await secretManagerClient.addSecretVersion({
+          parent: secretName,
+          payload: {
+            data: Buffer.from(newTokens.refreshToken, "utf8"),
+          },
+        });
+
+        console.log(`[getValidTwitchTokenForUser] ✅ New refresh token saved to Secret Manager for ${userLogin}: ${newVersion.name}`);
+
+        // Update Firestore to point to the new version
+        await userDocRef.update({
+          refreshTokenSecretPath: newVersion.name,
+          lastTokenRefreshAt: FieldValue.serverTimestamp(),
+          needsTwitchReAuth: false,
+        });
+        console.log(`[getValidTwitchTokenForUser] ✅ Updated Firestore with new secret version path for ${userLogin}`);
+
+      } catch (secretError) {
+        console.error(`[getValidTwitchTokenForUser] ❌ CRITICAL: Failed to save new refresh token for ${userLogin}:`, secretError.message);
+        console.error("[getValidTwitchTokenForUser] This will cause authentication to fail on next token refresh!");
+        // Don't throw - we still have a valid access token for this request
+      }
+    } else if (!newTokens.refreshToken) {
+      console.warn(`[getValidTwitchTokenForUser] ⚠️  Twitch did not return a new refresh token for ${userLogin} (unexpected)`);
+      await userDocRef.update({
+        lastTokenRefreshAt: FieldValue.serverTimestamp(),
+        needsTwitchReAuth: false,
+      });
+    } else {
+      console.log(`[getValidTwitchTokenForUser] Refresh token unchanged for ${userLogin} (reusing same token)`);
+      await userDocRef.update({
+        lastTokenRefreshAt: FieldValue.serverTimestamp(),
+        needsTwitchReAuth: false,
+      });
+    }
+
+    // Cache the new access token (with 5 minute buffer before actual expiry)
     const expiresAt = Date.now() + ((newTokens.expiresIn - 300) * 1000);
     tokenCache.set(userLogin, {
       token: newTokens.accessToken,
       expiresAt,
     });
-    console.log(`[getValidTwitchTokenForUser] Cached new token for ${userLogin} (expires in ${newTokens.expiresIn}s)`);
-    
-    await userDocRef.update({
-      lastTokenRefreshAt: FieldValue.serverTimestamp(),
-      needsTwitchReAuth: false,
-    });
+    console.log(`[getValidTwitchTokenForUser] Cached new access token for ${userLogin} (expires in ${newTokens.expiresIn}s)`);
     console.log(`[getValidTwitchTokenForUser] Successfully refreshed access token for ${userLogin}.`);
     return newTokens.accessToken;
   } catch (error) {
