@@ -314,59 +314,6 @@ app.get("/auth/twitch/callback", authLimiter, async (req, res) => {
       };
       console.log("Twitch user fetched successfully:", twitchUser.login);
       const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
-      try {
-        const projectId = getProjectId();
-        const secretName = `projects/${projectId}/secrets/twitch-refresh-token-${twitchUser.login}`;
-        let versionName;
-        try {
-          console.log(`[AuthCallback] Checking for secret existence: ${secretName}`);
-          await secretManagerClient.getSecret({ name: secretName });
-          console.log(`[AuthCallback] Secret exists: ${secretName}`);
-        } catch (getSecretError) {
-          if (getSecretError.code === 5) {
-            console.log(`[AuthCallback] Secret does not exist. Creating secret: ${secretName}`);
-            await secretManagerClient.createSecret({
-              parent: `projects/${projectId}`,
-              secretId: `twitch-refresh-token-${twitchUser.login}`,
-              secret: {
-                replication: { automatic: {} },
-              },
-            });
-            console.log(`[AuthCallback] Secret created: ${secretName}`);
-          } else {
-            throw getSecretError;
-          }
-        }
-        const [version] = await secretManagerClient.addSecretVersion({
-          parent: secretName,
-          payload: {
-            data: Buffer.from(refreshToken, "utf8"),
-          },
-        });
-        versionName = version.name;
-        console.log(`[AuthCallback] Stored refresh token for ${twitchUser.login} in Secret Manager version ${versionName}`);
-        await userDocRef.set({
-          refreshTokenSecretPath: versionName,
-          twitchUserId: twitchUser.id,
-          displayName: twitchUser.displayName,
-          lastLoginAt: FieldValue.serverTimestamp(),
-          needsTwitchReAuth: false,
-          lastTokenError: null,
-          lastTokenErrorAt: null,
-        }, { merge: true });
-        console.log(`Twitch refresh token secret path stored for user ${twitchUser.login}`);
-        try {
-          await axios.get(TWITCH_VALIDATE_URL, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          console.log(`Twitch tokens for ${twitchUser.login} successfully validated.`);
-        } catch (validateError) {
-          console.error(`Failed to validate new tokens for ${twitchUser.login}:`, validateError.message);
-        }
-      } catch (dbError) {
-        console.error(`Error storing Twitch tokens for ${twitchUser.login}:`, dbError);
-        return redirectToFrontendWithError(res, "token_store_failed", "Failed to securely store Twitch credentials. Please try again.", twitchQueryState);
-      }
       const jwtPayload = {
         login: twitchUser.login,
         userId: twitchUser.id,
