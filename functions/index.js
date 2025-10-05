@@ -685,40 +685,80 @@ app.post("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) 
   }
 });
 
+// Cache for app access token (these last 60 days but we'll refresh every 50 days)
+let appAccessTokenCache = null;
+let appAccessTokenExpiry = 0;
+
+async function getAppAccessToken() {
+  // Return cached token if still valid (with 1 hour buffer)
+  if (appAccessTokenCache && Date.now() < appAccessTokenExpiry - 3600000) {
+    return appAccessTokenCache;
+  }
+
+  // Get new app access token using client credentials flow
+  try {
+    const response = await axios.post("https://id.twitch.tv/oauth2/token", null, {
+      params: {
+        client_id: TWITCH_CLIENT_ID,
+        client_secret: TWITCH_CLIENT_SECRET,
+        grant_type: "client_credentials",
+      },
+    });
+
+    appAccessTokenCache = response.data.access_token;
+    const expiresIn = response.data.expires_in || 5184000; // Default 60 days
+    appAccessTokenExpiry = Date.now() + (expiresIn * 1000);
+
+    console.log(`[getAppAccessToken] Obtained new app access token (expires in ${Math.floor(expiresIn / 86400)} days)`);
+    return appAccessTokenCache;
+  } catch (error) {
+    console.error("[getAppAccessToken] Failed to get app access token:", error.message);
+    throw error;
+  }
+}
+
 async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
   if (!BOT_PUBLIC_URL) {
     return;
   }
   try {
-    const accessToken = await getValidTwitchTokenForUser(channelLogin);
+    // Get user ID from Firestore
     const userDocRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
     const userDoc = await userDocRef.get();
     const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
     if (!userId) return;
 
-    // Validate token has required scope before attempting subscription
+    // Verify user has granted channel:read:ads scope by validating their token
+    // (This doesn't create the subscription, just confirms they have permission)
     try {
+      const userToken = await getValidTwitchTokenForUser(channelLogin);
       const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
-        headers: { Authorization: `OAuth ${accessToken}` },
+        headers: { Authorization: `OAuth ${userToken}` },
       });
       const scopes = validateResponse.data.scopes || [];
-      console.log(`[ensureAdBreakSubscription] Token validation for ${channelLogin}:`, {
+      console.log(`[ensureAdBreakSubscription] User token validation for ${channelLogin}:`, {
         userId: validateResponse.data.user_id,
         scopes,
         hasAdsScope: scopes.includes("channel:read:ads"),
       });
       if (!scopes.includes("channel:read:ads")) {
-        console.error(`[ensureAdBreakSubscription] Missing channel:read:ads scope for ${channelLogin}`);
-        return; // Skip subscription if scope is missing
+        console.error(`[ensureAdBreakSubscription] User ${channelLogin} hasn't granted channel:read:ads scope`);
+        return; // Skip subscription if user hasn't granted scope
       }
     } catch (validateErr) {
-      console.error(`[ensureAdBreakSubscription] Token validation failed for ${channelLogin}:`, validateErr.message);
+      console.error(`[ensureAdBreakSubscription] User token validation failed for ${channelLogin}:`, validateErr.message);
       return;
     }
 
+    // Use APP access token for EventSub webhook subscription (required by Twitch)
+    const appAccessToken = await getAppAccessToken();
+    console.log(`[ensureAdBreakSubscription] Using app access token for ${channelLogin}:`, {
+      tokenPrefix: appAccessToken ? appAccessToken.substring(0, 8) + "..." : "null",
+      tokenType: typeof appAccessToken,
+    });
     const HELIX_URL = "https://api.twitch.tv/helix";
     const headers = {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${appAccessToken}`,
       "Client-ID": TWITCH_CLIENT_ID,
       "Content-Type": "application/json",
     };
@@ -738,6 +778,11 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
           secret: TWITCH_EVENTSUB_SECRET,
         },
       };
+      console.log(`[ensureAdBreakSubscription] Creating subscription for ${channelLogin}:`, {
+        userId,
+        authHeaderPrefix: headers.Authorization?.substring(0, 15) + "...",
+        clientId: headers["Client-ID"],
+      });
       await axios.post(`${HELIX_URL}/eventsub/subscriptions`, body, { headers });
       return;
     } else {
