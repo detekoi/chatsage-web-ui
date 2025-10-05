@@ -695,6 +695,27 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
     const userDoc = await userDocRef.get();
     const userId = userDoc.exists ? userDoc.data().twitchUserId : null;
     if (!userId) return;
+
+    // Validate token has required scope before attempting subscription
+    try {
+      const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
+        headers: { Authorization: `OAuth ${accessToken}` }
+      });
+      const scopes = validateResponse.data.scopes || [];
+      console.log(`[ensureAdBreakSubscription] Token validation for ${channelLogin}:`, {
+        userId: validateResponse.data.user_id,
+        scopes,
+        hasAdsScope: scopes.includes('channel:read:ads')
+      });
+      if (!scopes.includes('channel:read:ads')) {
+        console.error(`[ensureAdBreakSubscription] Missing channel:read:ads scope for ${channelLogin}`);
+        return; // Skip subscription if scope is missing
+      }
+    } catch (validateErr) {
+      console.error(`[ensureAdBreakSubscription] Token validation failed for ${channelLogin}:`, validateErr.message);
+      return;
+    }
+
     const HELIX_URL = "https://api.twitch.tv/helix";
     const headers = {
       Authorization: `Bearer ${accessToken}`,
@@ -735,7 +756,7 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
       status: e.response?.status,
       statusText: e.response?.statusText,
       twitchError: e.response?.data,
-      adsEnabled
+      adsEnabled,
     });
     throw e;
   }
