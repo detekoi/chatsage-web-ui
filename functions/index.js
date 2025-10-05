@@ -729,6 +729,14 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
       return;
     }
   } catch (e) {
+    // Enhanced error logging for debugging EventSub subscription issues
+    console.error(`[ensureAdBreakSubscription] Error for ${channelLogin}:`, {
+      message: e.message,
+      status: e.response?.status,
+      statusText: e.response?.statusText,
+      twitchError: e.response?.data,
+      adsEnabled
+    });
     throw e;
   }
 }
