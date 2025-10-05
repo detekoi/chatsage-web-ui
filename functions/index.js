@@ -699,15 +699,15 @@ async function ensureAdBreakSubscription(channelLogin, adsEnabled) {
     // Validate token has required scope before attempting subscription
     try {
       const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
-        headers: { Authorization: `OAuth ${accessToken}` }
+        headers: { Authorization: `OAuth ${accessToken}` },
       });
       const scopes = validateResponse.data.scopes || [];
       console.log(`[ensureAdBreakSubscription] Token validation for ${channelLogin}:`, {
         userId: validateResponse.data.user_id,
         scopes,
-        hasAdsScope: scopes.includes('channel:read:ads')
+        hasAdsScope: scopes.includes("channel:read:ads"),
       });
-      if (!scopes.includes('channel:read:ads')) {
+      if (!scopes.includes("channel:read:ads")) {
         console.error(`[ensureAdBreakSubscription] Missing channel:read:ads scope for ${channelLogin}`);
         return; // Skip subscription if scope is missing
       }
