@@ -11,6 +11,9 @@ const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 
 const app = express();
 
+// Trust proxy headers from Cloud Run/Firebase Hosting
+app.set("trust proxy", true);
+
 app.use(express.json());
 app.use(cookieParser());
 
