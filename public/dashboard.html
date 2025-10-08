@@ -75,14 +75,21 @@
                     <option value="medium">Medium</option>
                     <option value="high">High</option>
                 </select>
-                
+
                 <div style="margin-top:0.5em;">
                     <label><input type="checkbox" id="auto-cat-greetings" checked> Greetings</label>
                     <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-facts" checked> Facts/Tips</label>
                     <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-questions" checked> Questions</label>
-                    <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-ads"> Ad notifications</label>
                 </div>
                 <p id="auto-chat-message" style="margin-top:0.5em;"></p>
+            </div>
+        </div>
+        <div id="ad-notifications-section" style="display:none; margin-top: 2em;">
+            <h3>Ad Notifications</h3>
+            <div id="ad-notifications-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading ad notification settings...</div>
+            <div class="ad-notifications-form">
+                <label><input type="checkbox" id="auto-cat-ads"> Enable ad break notifications</label>
+                <p id="ad-notifications-message" style="margin-top:0.5em;"></p>
             </div>
         </div>
         <p id="action-message"></p>
