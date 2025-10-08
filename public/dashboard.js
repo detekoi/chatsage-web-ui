@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adNotificationsMsgEl = document.getElementById('ad-notifications-message');
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
-    const API_BASE_URL = 'https://webui-zpqjdsguqa-uc.a.run.app';
+    const API_BASE_URL = 'https://api.wildcat.chat';
     let appSessionToken = null;
     let loggedInUser = null;
 

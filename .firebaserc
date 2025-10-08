@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "streamsage-bot"
+  },
+  "targets": {
+    "streamsage-bot": {
+      "hosting": {
+        "app": [
+          "streamsage-bot"
+        ],
+        "api": [
+          "wildcat-api"
+        ]
+      }
+    }
   }
 }

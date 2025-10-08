@@ -18,15 +18,36 @@
   "firestore": {
     "rules": "firestore.rules"
   },
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log",
-      "*.local",
-      ".env"
-    ]
-  }
+  "hosting": [
+    {
+      "target": "app",
+      "public": "public",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local",
+        ".env"
+      ]
+    },
+    {
+      "target": "api",
+      "public": "public",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local",
+        ".env"
+      ],
+      "rewrites": [
+        {
+          "source": "/**",
+          "function": "webUi"
+        }
+      ]
+    }
+  ]
 }
