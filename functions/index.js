@@ -364,6 +364,7 @@ app.get("/auth/twitch/callback", authLimiter, async (req, res) => {
           refreshTokenSecretPath: versionName, // Store the path to the secret version
           twitchUserId: twitchUser.id,
           displayName: twitchUser.displayName,
+          email: twitchUser.email || null, // Store user email from OAuth
           lastLoginAt: FieldValue.serverTimestamp(),
           needsTwitchReAuth: false,
           lastTokenError: null,
