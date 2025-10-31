@@ -1,19 +1,33 @@
 {
-    "root": true,
-    "env": {
-      "node": true,
-      "es2021": true
-    },
-    "parserOptions": {
-      "ecmaVersion": 2021,
-      "sourceType": "script"
-    },
-    "rules": {
-      "indent": ["error", 2],
-      "comma-dangle": ["error", "always-multiline"],
-      "semi": ["error", "always"],
-      "quotes": ["error", "double"],
-      "no-unused-vars": ["warn"],
-      "no-console": ["off"]
-    }
-  }
+  "root": true,
+  "env": {
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "comma-dangle": ["error", "always-multiline"],
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-console": ["off"]
+  },
+  "ignorePatterns": ["lib/", "node_modules/", "*.js", "test/setup.ts"]
+}
