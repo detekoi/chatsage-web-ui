@@ -36,6 +36,7 @@ const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL;
 const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const TWITCH_BOT_USERNAME = process.env.TWITCH_BOT_USERNAME || "";
 
 let db;
 let secretManagerClient;
@@ -139,7 +140,7 @@ function buildTwitchAuthUrl(currentTwitchClientId, currentCallbackRedirectUri, s
   authUrl.searchParams.set("client_id", currentTwitchClientId);
   authUrl.searchParams.set("redirect_uri", currentCallbackRedirectUri);
   authUrl.searchParams.set("response_type", "code");
-  authUrl.searchParams.set("scope", "user:read:email channel:read:ads");
+  authUrl.searchParams.set("scope", "user:read:email channel:read:ads channel:manage:moderators");
   authUrl.searchParams.set("state", state);
   authUrl.searchParams.set("force_verify", "true");
   return authUrl;
@@ -512,14 +513,49 @@ app.post("/api/bot/add", apiLimiter, authenticateApiRequest, async (req, res) =>
     });
   }
   const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
+  const broadcasterUserId = req.user.userId;
+  
   try {
     await docRef.set({
       channelName: channelLogin,
       isActive: true,
       addedAt: FieldValue.serverTimestamp(),
+      twitchUserId: broadcasterUserId, // Ensure twitchUserId is stored
     }, { merge: true });
     console.log(`Channel ${channelLogin} activated successfully.`);
-    res.json({ success: true, message: `Bot successfully added to ${channelLogin}.` });
+
+    // Automatically add bot as moderator
+    let modStatus = { success: false, error: "Bot username not configured" };
+    if (TWITCH_BOT_USERNAME) {
+      try {
+        console.log(`[API /add] Attempting to add bot ${TWITCH_BOT_USERNAME} as moderator...`);
+        const botUserId = await getUserIdFromUsername(TWITCH_BOT_USERNAME);
+        
+        if (botUserId) {
+          modStatus = await addModerator(channelLogin, broadcasterUserId, botUserId);
+          if (modStatus.success) {
+            console.log(`[API /add] Bot successfully added as moderator to ${channelLogin}`);
+          } else {
+            console.warn(`[API /add] Failed to add bot as moderator: ${modStatus.error}`);
+          }
+        } else {
+          console.warn(`[API /add] Could not find user ID for bot username: ${TWITCH_BOT_USERNAME}`);
+          modStatus = { success: false, error: "Bot user not found" };
+        }
+      } catch (modError) {
+        console.error("[API /add] Error adding bot as moderator:", modError);
+        modStatus = { success: false, error: modError.message };
+      }
+    } else {
+      console.warn("[API /add] TWITCH_BOT_USERNAME not configured, skipping moderator setup");
+    }
+
+    res.json({
+      success: true,
+      message: `Bot successfully added to ${channelLogin}.`,
+      moderatorStatus: modStatus.success ? "added" : "failed",
+      moderatorError: modStatus.success ? undefined : modStatus.error,
+    });
   } catch (error) {
     console.error(`[API /add] Error adding channel ${channelLogin}:`, error);
     res.status(500).json({ success: false, message: "Failed to add bot. Please try again." });
@@ -1212,6 +1248,107 @@ async function getValidTwitchTokenForUser(userLogin) {
       console.error(`[getValidTwitchTokenForUser] Failed to update user document for ${userLogin}:`, updateError.message);
     }
     throw new Error("Failed to obtain a valid Twitch token. User may need to re-authenticate.");
+  }
+}
+
+/**
+ * Gets a Twitch user ID from a username (login)
+ * @param {string} username - The Twitch username
+ * @return {Promise<string|null>} The user ID or null if not found
+ */
+async function getUserIdFromUsername(username) {
+  try {
+    const appAccessToken = await getAppAccessToken();
+    const response = await axios.get("https://api.twitch.tv/helix/users", {
+      params: { login: username.toLowerCase() },
+      headers: {
+        "Client-Id": TWITCH_CLIENT_ID,
+        "Authorization": `Bearer ${appAccessToken}`,
+      },
+      timeout: 15000,
+    });
+
+    if (response.data?.data && response.data.data.length > 0) {
+      return response.data.data[0].id;
+    }
+    return null;
+  } catch (error) {
+    console.error(`[getUserIdFromUsername] Error getting user ID for ${username}:`, error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Adds a user as a moderator in a broadcaster's channel
+ * @param {string} broadcasterLogin - The broadcaster's Twitch login
+ * @param {string} broadcasterId - The broadcaster's Twitch user ID
+ * @param {string} moderatorUserId - The user ID to add as moderator
+ * @return {Promise<{success: boolean, error?: string}>} Success status and optional error message
+ */
+async function addModerator(broadcasterLogin, broadcasterId, moderatorUserId) {
+  try {
+    const accessToken = await getValidTwitchTokenForUser(broadcasterLogin);
+
+    const response = await axios.post(
+      "https://api.twitch.tv/helix/moderation/moderators",
+      {},
+      {
+        params: {
+          broadcaster_id: broadcasterId,
+          user_id: moderatorUserId,
+        },
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Client-Id": TWITCH_CLIENT_ID,
+        },
+        timeout: 15000,
+      },
+    );
+
+    // 204 No Content means success (moderator was added)
+    if (response.status === 204) {
+      console.log(`[addModerator] Successfully added moderator ${moderatorUserId} to channel ${broadcasterLogin}`);
+      return { success: true };
+    }
+
+    return { success: false, error: `Unexpected status: ${response.status}` };
+  } catch (error) {
+    const status = error.response?.status;
+    const errorData = error.response?.data;
+    const errorMessage = errorData?.message || error.message;
+
+    // 400 Bad Request - could be: already moderator, banned, or VIP
+    if (status === 400) {
+      if (errorMessage?.toLowerCase().includes("already") || errorMessage?.toLowerCase().includes("moderator")) {
+        console.log(`[addModerator] User ${moderatorUserId} is already a moderator in ${broadcasterLogin}`);
+        return { success: true }; // Already a mod, treat as success
+      }
+      // User might be banned or VIP - log for debugging
+      console.warn(`[addModerator] Cannot add ${moderatorUserId} as moderator in ${broadcasterLogin}: ${errorMessage}`);
+      return { success: false, error: errorMessage || "User cannot be added as moderator (may be banned or VIP)" };
+    }
+
+    // 403 Forbidden - broadcaster doesn't have channel:manage:moderators scope
+    if (status === 403) {
+      console.warn(`[addModerator] Broadcaster ${broadcasterLogin} lacks channel:manage:moderators scope`);
+      return { success: false, error: "Missing channel:manage:moderators scope. Please re-authenticate." };
+    }
+
+    // 401 Unauthorized - token invalid or expired
+    if (status === 401) {
+      console.warn(`[addModerator] Authentication failed for ${broadcasterLogin}`);
+      return { success: false, error: "Authentication failed. Please re-authenticate." };
+    }
+
+    // 404 Not Found - user or broadcaster doesn't exist
+    if (status === 404) {
+      console.warn("[addModerator] User or broadcaster not found");
+      return { success: false, error: "User or broadcaster not found" };
+    }
+
+    // Other errors
+    console.error(`[addModerator] Error adding moderator ${moderatorUserId} to ${broadcasterLogin}:`, errorData || errorMessage);
+    return { success: false, error: errorMessage || "Unknown error occurred" };
   }
 }
 
