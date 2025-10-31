@@ -36,7 +36,7 @@ const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME;
 const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL;
 const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET;
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
-const TWITCH_BOT_USERNAME = process.env.TWITCH_BOT_USERNAME || "";
+const TWITCH_BOT_USERNAME_SECRET = process.env.TWITCH_BOT_USERNAME || "projects/907887386166/secrets/TWITCH_BOT_USERNAME";
 
 let db;
 let secretManagerClient;
@@ -108,6 +108,22 @@ async function getInternalBotTokenValue() {
   } catch (error) {
     console.error("Error fetching WEBUI_INTERNAL_TOKEN from Secret Manager:", error.message);
     throw new Error("Failed to fetch internal bot token.");
+  }
+}
+
+async function getTwitchBotUsername() {
+  const secretInput = TWITCH_BOT_USERNAME_SECRET;
+  if (!secretInput) {
+    console.warn("TWITCH_BOT_USERNAME_SECRET is not configured");
+    return null;
+  }
+  try {
+    const name = normalizeSecretVersionPath(secretInput);
+    const [version] = await secretManagerClient.accessSecretVersion({ name });
+    return version.payload.data.toString("utf8").trim();
+  } catch (error) {
+    console.error("Error fetching TWITCH_BOT_USERNAME from Secret Manager:", error.message);
+    return null;
   }
 }
 
@@ -526,11 +542,12 @@ app.post("/api/bot/add", apiLimiter, authenticateApiRequest, async (req, res) =>
 
     // Automatically add bot as moderator
     let modStatus = { success: false, error: "Bot username not configured" };
-    if (TWITCH_BOT_USERNAME) {
+    const botUsername = await getTwitchBotUsername();
+    if (botUsername) {
       try {
-        console.log(`[API /add] Attempting to add bot ${TWITCH_BOT_USERNAME} as moderator...`);
-        const botUserId = await getUserIdFromUsername(TWITCH_BOT_USERNAME);
-        
+        console.log(`[API /add] Attempting to add bot ${botUsername} as moderator...`);
+        const botUserId = await getUserIdFromUsername(botUsername);
+
         if (botUserId) {
           modStatus = await addModerator(channelLogin, broadcasterUserId, botUserId);
           if (modStatus.success) {
@@ -539,7 +556,7 @@ app.post("/api/bot/add", apiLimiter, authenticateApiRequest, async (req, res) =>
             console.warn(`[API /add] Failed to add bot as moderator: ${modStatus.error}`);
           }
         } else {
-          console.warn(`[API /add] Could not find user ID for bot username: ${TWITCH_BOT_USERNAME}`);
+          console.warn(`[API /add] Could not find user ID for bot username: ${botUsername}`);
           modStatus = { success: false, error: "Bot user not found" };
         }
       } catch (modError) {
