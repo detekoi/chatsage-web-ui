@@ -667,7 +667,7 @@ app.get("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) =
   try {
     const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
     const snap = await docRef.get();
-    const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true, ads: false } };
+    const defaultCfg = { mode: "off", categories: { greetings: true, facts: true, questions: true, celebrations: true, ads: false } };
     const cfg = snap.exists ? { ...defaultCfg, ...snap.data() } : defaultCfg;
     return res.json({
       success: true, config: {
@@ -676,6 +676,7 @@ app.get("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) =
           greetings: cfg.categories && cfg.categories.greetings !== false,
           facts: cfg.categories && cfg.categories.facts !== false,
           questions: cfg.categories && cfg.categories.questions !== false,
+          celebrations: cfg.categories && cfg.categories.celebrations !== false,
           ads: cfg.categories && cfg.categories.ads === true,
         },
       },
@@ -701,11 +702,13 @@ app.post("/api/auto-chat", apiLimiter, authenticateApiRequest, async (req, res) 
     }
     const categories = body.categories && typeof body.categories === "object" ? body.categories : {};
     const updates = {};
-    if (mode) updates.mode = mode;
+    // Default to "off" if mode is not provided or invalid
+    updates.mode = mode && validModes.includes(mode) ? mode : "off";
     updates.categories = {
       greetings: categories.greetings !== false,
       facts: categories.facts !== false,
       questions: categories.questions !== false,
+      celebrations: categories.celebrations !== false,
       ads: categories.ads === true,
     };
     updates.channelName = channelLogin;
