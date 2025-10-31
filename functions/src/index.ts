@@ -3,6 +3,9 @@
  * Wires together all routers and middleware
  */
 
+// Register module aliases first (must be before any imports using @)
+import "module-alias/register";
+
 import * as functions from "firebase-functions";
 import express from "express";
 import { initializeDatabase } from "@/config/database";
