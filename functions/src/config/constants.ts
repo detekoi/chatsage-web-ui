@@ -82,6 +82,7 @@ export const ALL_COMMANDS = [
   "disable",
   "enable",
   "ping",
+  "quote",
 ];
 
 // Auto-chat modes
