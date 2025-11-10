@@ -497,10 +497,14 @@ document.addEventListener('DOMContentLoaded', () => {
     addBotBtn.addEventListener('click', async () => {
         if (!appSessionToken) {
             actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            actionMessageEl.className = 'alert alert-danger';
+            actionMessageEl.style.display = 'block';
             return;
         }
         
         actionMessageEl.textContent = 'Requesting bot to join...';
+        actionMessageEl.className = 'alert alert-info';
+        actionMessageEl.style.display = 'block';
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/add`, {
                 method: 'POST',
@@ -512,22 +516,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             actionMessageEl.textContent = data.message;
             if (data.success) {
+                actionMessageEl.className = 'alert alert-success';
                 updateBotStatusUI(true);
                 await loadCommandSettings();
+            } else {
+                actionMessageEl.className = 'alert alert-danger';
             }
         } catch (error) {
             console.error('Error adding bot:', error);
             actionMessageEl.textContent = 'Failed to send request to add bot.';
+            actionMessageEl.className = 'alert alert-danger';
         }
     });
 
     removeBotBtn.addEventListener('click', async () => {
         if (!appSessionToken) {
             actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            actionMessageEl.className = 'alert alert-danger';
+            actionMessageEl.style.display = 'block';
             return;
         }
         
         actionMessageEl.textContent = 'Requesting bot to leave...';
+        actionMessageEl.className = 'alert alert-info';
+        actionMessageEl.style.display = 'block';
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/remove`, {
                 method: 'POST',
@@ -539,12 +551,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             actionMessageEl.textContent = data.message;
             if (data.success) {
+                actionMessageEl.className = 'alert alert-success';
                 updateBotStatusUI(false);
                 await loadCommandSettings();
+            } else {
+                actionMessageEl.className = 'alert alert-danger';
             }
         } catch (error) {
             console.error('Error removing bot:', error);
             actionMessageEl.textContent = 'Failed to send request to remove bot.';
+            actionMessageEl.className = 'alert alert-danger';
         }
     });
 
