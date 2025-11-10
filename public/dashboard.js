@@ -108,7 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBotStatusUI(isActive) {
         if (isActive) {
             botStatusEl.textContent = 'Active';
-            botStatusEl.className = 'status-active';
+            botStatusEl.classList.remove('text-danger');
+            botStatusEl.classList.add('text-success');
             addBotBtn.style.display = 'none';
             removeBotBtn.style.display = 'inline-block';
             // Show settings sections when bot is active
@@ -117,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             adNotificationsSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
-            botStatusEl.className = 'status-inactive';
+            botStatusEl.classList.remove('text-success');
+            botStatusEl.classList.add('text-danger');
             addBotBtn.style.display = 'inline-block';
             removeBotBtn.style.display = 'none';
             // Show settings even when inactive for pre-configuration
@@ -126,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adNotificationsSectionEl.style.display = 'block';
         }
         actionMessageEl.textContent = ''; // Clear previous messages
+        actionMessageEl.style.display = 'none';
     }
 
     async function loadCommandSettings() {
@@ -167,12 +170,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success && data.commands) {
                 renderCommandsList(data.commands);
             } else {
-                commandsListEl.innerHTML = '<p style="color: #ff6b6b;">Failed to load command settings.</p>';
+                commandsListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load command settings.</div>';
             }
         } catch (error) {
             console.error('Error loading command settings:', error);
             commandsLoadingEl.style.display = 'none';
-            commandsListEl.innerHTML = '<p style="color: #ff6b6b;">Error loading command settings.</p>';
+            commandsListEl.innerHTML = '<div class="alert alert-danger" role="alert">Error loading command settings.</div>';
         }
     }
 
@@ -380,36 +383,58 @@ document.addEventListener('DOMContentLoaded', () => {
         commandsListEl.innerHTML = '';
         
         commands.forEach(cmd => {
-            const commandDiv = document.createElement('div');
-            commandDiv.className = 'command-item';
+            const commandItem = document.createElement('div');
+            commandItem.className = 'list-group-item';
+            
+            const row = document.createElement('div');
+            row.className = 'row align-items-center';
+            
+            const col = document.createElement('div');
+            col.className = 'col';
+            
+            const label = document.createElement('strong');
+            label.textContent = `!${cmd.name}`;
+            
+            col.appendChild(label);
+            
+            // Add disabled message for help command
+            if (cmd.primaryName === 'help') {
+                const helpText = document.createElement('p');
+                helpText.className = 'text-muted mb-0';
+                helpText.textContent = 'This command cannot be disabled';
+                col.appendChild(helpText);
+            }
+            
+            const colAuto = document.createElement('div');
+            colAuto.className = 'col-auto';
+            
+            const switchDiv = document.createElement('div');
+            switchDiv.className = 'form-check form-switch';
             
             const checkbox = document.createElement('input');
+            checkbox.className = 'form-check-input';
             checkbox.type = 'checkbox';
             checkbox.id = `cmd-${cmd.primaryName}`;
             checkbox.checked = cmd.enabled;
             checkbox.dataset.command = cmd.primaryName;
+            checkbox.role = 'switch';
             
             // Special handling for help command
             if (cmd.primaryName === 'help') {
                 checkbox.disabled = true;
-                checkbox.title = 'The help command cannot be disabled';
-            }
-            
-            const label = document.createElement('label');
-            label.htmlFor = `cmd-${cmd.primaryName}`;
-            label.textContent = `!${cmd.name}`;
-            
-            if (cmd.primaryName === 'help') {
-                label.title = 'The help command cannot be disabled';
             }
             
             checkbox.addEventListener('change', async function() {
                 await toggleCommand(cmd.primaryName, this.checked, this);
             });
             
-            commandDiv.appendChild(checkbox);
-            commandDiv.appendChild(label);
-            commandsListEl.appendChild(commandDiv);
+            switchDiv.appendChild(checkbox);
+            colAuto.appendChild(switchDiv);
+            
+            row.appendChild(col);
+            row.appendChild(colAuto);
+            commandItem.appendChild(row);
+            commandsListEl.appendChild(commandItem);
         });
     }
 
@@ -450,16 +475,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 actionMessageEl.textContent = `Command !${commandName} ${enabled ? 'enabled' : 'disabled'}.`;
-                actionMessageEl.style.color = '#4ecdc4';
+                actionMessageEl.className = 'alert alert-success';
+                actionMessageEl.style.display = 'block';
             } else {
                 actionMessageEl.textContent = data.message || 'Error updating command settings.';
-                actionMessageEl.style.color = '#ff6b6b';
+                actionMessageEl.className = 'alert alert-danger';
+                actionMessageEl.style.display = 'block';
                 checkboxEl.checked = !enabled; // Revert on error
             }
         } catch (error) {
             console.error('Error toggling command:', error);
             actionMessageEl.textContent = 'Failed to update command settings.';
-            actionMessageEl.style.color = '#ff6b6b';
+            actionMessageEl.className = 'alert alert-danger';
+            actionMessageEl.style.display = 'block';
             checkboxEl.checked = !enabled; // Revert on error
         } finally {
             checkboxEl.disabled = false; // Re-enable checkbox

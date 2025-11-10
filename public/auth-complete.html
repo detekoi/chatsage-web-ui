@@ -2,26 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Processing Authentication...</title>
-    <link rel="stylesheet" href="styles/reset.css">
-    <link rel="stylesheet" href="styles/unified.css">
-    <link rel="stylesheet" href="styles/chatsage-specific.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Custom overrides -->
+    <link rel="stylesheet" href="styles/custom.css">
+
+    <!-- Apply theme early to prevent flash -->
     <script>
-        // 1. Array of SPAM DOMAINS to block
+        (function() {
+            const theme = localStorage.getItem('chatsage-theme') ||
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
+    <script>
+        // Spam domain blocker
         const spamDomains = [
           "sigr.io",
           "semalt.com",
           "buttons-for-website.com",
           "4webmasters.org",
-          // Add more as you discover them
         ];
       
-        // 2. Get the referrer URL
         const referrer = document.referrer;
-      
         let isSpam = false;
       
-        // 3. Check if the referrer CONTAINS any of our spam domains
         for (const spamDomain of spamDomains) {
           if (referrer.includes(spamDomain)) {
             isSpam = true;
@@ -29,7 +46,6 @@
           }
         }
       
-        // 4. If the referrer is NOT a spam domain, THEN add the Rybbit tracking script
         if (!isSpam) {
           const rybbitScript = document.createElement("script");
           rybbitScript.src = "https://app.rybbit.io/api/script.js";
@@ -38,16 +54,22 @@
           document.head.appendChild(rybbitScript);
         }
       
-        // 5. (Optional) Log the referrer for debugging
         if (isSpam) {
           console.warn("Spam referrer blocked:", referrer);
         }
-      </script>
+    </script>
 </head>
-<body class="web-ui">
-    <div class="ui-container">
-        <h1>Processing Login...</h1>
-        <p id="auth-message">Please wait.</p>
+<body>
+    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="card shadow-lg" style="max-width: 500px; width: 100%;">
+            <div class="card-body text-center p-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h1 class="h4 mb-3">Processing Login...</h1>
+                <p id="auth-message" class="text-muted mb-0">Please wait.</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -64,14 +86,14 @@
 
             if (userLogin && userId && sessionToken) {
                 // Store user info and session token
-                // Note: Due to cross-origin setup (Firebase Hosting + Cloud Run),
-                // we use localStorage with Authorization header instead of HTTP-only cookies
                 localStorage.setItem('twitch_user_login', userLogin);
                 localStorage.setItem('twitch_user_id', userId);
                 localStorage.setItem('app_session_token', sessionToken);
                 
                 console.log("Authentication successful. Session token stored.");
                 messageEl.textContent = `Welcome, ${userLogin}! Redirecting to dashboard...`;
+                messageEl.classList.remove('text-muted');
+                messageEl.classList.add('text-success');
                 
                 // Redirect to dashboard after brief delay
                 setTimeout(() => {
@@ -80,11 +102,16 @@
             } else {
                 console.error("Missing required parameters:", { userLogin, userId, sessionToken: sessionToken ? 'present' : 'missing' });
                 messageEl.textContent = "Login failed: Missing authentication information. Please try again.";
+                messageEl.classList.remove('text-muted');
+                messageEl.classList.add('text-danger');
                 setTimeout(() => { 
                     window.location.href = 'index.html'; 
                 }, 3000);
             }
         });
     </script>
+
+    <!-- Bootstrap 5 Bundle JS (with Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

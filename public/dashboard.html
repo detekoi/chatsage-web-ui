@@ -2,29 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatSage Dashboard</title>
-    <link rel="stylesheet" href="styles/reset.css">
-    <link rel="stylesheet" href="styles/unified.css">
-    <link rel="stylesheet" href="styles/chatsage-specific.css">
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Cabin+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Custom overrides -->
+    <link rel="stylesheet" href="styles/custom.css">
+
+    <!-- Apply theme early to prevent flash -->
     <script>
-        // 1. Array of SPAM DOMAINS to block
+        (function() {
+            const theme = localStorage.getItem('chatsage-theme') ||
+                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+
+    <script>
+        // Spam domain blocker
         const spamDomains = [
           "sigr.io",
           "semalt.com",
           "buttons-for-website.com",
           "4webmasters.org",
-          // Add more as you discover them
         ];
       
-        // 2. Get the referrer URL
         const referrer = document.referrer;
-      
         let isSpam = false;
       
-        // 3. Check if the referrer CONTAINS any of our spam domains
         for (const spamDomain of spamDomains) {
           if (referrer.includes(spamDomain)) {
             isSpam = true;
@@ -32,7 +46,6 @@
           }
         }
       
-        // 4. If the referrer is NOT a spam domain, THEN add the Rybbit tracking script
         if (!isSpam) {
           const rybbitScript = document.createElement("script");
           rybbitScript.src = "https://app.rybbit.io/api/script.js";
@@ -41,61 +54,153 @@
           document.head.appendChild(rybbitScript);
         }
       
-        // 5. (Optional) Log the referrer for debugging
         if (isSpam) {
           console.warn("Spam referrer blocked:", referrer);
         }
-      </script>
+    </script>
 </head>
 <body>
-    <canvas id="staticCanvas" style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1;"></canvas>
-    <div class="container">
-        <h1>ChatSage Dashboard</h1>
-        <p>Welcome, <span id="twitch-username">loading...</span>!</p>
-        <a href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener noreferrer" class="button" style="margin-bottom: 1em;">Commands Documentation</a>
-        <div id="bot-status-container">
-            <p>Bot status for channel <strong id="channel-name-status">your channel</strong>: <strong id="bot-status">Loading...</strong></p>
-            <button id="add-bot-btn" class="button" style="display:none;">Add Bot to My Channel</button>
-            <button id="remove-bot-btn" class="button" style="display:none;">Remove Bot from My Channel</button>
-        </div>
-        <div id="commands-section" style="display:none; margin-top: 2em;">
-            <h3>Command Settings</h3>
-            <p>Enable or disable commands for your channel:</p>
-            <div id="commands-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading command options...</div>
-            <div id="commands-list"></div>
-        </div>
-        <div id="auto-chat-section" style="display:none; margin-top: 2em;">
-            <h3>Auto-Chat Settings</h3>
-            <div id="auto-chat-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading auto-chat settings...</div>
-            <div class="auto-chat-form">
-                <label for="auto-mode">Mode:</label>
-                <select id="auto-mode">
-                    <option value="off">Off</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                </select>
 
-                <div style="margin-top:0.5em;">
-                    <label><input type="checkbox" id="auto-cat-greetings" checked> Greetings</label>
-                    <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-facts" checked> Facts/Tips</label>
-                    <label style="margin-left:1em;"><input type="checkbox" id="auto-cat-questions" checked> Questions</label>
+    <div class="container my-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h3 mb-0">ChatSage Dashboard</h1>
+            <div class="d-flex align-items-center gap-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
                 </div>
-                <p id="auto-chat-message" style="margin-top:0.5em;"></p>
+                <a href="#" id="logout-link" class="btn btn-outline-danger btn-sm">Logout</a>
             </div>
         </div>
-        <div id="ad-notifications-section" style="display:none; margin-top: 2em;">
-            <h3>Ad Notifications</h3>
-            <div id="ad-notifications-loading" style="display:none; margin: 1em 0; font-style: italic;">Loading ad notification settings...</div>
-            <div class="ad-notifications-form">
-                <label><input type="checkbox" id="auto-cat-ads"> Enable ad break notifications</label>
-                <p id="ad-notifications-message" style="margin-top:0.5em;"></p>
+        <p class="text-center mb-3">
+            <a href="https://docs.wildcat.chat/botcommands.html" target="_blank" class="link-primary">Commands Documentation</a>
+        </p>
+
+        <!-- Bot Status & Control -->
+        <div class="card mb-4 shadow">
+            <div class="card-body">
+                <p class="mb-1">Welcome, <span id="twitch-username">loading...</span>!</p>
+                <p class="mb-3">Bot status for channel <strong id="channel-name-status">your channel</strong>: <strong id="bot-status">Loading...</strong></p>
+                <div class="d-flex gap-2">
+                    <button id="add-bot-btn" class="btn btn-outline-primary" style="display:none;" type="button">Add Bot to My Channel</button>
+                    <button id="remove-bot-btn" class="btn btn-outline-danger" style="display:none;" type="button">Remove Bot from My Channel</button>
+                </div>
             </div>
         </div>
-        <p id="action-message"></p>
-        <a href="#" id="logout-link" class="button">Logout</a>
+
+        <!-- Command Settings Section -->
+        <div id="commands-section" style="display:none;">
+            <div class="card mb-4 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Command Settings</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">Enable or disable commands for your channel:</p>
+                    <div id="commands-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading command options...</p>
+                    </div>
+                    <div id="commands-list" class="list-group"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Chat Settings Section -->
+        <div id="auto-chat-section" style="display:none;">
+            <div class="card mb-4 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Auto-Chat Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div id="auto-chat-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading auto-chat settings...</p>
+                    </div>
+                    <div class="auto-chat-form">
+                        <div class="mb-3">
+                            <label for="auto-mode" class="form-label">Mode:</label>
+                            <select id="auto-mode" class="form-select">
+                                <option value="off">Off</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-cat-greetings" checked>
+                                <label class="form-check-label" for="auto-cat-greetings">Greetings</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
+                                <label class="form-check-label" for="auto-cat-facts">Facts/Tips</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-cat-questions" checked>
+                                <label class="form-check-label" for="auto-cat-questions">Questions</label>
+                            </div>
+                        </div>
+                        <p id="auto-chat-message" class="text-muted"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Notifications Section -->
+        <div id="ad-notifications-section" style="display:none;">
+            <div class="card mb-4 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Ad Notifications</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ad-notifications-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading ad notification settings...</p>
+                    </div>
+                    <div class="ad-notifications-form">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="auto-cat-ads">
+                            <label class="form-check-label" for="auto-cat-ads">Enable ad break notifications</label>
+                        </div>
+                        <p id="ad-notifications-message" class="text-muted mt-2"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p id="action-message" class="alert alert-info" style="display:none;"></p>
     </div>
+
+    <!-- Dark mode toggle functionality -->
+    <script>
+        // Initialize dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const currentTheme = localStorage.getItem('chatsage-theme') ||
+                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        darkModeToggle.checked = currentTheme === 'dark';
+        
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('chatsage-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('chatsage-theme', 'light');
+            }
+        });
+    </script>
+
     <script src="dashboard.js"></script>
-    <script src="static-background.js"></script>
+
+    <!-- Bootstrap 5 Bundle JS (with Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
