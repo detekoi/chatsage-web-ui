@@ -445,6 +445,32 @@ strong, .fw-semibold, .fw-bold {
     color: #ffe0a3;
 }
 
+/* Dark mode alert links */
+[data-theme="dark"] .alert-link {
+    color: #ffc107;
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .alert-warning .alert-link {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .alert-info .alert-link {
+    color: #66b3ff;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .alert-success .alert-link {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .alert-danger .alert-link {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
 /* Responsive adjustments */
 @media (max-width: 767.98px) {
     .button-3d {
