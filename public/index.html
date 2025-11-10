@@ -60,7 +60,9 @@
     </script>
 </head>
 <body>
-    <canvas id="staticCanvas" style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1;"></canvas>
+    <video id="staticVideo" autoplay loop muted playsinline style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1; object-fit:cover;">
+        <source src="assets/video/Pixelated_static_pattern_web_balanced.mp4" type="video/mp4">
+    </video>
     
     <!-- Dark mode toggle in top-right corner -->
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
@@ -88,8 +90,6 @@
             </div>
         </div>
     </div>
-
-    <script src="static-background.js"></script>
     
     <!-- Dark mode toggle functionality -->
     <script>
