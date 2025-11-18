@@ -16,15 +16,9 @@
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
 
-    <!-- Apply theme early to prevent flash -->
+    <!-- Apply dark theme (default) -->
     <script>
-        (function() {
-            const theme = localStorage.getItem('chatsage-theme') ||
-                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            if (theme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        })();
+        document.documentElement.setAttribute('data-theme', 'dark');
     </script>
 
     <script>
@@ -64,13 +58,6 @@
         <source src="assets/video/Pixelated_static_pattern_web_balanced.mp4" type="video/mp4">
     </video>
     
-    <!-- Dark mode toggle in top-right corner -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="darkModeToggle">
-            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-        </div>
-    </div>
 
     <div class="container" style="max-width: 600px; margin-top: 10vh;">
         <div class="card shadow-lg">
@@ -91,25 +78,6 @@
         </div>
     </div>
     
-    <!-- Dark mode toggle functionality -->
-    <script>
-        // Initialize dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const currentTheme = localStorage.getItem('chatsage-theme') ||
-                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        
-        darkModeToggle.checked = currentTheme === 'dark';
-        
-        darkModeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('chatsage-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('chatsage-theme', 'light');
-            }
-        });
-    </script>
 
     <!-- Login functionality -->
     <script>
