@@ -16,9 +16,16 @@
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
 
-    <!-- Apply dark theme (default) -->
+    <!-- Apply theme based on system preference -->
     <script>
-        document.documentElement.setAttribute('data-theme', 'dark');
+        (function() {
+            const savedTheme = localStorage.getItem('chatsage-theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
     </script>
 
     <script>
@@ -59,6 +66,10 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h1 class="h3 mb-0">ChatSage Dashboard</h1>
             <div class="d-flex align-items-center gap-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+                </div>
                 <a href="#" id="logout-link" class="btn btn-outline-danger btn-sm">Logout</a>
             </div>
         </div>
@@ -167,6 +178,27 @@
 
         <p id="action-message" class="alert alert-info" style="display:none;"></p>
     </div>
+
+    <!-- Dark mode toggle functionality -->
+    <script>
+        // Initialize dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const savedTheme = localStorage.getItem('chatsage-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+        darkModeToggle.checked = currentTheme === 'dark';
+
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('chatsage-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('chatsage-theme', 'light');
+            }
+        });
+    </script>
 
 
     <script src="dashboard.js"></script>

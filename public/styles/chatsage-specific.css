@@ -128,15 +128,16 @@
 /* =====================================================
    INVITE NOTICE
    ===================================================== */
+/* Light Mode */
 .invite-notice {
-  background: #2a2a1a;
-  border: 1px solid #544c3a;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
   padding: 15px;
   border-radius: 0;
   margin: 20px 0;
   font-size: 0.95em;
   text-align: left;
-  color: #e0e0e0;
+  color: #856404;
 }
 
 .invite-notice strong {
@@ -146,7 +147,7 @@
 }
 
 .invite-notice a {
-  color: #ffffff;
+  color: #0a0a0a;
   text-decoration: underline;
   border: none;
   box-shadow: none;
@@ -158,15 +159,34 @@
 }
 
 .invite-notice a:hover {
-  color: #cccccc;
+  color: #333333;
   transform: none;
   box-shadow: none;
 }
 
 .invite-notice a:active {
-  color: #999999;
+  color: #666666;
   transform: none;
   box-shadow: none;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .invite-notice {
+  background: #2a2a1a;
+  border-color: #544c3a;
+  color: #e0e0e0;
+}
+
+[data-theme="dark"] .invite-notice a {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .invite-notice a:hover {
+  color: #cccccc;
+}
+
+[data-theme="dark"] .invite-notice a:active {
+  color: #999999;
 }
 
 /* =====================================================
@@ -265,12 +285,19 @@
 /* =====================================================
    ERROR MESSAGES
    ===================================================== */
+/* Light Mode */
 .error-message,
 #loginError {
-  color: #ff6b6b;
+  color: #d32f2f;
   font-weight: 800;
   margin-top: var(--spacing-medium);
   text-transform: uppercase;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .error-message,
+[data-theme="dark"] #loginError {
+  color: #ff6b6b;
 }
 
 /* =====================================================

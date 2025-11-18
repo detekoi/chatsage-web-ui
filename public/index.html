@@ -16,9 +16,16 @@
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
 
-    <!-- Apply dark theme (default) -->
+    <!-- Apply theme based on system preference -->
     <script>
-        document.documentElement.setAttribute('data-theme', 'dark');
+        (function() {
+            const savedTheme = localStorage.getItem('chatsage-theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
     </script>
 
     <script>
@@ -57,7 +64,18 @@
     <video id="staticVideo" autoplay loop muted playsinline style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1; object-fit:cover;">
         <source src="assets/video/Pixelated_static_pattern_web_balanced.mp4" type="video/mp4">
     </video>
-    
+
+    <!-- Light mode overlay for video -->
+    <div class="video-overlay"></div>
+
+    <!-- Dark mode toggle in top-right corner -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="darkModeToggle">
+            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+        </div>
+    </div>
+
 
     <div class="container" style="max-width: 600px; margin-top: 10vh;">
         <div class="card shadow-lg">
@@ -78,6 +96,27 @@
         </div>
     </div>
     
+
+    <!-- Dark mode toggle functionality -->
+    <script>
+        // Initialize dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const savedTheme = localStorage.getItem('chatsage-theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+
+        darkModeToggle.checked = currentTheme === 'dark';
+
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('chatsage-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('chatsage-theme', 'light');
+            }
+        });
+    </script>
 
     <!-- Login functionality -->
     <script>

@@ -7,7 +7,46 @@
   --font-primary: 'Atkinson Hyperlegible Next', sans-serif;
   --font-code: 'Atkinson Hyperlegible Mono', monospace;
 
-  /* Colors - Post-Industrial Dark Mode (Default) */
+  /* Colors - Post-Industrial Light Mode (Default) */
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8e8e8;
+  --text-primary: #0a0a0a;
+  --text-secondary: #0a0a0a;
+  --text-muted: #666666;
+  --border-color: #d0d0d0;
+  --border-hover: #999999;
+  --accent-primary: #0a0a0a;
+  --accent-primary-hover: #333333;
+  --accent-focus: rgba(10, 10, 10, 0.25);
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --danger-primary: #d32f2f;
+  --danger-secondary: #b71c1c;
+  --danger-bg: #ffebee;
+  --danger-text: #c62828;
+  --help-icon-bg: #e8e8e8;
+  --help-icon-text: #0a0a0a;
+  --modal-backdrop: rgba(0, 0, 0, 0.5);
+  --modal-text: #0a0a0a;
+  --color-grid-line: #e0e0e0;
+  --color-accent-grey: #666666;
+
+  /* Spacing */
+  --spacing-unit: 8px;
+  --spacing-small: var(--spacing-unit);
+  --spacing-medium: calc(var(--spacing-unit) * 3);
+  --spacing-large: calc(var(--spacing-unit) * 8);
+
+  /* Typography Scale - Massive for Post-Industrial */
+  --font-size-huge: 8rem;
+  --font-size-large: 4rem;
+  --font-size-medium: 2rem;
+  --font-size-regular: 1rem;
+  --font-size-small: 0.875rem;
+}
+
+[data-theme="dark"] {
+  /* Colors - Post-Industrial Dark Mode */
   --bg-primary: #050505;
   --bg-secondary: #0a0a0a;
   --bg-tertiary: #0a0a0a;
@@ -29,24 +68,6 @@
   --modal-backdrop: rgba(0, 0, 0, 0.7);
   --modal-text: #ffffff;
   --color-grid-line: #333333;
-  --color-accent-grey: #666666;
-
-  /* Spacing */
-  --spacing-unit: 8px;
-  --spacing-small: var(--spacing-unit);
-  --spacing-medium: calc(var(--spacing-unit) * 3);
-  --spacing-large: calc(var(--spacing-unit) * 8);
-
-  /* Typography Scale - Massive for Post-Industrial */
-  --font-size-huge: 8rem;
-  --font-size-large: 4rem;
-  --font-size-medium: 2rem;
-  --font-size-regular: 1rem;
-  --font-size-small: 0.875rem;
-}
-
-[data-theme="dark"] {
-  /* Dark theme is the default - no changes needed */
 }
 
 /* Fonts */
@@ -182,6 +203,25 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
 }
 
 /* Custom switch and checkbox styling for post-industrial look */
+/* Dark Mode Toggle Alignment */
+.form-check.form-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-left: 0;
+}
+
+.form-check.form-switch .form-check-input {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.form-check.form-switch .form-check-label {
+    margin-bottom: 0;
+    padding-top: 0;
+}
+
+/* Light Mode */
 .form-check-input {
     background-color: transparent;
     border: 2px solid var(--border-color);
@@ -196,7 +236,7 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
 .form-check-input[type="checkbox"]:checked {
     background-color: var(--text-primary);
     border-color: var(--text-primary);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 
 .form-switch .form-check-input {
@@ -211,12 +251,21 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
 .form-switch .form-check-input:checked {
     background-color: var(--text-primary);
     border-color: var(--text-primary);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23000'/%3e%3c/svg%3e");
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23f5f5f5'/%3e%3c/svg%3e");
 }
 
 .form-check-input:focus {
     border-color: var(--text-primary);
     box-shadow: none;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .form-check-input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
+}
+
+[data-theme="dark"] .form-switch .form-check-input:checked {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23000'/%3e%3c/svg%3e");
 }
 
 /* Static background canvas */
@@ -229,12 +278,41 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
     z-index: -1;
 }
 
+/* Video background */
+#staticVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    object-fit: cover;
+}
+
+/* Light mode overlay for video background */
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.66);
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Hide overlay in dark mode */
+[data-theme="dark"] .video-overlay {
+    display: none;
+}
+
 /* 3D Skeuomorphic Button Styles (Login Pages Only) - Post-Industrial */
+/* Light Mode */
 .button-3d {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #ffffff;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
+    background-color: #0a0a0a;
+    color: #ffffff;
+    border: 2px solid #0a0a0a;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
     text-decoration: none;
     transition: all 0.2s ease;
     padding: 12px 24px;
@@ -250,33 +328,73 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
 .button-3d:hover,
 .button-3d:focus {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
+    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.2);
     text-decoration: none;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: #0a0a0a;
+    color: #ffffff;
 }
 
 .button-3d:active {
     transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
-    background-color: #cccccc;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+    background-color: #333333;
 }
 
 .button-3d.btn-primary {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    border: 2px solid #0a0a0a;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.button-3d.btn-primary:hover,
+.button-3d.btn-primary:focus {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-3d.btn-primary:active {
+    background-color: #333333;
+    color: #ffffff;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .button-3d {
     background-color: #ffffff;
     color: #000000;
     border: 2px solid #ffffff;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
 }
 
-.button-3d.btn-primary:hover,
-.button-3d.btn-primary:focus {
+[data-theme="dark"] .button-3d:hover,
+[data-theme="dark"] .button-3d:focus {
+    box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
+    background-color: #ffffff;
+    color: #000000;
+}
+
+[data-theme="dark"] .button-3d:active {
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
+    background-color: #cccccc;
+}
+
+[data-theme="dark"] .button-3d.btn-primary {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .button-3d.btn-primary:hover,
+[data-theme="dark"] .button-3d.btn-primary:focus {
     background-color: #ffffff;
     color: #000000;
     box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
 }
 
-.button-3d.btn-primary:active {
+[data-theme="dark"] .button-3d.btn-primary:active {
     background-color: #cccccc;
     color: #000000;
     box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
@@ -451,54 +569,95 @@ strong, .fw-semibold, .fw-bold {
 }
 
 /* Alert styles - Post-Industrial */
+/* Light Mode */
 .alert {
     border-radius: 0;
     border: 1px solid var(--border-color);
 }
 
 .alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffc107;
+    color: #856404;
+}
+
+.alert-link {
+    text-decoration: underline;
+    font-weight: 800;
+}
+
+.alert-warning .alert-link {
+    color: #533f03;
+}
+
+.alert-info .alert-link {
+    color: #062c33;
+}
+
+.alert-success .alert-link {
+    color: #0b2e13;
+}
+
+.alert-danger .alert-link {
+    color: #491217;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .alert-info {
     background-color: #0a3a46;
     border-color: #0a3a46;
     color: #bfe9ff;
 }
 
-.alert-success {
+[data-theme="dark"] .alert-success {
     background-color: #0f3a1f;
     border-color: #0f3a1f;
     color: #b8f7c1;
 }
 
-.alert-danger {
+[data-theme="dark"] .alert-danger {
     background-color: #4a1e1e;
     border-color: #4a1e1e;
     color: #ffb3b8;
 }
 
-.alert-warning {
+[data-theme="dark"] .alert-warning {
     background-color: #4a3a12;
     border-color: #4a3a12;
     color: #ffe0a3;
 }
 
-.alert-link {
-    color: #ffc107;
-    text-decoration: underline;
-    font-weight: 600;
-}
-
-.alert-warning .alert-link {
+[data-theme="dark"] .alert-warning .alert-link {
     color: #ffc107;
 }
 
-.alert-info .alert-link {
+[data-theme="dark"] .alert-info .alert-link {
     color: #66b3ff;
 }
 
-.alert-success .alert-link {
+[data-theme="dark"] .alert-success .alert-link {
     color: #4caf50;
 }
 
-.alert-danger .alert-link {
+[data-theme="dark"] .alert-danger .alert-link {
     color: #ff6b6b;
 }
 
