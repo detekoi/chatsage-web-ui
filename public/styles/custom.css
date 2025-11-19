@@ -16,9 +16,9 @@
   --text-muted: #666666;
   --border-color: #d0d0d0;
   --border-hover: #999999;
-  --accent-primary: #9b4d96;
-  --accent-primary-hover: #7a3d77;
-  --accent-focus: rgba(155, 77, 150, 0.25);
+  --accent-primary: #0a0a0a;
+  --accent-primary-hover: #333333;
+  --accent-focus: rgba(10, 10, 10, 0.25);
   --shadow-color: rgba(0, 0, 0, 0.2);
   --danger-primary: #d32f2f;
   --danger-secondary: #b71c1c;
@@ -55,9 +55,9 @@
   --text-muted: #666666;
   --border-color: #333333;
   --border-hover: #555555;
-  --accent-primary: #b47fb4;
-  --accent-primary-hover: #9b4d96;
-  --accent-focus: rgba(180, 127, 180, 0.25);
+  --accent-primary: #ffffff;
+  --accent-primary-hover: #cccccc;
+  --accent-focus: rgba(255, 255, 255, 0.25);
   --shadow-color: rgba(255, 255, 255, 0.2);
   --danger-primary: #ff6b6b;
   --danger-secondary: #ff5252;
@@ -679,34 +679,6 @@ a:not(.btn):not(.button-3d):focus {
 
 .link-primary:hover {
     color: var(--color-accent-grey);
-}
-
-/* =====================================================
-   LOADING SPINNER - CIRCULAR WITH PURPLE ACCENT
-   ===================================================== */
-/* Override Bootstrap spinner-border to be fully circular */
-.spinner-border {
-    border: 0.25em solid rgba(155, 77, 150, 0.2) !important;
-    border-top-color: var(--accent-primary) !important;
-    border-right-color: var(--accent-primary) !important;
-    border-bottom-color: var(--accent-primary) !important;
-    border-left-color: transparent !important;
-    border-radius: 50% !important;
-    animation: spinner-border 0.75s linear infinite;
-}
-
-[data-theme="dark"] .spinner-border {
-    border: 0.25em solid rgba(180, 127, 180, 0.2) !important;
-    border-top-color: var(--accent-primary) !important;
-    border-right-color: var(--accent-primary) !important;
-    border-bottom-color: var(--accent-primary) !important;
-    border-left-color: transparent !important;
-}
-
-@keyframes spinner-border {
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 /* Responsive adjustments */
