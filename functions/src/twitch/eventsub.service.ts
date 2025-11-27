@@ -17,6 +17,149 @@ import { getValidTwitchTokenForUser } from "@/tokens";
 import { getAppAccessToken } from "./appToken.service";
 
 /**
+ * Ensures stream.online and stream.offline EventSub subscriptions exist
+ * These subscriptions are REQUIRED for the bot to work with LAZY_CONNECT mode
+ * @param channelLogin - Channel login name
+ * @param broadcasterUserId - Twitch user ID of the broadcaster
+ */
+export async function ensureStreamEventSubscriptions(
+  channelLogin: string,
+  broadcasterUserId: string,
+): Promise<void> {
+  if (!BOT_PUBLIC_URL) {
+    logger.warn("BOT_PUBLIC_URL not configured, skipping EventSub setup", {
+      channelLogin,
+    });
+    return;
+  }
+
+  if (!TWITCH_EVENTSUB_SECRET) {
+    logger.warn("TWITCH_EVENTSUB_SECRET not configured, skipping EventSub setup", {
+      channelLogin,
+    });
+    return;
+  }
+
+  try {
+    // Use APP access token for EventSub webhook subscription (required by Twitch)
+    const appAccessToken = await getAppAccessToken();
+    logger.debug("Using app access token for EventSub", {
+      channelLogin,
+    });
+
+    const headers = {
+      Authorization: `Bearer ${appAccessToken}`,
+      "Client-ID": TWITCH_CLIENT_ID,
+      "Content-Type": "application/json",
+    };
+
+    // Check existing subscriptions
+    const list = await axios.get(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
+      headers,
+    });
+
+    const existingStreamOnline = (list.data?.data || []).filter(
+      (s: { type: string; condition?: { broadcaster_user_id?: string } }) =>
+        s.type === "stream.online" &&
+        s.condition?.broadcaster_user_id === String(broadcasterUserId),
+    );
+
+    const existingStreamOffline = (list.data?.data || []).filter(
+      (s: { type: string; condition?: { broadcaster_user_id?: string } }) =>
+        s.type === "stream.offline" &&
+        s.condition?.broadcaster_user_id === String(broadcasterUserId),
+    );
+
+    // Create stream.online subscription if it doesn't exist
+    if (existingStreamOnline.length === 0) {
+      const onlineBody = {
+        type: "stream.online",
+        version: "1",
+        condition: { broadcaster_user_id: String(broadcasterUserId) },
+        transport: {
+          method: "webhook",
+          callback: `${BOT_PUBLIC_URL}/twitch/event`,
+          secret: TWITCH_EVENTSUB_SECRET,
+        },
+      };
+
+      logger.info("Creating stream.online subscription", {
+        channelLogin,
+        broadcasterUserId,
+      });
+
+      await axios.post(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, onlineBody, {
+        headers,
+      });
+
+      logger.info("stream.online subscription created", { channelLogin });
+    } else {
+      logger.info("stream.online subscription already exists", {
+        channelLogin,
+        subscriptionCount: existingStreamOnline.length,
+      });
+    }
+
+    // Create stream.offline subscription if it doesn't exist
+    if (existingStreamOffline.length === 0) {
+      const offlineBody = {
+        type: "stream.offline",
+        version: "1",
+        condition: { broadcaster_user_id: String(broadcasterUserId) },
+        transport: {
+          method: "webhook",
+          callback: `${BOT_PUBLIC_URL}/twitch/event`,
+          secret: TWITCH_EVENTSUB_SECRET,
+        },
+      };
+
+      logger.info("Creating stream.offline subscription", {
+        channelLogin,
+        broadcasterUserId,
+      });
+
+      await axios.post(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, offlineBody, {
+        headers,
+      });
+
+      logger.info("stream.offline subscription created", { channelLogin });
+    } else {
+      logger.info("stream.offline subscription already exists", {
+        channelLogin,
+        subscriptionCount: existingStreamOffline.length,
+      });
+    }
+
+    logger.info("Stream event subscriptions ensured", {
+      channelLogin,
+      broadcasterUserId,
+      streamOnlineExists: existingStreamOnline.length > 0,
+      streamOfflineExists: existingStreamOffline.length > 0,
+    });
+  } catch (error: unknown) {
+    const err = error as {
+      response?: {
+        status?: number;
+        statusText?: string;
+        data?: unknown;
+      };
+      message: string;
+    };
+
+    logger.error("Error ensuring stream event subscriptions", {
+      channelLogin,
+      broadcasterUserId,
+      message: err.message,
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      twitchError: err.response?.data,
+    });
+
+    throw err;
+  }
+}
+
+/**
  * Ensures an ad break EventSub subscription exists or is removed
  * @param channelLogin - Channel login name
  * @param adsEnabled - Whether ads notifications should be enabled

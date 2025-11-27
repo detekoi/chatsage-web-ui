@@ -10,7 +10,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
 import { getAllowedChannelsList } from "@/utils/secrets";
-import { getUserIdFromUsername, addModerator } from "@/twitch";
+import { getUserIdFromUsername, addModerator, ensureStreamEventSubscriptions } from "@/twitch";
 
 const router = Router();
 
@@ -114,6 +114,29 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
 
     logger.info("Channel activated successfully", { channelLogin });
 
+    // Create required EventSub subscriptions (stream.online, stream.offline)
+    // These are CRITICAL for the bot to work with LAZY_CONNECT mode
+    let eventsubStatus: { success: boolean; error?: string } = { success: false };
+    try {
+      logger.info("Creating EventSub subscriptions for stream events", {
+        channelLogin,
+        broadcasterUserId,
+      });
+
+      await ensureStreamEventSubscriptions(channelLogin, broadcasterUserId);
+      eventsubStatus = { success: true };
+
+      logger.info("EventSub subscriptions created successfully", { channelLogin });
+    } catch (eventsubError) {
+      logger.error("Failed to create EventSub subscriptions", {
+        channelLogin,
+        broadcasterUserId,
+        error: (eventsubError as Error).message,
+      });
+      eventsubStatus = { success: false, error: (eventsubError as Error).message };
+      // Don't fail the whole operation - moderator setup and IRC join can still work
+    }
+
     // Automatically add bot as moderator
     let modStatus: { success: boolean; error?: string } = { success: false, error: "Bot username not configured" };
 
@@ -157,6 +180,8 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
     res.json({
       success: true,
       message: `Bot successfully added to ${channelLogin}.`,
+      eventsubStatus: eventsubStatus.success ? "created" : "failed",
+      eventsubError: eventsubStatus.success ? undefined : eventsubStatus.error,
       moderatorStatus: modStatus.success ? "added" : "failed",
       moderatorError: modStatus.success ? undefined : modStatus.error,
     });
