@@ -6,4 +6,4 @@
 export * from "./token.service";
 export * from "./refresh.service";
 export * from "./cache.service";
-export * from "./secretManager.service";
+export * from "./firestoreRefreshToken.service";

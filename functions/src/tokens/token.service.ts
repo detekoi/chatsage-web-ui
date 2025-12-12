@@ -8,7 +8,7 @@ import { CHANNELS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { getCachedToken, cacheToken, clearCachedToken } from "./cache.service";
 import { refreshTwitchToken } from "./refresh.service";
-import { getRefreshToken, rotateRefreshToken } from "./secretManager.service";
+import { getStoredTwitchRefreshToken, storeTwitchRefreshToken } from "./firestoreRefreshToken.service";
 import { AuthError } from "@/utils/errors";
 
 /**
@@ -30,7 +30,7 @@ export async function getValidTwitchTokenForUser(userLogin: string): Promise<str
 
   logger.debug("No cached token, fetching from Firestore", { userLogin });
 
-  // Step 2: Get refresh token path from Firestore
+  // Step 2: Get Twitch user ID from Firestore
   const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userLogin);
   const userDoc = await userDocRef.get();
 
@@ -40,21 +40,22 @@ export async function getValidTwitchTokenForUser(userLogin: string): Promise<str
   }
 
   const userData = userDoc.data();
-  const { refreshTokenSecretPath, twitchUserId } = userData || {};
+  const { twitchUserId } = userData || {};
 
-  if (!refreshTokenSecretPath) {
-    logger.warn("No refresh token secret path found", { userLogin });
+  if (!twitchUserId) {
+    logger.warn("No Twitch user ID found in Firestore", { userLogin });
     throw new AuthError("Refresh token not available. User needs to re-authenticate", 401);
   }
 
-  // Step 3: Get refresh token from Secret Manager
-  logger.debug("Fetching refresh token from Secret Manager", {
-    userLogin,
-    secretPath: refreshTokenSecretPath.split("/versions/")[0],
-  });
-
   try {
-    const currentRefreshToken = await getRefreshToken(refreshTokenSecretPath);
+    // Step 3: Get refresh token from Firestore (users/{twitchUserId}/private/oauth)
+    logger.debug("Fetching refresh token from Firestore", { userLogin, twitchUserId });
+
+    const currentRefreshToken = await getStoredTwitchRefreshToken(db, twitchUserId);
+    if (!currentRefreshToken) {
+      logger.warn("No refresh token found in Firestore; user must re-auth", { userLogin, twitchUserId });
+      throw new AuthError("Refresh token not available. User needs to re-authenticate", 401);
+    }
 
     // Step 4: Refresh the access token
     logger.info("Refreshing access token", { userLogin });
@@ -70,30 +71,25 @@ export async function getValidTwitchTokenForUser(userLogin: string): Promise<str
       });
 
       try {
-        // Store the new refresh token
-        const newSecretPath = await rotateRefreshToken(
-          twitchUserId,
-          newTokens.refreshToken,
-          refreshTokenSecretPath,
-        );
+        // Store the new refresh token in Firestore
+        await storeTwitchRefreshToken(db, twitchUserId, newTokens.refreshToken, {
+          reason: "twitch-rotation",
+        });
 
-        // Update Firestore with new secret path
+        // Update managedChannels metadata
         await userDocRef.update({
-          refreshTokenSecretPath: newSecretPath,
           lastTokenRefreshAt: FieldValue.serverTimestamp(),
           needsTwitchReAuth: false,
           lastTokenError: null,
           lastTokenErrorAt: null,
         });
 
-        logger.info("Firestore updated with new refresh token path", {
+        logger.info("Firestore updated with rotated refresh token", { userLogin, twitchUserId });
+      } catch (tokenStoreError: unknown) {
+        const err = tokenStoreError as Error;
+        logger.error("CRITICAL: Failed to save rotated refresh token to Firestore", {
           userLogin,
-          newSecretPath: newSecretPath.split("/versions/")[0],
-        });
-      } catch (secretError: unknown) {
-        const err = secretError as Error;
-        logger.error("CRITICAL: Failed to save rotated refresh token", {
-          userLogin,
+          twitchUserId,
           error: err.message,
         });
         // Don't throw - we still have a valid access token for this request

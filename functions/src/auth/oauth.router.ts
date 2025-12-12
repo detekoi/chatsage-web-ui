@@ -19,7 +19,7 @@ import {
 import { logger } from "@/config/logger";
 import { redirectToFrontendWithError } from "@/utils/errors";
 import { createSessionToken } from "./jwt.middleware";
-import { storeRefreshToken } from "@/tokens/secretManager.service";
+import { storeTwitchRefreshToken } from "@/tokens/firestoreRefreshToken.service";
 
 const router = Router();
 
@@ -188,18 +188,15 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       userId: twitchUser.id,
     });
 
-    // Store refresh token in Secret Manager
-    logger.info("Storing refresh token in Secret Manager", {
-      userId: twitchUser.id,
+    // Store refresh token in Firestore (users/{twitchUserId}/private/oauth)
+    await storeTwitchRefreshToken(db, twitchUser.id, refreshToken, {
+      reason: "oauth-callback",
     });
-
-    const secretPath = await storeRefreshToken(twitchUser.id, refreshToken);
 
     // Store user data in Firestore
     const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
     await userDocRef.set(
       {
-        refreshTokenSecretPath: secretPath,
         twitchUserId: twitchUser.id,
         displayName: twitchUser.displayName,
         email: twitchUser.email || null,

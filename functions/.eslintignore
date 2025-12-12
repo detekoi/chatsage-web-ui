@@ -1,0 +1,8 @@
+# Build output
+lib/
+
+# Scripts (CommonJS, not TypeScript)
+scripts/
+
+# Dependencies
+node_modules/

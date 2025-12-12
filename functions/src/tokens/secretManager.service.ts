@@ -3,6 +3,10 @@
  * Handles storage and rotation of Twitch refresh tokens
  *
  * SECURITY: This fixes the critical bug where refresh tokens weren't being rotated properly
+ *
+ * @deprecated Per-user Twitch tokens should not be stored in Secret Manager.
+ * This module is kept only for historical reference during the migration to Firestore:
+ *   users/{twitchUserId}/private/oauth
  */
 
 import { getSecretManager, getProjectId } from "@/config/database";
