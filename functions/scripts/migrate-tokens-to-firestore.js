@@ -18,22 +18,28 @@
 const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 const admin = require("firebase-admin");
 
+function getArgValue(flag) {
+  const idx = process.argv.indexOf(flag);
+  if (idx !== -1 && process.argv[idx + 1] && !process.argv[idx + 1].startsWith("--")) {
+    return process.argv[idx + 1];
+  }
+  const withEquals = process.argv.find((a) => a.startsWith(`${flag}=`));
+  if (withEquals) return withEquals.split("=").slice(1).join("=");
+  return null;
+}
+
 const PROJECT_ID =
+  getArgValue("--project") ||
   process.env.GOOGLE_CLOUD_PROJECT ||
   process.env.GCLOUD_PROJECT ||
   process.env.GCP_PROJECT ||
-  process.env.FIREBASE_PROJECT_ID;
+  process.env.FIREBASE_PROJECT_ID ||
+  "streamsage-bot";
 
 const EXECUTE = process.argv.includes("--execute");
 const CLEANUP = process.argv.includes("--cleanup");
 
-if (!PROJECT_ID) {
-  // eslint-disable-next-line no-console
-  console.error(
-    "Missing project id. Set one of GOOGLE_CLOUD_PROJECT/GCLOUD_PROJECT/GCP_PROJECT/FIREBASE_PROJECT_ID.",
-  );
-  process.exit(1);
-}
+// NOTE: Defaults to "streamsage-bot"; pass --project to override.
 
 if (!admin.apps.length) {
   admin.initializeApp({ projectId: PROJECT_ID });
