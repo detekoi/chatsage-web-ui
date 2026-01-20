@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Error - ChatSage</title>
+    <title>Authentication Error - WildcatSage</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
 
     <!-- Apply theme early to prevent flash -->
     <script>
-        (function() {
+        (function () {
             const theme = localStorage.getItem('chatsage-theme') ||
-                         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             if (theme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
@@ -47,13 +51,14 @@
                     errorMessageEl.textContent = "An unspecified error occurred.";
                 }
             }
-            
+
             if (errorTitleEl && error === 'access_denied') {
                 errorTitleEl.textContent = "Authentication Denied";
             }
         });
     </script>
 </head>
+
 <body>
     <!-- Dark mode toggle in top-right corner -->
     <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
@@ -68,7 +73,7 @@
             <div class="card-body text-center p-4">
                 <h1 id="error-title" class="h3 mb-3 text-danger">Authentication Failed</h1>
                 <p class="mb-3">Sorry, there was a problem during the Twitch authentication process.</p>
-                
+
                 <div class="alert alert-danger text-start" role="alert">
                     <p id="error-message-details" class="mb-0">Loading error details...</p>
                 </div>
@@ -85,11 +90,11 @@
         // Initialize dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const currentTheme = localStorage.getItem('chatsage-theme') ||
-                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
         darkModeToggle.checked = currentTheme === 'dark';
-        
-        darkModeToggle.addEventListener('change', function() {
+
+        darkModeToggle.addEventListener('change', function () {
             if (this.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('chatsage-theme', 'dark');
@@ -101,6 +106,9 @@
     </script>
 
     <!-- Bootstrap 5 Bundle JS (with Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

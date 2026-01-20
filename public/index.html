@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatSage Bot Management</title>
+    <title>WildcatSage Bot Management</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Cabin+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Cabin+Condensed:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
 
     <!-- Apply theme based on system preference -->
     <script>
-        (function() {
+        (function () {
             const savedTheme = localStorage.getItem('chatsage-theme');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
@@ -31,37 +35,39 @@
     <script>
         // Spam domain blocker
         const spamDomains = [
-          "sigr.io",
-          "semalt.com",
-          "buttons-for-website.com",
-          "4webmasters.org",
+            "sigr.io",
+            "semalt.com",
+            "buttons-for-website.com",
+            "4webmasters.org",
         ];
-      
+
         const referrer = document.referrer;
         let isSpam = false;
-      
+
         for (const spamDomain of spamDomains) {
-          if (referrer.includes(spamDomain)) {
-            isSpam = true;
-            break;
-          }
+            if (referrer.includes(spamDomain)) {
+                isSpam = true;
+                break;
+            }
         }
-      
+
         if (!isSpam) {
-          const rybbitScript = document.createElement("script");
-          rybbitScript.src = "https://app.rybbit.io/api/script.js";
-          rybbitScript.dataset.siteId = "107";
-          rybbitScript.setAttribute("defer", "true");
-          document.head.appendChild(rybbitScript);
+            const rybbitScript = document.createElement("script");
+            rybbitScript.src = "https://app.rybbit.io/api/script.js";
+            rybbitScript.dataset.siteId = "107";
+            rybbitScript.setAttribute("defer", "true");
+            document.head.appendChild(rybbitScript);
         }
-      
+
         if (isSpam) {
-          console.warn("Spam referrer blocked:", referrer);
+            console.warn("Spam referrer blocked:", referrer);
         }
     </script>
 </head>
+
 <body>
-    <video id="staticVideo" autoplay loop muted playsinline style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1; object-fit:cover;">
+    <video id="staticVideo" autoplay loop muted playsinline
+        style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1; object-fit:cover;">
         <source src="assets/video/Pixelated_static_pattern_web_balanced.mp4" type="video/mp4">
     </video>
 
@@ -80,11 +86,14 @@
     <div class="container" style="max-width: 600px; margin-top: 10vh;">
         <div class="card shadow-lg">
             <div class="card-body text-center p-4">
-                <h1 class="h2 mb-3">ChatSage Bot Management</h1>
-                <p class="mb-3">Manage <a href="https://github.com/detekoi/chatsage" target="_blank" class="link-primary">ChatSage</a> for your Twitch channel.</p>
-                
+                <h1 class="h2 mb-3">WildcatSage Bot Management</h1>
+                <p class="mb-3">Manage <a href="https://github.com/detekoi/chatsage" target="_blank"
+                        class="link-primary">WildcatSage</a> for your Twitch channel.</p>
+
                 <div class="alert alert-warning text-start mb-4" role="alert">
-                    <strong>Note:</strong> Access is currently invite-only. Unapproved channels will see an access denied message. <a href="https://detekoi.github.io/#contact-me" target="_blank" class="alert-link">Request access here</a>.
+                    <strong>Note:</strong> Access is currently invite-only. Unapproved channels will see an access
+                    denied message. <a href="https://detekoi.github.io/#contact-me" target="_blank"
+                        class="alert-link">Request access here</a>.
                 </div>
 
                 <div class="d-grid gap-2">
@@ -95,7 +104,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <!-- Dark mode toggle functionality -->
     <script>
@@ -107,7 +116,7 @@
 
         darkModeToggle.checked = currentTheme === 'dark';
 
-        darkModeToggle.addEventListener('change', function() {
+        darkModeToggle.addEventListener('change', function () {
             if (this.checked) {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 localStorage.setItem('chatsage-theme', 'dark');
@@ -128,6 +137,9 @@
     </script>
 
     <!-- Bootstrap 5 Bundle JS (with Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

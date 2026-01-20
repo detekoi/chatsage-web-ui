@@ -33,7 +33,7 @@ setupMiddleware(app);
 // Root endpoint
 app.get("/", (req, res) => {
   res.json({
-    name: "ChatSage Web UI",
+    name: "WildcatSage Web UI",
     version: "2.0.0",
     status: "running",
     message: "TypeScript refactored version with enhanced security",
