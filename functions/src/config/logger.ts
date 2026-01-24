@@ -4,6 +4,7 @@
  */
 
 import winston from "winston";
+import { Request, Response, NextFunction } from "express";
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const IS_TEST = process.env.NODE_ENV === "test";
@@ -55,20 +56,26 @@ export function createChildLogger(context: string) {
 /**
  * Middleware to add request ID tracking to Express requests
  */
-export function requestIdMiddleware(req: any, res: any, next: any) {
+export function requestIdMiddleware(req: Request, res: Response, next: NextFunction) {
   const requestId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  req.requestId = requestId;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (req as any).requestId = requestId;
 
   // Add request ID to all logs made during this request
-  req.logger = logger.child({ requestId });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (req as any).logger = logger.child({ requestId });
 
   next();
 }
 
 // Export convenience methods for backward compatibility with console.log
 export const log = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info: (message: string, ...args: any[]) => logger.info(message, ...args),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: (message: string, ...args: any[]) => logger.error(message, ...args),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   warn: (message: string, ...args: any[]) => logger.warn(message, ...args),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   debug: (message: string, ...args: any[]) => logger.debug(message, ...args),
 };

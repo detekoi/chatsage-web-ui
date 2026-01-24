@@ -37,9 +37,9 @@ export function redirectToFrontendWithError(
         // Ignore parse error
       }
     }
-  } catch (urlError: any) {
+  } catch (urlError) {
     logger.error("Error constructing error redirect URL", {
-      error: urlError.message,
+      error: (urlError as Error).message,
     });
     return res.status(500).send("Authentication failed and unable to construct error redirect.");
   }
@@ -59,14 +59,14 @@ export function redirectToFrontendWithError(
  * @param defaultMessage - Default user-friendly message
  * @returns Sanitized error message
  */
-export function sanitizeErrorMessage(error: any, defaultMessage: string): string {
+export function sanitizeErrorMessage(error: unknown, defaultMessage: string): string {
   // In production, never expose internal error details
   if (process.env.NODE_ENV === "production") {
     return defaultMessage;
   }
 
   // In development, provide more details for debugging
-  return error?.message || defaultMessage;
+  return (error as Error)?.message || defaultMessage;
 }
 
 /**
@@ -78,7 +78,7 @@ export function sanitizeErrorMessage(error: any, defaultMessage: string): string
  */
 export function handleApiError(
   res: Response,
-  error: any,
+  error: unknown,
   defaultMessage: string,
   statusCode = 500,
 ) {
@@ -86,8 +86,8 @@ export function handleApiError(
 
   logger.error("API error", {
     message,
-    error: error?.message,
-    stack: error?.stack,
+    error: (error as Error)?.message,
+    stack: (error as Error)?.stack,
     statusCode,
   });
 
@@ -102,8 +102,8 @@ export function handleApiError(
  * @param error - The error object or message
  * @returns True if user needs to re-authenticate
  */
-export function needsReAuth(error: any): boolean {
-  const errorMessage = typeof error === "string" ? error : error?.message || "";
+export function needsReAuth(error: unknown): boolean {
+  const errorMessage = typeof error === "string" ? error : (error as Error)?.message || "";
 
   return (
     errorMessage.includes("re-authenticate") ||
@@ -138,7 +138,7 @@ export class ValidationError extends Error {
  * Custom error class for Twitch API errors
  */
 export class TwitchApiError extends Error {
-  constructor(message: string, public statusCode?: number, public twitchError?: any) {
+  constructor(message: string, public statusCode?: number, public twitchError?: unknown) {
     super(message);
     this.name = "TwitchApiError";
   }

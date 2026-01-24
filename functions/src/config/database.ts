@@ -18,10 +18,10 @@ export function initializeDatabase() {
     db = new Firestore();
     secretManagerClient = new SecretManagerServiceClient();
     logger.info("Firestore and Secret Manager initialized successfully");
-  } catch (initError: any) {
+  } catch (initError) {
     logger.error("Failed to initialize Firestore or Secret Manager", {
-      error: initError.message,
-      stack: initError.stack,
+      error: (initError as Error).message,
+      stack: (initError as Error).stack,
     });
     throw initError;
   }

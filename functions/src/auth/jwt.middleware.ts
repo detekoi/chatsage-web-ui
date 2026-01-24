@@ -77,9 +77,9 @@ export function authenticateApiRequest(
     });
 
     next();
-  } catch (err: any) {
+  } catch (err) {
     logger.error("JWT verification failed", {
-      error: err.message,
+      error: (err as Error).message,
       path: req.path,
     });
 

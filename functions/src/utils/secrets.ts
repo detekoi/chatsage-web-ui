@@ -72,12 +72,12 @@ export async function getSecret(secretPath: string, useCache = true): Promise<st
     }
 
     return value;
-  } catch (error: any) {
+  } catch (error) {
     logger.error("Error fetching secret from Secret Manager", {
       path: normalizedPath,
-      error: error.message,
+      error: (error as Error).message,
     });
-    throw new Error(`Failed to fetch secret: ${error.message}`);
+    throw new Error(`Failed to fetch secret: ${(error as Error).message}`);
   }
 }
 
@@ -92,8 +92,8 @@ export async function getInternalBotTokenValue(): Promise<string> {
 
   try {
     return await getSecret(WEBUI_INTERNAL_TOKEN);
-  } catch (error: any) {
-    logger.error("Error fetching WEBUI_INTERNAL_TOKEN", { error: error.message });
+  } catch (error) {
+    logger.error("Error fetching WEBUI_INTERNAL_TOKEN", { error: (error as Error).message });
     throw new Error("Failed to fetch internal bot token");
   }
 }
@@ -123,9 +123,9 @@ export async function getAllowedChannelsList(): Promise<string[]> {
 
     logger.info(`Loaded ${channels.length} allowed channels from Secret Manager`);
     return channels;
-  } catch (error: any) {
+  } catch (error) {
     logger.error("Error fetching allowed channels from Secret Manager", {
-      error: error.message,
+      error: (error as Error).message,
     });
     return [];
   }
@@ -146,9 +146,9 @@ export async function createOrUpdateSecret(secretId: string, value: string): Pro
     // Try to get existing secret
     await secretManager.getSecret({ name: secretName });
     logger.debug("Secret already exists, adding new version", { secretId });
-  } catch (err: any) {
+  } catch (err) {
     // Secret doesn't exist, create it
-    if (err.code === 5) { // NOT_FOUND
+    if ((err as { code?: number }).code === 5) { // NOT_FOUND
       logger.info("Creating new secret", { secretId });
       await secretManager.createSecret({
         parent: `projects/${projectId}`,
