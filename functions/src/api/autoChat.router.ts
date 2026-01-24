@@ -121,8 +121,8 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     logger.info("Auto-chat config updated", {
       channelLogin,
-      mode: updates.mode,
-      categories: updates.categories,
+      mode,
+      categories: mergedCategories,
     });
 
     // Handle EventSub subscription for ads if ads setting was changed
