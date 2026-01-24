@@ -63,19 +63,45 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
   try {
     const body = req.body || {};
-    const categories = body.categories && typeof body.categories === "object" ? body.categories : {};
+    const inputCategories = body.categories && typeof body.categories === "object" ? body.categories : {};
 
-    // Build updates object with only fields that were explicitly sent
-    // Use dot notation for category fields to avoid overwriting unrelated settings
-    const updates: Record<string, unknown> = {
-      channelName: channelLogin,
-      updatedAt: new Date(),
+    // Fetch existing config first to merge with
+    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
+    const existingSnap = await docRef.get();
+    const existingData = existingSnap.exists ? existingSnap.data() : {};
+    const existingCategories = existingData?.categories || {};
+
+    // Start with existing categories, then override only what was sent
+    const mergedCategories: Record<string, boolean> = {
+      greetings: existingCategories.greetings !== false,
+      facts: existingCategories.facts !== false,
+      questions: existingCategories.questions !== false,
+      celebrations: existingCategories.celebrations !== false,
+      ads: existingCategories.ads === true,
     };
 
-    // Only update mode if explicitly provided
+    // Override only the categories that were explicitly sent
+    if (typeof inputCategories.greetings === "boolean") {
+      mergedCategories.greetings = inputCategories.greetings;
+    }
+    if (typeof inputCategories.facts === "boolean") {
+      mergedCategories.facts = inputCategories.facts;
+    }
+    if (typeof inputCategories.questions === "boolean") {
+      mergedCategories.questions = inputCategories.questions;
+    }
+    if (typeof inputCategories.celebrations === "boolean") {
+      mergedCategories.celebrations = inputCategories.celebrations;
+    }
+    if (typeof inputCategories.ads === "boolean") {
+      mergedCategories.ads = inputCategories.ads;
+    }
+
+    // Determine mode: use provided value, or keep existing, or default to "off"
+    let mode = existingData?.mode || "off";
     if (typeof body.mode === "string" && body.mode.trim() !== "") {
       try {
-        updates.mode = validateMode(body.mode.toLowerCase(), AUTO_CHAT_MODES);
+        mode = validateMode(body.mode.toLowerCase(), AUTO_CHAT_MODES);
       } catch (error) {
         return res.status(400).json({
           success: false,
@@ -84,35 +110,25 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       }
     }
 
-    // Only update category fields that were explicitly sent
-    // Using dot notation preserves other category fields
-    if (typeof categories.greetings === "boolean") {
-      updates["categories.greetings"] = categories.greetings;
-    }
-    if (typeof categories.facts === "boolean") {
-      updates["categories.facts"] = categories.facts;
-    }
-    if (typeof categories.questions === "boolean") {
-      updates["categories.questions"] = categories.questions;
-    }
-    if (typeof categories.celebrations === "boolean") {
-      updates["categories.celebrations"] = categories.celebrations;
-    }
-    if (typeof categories.ads === "boolean") {
-      updates["categories.ads"] = categories.ads;
-    }
+    const updates = {
+      channelName: channelLogin,
+      updatedAt: new Date(),
+      mode,
+      categories: mergedCategories,
+    };
 
-    await db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin).set(updates, { merge: true });
+    await docRef.set(updates, { merge: true });
 
     logger.info("Auto-chat config updated", {
       channelLogin,
-      updatedFields: Object.keys(updates).filter(k => k !== "channelName" && k !== "updatedAt"),
+      mode: updates.mode,
+      categories: updates.categories,
     });
 
     // Handle EventSub subscription for ads if ads setting was changed
-    if (typeof categories.ads === "boolean") {
+    if (typeof inputCategories.ads === "boolean") {
       try {
-        await ensureAdBreakSubscription(channelLogin, categories.ads);
+        await ensureAdBreakSubscription(channelLogin, inputCategories.ads);
       } catch (subErr) {
         logger.warn("EventSub subscription warning", {
           channelLogin,
@@ -122,22 +138,11 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       }
     }
 
-    // Fetch and return the full current config
-    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
-    const snap = await docRef.get();
-    const cfg = snap.exists ? snap.data() : {};
-
     res.json({
       success: true,
       config: {
-        mode: cfg?.mode || "off",
-        categories: {
-          greetings: cfg?.categories?.greetings !== false,
-          facts: cfg?.categories?.facts !== false,
-          questions: cfg?.categories?.questions !== false,
-          celebrations: cfg?.categories?.celebrations !== false,
-          ads: cfg?.categories?.ads === true,
-        },
+        mode: updates.mode,
+        categories: updates.categories,
       },
     });
   } catch (error) {
