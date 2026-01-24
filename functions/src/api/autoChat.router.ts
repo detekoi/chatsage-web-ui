@@ -55,7 +55,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 
 /**
  * POST /api/auto-chat
- * Update auto-chat configuration
+ * Update auto-chat configuration (partial updates supported)
  */
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
@@ -63,58 +63,82 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
   try {
     const body = req.body || {};
-    const modeInput = (body.mode || "").toLowerCase();
-
-    // Validate mode
-    let mode = "off";
-    try {
-      mode = validateMode(modeInput || "off", AUTO_CHAT_MODES);
-    } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: (error as Error).message,
-      });
-    }
-
     const categories = body.categories && typeof body.categories === "object" ? body.categories : {};
 
-    const updates = {
-      mode,
-      categories: {
-        greetings: categories.greetings !== false,
-        facts: categories.facts !== false,
-        questions: categories.questions !== false,
-        celebrations: categories.celebrations !== false,
-        ads: categories.ads === true,
-      },
+    // Build updates object with only fields that were explicitly sent
+    // Use dot notation for category fields to avoid overwriting unrelated settings
+    const updates: Record<string, unknown> = {
       channelName: channelLogin,
       updatedAt: new Date(),
     };
+
+    // Only update mode if explicitly provided
+    if (typeof body.mode === "string" && body.mode.trim() !== "") {
+      try {
+        updates.mode = validateMode(body.mode.toLowerCase(), AUTO_CHAT_MODES);
+      } catch (error) {
+        return res.status(400).json({
+          success: false,
+          message: (error as Error).message,
+        });
+      }
+    }
+
+    // Only update category fields that were explicitly sent
+    // Using dot notation preserves other category fields
+    if (typeof categories.greetings === "boolean") {
+      updates["categories.greetings"] = categories.greetings;
+    }
+    if (typeof categories.facts === "boolean") {
+      updates["categories.facts"] = categories.facts;
+    }
+    if (typeof categories.questions === "boolean") {
+      updates["categories.questions"] = categories.questions;
+    }
+    if (typeof categories.celebrations === "boolean") {
+      updates["categories.celebrations"] = categories.celebrations;
+    }
+    if (typeof categories.ads === "boolean") {
+      updates["categories.ads"] = categories.ads;
+    }
 
     await db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin).set(updates, { merge: true });
 
     logger.info("Auto-chat config updated", {
       channelLogin,
-      mode: updates.mode,
-      adsEnabled: updates.categories.ads,
+      updatedFields: Object.keys(updates).filter(k => k !== "channelName" && k !== "updatedAt"),
     });
 
-    // Handle EventSub subscription for ads
-    try {
-      if (typeof updates.categories.ads === "boolean") {
-        await ensureAdBreakSubscription(channelLogin, updates.categories.ads);
+    // Handle EventSub subscription for ads if ads setting was changed
+    if (typeof categories.ads === "boolean") {
+      try {
+        await ensureAdBreakSubscription(channelLogin, categories.ads);
+      } catch (subErr) {
+        logger.warn("EventSub subscription warning", {
+          channelLogin,
+          error: (subErr as Error).message,
+        });
+        // Don't fail the request if EventSub setup fails
       }
-    } catch (subErr) {
-      logger.warn("EventSub subscription warning", {
-        channelLogin,
-        error: (subErr as Error).message,
-      });
-      // Don't fail the request if EventSub setup fails
     }
+
+    // Fetch and return the full current config
+    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
+    const snap = await docRef.get();
+    const cfg = snap.exists ? snap.data() : {};
 
     res.json({
       success: true,
-      config: updates,
+      config: {
+        mode: cfg?.mode || "off",
+        categories: {
+          greetings: cfg?.categories?.greetings !== false,
+          facts: cfg?.categories?.facts !== false,
+          questions: cfg?.categories?.questions !== false,
+          celebrations: cfg?.categories?.celebrations !== false,
+          ads: cfg?.categories?.ads === true,
+        },
+      },
     });
   } catch (error) {
     logger.error("Error saving auto-chat config", {
