@@ -37,6 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const customCmdFormMsgEl = document.getElementById('custom-cmd-form-msg');
     let customCmdEditingName = null; // Track whether we're editing an existing command
 
+    // Variable chip click → insert at cursor in response field
+    document.querySelector('.variable-chips')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.var-chip');
+        if (!chip) return;
+        const varText = chip.dataset.var;
+        const input = customCmdResponseEl;
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        input.focus();
+        input.setRangeText(varText, start, end, 'end');
+    });
+
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://api.wildcat.chat';
     let appSessionToken = null;

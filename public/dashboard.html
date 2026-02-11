@@ -208,8 +208,16 @@
                             <label for="custom-cmd-response" class="form-label">Response</label>
                             <input type="text" class="form-control" id="custom-cmd-response"
                                 placeholder="Hello $(user), welcome to $(channel)!" maxlength="500" autocomplete="off">
-                            <small class="text-muted">Variables: $(user), $(channel), $(args), $(count), $(uptime),
-                                $(game), $(followage), $(random X-Y)</small>
+                            <div class="variable-chips">
+                                <span class="var-chip" data-var="$(user)">$(user)</span>
+                                <span class="var-chip" data-var="$(channel)">$(channel)</span>
+                                <span class="var-chip" data-var="$(args)">$(args)</span>
+                                <span class="var-chip" data-var="$(count)">$(count)</span>
+                                <span class="var-chip" data-var="$(uptime)">$(uptime)</span>
+                                <span class="var-chip" data-var="$(game)">$(game)</span>
+                                <span class="var-chip" data-var="$(followage)">$(followage)</span>
+                                <span class="var-chip" data-var="$(random X-Y)">$(random X-Y)</span>
+                            </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col">
