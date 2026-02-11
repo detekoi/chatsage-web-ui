@@ -83,7 +83,10 @@ export const ALL_COMMANDS = [
   "enable",
   "ping",
   "quote",
+  "command",
+  "followage",
 ];
+
 
 // Auto-chat modes
 export const AUTO_CHAT_MODES = ["off", "low", "medium", "high"] as const;
