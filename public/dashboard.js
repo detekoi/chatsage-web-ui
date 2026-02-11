@@ -21,6 +21,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoCatAdsEl = document.getElementById('auto-cat-ads');
     const adNotificationsMsgEl = document.getElementById('ad-notifications-message');
 
+    // Custom commands elements
+    const customCmdSectionEl = document.getElementById('custom-commands-section');
+    const customCmdLoadingEl = document.getElementById('custom-cmd-loading');
+    const customCmdListEl = document.getElementById('custom-cmd-list');
+    const customCmdEmptyEl = document.getElementById('custom-cmd-empty');
+    const customCmdFormEl = document.getElementById('custom-cmd-form');
+    const customCmdAddBtn = document.getElementById('custom-cmd-add-btn');
+    const customCmdSaveBtn = document.getElementById('custom-cmd-save-btn');
+    const customCmdCancelBtn = document.getElementById('custom-cmd-cancel-btn');
+    const customCmdNameEl = document.getElementById('custom-cmd-name');
+    const customCmdResponseEl = document.getElementById('custom-cmd-response');
+    const customCmdPermissionEl = document.getElementById('custom-cmd-permission');
+    const customCmdCooldownEl = document.getElementById('custom-cmd-cooldown');
+    const customCmdFormMsgEl = document.getElementById('custom-cmd-form-msg');
+    let customCmdEditingName = null; // Track whether we're editing an existing command
+
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://api.wildcat.chat';
     let appSessionToken = null;
@@ -49,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
             updateBotStatusUI(true);
-            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings()]);
+            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands()]);
             return;
         }
 
@@ -89,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
-                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings()]);
+                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands()]);
                 } else {
                     actionMessageEl.textContent = `Error: ${statusData.message}`;
                     botStatusEl.textContent = "Error";
@@ -116,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             commandsSectionEl.style.display = 'block';
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
+            customCmdSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
             botStatusEl.classList.remove('text-success');
@@ -126,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             commandsSectionEl.style.display = 'block';
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
+            customCmdSectionEl.style.display = 'block';
         }
         actionMessageEl.textContent = ''; // Clear previous messages
         actionMessageEl.style.display = 'none';
@@ -379,24 +397,285 @@ document.addEventListener('DOMContentLoaded', () => {
     autoCatAdsEl.addEventListener('change', debouncedAdNotificationsSave);
     // No explicit save button; changes are auto-saved
 
+    // ─── Custom Commands ─────────────────────────────────────────────────────
+
+    async function loadCustomCommands() {
+        if (!appSessionToken) return;
+
+        customCmdLoadingEl.style.display = 'block';
+        customCmdListEl.innerHTML = '';
+        customCmdEmptyEl.style.display = 'none';
+
+        // DEV MODE: Use mock data
+        if (DEV_MODE) {
+            setTimeout(() => {
+                customCmdLoadingEl.style.display = 'none';
+                const mockCmds = [
+                    { name: 'hello', response: 'Hello $(user), welcome to $(channel)!', permission: 'everyone', cooldownMs: 5000 },
+                    { name: 'discord', response: 'Join our Discord: https://discord.gg/example', permission: 'everyone', cooldownMs: 30000 },
+                    { name: 'rank', response: '$(user) has used this command $(count) times!', permission: 'subscriber', cooldownMs: 10000 },
+                ];
+                renderCustomCommandsList(mockCmds);
+            }, 500);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/custom-commands`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+            const data = await res.json();
+            customCmdLoadingEl.style.display = 'none';
+
+            if (data.success && data.commands) {
+                renderCustomCommandsList(data.commands);
+            } else {
+                customCmdListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load custom commands.</div>';
+            }
+        } catch (error) {
+            console.error('Error loading custom commands:', error);
+            customCmdLoadingEl.style.display = 'none';
+            customCmdListEl.innerHTML = '<div class="alert alert-danger" role="alert">Error loading custom commands.</div>';
+        }
+    }
+
+    function renderCustomCommandsList(commands) {
+        customCmdListEl.innerHTML = '';
+
+        if (!commands || commands.length === 0) {
+            customCmdEmptyEl.style.display = 'block';
+            return;
+        }
+
+        customCmdEmptyEl.style.display = 'none';
+
+        commands.forEach(cmd => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item';
+
+            const row = document.createElement('div');
+            row.className = 'cmd-row';
+
+            // Info column
+            const info = document.createElement('div');
+            info.className = 'cmd-info';
+
+            const name = document.createElement('p');
+            name.className = 'cmd-name';
+            name.textContent = `!${cmd.name}`;
+
+            const response = document.createElement('p');
+            response.className = 'cmd-response';
+            response.textContent = cmd.response;
+
+            const meta = document.createElement('div');
+            meta.className = 'cmd-meta';
+
+            if (cmd.permission && cmd.permission !== 'everyone') {
+                const badge = document.createElement('span');
+                badge.className = 'cmd-badge';
+                badge.textContent = cmd.permission;
+                meta.appendChild(badge);
+            }
+
+            if (cmd.cooldownMs && cmd.cooldownMs > 0) {
+                const cooldown = document.createElement('span');
+                cooldown.className = 'cmd-cooldown';
+                cooldown.textContent = `${cmd.cooldownMs / 1000}s cooldown`;
+                meta.appendChild(cooldown);
+            }
+
+            info.appendChild(name);
+            info.appendChild(response);
+            if (meta.children.length > 0) info.appendChild(meta);
+
+            // Actions column
+            const actions = document.createElement('div');
+            actions.className = 'cmd-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-outline-primary btn-sm';
+            editBtn.textContent = 'Edit';
+            editBtn.addEventListener('click', () => openEditForm(cmd));
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-outline-danger btn-sm';
+            deleteBtn.textContent = 'Del';
+            deleteBtn.addEventListener('click', () => deleteCustomCommand(cmd.name));
+
+            actions.appendChild(editBtn);
+            actions.appendChild(deleteBtn);
+
+            row.appendChild(info);
+            row.appendChild(actions);
+            item.appendChild(row);
+            customCmdListEl.appendChild(item);
+        });
+    }
+
+    function openAddForm() {
+        customCmdEditingName = null;
+        customCmdNameEl.value = '';
+        customCmdNameEl.disabled = false;
+        customCmdResponseEl.value = '';
+        customCmdPermissionEl.value = 'everyone';
+        customCmdCooldownEl.value = '5';
+        customCmdFormMsgEl.textContent = '';
+        customCmdFormEl.style.display = 'block';
+        customCmdNameEl.focus();
+    }
+
+    function openEditForm(cmd) {
+        customCmdEditingName = cmd.name;
+        customCmdNameEl.value = cmd.name;
+        customCmdNameEl.disabled = true;
+        customCmdResponseEl.value = cmd.response;
+        customCmdPermissionEl.value = cmd.permission || 'everyone';
+        customCmdCooldownEl.value = String((cmd.cooldownMs || 5000) / 1000);
+        customCmdFormMsgEl.textContent = '';
+        customCmdFormEl.style.display = 'block';
+        customCmdResponseEl.focus();
+    }
+
+    function closeForm() {
+        customCmdFormEl.style.display = 'none';
+        customCmdEditingName = null;
+        customCmdFormMsgEl.textContent = '';
+    }
+
+    async function saveCustomCommand() {
+        if (!appSessionToken) return;
+
+        const name = customCmdNameEl.value.trim().toLowerCase();
+        const response = customCmdResponseEl.value.trim();
+        const permission = customCmdPermissionEl.value;
+        const cooldownSec = parseInt(customCmdCooldownEl.value, 10);
+
+        if (!name) {
+            customCmdFormMsgEl.textContent = 'Command name is required.';
+            customCmdFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        if (!response) {
+            customCmdFormMsgEl.textContent = 'Response text is required.';
+            customCmdFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        customCmdFormMsgEl.textContent = 'Saving...';
+        customCmdFormMsgEl.style.color = 'var(--text-muted)';
+        customCmdSaveBtn.disabled = true;
+
+        // DEV MODE: Mock save
+        if (DEV_MODE) {
+            setTimeout(() => {
+                customCmdFormMsgEl.textContent = `Command !${name} saved (dev mode).`;
+                customCmdFormMsgEl.style.color = '#4ecdc4';
+                customCmdSaveBtn.disabled = false;
+                closeForm();
+                loadCustomCommands();
+            }, 500);
+            return;
+        }
+
+        try {
+            const isEditing = !!customCmdEditingName;
+            const url = isEditing
+                ? `${API_BASE_URL}/api/custom-commands/${encodeURIComponent(customCmdEditingName)}`
+                : `${API_BASE_URL}/api/custom-commands`;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const body = {
+                response,
+                permission,
+                cooldown: (isNaN(cooldownSec) ? 5 : cooldownSec) * 1000,
+            };
+            if (!isEditing) body.name = name;
+
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                closeForm();
+                await loadCustomCommands();
+            } else {
+                customCmdFormMsgEl.textContent = data.message || 'Failed to save command.';
+                customCmdFormMsgEl.style.color = 'var(--danger-primary)';
+            }
+        } catch (error) {
+            console.error('Error saving custom command:', error);
+            customCmdFormMsgEl.textContent = 'Error saving command.';
+            customCmdFormMsgEl.style.color = 'var(--danger-primary)';
+        } finally {
+            customCmdSaveBtn.disabled = false;
+        }
+    }
+
+    async function deleteCustomCommand(name) {
+        if (!confirm(`Delete command !${name}?`)) return;
+        if (!appSessionToken) return;
+
+        // DEV MODE: Mock delete
+        if (DEV_MODE) {
+            setTimeout(() => loadCustomCommands(), 300);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/custom-commands/${encodeURIComponent(name)}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                await loadCustomCommands();
+            } else {
+                actionMessageEl.textContent = data.message || 'Failed to delete command.';
+                actionMessageEl.className = 'alert alert-danger';
+                actionMessageEl.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error deleting custom command:', error);
+            actionMessageEl.textContent = 'Error deleting command.';
+            actionMessageEl.className = 'alert alert-danger';
+            actionMessageEl.style.display = 'block';
+        }
+    }
+
+    // Wire up form buttons
+    customCmdAddBtn.addEventListener('click', openAddForm);
+    customCmdSaveBtn.addEventListener('click', saveCustomCommand);
+    customCmdCancelBtn.addEventListener('click', closeForm);
+
     function renderCommandsList(commands) {
         commandsListEl.innerHTML = '';
-        
+
         commands.forEach(cmd => {
             const commandItem = document.createElement('div');
             commandItem.className = 'list-group-item';
-            
+
             const row = document.createElement('div');
             row.className = 'row align-items-center';
-            
+
             const col = document.createElement('div');
             col.className = 'col';
-            
+
             const label = document.createElement('strong');
             label.textContent = `!${cmd.name}`;
-            
+
             col.appendChild(label);
-            
+
             // Add disabled message for help command
             if (cmd.primaryName === 'help') {
                 const helpText = document.createElement('p');
@@ -404,13 +683,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 helpText.textContent = 'This command cannot be disabled';
                 col.appendChild(helpText);
             }
-            
+
             const colAuto = document.createElement('div');
             colAuto.className = 'col-auto';
-            
+
             const switchDiv = document.createElement('div');
             switchDiv.className = 'form-check form-switch';
-            
+
             const checkbox = document.createElement('input');
             checkbox.className = 'form-check-input';
             checkbox.type = 'checkbox';
@@ -418,19 +697,19 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.checked = cmd.enabled;
             checkbox.dataset.command = cmd.primaryName;
             checkbox.role = 'switch';
-            
+
             // Special handling for help command
             if (cmd.primaryName === 'help') {
                 checkbox.disabled = true;
             }
-            
-            checkbox.addEventListener('change', async function() {
+
+            checkbox.addEventListener('change', async function () {
                 await toggleCommand(cmd.primaryName, this.checked, this);
             });
-            
+
             switchDiv.appendChild(checkbox);
             colAuto.appendChild(switchDiv);
-            
+
             row.appendChild(col);
             row.appendChild(colAuto);
             commandItem.appendChild(row);
@@ -501,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.style.display = 'block';
             return;
         }
-        
+
         actionMessageEl.textContent = 'Requesting bot to join...';
         actionMessageEl.className = 'alert alert-info';
         actionMessageEl.style.display = 'block';
@@ -536,7 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
             actionMessageEl.style.display = 'block';
             return;
         }
-        
+
         actionMessageEl.textContent = 'Requesting bot to leave...';
         actionMessageEl.className = 'alert alert-info';
         actionMessageEl.style.display = 'block';
@@ -566,13 +845,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     logoutLink.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         // Clear localStorage
         localStorage.removeItem('twitch_user_login');
         localStorage.removeItem('twitch_user_id');
         localStorage.removeItem('app_session_token');
         appSessionToken = null;
-        
+
         // Redirect to login
         window.location.href = 'index.html';
     });

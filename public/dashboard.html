@@ -185,6 +185,79 @@
             </div>
         </div>
 
+        <!-- Custom Commands Section -->
+        <div id="custom-commands-section" style="display:none;">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Custom Commands</h5>
+                    <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button">+ Add</button>
+                </div>
+                <div class="card-body">
+                    <!-- Inline Add/Edit Form (hidden by default) -->
+                    <div id="custom-cmd-form" class="cmd-form" style="display:none;">
+                        <div class="mb-2">
+                            <label for="custom-cmd-name" class="form-label">Command Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"
+                                    style="border-radius:0;background:var(--bg-tertiary);border-color:var(--border-color);color:var(--text-muted);">!</span>
+                                <input type="text" class="form-control" id="custom-cmd-name" placeholder="hello"
+                                    maxlength="25" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label for="custom-cmd-response" class="form-label">Response</label>
+                            <input type="text" class="form-control" id="custom-cmd-response"
+                                placeholder="Hello $(user), welcome to $(channel)!" maxlength="500" autocomplete="off">
+                            <small class="text-muted">Variables: $(user), $(channel), $(args), $(count), $(uptime),
+                                $(game), $(followage), $(random X-Y)</small>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label for="custom-cmd-permission" class="form-label">Permission</label>
+                                <select id="custom-cmd-permission" class="form-select">
+                                    <option value="everyone">Everyone</option>
+                                    <option value="subscriber">Subscriber</option>
+                                    <option value="vip">VIP</option>
+                                    <option value="moderator">Moderator</option>
+                                    <option value="broadcaster">Broadcaster</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label for="custom-cmd-cooldown" class="form-label">Cooldown (sec)</label>
+                                <input type="number" class="form-control" id="custom-cmd-cooldown" value="5" min="0"
+                                    max="300">
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="custom-cmd-save-btn" class="btn btn-outline-primary btn-sm"
+                                type="button">Save</button>
+                            <button id="custom-cmd-cancel-btn" class="btn btn-outline-danger btn-sm"
+                                type="button">Cancel</button>
+                        </div>
+                        <p id="custom-cmd-form-msg" class="text-muted mt-2 mb-0"></p>
+                    </div>
+
+                    <!-- Loading spinner -->
+                    <div id="custom-cmd-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading custom commands...</p>
+                    </div>
+
+                    <!-- Command list -->
+                    <div id="custom-cmd-list" class="list-group"></div>
+
+                    <!-- Empty state -->
+                    <div id="custom-cmd-empty" class="text-center py-3" style="display:none;">
+                        <p class="text-muted mb-1">No custom commands yet.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Use the <strong>+ Add</strong> button or
+                            type <code>!command add</code> in chat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <p id="action-message" class="alert alert-info" style="display:none;"></p>
     </div>
 

@@ -3,71 +3,71 @@
 
 /* CSS Custom Properties for Theme Support */
 :root {
-  /* Typography */
-  --font-primary: 'Atkinson Hyperlegible Next', sans-serif;
-  --font-code: 'Atkinson Hyperlegible Mono', monospace;
+    /* Typography */
+    --font-primary: 'Atkinson Hyperlegible Next', sans-serif;
+    --font-code: 'Atkinson Hyperlegible Mono', monospace;
 
-  /* Colors - Post-Industrial Light Mode (Default) */
-  --bg-primary: #f5f5f5;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #e8e8e8;
-  --text-primary: #0a0a0a;
-  --text-secondary: #0a0a0a;
-  --text-muted: #666666;
-  --border-color: #d0d0d0;
-  --border-hover: #999999;
-  --accent-primary: #0a0a0a;
-  --accent-primary-hover: #333333;
-  --accent-focus: rgba(10, 10, 10, 0.25);
-  --shadow-color: rgba(0, 0, 0, 0.2);
-  --danger-primary: #d32f2f;
-  --danger-secondary: #b71c1c;
-  --danger-bg: #ffebee;
-  --danger-text: #c62828;
-  --help-icon-bg: #e8e8e8;
-  --help-icon-text: #0a0a0a;
-  --modal-backdrop: rgba(0, 0, 0, 0.5);
-  --modal-text: #0a0a0a;
-  --color-grid-line: #e0e0e0;
-  --color-accent-grey: #666666;
+    /* Colors - Post-Industrial Light Mode (Default) */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e8e8e8;
+    --text-primary: #0a0a0a;
+    --text-secondary: #0a0a0a;
+    --text-muted: #666666;
+    --border-color: #d0d0d0;
+    --border-hover: #999999;
+    --accent-primary: #0a0a0a;
+    --accent-primary-hover: #333333;
+    --accent-focus: rgba(10, 10, 10, 0.25);
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --danger-primary: #d32f2f;
+    --danger-secondary: #b71c1c;
+    --danger-bg: #ffebee;
+    --danger-text: #c62828;
+    --help-icon-bg: #e8e8e8;
+    --help-icon-text: #0a0a0a;
+    --modal-backdrop: rgba(0, 0, 0, 0.5);
+    --modal-text: #0a0a0a;
+    --color-grid-line: #e0e0e0;
+    --color-accent-grey: #666666;
 
-  /* Spacing */
-  --spacing-unit: 8px;
-  --spacing-small: var(--spacing-unit);
-  --spacing-medium: calc(var(--spacing-unit) * 3);
-  --spacing-large: calc(var(--spacing-unit) * 8);
+    /* Spacing */
+    --spacing-unit: 8px;
+    --spacing-small: var(--spacing-unit);
+    --spacing-medium: calc(var(--spacing-unit) * 3);
+    --spacing-large: calc(var(--spacing-unit) * 8);
 
-  /* Typography Scale - Massive for Post-Industrial */
-  --font-size-huge: 8rem;
-  --font-size-large: 4rem;
-  --font-size-medium: 2rem;
-  --font-size-regular: 1rem;
-  --font-size-small: 0.875rem;
+    /* Typography Scale - Massive for Post-Industrial */
+    --font-size-huge: 8rem;
+    --font-size-large: 4rem;
+    --font-size-medium: 2rem;
+    --font-size-regular: 1rem;
+    --font-size-small: 0.875rem;
 }
 
 [data-theme="dark"] {
-  /* Colors - Post-Industrial Dark Mode */
-  --bg-primary: #050505;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #0a0a0a;
-  --text-primary: #ffffff;
-  --text-secondary: #ffffff;
-  --text-muted: #666666;
-  --border-color: #333333;
-  --border-hover: #555555;
-  --accent-primary: #ffffff;
-  --accent-primary-hover: #cccccc;
-  --accent-focus: rgba(255, 255, 255, 0.25);
-  --shadow-color: rgba(255, 255, 255, 0.2);
-  --danger-primary: #ff6b6b;
-  --danger-secondary: #ff5252;
-  --danger-bg: #2d1b1b;
-  --danger-text: #ff8a80;
-  --help-icon-bg: #333333;
-  --help-icon-text: #ffffff;
-  --modal-backdrop: rgba(0, 0, 0, 0.7);
-  --modal-text: #ffffff;
-  --color-grid-line: #333333;
+    /* Colors - Post-Industrial Dark Mode */
+    --bg-primary: #050505;
+    --bg-secondary: #0a0a0a;
+    --bg-tertiary: #0a0a0a;
+    --text-primary: #ffffff;
+    --text-secondary: #ffffff;
+    --text-muted: #666666;
+    --border-color: #333333;
+    --border-hover: #555555;
+    --accent-primary: #ffffff;
+    --accent-primary-hover: #cccccc;
+    --accent-focus: rgba(255, 255, 255, 0.25);
+    --shadow-color: rgba(255, 255, 255, 0.2);
+    --danger-primary: #ff6b6b;
+    --danger-secondary: #ff5252;
+    --danger-bg: #2d1b1b;
+    --danger-text: #ff8a80;
+    --help-icon-bg: #333333;
+    --help-icon-text: #ffffff;
+    --modal-backdrop: rgba(0, 0, 0, 0.7);
+    --modal-text: #ffffff;
+    --color-grid-line: #333333;
 }
 
 /* Fonts */
@@ -82,7 +82,12 @@ body {
 }
 
 /* Typography - Post-Industrial */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-top: 0;
     line-height: 1.2;
     font-weight: 800;
@@ -91,7 +96,13 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary) !important;
 }
 
-p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body strong {
+p,
+label,
+.form-label,
+.form-check-label,
+.card-body,
+.card-body p,
+.card-body strong {
     color: var(--text-primary) !important;
 }
 
@@ -108,7 +119,9 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
 }
 
 /* Remove Bootstrap shadows */
-.shadow, .shadow-sm, .shadow-lg {
+.shadow,
+.shadow-sm,
+.shadow-lg {
     box-shadow: none !important;
 }
 
@@ -128,17 +141,26 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
     border-radius: 0 !important;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
+    color: var(--text-primary) !important;
+    background-color: var(--bg-secondary) !important;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: var(--text-primary);
     box-shadow: none;
-    background-color: var(--bg-secondary);
-    color: var(--text-primary);
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-muted) !important;
+    opacity: 0.7;
 }
 
 /* Button enhancements - Post-Industrial */
@@ -485,11 +507,11 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
     border-bottom-color: var(--text-primary);
 }
 
-.list-group-item + .list-group-item {
+.list-group-item+.list-group-item {
     border-top-width: 0;
 }
 
-.list-group-item + .list-group-item.active {
+.list-group-item+.list-group-item.active {
     margin-top: -1px;
     border-top-width: 0;
 }
@@ -544,7 +566,9 @@ p, label, .form-label, .form-check-label, .card-body, .card-body p, .card-body s
     color: var(--text-muted) !important;
 }
 
-strong, .fw-semibold, .fw-bold {
+strong,
+.fw-semibold,
+.fw-bold {
     color: var(--text-primary);
 }
 
@@ -689,3 +713,102 @@ a:not(.btn):not(.button-3d):focus {
     }
 }
 
+/* ─── Custom Commands Section ─────────────────────────────────────────────── */
+
+/* Inline add/edit form */
+.cmd-form {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cmd-form .form-label {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.cmd-form small {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.cmd-form code {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 0.125rem 0.375rem;
+    border: 1px solid var(--border-color);
+}
+
+/* Command list item layout */
+.cmd-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.cmd-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cmd-name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    margin: 0 0 0.125rem 0;
+}
+
+.cmd-response {
+    font-family: var(--font-code);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    max-width: 100%;
+}
+
+.cmd-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.cmd-badge {
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 0.125rem 0.375rem;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    background: transparent;
+    line-height: 1.4;
+}
+
+.cmd-cooldown {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+/* Action buttons */
+.cmd-actions {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    align-items: flex-start;
+    padding-top: 0.125rem;
+}
+
+.cmd-actions .btn {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+}
