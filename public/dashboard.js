@@ -35,7 +35,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const customCmdPermissionEl = document.getElementById('custom-cmd-permission');
     const customCmdCooldownEl = document.getElementById('custom-cmd-cooldown');
     const customCmdFormMsgEl = document.getElementById('custom-cmd-form-msg');
+    const customCmdTypeToggleEl = document.getElementById('custom-cmd-type-toggle');
+    const customCmdResponseLabelEl = document.getElementById('custom-cmd-response-label');
     let customCmdEditingName = null; // Track whether we're editing an existing command
+
+    // Toggle label when AI mode changes
+    customCmdTypeToggleEl.addEventListener('change', () => {
+        if (customCmdTypeToggleEl.checked) {
+            customCmdResponseLabelEl.textContent = 'AI Prompt';
+            customCmdResponseEl.placeholder = 'Write a fun greeting for $(user) in exactly one sentence.';
+        } else {
+            customCmdResponseLabelEl.textContent = 'Response';
+            customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
+        }
+    });
 
     // Variable chip click → insert at cursor in response field
     document.querySelector('.variable-chips')?.addEventListener('click', (e) => {
@@ -423,9 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 customCmdLoadingEl.style.display = 'none';
                 const mockCmds = [
-                    { name: 'hello', response: 'Hello $(user), welcome to $(channel)!', permission: 'everyone', cooldownMs: 5000 },
-                    { name: 'discord', response: 'Join our Discord: https://discord.gg/example', permission: 'everyone', cooldownMs: 30000 },
-                    { name: 'rank', response: '$(user) has used this command $(count) times!', permission: 'subscriber', cooldownMs: 10000 },
+                    { name: 'hello', response: 'Hello $(user), welcome to $(channel)!', permission: 'everyone', cooldownMs: 5000, type: 'text' },
+                    { name: 'discord', response: 'Join our Discord: https://discord.gg/example', permission: 'everyone', cooldownMs: 30000, type: 'text' },
+                    { name: 'vibe', response: 'Tell $(user) what kind of vibe their message "$(args)" gives off in one sentence.', permission: 'everyone', cooldownMs: 10000, type: 'prompt' },
                 ];
                 renderCustomCommandsList(mockCmds);
             }, 500);
@@ -498,6 +511,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 meta.appendChild(cooldown);
             }
 
+            if (cmd.type === 'prompt') {
+                const aiBadge = document.createElement('span');
+                aiBadge.className = 'cmd-badge';
+                aiBadge.style.background = 'var(--bs-purple, #7c3aed)';
+                aiBadge.style.color = '#fff';
+                aiBadge.textContent = 'AI';
+                meta.appendChild(aiBadge);
+            }
+
             info.appendChild(name);
             info.appendChild(response);
             if (meta.children.length > 0) info.appendChild(meta);
@@ -533,6 +555,9 @@ document.addEventListener('DOMContentLoaded', () => {
         customCmdResponseEl.value = '';
         customCmdPermissionEl.value = 'everyone';
         customCmdCooldownEl.value = '5';
+        customCmdTypeToggleEl.checked = false;
+        customCmdResponseLabelEl.textContent = 'Response';
+        customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
         customCmdFormMsgEl.textContent = '';
         customCmdFormEl.style.display = 'block';
         customCmdNameEl.focus();
@@ -545,6 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
         customCmdResponseEl.value = cmd.response;
         customCmdPermissionEl.value = cmd.permission || 'everyone';
         customCmdCooldownEl.value = String((cmd.cooldownMs || 5000) / 1000);
+        customCmdTypeToggleEl.checked = cmd.type === 'prompt';
+        customCmdResponseLabelEl.textContent = cmd.type === 'prompt' ? 'AI Prompt' : 'Response';
+        customCmdResponseEl.placeholder = cmd.type === 'prompt'
+            ? 'Write a fun greeting for $(user) in exactly one sentence.'
+            : 'Hello $(user), welcome to $(channel)!';
         customCmdFormMsgEl.textContent = '';
         customCmdFormEl.style.display = 'block';
         customCmdResponseEl.focus();
@@ -603,6 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 response,
                 permission,
                 cooldown: (isNaN(cooldownSec) ? 5 : cooldownSec) * 1000,
+                type: customCmdTypeToggleEl.checked ? 'prompt' : 'text',
             };
             if (!isEditing) body.name = name;
 

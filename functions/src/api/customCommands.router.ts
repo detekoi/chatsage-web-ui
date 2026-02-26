@@ -16,6 +16,9 @@ const router = Router();
 /** Valid permission levels (must match the bot's expectations) */
 const VALID_PERMISSIONS = ["everyone", "subscriber", "vip", "moderator", "broadcaster"];
 
+/** Valid command types */
+const VALID_TYPES = ["text", "prompt"];
+
 /** Max number of custom commands per channel */
 const MAX_COMMANDS_PER_CHANNEL = 100;
 
@@ -72,7 +75,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
 
   try {
-    const { name, response, permission, cooldown } = req.body;
+    const { name, response, permission, cooldown, type } = req.body;
 
     // Validate name
     if (!isValidCommandName(name)) {
@@ -131,8 +134,18 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    // Validate type (optional, defaults to "text")
+    const commandType = type || "text";
+    if (!VALID_TYPES.includes(commandType)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+      });
+    }
+
     await docRef.set({
       response: response.trim(),
+      type: commandType,
       permission: perm,
       cooldownMs,
       enabled: true,
@@ -187,7 +200,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    const { response, permission, cooldown, enabled } = req.body;
+    const { response, permission, cooldown, enabled, type } = req.body;
 
     if (response !== undefined) {
       if (typeof response !== "string" || response.trim().length === 0) {
@@ -233,6 +246,16 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
         });
       }
       updates.enabled = enabled;
+    }
+
+    if (type !== undefined) {
+      if (!VALID_TYPES.includes(type)) {
+        return res.status(400).json({
+          success: false,
+          message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+        });
+      }
+      updates.type = type;
     }
 
     await docRef.update(updates);
