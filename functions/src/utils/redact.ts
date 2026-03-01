@@ -10,7 +10,7 @@
  * @returns Redacted string, e.g. "hen***"
  */
 export function redact(value: string, visibleChars = 3): string {
-    if (!value) return "[empty]";
-    if (value.length <= visibleChars) return "***";
-    return value.slice(0, visibleChars) + "***";
+  if (!value) return "[empty]";
+  if (value.length <= visibleChars) return "***";
+  return value.slice(0, visibleChars) + "***";
 }
