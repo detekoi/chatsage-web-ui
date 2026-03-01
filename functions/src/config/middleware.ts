@@ -156,21 +156,27 @@ export function setupMiddleware(app: express.Application) {
   // Trust proxy headers from Cloud Run/Firebase Hosting
   app.set("trust proxy", true);
 
+  // CORS and security headers (must be first so error responses include CORS headers)
+  app.use(corsAndSecurityMiddleware);
+
   // Body parsing and cookies
   app.use(express.json());
   app.use(cookieParser());
 
-  // CSRF protection for cookie-based requests
-  app.use(csrfProtectionMiddleware);
+  // CSRF protection for cookie-based auth routes only.
+  // API and internal routes use JWT bearer tokens (not vulnerable to CSRF).
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api/") || req.path.startsWith("/internal/")) {
+      return next();
+    }
+    csrfProtectionMiddleware(req, res, next);
+  });
 
   // Request tracking
   app.use(requestIdMiddleware);
 
   // Request timeout
   app.use(requestTimeoutMiddleware);
-
-  // CORS and security headers
-  app.use(corsAndSecurityMiddleware);
 }
 
 /**

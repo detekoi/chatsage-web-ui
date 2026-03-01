@@ -44,6 +44,9 @@ export const ALLOWED_ORIGINS = (() => {
   const origins = new Set([
     "http://127.0.0.1:5002",
     "http://localhost:5002",
+    "https://app.wildcat.chat",
+    "https://bot.wildcat.chat",
+    "https://streamsage-bot.web.app",
   ]);
 
   if (FRONTEND_URL_CONFIG) {
