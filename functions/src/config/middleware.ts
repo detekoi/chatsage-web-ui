@@ -38,6 +38,11 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
     secure: IS_PRODUCTION,
     httpOnly: true,
   },
+  // Skip CSRF for API and internal routes — they use JWT Bearer tokens
+  // (not cookies), so they are not vulnerable to CSRF attacks.
+  skipCsrfProtection: (req) => {
+    return req.path.startsWith("/api/") || req.path.startsWith("/internal/");
+  },
 });
 
 export { generateCsrfToken };
@@ -163,14 +168,8 @@ export function setupMiddleware(app: express.Application) {
   app.use(express.json());
   app.use(cookieParser());
 
-  // CSRF protection for cookie-based auth routes only.
-  // API and internal routes use JWT bearer tokens (not vulnerable to CSRF).
-  app.use((req, res, next) => {
-    if (req.path.startsWith("/api/") || req.path.startsWith("/internal/")) {
-      return next();
-    }
-    csrfProtectionMiddleware(req, res, next);
-  });
+  // CSRF protection (skips /api/ and /internal/ routes via skipCsrfProtection config)
+  app.use(csrfProtectionMiddleware);
 
   // Request tracking
   app.use(requestIdMiddleware);

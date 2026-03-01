@@ -6,6 +6,7 @@
 import axios from "axios";
 import { TWITCH_CLIENT_ID } from "@/config/constants";
 import { logger } from "@/config/logger";
+import { redact } from "@/utils/redact";
 import { getAppAccessToken } from "./appToken.service";
 
 /**
@@ -29,18 +30,18 @@ export async function getUserIdFromUsername(username: string): Promise<string | 
     if (response.data?.data && response.data.data.length > 0) {
       const userId = response.data.data[0].id;
       logger.debug("Found user ID from username", {
-        username,
+        username: redact(username),
         userId,
       });
       return userId;
     }
 
-    logger.warn("User not found", { username });
+    logger.warn("User not found", { username: redact(username) });
     return null;
   } catch (error: unknown) {
     const err = error as { response?: { data?: unknown }; message: string };
     logger.error("Error getting user ID from username", {
-      username,
+      username: redact(username),
       error: err.response?.data || err.message,
     });
     return null;

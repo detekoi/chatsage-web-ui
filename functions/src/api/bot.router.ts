@@ -7,6 +7,7 @@ import { Router, Response } from "express";
 import { getDb, FieldValue } from "@/config/database";
 import { CHANNELS_COLLECTION, TWITCH_BOT_USERNAME } from "@/config/constants";
 import { logger } from "@/config/logger";
+import { redact } from "@/utils/redact";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
 import { getAllowedChannelsList } from "@/utils/secrets";
@@ -144,7 +145,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
       try {
         logger.info("Attempting to add bot as moderator", {
           channelLogin,
-          botUsername: TWITCH_BOT_USERNAME,
+          botUsername: redact(TWITCH_BOT_USERNAME),
         });
 
         const botUserId = await getUserIdFromUsername(TWITCH_BOT_USERNAME);
@@ -162,7 +163,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
           }
         } else {
           logger.warn("Could not find bot user ID", {
-            botUsername: TWITCH_BOT_USERNAME,
+            botUsername: redact(TWITCH_BOT_USERNAME),
           });
           modStatus = { success: false, error: "Bot user not found" };
         }
