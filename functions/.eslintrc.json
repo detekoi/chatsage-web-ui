@@ -19,15 +19,49 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "indent": ["error", 2],
-    "comma-dangle": ["error", "always-multiline"],
-    "semi": ["error", "always"],
-    "quotes": ["error", "double"],
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "indent": [
+      "error",
+      2
+    ],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "quotes": [
+      "error",
+      "double"
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "warn",
-    "no-console": ["off"]
+    "no-console": [
+      "off"
+    ]
   },
-  "ignorePatterns": ["lib/", "node_modules/", "*.js", "test/setup.ts"]
+  "overrides": [
+    {
+      "files": [
+        "test/**/*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-require-imports": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "lib/",
+    "node_modules/",
+    "*.js",
+    "test/setup.ts"
+  ]
 }
