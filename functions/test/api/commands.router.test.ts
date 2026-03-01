@@ -6,6 +6,7 @@
 import express from "express";
 import request from "supertest";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import commandsRouter from "@/api/commands.router";
 
 jest.mock("@/config/logger", () => ({
@@ -39,6 +40,7 @@ const JWT_SECRET = process.env.JWT_SECRET_KEY!;
 function createApp() {
   const app = express();
   app.use(express.json());
+  app.use(rateLimit({ windowMs: 60000, max: 1000 }));
 
   // Simulate auth middleware
   app.use((req: any, _res: any, next: any) => {
