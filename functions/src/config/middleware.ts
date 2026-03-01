@@ -6,20 +6,42 @@
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
-import csurf from "csurf";
+import { doubleCsrf } from "csrf-csrf";
 import {
   ALLOWED_ORIGINS,
   RATE_LIMIT,
   IS_PRODUCTION,
   REQUEST_TIMEOUT_MS,
+  CSRF_SECRET,
 } from "./constants";
 import { requestIdMiddleware } from "./logger";
 
 /**
  * CSRF protection middleware
- * Uses cookie-based tokens to protect state-changing requests.
+ * Uses the Double Submit Cookie Pattern via csrf-csrf.
+ * HMAC-signed tokens are stored in a cookie; the frontend must send
+ * the token back in the `x-csrf-token` header on state-changing requests.
  */
-export const csrfProtectionMiddleware = csurf({ cookie: true });
+const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
+  getSecret: () => CSRF_SECRET,
+  getSessionIdentifier: (req) => {
+    // Use JWT user ID if authenticated, otherwise a static identifier
+    const authReq = req as any;
+    return authReq.user?.userId || "anonymous";
+  },
+  cookieName: IS_PRODUCTION
+    ? "__Host-psifi.x-csrf-token"
+    : "x-csrf-token",
+  cookieOptions: {
+    sameSite: "strict",
+    path: "/",
+    secure: IS_PRODUCTION,
+    httpOnly: true,
+  },
+});
+
+export { generateCsrfToken };
+export const csrfProtectionMiddleware = doubleCsrfProtection;
 
 /**
  * CORS and security headers middleware
@@ -41,7 +63,10 @@ export function corsAndSecurityMiddleware(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS",
   );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, x-csrf-token",
+  );
 
   // Security headers
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -54,12 +79,12 @@ export function corsAndSecurityMiddleware(
   res.setHeader(
     "Content-Security-Policy",
     "default-src 'self'; " +
-      "script-src 'self' 'unsafe-inline' https://app.rybbit.io; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-      "font-src 'self' https://fonts.gstatic.com; " +
-      "img-src 'self' data: https:; " +
-      "connect-src 'self' https://api.wildcat.chat https://api.twitch.tv; " +
-      "frame-ancestors 'none';",
+    "script-src 'self' 'unsafe-inline' https://app.rybbit.io; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self' https://api.wildcat.chat https://api.twitch.tv; " +
+    "frame-ancestors 'none';",
   );
 
   // Strict-Transport-Security (HSTS) for production

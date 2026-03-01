@@ -20,6 +20,9 @@ export const TWITCH_HELIX_URL = "https://api.twitch.tv/helix";
 // JWT configuration
 export const JWT_SECRET = process.env.JWT_SECRET_KEY || "";
 
+// CSRF protection
+export const CSRF_SECRET = process.env.CSRF_SECRET || "dev-csrf-secret-change-in-production";
+
 // Firestore collections
 export const CHANNELS_COLLECTION = "managedChannels";
 export const AUTO_CHAT_COLLECTION = "autoChatConfigs";
