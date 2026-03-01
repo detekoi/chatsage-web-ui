@@ -6,6 +6,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import csurf from "csurf";
 import {
   ALLOWED_ORIGINS,
   RATE_LIMIT,
@@ -13,6 +14,12 @@ import {
   REQUEST_TIMEOUT_MS,
 } from "./constants";
 import { requestIdMiddleware } from "./logger";
+
+/**
+ * CSRF protection middleware
+ * Uses cookie-based tokens to protect state-changing requests.
+ */
+export const csrfProtectionMiddleware = csurf({ cookie: true });
 
 /**
  * CORS and security headers middleware
@@ -127,6 +134,9 @@ export function setupMiddleware(app: express.Application) {
   // Body parsing and cookies
   app.use(express.json());
   app.use(cookieParser());
+
+  // CSRF protection for cookie-based requests
+  app.use(csrfProtectionMiddleware);
 
   // Request tracking
   app.use(requestIdMiddleware);
