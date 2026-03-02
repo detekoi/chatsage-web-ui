@@ -72,14 +72,9 @@
 
     <div class="container my-4">
         <div class="d-flex align-items-center justify-content-between mb-3">
-            <h1 class="h3 mb-0">WildcatSage Dashboard</h1>
-            <div class="d-flex align-items-center gap-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="darkModeToggle">
-                    <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-                </div>
-                <a href="#" id="logout-link" class="btn btn-outline-danger btn-sm">Logout</a>
-            </div>
+            <h1 class="h3 mb-0 dashboard-title" id="darkModeToggle" title="Click to toggle dark mode">WildcatSage
+                Dashboard</h1>
+            <a href="#" id="logout-link" class="btn btn-outline-danger btn-sm">Logout</a>
         </div>
         <p class="text-center mb-3">
             <a href="https://docs.wildcat.chat/botcommands.html" target="_blank" class="link-primary">Commands
@@ -91,13 +86,16 @@
         <div class="card mb-4 shadow">
             <div class="card-body">
                 <p class="mb-1">Welcome, <span id="twitch-username">loading...</span>!</p>
-                <p class="mb-3">Bot status for channel <strong id="channel-name-status">your channel</strong>: <strong
-                        id="bot-status">Loading...</strong></p>
-                <div class="d-flex gap-2">
-                    <button id="add-bot-btn" class="btn btn-outline-primary" style="display:none;" type="button">Add Bot
-                        to My Channel</button>
-                    <button id="remove-bot-btn" class="btn btn-outline-danger" style="display:none;"
-                        type="button">Remove Bot from My Channel</button>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 bot-status-row">
+                    <p class="mb-0">Bot status for channel <strong id="channel-name-status">your channel</strong>:
+                        <strong id="bot-status">Loading...</strong></p>
+                    <div class="d-flex gap-2 bot-action-buttons">
+                        <button id="add-bot-btn" class="btn btn-outline-primary btn-sm" style="display:none;"
+                            type="button">Add Bot
+                            to My Channel</button>
+                        <button id="remove-bot-btn" class="btn btn-outline-danger btn-sm" style="display:none;"
+                            type="button">Remove Bot from My Channel</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -281,23 +279,25 @@
 
     </div>
 
-    <!-- Dark mode toggle functionality -->
+    <!-- Dark mode toggle (hidden behind title click) -->
     <script>
-        // Initialize dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const savedTheme = localStorage.getItem('chatsage-theme');
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
 
-        darkModeToggle.checked = currentTheme === 'dark';
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
 
-        darkModeToggle.addEventListener('change', function () {
-            if (this.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('chatsage-theme', 'dark');
-            } else {
+        darkModeToggle.addEventListener('click', function () {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDark) {
                 document.documentElement.removeAttribute('data-theme');
                 localStorage.setItem('chatsage-theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('chatsage-theme', 'dark');
             }
         });
     </script>

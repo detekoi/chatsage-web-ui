@@ -799,9 +799,8 @@ a:not(.btn):not(.button-3d):focus {
     font-family: var(--font-code);
     font-size: 0.8125rem;
     color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-word;
     margin: 0;
     max-width: 100%;
 }
