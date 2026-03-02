@@ -10,7 +10,6 @@ import { logger } from "@/config/logger";
 import { redact } from "@/utils/redact";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
-import { getAllowedChannelsList } from "@/utils/secrets";
 import { getUserIdFromUsername, addModerator, ensureStreamEventSubscriptions } from "@/twitch";
 
 const router = Router();
@@ -74,17 +73,6 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
   const db = getDb();
 
   try {
-    // Check if channel is on allow-list
-    const allowedList = await getAllowedChannelsList();
-    const isAllowed = allowedList.includes(broadcasterUserId);
-
-    if (!isAllowed) {
-      logger.warn("Channel not on allow-list", { channelLogin });
-      return res.status(403).json({
-        success: false,
-        message: "Your channel is not on the allow-list. Contact support for access.",
-      });
-    }
 
     // Verify valid Twitch token
     try {
