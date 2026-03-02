@@ -21,7 +21,7 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response): Promise<
   logger.info("Checking auth status", { userLogin });
 
   try {
-    await getValidTwitchTokenForUser(userLogin);
+    await getValidTwitchTokenForUser(req.user.userId);
 
     res.json({
       success: true,
@@ -59,10 +59,10 @@ router.post("/refresh", async (req: AuthenticatedRequest, res: Response): Promis
 
   try {
     // Clear cached tokens first
-    await clearUserTokens(userLogin, "Manual refresh requested by user");
+    await clearUserTokens(req.user.userId, "Manual refresh requested by user");
 
     // Get a fresh token (this will trigger refresh)
-    const accessToken = await getValidTwitchTokenForUser(userLogin);
+    const accessToken = await getValidTwitchTokenForUser(req.user.userId);
 
     if (!accessToken) {
       throw new Error("Failed to obtain access token after refresh");

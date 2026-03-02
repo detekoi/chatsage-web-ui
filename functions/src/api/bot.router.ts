@@ -25,7 +25,7 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Try to validate token (but don't fail if it doesn't work)
     try {
-      await getValidTwitchTokenForUser(channelLogin);
+      await getValidTwitchTokenForUser(req.user.userId);
     } catch (tokenError) {
       logger.warn("Token validation failed in status check", {
         channelLogin,
@@ -33,7 +33,7 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(CHANNELS_COLLECTION).doc(req.user.userId);
     const docSnap = await docRef.get();
 
     if (docSnap.exists && docSnap.data()?.isActive) {
@@ -76,7 +76,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
 
     // Verify valid Twitch token
     try {
-      await getValidTwitchTokenForUser(channelLogin);
+      await getValidTwitchTokenForUser(broadcasterUserId);
       logger.info("Verified valid Twitch token", { channelLogin });
     } catch (tokenError) {
       logger.error("Token validation failed", {
@@ -90,7 +90,18 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Activate the bot for this channel
-    const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(CHANNELS_COLLECTION).doc(broadcasterUserId);
+
+    // Defense-in-depth: verify doc exists (admin-created) even if JWT is valid
+    const existingDoc = await docRef.get();
+    if (!existingDoc.exists) {
+      logger.warn("Channel not approved in Firestore", { channelLogin, broadcasterUserId });
+      return res.status(403).json({
+        success: false,
+        message: "Your channel is not on the allow-list. Contact me for access: https://detekoi.github.io/index.html#contact-me",
+      });
+    }
+
     await docRef.set(
       {
         channelName: channelLogin,
@@ -197,7 +208,7 @@ router.post("/remove", async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Try to validate token (but allow removal even if it fails)
     try {
-      await getValidTwitchTokenForUser(channelLogin);
+      await getValidTwitchTokenForUser(req.user.userId);
       logger.info("Verified valid Twitch token", { channelLogin });
     } catch (tokenError) {
       logger.warn("Token validation failed, but allowing removal", {
@@ -206,7 +217,7 @@ router.post("/remove", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const docRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(CHANNELS_COLLECTION).doc(req.user.userId);
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {

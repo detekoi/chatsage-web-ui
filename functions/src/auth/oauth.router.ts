@@ -193,8 +193,24 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       reason: "oauth-callback",
     });
 
-    // Store user data in Firestore
-    const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.login);
+    // Allow-list gate: only pre-approved channels (admin-created docs) can log in.
+    // If no managedChannels document exists, the channel is not approved.
+    const userDocRef = db.collection(CHANNELS_COLLECTION).doc(twitchUser.id);
+    const existingDoc = await userDocRef.get();
+    if (!existingDoc.exists) {
+      logger.warn("Channel not approved — no managedChannels document", {
+        login: twitchUser.login,
+        userId: twitchUser.id,
+      });
+      return redirectToFrontendWithError(
+        res,
+        "not_authorized",
+        "Your channel is not on the allow-list. Contact me for access: https://detekoi.github.io/index.html#contact-me",
+        twitchQueryState as string,
+      );
+    }
+
+    // Update (never create) the approved channel's metadata
     await userDocRef.set(
       {
         twitchUserId: twitchUser.id,

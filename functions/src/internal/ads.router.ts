@@ -47,20 +47,20 @@ router.get("/schedule", async (req: Request, res: Response) => {
 
     const db = getDb();
 
-    // Get valid access token (refreshes if needed)
-    const accessToken = await getValidTwitchTokenForUser(channelLogin);
+    // Find user by channel name and get valid access token
+    const channelsSnapshot = await db.collection(CHANNELS_COLLECTION)
+      .where("channelName", "==", channelLogin).limit(1).get();
 
-    // Get user ID
-    const userDoc = await db.collection(CHANNELS_COLLECTION).doc(channelLogin).get();
-    const userId = userDoc.exists ? userDoc.data()?.twitchUserId : null;
-
-    if (!userId) {
-      logger.error("No twitchUserId found", { channelLogin });
+    if (channelsSnapshot.empty) {
+      logger.error("Channel not found in Firestore", { channelLogin });
       return res.status(404).json({
         success: false,
         message: "User not found or missing Twitch user ID",
       });
     }
+
+    const userId = channelsSnapshot.docs[0].id;
+    const accessToken = await getValidTwitchTokenForUser(userId);
 
     logger.debug("Calling Twitch API for ad schedule", {
       channelLogin,

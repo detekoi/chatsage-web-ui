@@ -176,10 +176,11 @@ export async function ensureAdBreakSubscription(
   try {
     const db = getDb();
 
-    // Get user ID from Firestore
-    const userDocRef = db.collection(CHANNELS_COLLECTION).doc(channelLogin);
-    const userDoc = await userDocRef.get();
-    const userId = userDoc.exists ? userDoc.data()?.twitchUserId : null;
+    // Get user ID from Firestore — need to query by channelName since we only have login
+    const channelsSnapshot = await db.collection(CHANNELS_COLLECTION)
+      .where("channelName", "==", channelLogin).limit(1).get();
+    const userDoc = channelsSnapshot.empty ? null : channelsSnapshot.docs[0];
+    const userId = userDoc?.data()?.twitchUserId || userDoc?.id;
 
     if (!userId) {
       logger.warn("No user ID found for channel", { channelLogin });
@@ -188,7 +189,7 @@ export async function ensureAdBreakSubscription(
 
     // Verify user has granted channel:read:ads scope
     try {
-      const userToken = await getValidTwitchTokenForUser(channelLogin);
+      const userToken = await getValidTwitchTokenForUser(userId);
       const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
         headers: { Authorization: `OAuth ${userToken}` },
       });

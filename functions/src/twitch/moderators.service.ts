@@ -26,7 +26,7 @@ export async function addModerator(
   moderatorUserId: string,
 ): Promise<ModeratorResult> {
   try {
-    const accessToken = await getValidTwitchTokenForUser(broadcasterLogin);
+    const accessToken = await getValidTwitchTokenForUser(broadcasterId);
 
     const response = await axios.post(
       "https://api.twitch.tv/helix/moderation/moderators",
