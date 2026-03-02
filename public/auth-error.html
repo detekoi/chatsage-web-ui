@@ -51,12 +51,19 @@
                 } else {
                     message = "An unspecified error occurred.";
                 }
-                // Linkify URLs in the message
-                const linkified = message.replace(
-                    /(https?:\/\/[^\s]+)/g,
-                    '<a href="$1" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">$1</a>'
-                );
-                errorMessageEl.innerHTML = linkified;
+                errorMessageEl.textContent = message;
+
+                // Append a clickable "Contact Me" link for not_authorized errors
+                if (error === 'not_authorized') {
+                    errorMessageEl.appendChild(document.createTextNode(' '));
+                    const link = document.createElement('a');
+                    link.href = 'https://detekoi.github.io/index.html#contact-me';
+                    link.target = '_blank';
+                    link.rel = 'noopener';
+                    link.textContent = 'Contact Me';
+                    link.style.textDecoration = 'underline';
+                    errorMessageEl.appendChild(link);
+                }
             }
 
             if (errorTitleEl && error === 'access_denied') {

@@ -205,7 +205,7 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       return redirectToFrontendWithError(
         res,
         "not_authorized",
-        "Your channel is not on the allow-list. Contact me for access: https://detekoi.github.io/index.html#contact-me",
+        "Your channel is not on the allow-list.",
         twitchQueryState as string,
       );
     }
