@@ -83,6 +83,8 @@
                 Documentation</a>
         </p>
 
+        <p id="action-message" class="alert alert-info action-toast" style="display:none;"></p>
+
         <!-- Bot Status & Control -->
         <div class="card mb-4 shadow">
             <div class="card-body">
@@ -205,7 +207,8 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <label for="custom-cmd-response" class="form-label" id="custom-cmd-response-label">Response</label>
+                            <label for="custom-cmd-response" class="form-label"
+                                id="custom-cmd-response-label">Response</label>
                             <input type="text" class="form-control" id="custom-cmd-response"
                                 placeholder="Hello $(user), welcome to $(channel)!" maxlength="500" autocomplete="off">
                             <div class="variable-chips">
@@ -222,7 +225,8 @@
                         <div class="mb-2">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="custom-cmd-type-toggle">
-                                <label class="form-check-label" for="custom-cmd-type-toggle">AI Mode <small class="text-muted">(generates a unique response each time)</small></label>
+                                <label class="form-check-label" for="custom-cmd-type-toggle">AI Mode <small
+                                        class="text-muted">(generates a unique response each time)</small></label>
                             </div>
                         </div>
                         <div class="row mb-2">
@@ -272,7 +276,7 @@
             </div>
         </div>
 
-        <p id="action-message" class="alert alert-info" style="display:none;"></p>
+
     </div>
 
     <!-- Dark mode toggle functionality -->

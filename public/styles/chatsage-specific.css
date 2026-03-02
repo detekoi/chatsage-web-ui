@@ -29,13 +29,13 @@
   letter-spacing: 0.02em;
 }
 
-.container > p {
+.container>p {
   margin-bottom: 20px;
   line-height: 1.6;
 }
 
 /* Override button styling for links within paragraphs */
-.container > p a {
+.container>p a {
   background: none;
   border: none;
   box-shadow: none;
@@ -48,14 +48,14 @@
   transition: color 0.2s ease;
 }
 
-.container > p a:hover,
-.container > p a:focus {
+.container>p a:hover,
+.container>p a:focus {
   color: #0056b3;
   transform: none;
   box-shadow: none;
 }
 
-.container > p a:active {
+.container>p a:active {
   color: #004085;
   transform: none;
   box-shadow: none;
@@ -301,6 +301,51 @@
 }
 
 /* =====================================================
+   ACTION TOAST NOTIFICATION
+   ===================================================== */
+.action-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  max-width: 500px;
+  width: auto;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  animation: toast-fade-in 0.3s ease;
+}
+
+.action-toast.toast-fade-out {
+  animation: toast-fade-out 0.4s ease forwards;
+}
+
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+/* =====================================================
    RESPONSIVE ADJUSTMENTS
    ===================================================== */
 @media (max-width: 768px) {
@@ -339,4 +384,3 @@
     max-width: 300px;
   }
 }
-

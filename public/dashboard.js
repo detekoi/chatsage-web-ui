@@ -5,6 +5,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBotBtn = document.getElementById('add-bot-btn');
     const removeBotBtn = document.getElementById('remove-bot-btn');
     const actionMessageEl = document.getElementById('action-message');
+    let actionToastTimer = null;
+
+    /**
+     * Show the action message as a fixed toast notification that auto-dismisses.
+     * @param {string} text - Message text
+     * @param {'success'|'danger'|'info'|'warning'} type - Bootstrap alert type
+     * @param {number} duration - Auto-dismiss delay in ms (0 = no auto-dismiss)
+     */
+    function showActionToast(text, type = 'info', duration = 4000) {
+        if (actionToastTimer) clearTimeout(actionToastTimer);
+        actionMessageEl.textContent = text;
+        actionMessageEl.className = `alert alert-${type} action-toast`;
+        actionMessageEl.classList.remove('toast-fade-out');
+        actionMessageEl.style.display = 'block';
+        if (duration > 0) {
+            actionToastTimer = setTimeout(() => {
+                actionMessageEl.classList.add('toast-fade-out');
+                setTimeout(() => {
+                    actionMessageEl.style.display = 'none';
+                    actionMessageEl.classList.remove('toast-fade-out');
+                }, 400);
+            }, duration);
+        }
+    }
+
     const logoutLink = document.getElementById('logout-link');
     const commandsSectionEl = document.getElementById('commands-section');
     const commandsLoadingEl = document.getElementById('commands-loading');
@@ -98,11 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
             loggedInUser = { login: userLoginFromStorage, id: userIdFromStorage, displayName: userLoginFromStorage };
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
-            actionMessageEl.textContent = '';
+            // Clear previous toast
 
             if (!appSessionToken) {
                 console.warn("No session token found, redirecting to login");
-                actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+                showActionToast("Authentication token missing. Please log in again.", 'danger', 0);
                 setTimeout(() => window.location.href = 'index.html', 2000);
                 return;
             }
@@ -119,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (!statusRes.ok) {
                     if (statusRes.status === 401) {
-                        actionMessageEl.textContent = "Session potentially expired or not fully established. Try logging in again.";
+                        showActionToast("Session potentially expired or not fully established. Try logging in again.", 'danger', 0);
                         return;
                     }
                     const errorData = await statusRes.json().catch(() => ({ message: statusRes.statusText }));
@@ -132,12 +157,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
                     await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands()]);
                 } else {
-                    actionMessageEl.textContent = `Error: ${statusData.message}`;
+                    showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                     botStatusEl.textContent = "Error";
                 }
             } catch (error) {
                 console.error('Error fetching bot status:', error);
-                actionMessageEl.textContent = 'Failed to load bot status. ' + error.message;
+                showActionToast('Failed to load bot status. ' + error.message, 'danger', 0);
                 botStatusEl.textContent = 'Error';
             }
         } else {
@@ -170,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
         }
-        actionMessageEl.textContent = ''; // Clear previous messages
+        // Clear previous toast
         actionMessageEl.style.display = 'none';
     }
 
@@ -255,14 +280,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 autoCatFactsEl.checked = cfg.categories?.facts !== false;
                 autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
             } else {
-                actionMessageEl.textContent = 'Failed to load auto-chat settings.';
-                actionMessageEl.style.color = '#ff6b6b';
+                showActionToast('Failed to load auto-chat settings.', 'danger');
             }
         } catch (e) {
             console.error('Error loading auto-chat:', e);
             autoLoadingEl.style.display = 'none';
-            actionMessageEl.textContent = 'Error loading auto-chat settings.';
-            actionMessageEl.style.color = '#ff6b6b';
+            showActionToast('Error loading auto-chat settings.', 'danger');
         }
     }
 
@@ -684,15 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 await loadCustomCommands();
             } else {
-                actionMessageEl.textContent = data.message || 'Failed to delete command.';
-                actionMessageEl.className = 'alert alert-danger';
-                actionMessageEl.style.display = 'block';
+                showActionToast(data.message || 'Failed to delete command.', 'danger');
             }
         } catch (error) {
             console.error('Error deleting custom command:', error);
-            actionMessageEl.textContent = 'Error deleting command.';
-            actionMessageEl.className = 'alert alert-danger';
-            actionMessageEl.style.display = 'block';
+            showActionToast('Error deleting command.', 'danger');
         }
     }
 
@@ -762,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function toggleCommand(commandName, enabled, checkboxEl) {
         if (!appSessionToken) {
-            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
+            showActionToast("Authentication token missing. Please log in again.", 'danger');
             checkboxEl.checked = !enabled;
             return;
         }
@@ -773,8 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // DEV MODE: Mock toggle
         if (DEV_MODE) {
             setTimeout(() => {
-                actionMessageEl.textContent = `Command !${commandName} ${enabled ? 'enabled' : 'disabled'} (dev mode).`;
-                actionMessageEl.style.color = '#4ecdc4';
+                showActionToast(`Command !${commandName} ${enabled ? 'enabled' : 'disabled'} (dev mode).`, 'success');
                 checkboxEl.disabled = false;
             }, 500);
             return;
@@ -796,20 +814,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             if (data.success) {
-                actionMessageEl.textContent = `Command !${commandName} ${enabled ? 'enabled' : 'disabled'}.`;
-                actionMessageEl.className = 'alert alert-success';
-                actionMessageEl.style.display = 'block';
+                showActionToast(`Command !${commandName} ${enabled ? 'enabled' : 'disabled'}.`, 'success');
             } else {
-                actionMessageEl.textContent = data.message || 'Error updating command settings.';
-                actionMessageEl.className = 'alert alert-danger';
-                actionMessageEl.style.display = 'block';
+                showActionToast(data.message || 'Error updating command settings.', 'danger');
                 checkboxEl.checked = !enabled; // Revert on error
             }
         } catch (error) {
             console.error('Error toggling command:', error);
-            actionMessageEl.textContent = 'Failed to update command settings.';
-            actionMessageEl.className = 'alert alert-danger';
-            actionMessageEl.style.display = 'block';
+            showActionToast('Failed to update command settings.', 'danger');
             checkboxEl.checked = !enabled; // Revert on error
         } finally {
             checkboxEl.disabled = false; // Re-enable checkbox
@@ -818,15 +830,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addBotBtn.addEventListener('click', async () => {
         if (!appSessionToken) {
-            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
-            actionMessageEl.className = 'alert alert-danger';
-            actionMessageEl.style.display = 'block';
+            showActionToast("Authentication token missing. Please log in again.", 'danger');
             return;
         }
 
-        actionMessageEl.textContent = 'Requesting bot to join...';
-        actionMessageEl.className = 'alert alert-info';
-        actionMessageEl.style.display = 'block';
+        showActionToast('Requesting bot to join...', 'info', 0);
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/add`, {
                 method: 'POST',
@@ -836,32 +844,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             const data = await res.json();
-            actionMessageEl.textContent = data.message;
+            showActionToast(data.message, data.success ? 'success' : 'danger');
             if (data.success) {
-                actionMessageEl.className = 'alert alert-success';
                 updateBotStatusUI(true);
                 await loadCommandSettings();
             } else {
-                actionMessageEl.className = 'alert alert-danger';
+                // error already shown via showActionToast above
             }
         } catch (error) {
             console.error('Error adding bot:', error);
-            actionMessageEl.textContent = 'Failed to send request to add bot.';
-            actionMessageEl.className = 'alert alert-danger';
+            showActionToast('Failed to send request to add bot.', 'danger');
         }
     });
 
     removeBotBtn.addEventListener('click', async () => {
         if (!appSessionToken) {
-            actionMessageEl.textContent = "Authentication token missing. Please log in again.";
-            actionMessageEl.className = 'alert alert-danger';
-            actionMessageEl.style.display = 'block';
+            showActionToast("Authentication token missing. Please log in again.", 'danger');
             return;
         }
 
-        actionMessageEl.textContent = 'Requesting bot to leave...';
-        actionMessageEl.className = 'alert alert-info';
-        actionMessageEl.style.display = 'block';
+        showActionToast('Requesting bot to leave...', 'info', 0);
         try {
             const res = await fetch(`${API_BASE_URL}/api/bot/remove`, {
                 method: 'POST',
@@ -871,18 +873,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             const data = await res.json();
-            actionMessageEl.textContent = data.message;
+            showActionToast(data.message, data.success ? 'success' : 'danger');
             if (data.success) {
-                actionMessageEl.className = 'alert alert-success';
                 updateBotStatusUI(false);
                 await loadCommandSettings();
             } else {
-                actionMessageEl.className = 'alert alert-danger';
+                // error already shown via showActionToast above
             }
         } catch (error) {
             console.error('Error removing bot:', error);
-            actionMessageEl.textContent = 'Failed to send request to remove bot.';
-            actionMessageEl.className = 'alert alert-danger';
+            showActionToast('Failed to send request to remove bot.', 'danger');
         }
     });
 
