@@ -738,14 +738,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             col.appendChild(label);
 
-            // Add disabled message for help command
-            if (cmd.primaryName === 'help') {
-                const helpText = document.createElement('p');
-                helpText.className = 'text-muted mb-0';
-                helpText.textContent = 'This command cannot be disabled';
-                col.appendChild(helpText);
-            }
-
             const colAuto = document.createElement('div');
             colAuto.className = 'col-auto';
 
@@ -759,11 +751,6 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.checked = cmd.enabled;
             checkbox.dataset.command = cmd.primaryName;
             checkbox.role = 'switch';
-
-            // Special handling for help command
-            if (cmd.primaryName === 'help') {
-                checkbox.disabled = true;
-            }
 
             checkbox.addEventListener('change', async function () {
                 await toggleCommand(cmd.primaryName, this.checked, this);

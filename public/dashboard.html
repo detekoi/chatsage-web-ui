@@ -19,6 +19,7 @@
 
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/chatsage-specific.css">
 
     <!-- Apply theme based on system preference -->
     <script>
@@ -67,6 +68,8 @@
 
 <body>
 
+    <p id="action-message" class="alert alert-info action-toast" style="display:none;"></p>
+
     <div class="container my-4">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h1 class="h3 mb-0">WildcatSage Dashboard</h1>
@@ -83,7 +86,6 @@
                 Documentation</a>
         </p>
 
-        <p id="action-message" class="alert alert-info action-toast" style="display:none;"></p>
 
         <!-- Bot Status & Control -->
         <div class="card mb-4 shadow">
