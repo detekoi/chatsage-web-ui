@@ -99,8 +99,8 @@ export async function getInternalBotTokenValue(): Promise<string> {
 }
 
 /**
- * Gets the list of allowed channels from Secret Manager
- * @returns Array of allowed channel login names
+ * Gets the list of allowed broadcaster IDs from Secret Manager
+ * @returns Array of allowed broadcaster IDs
  */
 export async function getAllowedChannelsList(): Promise<string[]> {
   try {
@@ -118,10 +118,10 @@ export async function getAllowedChannelsList(): Promise<string[]> {
 
     const channels = csvData
       .split(",")
-      .map((ch) => ch.trim().toLowerCase())
+      .map((id) => id.trim())
       .filter(Boolean);
 
-    logger.info(`Loaded ${channels.length} allowed channels from Secret Manager`);
+    logger.info(`Loaded ${channels.length} allowed broadcaster IDs from Secret Manager`);
     return channels;
   } catch (error) {
     logger.error("Error fetching allowed channels from Secret Manager", {

@@ -76,7 +76,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Check if channel is on allow-list
     const allowedList = await getAllowedChannelsList();
-    const isAllowed = allowedList.includes(channelLogin.toLowerCase());
+    const isAllowed = allowedList.includes(broadcasterUserId);
 
     if (!isAllowed) {
       logger.warn("Channel not on allow-list", { channelLogin });
