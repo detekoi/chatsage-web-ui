@@ -43,13 +43,20 @@
             const errorTitleEl = document.getElementById('error-title');
 
             if (errorMessageEl) {
+                let message = '';
                 if (errorDescription) {
-                    errorMessageEl.textContent = decodeURIComponent(errorDescription);
+                    message = decodeURIComponent(errorDescription);
                 } else if (error) {
-                    errorMessageEl.textContent = `Error code: ${decodeURIComponent(error)}`;
+                    message = `Error code: ${decodeURIComponent(error)}`;
                 } else {
-                    errorMessageEl.textContent = "An unspecified error occurred.";
+                    message = "An unspecified error occurred.";
                 }
+                // Linkify URLs in the message
+                const linkified = message.replace(
+                    /(https?:\/\/[^\s]+)/g,
+                    '<a href="$1" target="_blank" rel="noopener" style="color: inherit; text-decoration: underline;">$1</a>'
+                );
+                errorMessageEl.innerHTML = linkified;
             }
 
             if (errorTitleEl && error === 'access_denied') {
