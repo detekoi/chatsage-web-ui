@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {SVGElement}
      */
     function createSuccessIcon() {
-        const svg = lucide.createElement(lucide.icons['circle-check']);
+        // Lucide UMD exports icons as PascalCase keys (kebab-case is only for data-lucide attributes)
+        const svg = lucide.createElement(lucide.icons.CircleCheck);
         svg.classList.add('inline-icon', 'inline-icon--success');
         return svg;
     }
