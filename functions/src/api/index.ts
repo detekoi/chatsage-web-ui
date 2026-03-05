@@ -11,6 +11,7 @@ import commandsRouter from "./commands.router";
 import autoChatRouter from "./autoChat.router";
 import authStatusRouter from "./authStatus.router";
 import customCommandsRouter from "./customCommands.router";
+import checkinRouter from "./checkin.router";
 
 const router = Router();
 
@@ -25,5 +26,6 @@ router.use("/commands", commandsRouter);
 router.use("/auto-chat", autoChatRouter);
 router.use("/auth", authStatusRouter);
 router.use("/custom-commands", customCommandsRouter);
+router.use("/checkin", checkinRouter);
 
 export default router;

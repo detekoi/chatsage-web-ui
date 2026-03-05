@@ -46,6 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoCatAdsEl = document.getElementById('auto-cat-ads');
     const adNotificationsMsgEl = document.getElementById('ad-notifications-message');
 
+    // Check-in elements
+    const checkinSectionEl = document.getElementById('checkin-section');
+    const checkinLoadingEl = document.getElementById('checkin-loading');
+    const checkinEnabledEl = document.getElementById('checkin-enabled');
+    const checkinTitleEl = document.getElementById('checkin-title');
+    const checkinCostEl = document.getElementById('checkin-cost');
+    const checkinResponseEl = document.getElementById('checkin-response');
+    const checkinAiToggleEl = document.getElementById('checkin-ai-toggle');
+    const checkinAiPromptGroupEl = document.getElementById('checkin-ai-prompt-group');
+    const checkinAiPromptEl = document.getElementById('checkin-ai-prompt');
+    const checkinSaveBtn = document.getElementById('checkin-save-btn');
+    const checkinDeleteBtn = document.getElementById('checkin-delete-btn');
+    const checkinMsgEl = document.getElementById('checkin-msg');
+
     // Custom commands elements
     const customCmdSectionEl = document.getElementById('custom-commands-section');
     const customCmdLoadingEl = document.getElementById('custom-cmd-loading');
@@ -87,6 +101,23 @@ document.addEventListener('DOMContentLoaded', () => {
         input.setRangeText(varText, start, end, 'end');
     });
 
+    // Check-in variable chip click → insert at cursor
+    document.querySelector('.checkin-chips')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.var-chip');
+        if (!chip) return;
+        const varText = chip.dataset.var;
+        const input = checkinResponseEl;
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        input.focus();
+        input.setRangeText(varText, start, end, 'end');
+    });
+
+    // Check-in AI toggle: show/hide AI prompt field
+    checkinAiToggleEl.addEventListener('change', () => {
+        checkinAiPromptGroupEl.style.display = checkinAiToggleEl.checked ? 'block' : 'none';
+    });
+
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://api.wildcat.chat';
     let appSessionToken = null;
@@ -115,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
             updateBotStatusUI(true);
-            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands()]);
+            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
             return;
         }
 
@@ -155,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
-                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands()]);
+                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
                 } else {
                     showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                     botStatusEl.textContent = "Error";
@@ -183,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
+            checkinSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
             botStatusEl.classList.remove('text-success');
@@ -194,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
+            checkinSectionEl.style.display = 'block';
         }
         // Clear previous toast
         actionMessageEl.style.display = 'none';
@@ -885,6 +918,140 @@ document.addEventListener('DOMContentLoaded', () => {
         // Redirect to login
         window.location.href = 'index.html';
     });
+
+    // ─── Daily Check-In ─────────────────────────────────────────────────────────
+
+    function updateCheckinDeleteBtn(rewardId) {
+        checkinDeleteBtn.style.display = rewardId ? 'inline-block' : 'none';
+    }
+
+    async function loadCheckinSettings() {
+        if (!appSessionToken) return;
+        checkinLoadingEl.style.display = 'block';
+
+        if (DEV_MODE) {
+            setTimeout(() => {
+                checkinLoadingEl.style.display = 'none';
+                checkinEnabledEl.checked = false;
+                checkinTitleEl.value = 'Daily Check-In';
+                checkinCostEl.value = 100;
+                checkinResponseEl.value = '$(user) checked in! Day #$(checkin_count) 🎉';
+                checkinAiToggleEl.checked = false;
+                checkinAiPromptEl.value = '';
+                updateCheckinDeleteBtn(null);
+            }, 300);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/checkin`, {
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+            const data = await res.json();
+            checkinLoadingEl.style.display = 'none';
+
+            if (data.success && data.config) {
+                checkinEnabledEl.checked = !!data.config.enabled;
+                checkinTitleEl.value = data.config.title || 'Daily Check-In';
+                checkinCostEl.value = data.config.cost || 100;
+                checkinResponseEl.value = data.config.responseTemplate || '';
+                checkinAiToggleEl.checked = !!data.config.useAi;
+                checkinAiPromptEl.value = data.config.aiPrompt || '';
+                checkinAiPromptGroupEl.style.display = data.config.useAi ? 'block' : 'none';
+                updateCheckinDeleteBtn(data.config.rewardId);
+            }
+        } catch (error) {
+            console.error('Error loading check-in settings:', error);
+            checkinLoadingEl.style.display = 'none';
+        }
+    }
+
+    async function saveCheckinSettings() {
+        if (!appSessionToken) return;
+        checkinMsgEl.textContent = 'Saving...';
+        checkinMsgEl.className = 'text-muted mt-2 mb-0';
+
+        const body = {
+            enabled: checkinEnabledEl.checked,
+            title: checkinTitleEl.value.trim() || 'Daily Check-In',
+            cost: parseInt(checkinCostEl.value, 10) || 100,
+            responseTemplate: checkinResponseEl.value,
+            useAi: checkinAiToggleEl.checked,
+            aiPrompt: checkinAiPromptEl.value,
+        };
+
+        if (DEV_MODE) {
+            setTimeout(() => {
+                checkinMsgEl.textContent = '✅ Saved (dev mode)';
+                checkinMsgEl.className = 'text-success mt-2 mb-0';
+            }, 300);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/checkin`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                checkinMsgEl.textContent = '✅ ' + (data.message || 'Check-in settings saved!');
+                checkinMsgEl.className = 'text-success mt-2 mb-0';
+                showActionToast(data.message || 'Daily check-in settings saved.', 'success');
+                // Update delete button visibility from returned config
+                if (data.config?.rewardId) updateCheckinDeleteBtn(data.config.rewardId);
+            } else {
+                checkinMsgEl.textContent = data.message || 'Error saving settings';
+                checkinMsgEl.className = 'text-danger mt-2 mb-0';
+                if (data.needsReauth) {
+                    showActionToast('Please log in again to manage Channel Point Rewards.', 'danger', 0);
+                }
+            }
+        } catch (error) {
+            console.error('Error saving check-in settings:', error);
+            checkinMsgEl.textContent = 'Network error. Try again.';
+            checkinMsgEl.className = 'text-danger mt-2 mb-0';
+        }
+    }
+
+    async function deleteCheckinReward() {
+        if (!appSessionToken) return;
+        if (!confirm('Delete the Daily Check-In reward from your channel? This cannot be undone.')) return;
+
+        checkinMsgEl.textContent = 'Deleting...';
+        checkinMsgEl.className = 'text-muted mt-2 mb-0';
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/checkin`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                checkinMsgEl.textContent = '✅ ' + (data.message || 'Reward deleted');
+                checkinMsgEl.className = 'text-success mt-2 mb-0';
+                checkinEnabledEl.checked = false;
+                updateCheckinDeleteBtn(null);
+                showActionToast(data.message || 'Check-in reward deleted.', 'success');
+            } else {
+                checkinMsgEl.textContent = data.message || 'Error deleting reward';
+                checkinMsgEl.className = 'text-danger mt-2 mb-0';
+            }
+        } catch (error) {
+            console.error('Error deleting check-in reward:', error);
+            checkinMsgEl.textContent = 'Network error. Try again.';
+            checkinMsgEl.className = 'text-danger mt-2 mb-0';
+        }
+    }
+
+    checkinSaveBtn.addEventListener('click', saveCheckinSettings);
+    checkinDeleteBtn.addEventListener('click', deleteCheckinReward);
 
     initializeDashboard();
 });
