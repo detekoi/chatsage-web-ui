@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {SVGElement}
      */
     function createSuccessIcon() {
-        const svg = lucide.createElement(lucide.icons.CircleCheck);
+        const svg = lucide.createElement(lucide.icons['circle-check']);
         svg.classList.add('inline-icon', 'inline-icon--success');
         return svg;
     }
