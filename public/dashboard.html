@@ -285,8 +285,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Viewers redeem a Channel Point Reward to check in daily. The reward is
-                        created and managed automatically — just configure it below and save.
+                        Viewers redeem a Channel Point Reward to check in daily.
                         <em>Requires Twitch Affiliate or Partner status.</em>
                     </p>
 
@@ -302,44 +301,51 @@
                             <label class="form-check-label" for="checkin-enabled">Enable Daily Check-In</label>
                         </div>
 
-                        <div class="row mb-2">
-                            <div class="col-8">
-                                <label for="checkin-title" class="form-label">Reward Title</label>
-                                <input type="text" class="form-control" id="checkin-title" value="Daily Check-In"
-                                    maxlength="45" autocomplete="off">
+                        <div id="checkin-config-fields" style="display:none;">
+                            <div class="row mb-2">
+                                <div class="col-8">
+                                    <label for="checkin-title" class="form-label">Reward Title</label>
+                                    <input type="text" class="form-control" id="checkin-title" value="Daily Check-In"
+                                        maxlength="45" autocomplete="off">
+                                </div>
+                                <div class="col-4">
+                                    <label for="checkin-cost" class="form-label">Cost</label>
+                                    <input type="number" class="form-control" id="checkin-cost" value="100" min="1"
+                                        max="999999">
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <label for="checkin-cost" class="form-label">Cost</label>
-                                <input type="number" class="form-control" id="checkin-cost" value="100" min="1"
-                                    max="999999">
-                            </div>
-                        </div>
 
-                        <div class="mb-2">
-                            <label for="checkin-response" class="form-label">Response Template</label>
-                            <input type="text" class="form-control" id="checkin-response"
-                                placeholder="$(user) checked in! Day #$(checkin_count) 🎉" maxlength="500"
-                                autocomplete="off">
-                            <div class="variable-chips checkin-chips">
-                                <span class="var-chip" data-var="$(user)">$(user)</span>
-                                <span class="var-chip" data-var="$(checkin_count)">$(checkin_count)</span>
-                                <span class="var-chip" data-var="$(channel)">$(channel)</span>
+                            <div class="mb-2" id="checkin-response-group">
+                                <label for="checkin-response" class="form-label">Response Template</label>
+                                <input type="text" class="form-control" id="checkin-response"
+                                    placeholder="$(user) checked in! Day #$(checkin_count) 🎉" maxlength="500"
+                                    autocomplete="off">
+                                <div class="variable-chips checkin-chips">
+                                    <span class="var-chip" data-var="$(user)">$(user)</span>
+                                    <span class="var-chip" data-var="$(checkin_count)">$(checkin_count)</span>
+                                    <span class="var-chip" data-var="$(channel)">$(channel)</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-2">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="checkin-ai-toggle">
-                                <label class="form-check-label" for="checkin-ai-toggle">AI Mode <small
-                                        class="text-muted">(generates a unique message each time)</small></label>
+                            <div class="mb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="checkin-ai-toggle">
+                                    <label class="form-check-label" for="checkin-ai-toggle">AI Mode <small
+                                            class="text-muted">(generates a unique message each time)</small></label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mb-2" id="checkin-ai-prompt-group" style="display:none;">
-                            <label for="checkin-ai-prompt" class="form-label">AI Prompt</label>
-                            <input type="text" class="form-control" id="checkin-ai-prompt"
-                                placeholder="Write a fun, short congratulatory message for $(user) on their $(checkin_count)th daily check-in."
-                                maxlength="500" autocomplete="off">
+                            <div class="mb-2" id="checkin-ai-prompt-group" style="display:none;">
+                                <label for="checkin-ai-prompt" class="form-label">AI Prompt</label>
+                                <input type="text" class="form-control" id="checkin-ai-prompt"
+                                    placeholder="Write a fun, short congratulatory message for $(user) on their $(checkin_count)th daily check-in."
+                                    maxlength="500" autocomplete="off">
+                                <div class="variable-chips checkin-ai-chips">
+                                    <span class="var-chip" data-var="$(user)">$(user)</span>
+                                    <span class="var-chip" data-var="$(checkin_count)">$(checkin_count)</span>
+                                    <span class="var-chip" data-var="$(channel)">$(channel)</span>
+                                </div>
+                            </div>
                         </div>
 
                         <button id="checkin-save-btn" class="btn btn-outline-primary btn-sm" type="button">Save</button>

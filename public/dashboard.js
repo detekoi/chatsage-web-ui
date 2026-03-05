@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkinSaveBtn = document.getElementById('checkin-save-btn');
     const checkinDeleteBtn = document.getElementById('checkin-delete-btn');
     const checkinMsgEl = document.getElementById('checkin-msg');
+    const checkinConfigFieldsEl = document.getElementById('checkin-config-fields');
+    const checkinResponseGroupEl = document.getElementById('checkin-response-group');
 
     // Custom commands elements
     const customCmdSectionEl = document.getElementById('custom-commands-section');
@@ -101,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.setRangeText(varText, start, end, 'end');
     });
 
-    // Check-in variable chip click → insert at cursor
+    // Check-in variable chip click → insert at cursor in the active field
     document.querySelector('.checkin-chips')?.addEventListener('click', (e) => {
         const chip = e.target.closest('.var-chip');
         if (!chip) return;
@@ -113,10 +115,31 @@ document.addEventListener('DOMContentLoaded', () => {
         input.setRangeText(varText, start, end, 'end');
     });
 
-    // Check-in AI toggle: show/hide AI prompt field
-    checkinAiToggleEl.addEventListener('change', () => {
-        checkinAiPromptGroupEl.style.display = checkinAiToggleEl.checked ? 'block' : 'none';
+    // Check-in AI prompt variable chip click → insert at cursor in AI prompt
+    document.querySelector('.checkin-ai-chips')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.var-chip');
+        if (!chip) return;
+        const varText = chip.dataset.var;
+        const input = checkinAiPromptEl;
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        input.focus();
+        input.setRangeText(varText, start, end, 'end');
     });
+
+    // Check-in AI toggle: show AI prompt OR response template (not both)
+    function updateCheckinAiVisibility() {
+        const aiOn = checkinAiToggleEl.checked;
+        checkinResponseGroupEl.style.display = aiOn ? 'none' : 'block';
+        checkinAiPromptGroupEl.style.display = aiOn ? 'block' : 'none';
+    }
+    checkinAiToggleEl.addEventListener('change', updateCheckinAiVisibility);
+
+    // Check-in enable toggle: collapse/expand config fields
+    function updateCheckinConfigVisibility() {
+        checkinConfigFieldsEl.style.display = checkinEnabledEl.checked ? 'block' : 'none';
+    }
+    checkinEnabledEl.addEventListener('change', updateCheckinConfigVisibility);
 
     // IMPORTANT: Configure this to your deployed Cloud Run Function URL
     const API_BASE_URL = 'https://api.wildcat.chat';
@@ -939,6 +962,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkinAiToggleEl.checked = false;
                 checkinAiPromptEl.value = '';
                 updateCheckinDeleteBtn(null);
+                updateCheckinConfigVisibility();
+                updateCheckinAiVisibility();
             }, 300);
             return;
         }
@@ -957,8 +982,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkinResponseEl.value = data.config.responseTemplate || '';
                 checkinAiToggleEl.checked = !!data.config.useAi;
                 checkinAiPromptEl.value = data.config.aiPrompt || '';
-                checkinAiPromptGroupEl.style.display = data.config.useAi ? 'block' : 'none';
+                updateCheckinAiVisibility();
                 updateCheckinDeleteBtn(data.config.rewardId);
+                updateCheckinConfigVisibility();
             }
         } catch (error) {
             console.error('Error loading check-in settings:', error);
