@@ -8,6 +8,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let actionToastTimer = null;
 
     /**
+     * Create a Lucide circle-check SVG element for inline success indicators.
+     * @returns {SVGElement}
+     */
+    function createSuccessIcon() {
+        const svg = lucide.createElement(lucide.icons.CircleCheck);
+        svg.classList.add('inline-icon', 'inline-icon--success');
+        return svg;
+    }
+
+    /**
+     * Set an element's content to a success icon followed by a text message.
+     * @param {HTMLElement} el - Target element
+     * @param {string} text - Message text
+     */
+    function setSuccessMessage(el, text) {
+        el.textContent = '';
+        el.appendChild(createSuccessIcon());
+        el.appendChild(document.createTextNode(' ' + text));
+    }
+
+    /**
      * Show the action message as a fixed toast notification that auto-dismisses.
      * @param {string} text - Message text
      * @param {'success'|'danger'|'info'|'warning'} type - Bootstrap alert type
@@ -1008,7 +1029,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (DEV_MODE) {
             setTimeout(() => {
-                checkinMsgEl.textContent = '✅ Saved (dev mode)';
+                setSuccessMessage(checkinMsgEl, 'Saved (dev mode)');
                 checkinMsgEl.className = 'text-success mt-2 mb-0';
             }, 300);
             return;
@@ -1026,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             if (data.success) {
-                checkinMsgEl.textContent = '✅ ' + (data.message || 'Check-in settings saved!');
+                setSuccessMessage(checkinMsgEl, data.message || 'Check-in settings saved!');
                 checkinMsgEl.className = 'text-success mt-2 mb-0';
                 showActionToast(data.message || 'Daily check-in settings saved.', 'success');
                 // Update delete button visibility from returned config
@@ -1060,7 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
 
             if (data.success) {
-                checkinMsgEl.textContent = '✅ ' + (data.message || 'Reward deleted');
+                setSuccessMessage(checkinMsgEl, data.message || 'Reward deleted');
                 checkinMsgEl.className = 'text-success mt-2 mb-0';
                 checkinEnabledEl.checked = false;
                 updateCheckinDeleteBtn(null);

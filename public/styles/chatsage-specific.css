@@ -408,3 +408,18 @@
     max-width: 300px;
   }
 }
+
+/* =====================================================
+   INLINE LUCIDE ICONS
+   ===================================================== */
+.inline-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  stroke-width: 2;
+}
+
+.inline-icon--success {
+  color: currentColor;
+}
