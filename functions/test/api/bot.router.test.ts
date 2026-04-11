@@ -132,6 +132,13 @@ describe("Bot Router", () => {
         displayName: "TestUser",
       });
 
+      // Both getValidTwitchTokenForUser (inside /add) and the doc existence check
+      // in the router need the Firestore doc to exist.
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ channelName: "testuser", isActive: false }),
+      });
+
       const app = createApp();
       const res = await request(app)
         .post("/add")
@@ -147,6 +154,9 @@ describe("Bot Router", () => {
         userId: "999",
         displayName: "NotAllowed",
       });
+
+      // Firestore doc doesn't exist for this user — triggers the channel not-approved 403.
+      mockGet.mockResolvedValue({ exists: false });
 
       const app = createApp();
       const res = await request(app)

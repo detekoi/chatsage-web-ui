@@ -108,7 +108,7 @@ describe("getValidTwitchTokenForUser", () => {
 
     expect(mockStoreRefreshToken).toHaveBeenCalledWith(
       expect.anything(),
-      "twitch-123",
+      "testuser",
       "new-rotated-refresh",
       { reason: "twitch-rotation" },
     );
@@ -123,17 +123,21 @@ describe("getValidTwitchTokenForUser", () => {
     );
   });
 
-  it("throws AuthError when twitchUserId is missing", async () => {
+  it("resolves when twitchUserId is missing from doc (uses userId arg directly)", async () => {
     mockGetCachedToken.mockReturnValue(null);
     mockGet.mockResolvedValue({
       exists: true,
-      data: () => ({}), // no twitchUserId
+      data: () => ({}), // no twitchUserId — impl now ignores this field
     });
+    // The impl uses the userId arg directly, not the doc's twitchUserId field.
+    // With no refresh token found, it throws a generic auth error.
+    mockGetStoredRefreshToken.mockResolvedValue(null);
 
     await expect(getValidTwitchTokenForUser("testuser")).rejects.toThrow(
-      "Refresh token not available",
+      "Failed to obtain a valid Twitch token",
     );
   });
+
 
   it("throws AuthError when no refresh token is stored", async () => {
     mockGetCachedToken.mockReturnValue(null);

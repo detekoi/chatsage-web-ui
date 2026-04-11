@@ -118,7 +118,7 @@ export async function getAllowedChannelsList(): Promise<string[]> {
 
     const channels = csvData
       .split(",")
-      .map((id) => id.trim())
+      .map((id) => id.trim().toLowerCase())
       .filter(Boolean);
 
     logger.info(`Loaded ${channels.length} allowed broadcaster IDs from Secret Manager`);
