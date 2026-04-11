@@ -123,6 +123,49 @@
             </div>
         </div>
 
+        <!-- Stream Events Section -->
+        <div id="stream-events-section" style="display:none;">
+            <div class="card mb-4 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0">Stream Events</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:0.8125rem;">
+                        AI-generated messages for stream lifecycle events. These work independently of Auto-Chat.
+                    </p>
+                    <div id="stream-events-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading stream event settings...</p>
+                    </div>
+                    <div class="stream-events-form">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-greetings-toggle" checked>
+                            <label class="form-check-label" for="stream-greetings-toggle">Stream Greetings</label>
+                            <small class="d-block text-muted">Greet when the stream goes live and say farewell when it ends</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-follows-toggle" checked>
+                            <label class="form-check-label" for="stream-follows-toggle">New Followers</label>
+                            <small class="d-block text-muted">Celebrate when someone follows the channel</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-subscriptions-toggle" checked>
+                            <label class="form-check-label" for="stream-subscriptions-toggle">Subscriptions</label>
+                            <small class="d-block text-muted">Celebrate new subscribers</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-raids-toggle" checked>
+                            <label class="form-check-label" for="stream-raids-toggle">Raids</label>
+                            <small class="d-block text-muted">Welcome incoming raiders</small>
+                        </div>
+                        <p id="stream-events-message" class="text-muted mt-2 mb-0"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Auto-Chat Settings Section -->
         <div id="auto-chat-section" style="display:none;">
             <div class="card mb-4 shadow">
@@ -148,10 +191,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="auto-cat-greetings" checked>
-                                <label class="form-check-label" for="auto-cat-greetings">Greetings</label>
-                            </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
                                 <label class="form-check-label" for="auto-cat-facts">Facts/Tips</label>

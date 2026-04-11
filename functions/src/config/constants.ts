@@ -105,7 +105,9 @@ export const DEFAULT_AUTO_CHAT_CONFIG = {
     greetings: true,
     facts: true,
     questions: true,
-    celebrations: true,
+    follows: true,
+    subscriptions: true,
+    raids: true,
     ads: false,
   },
 };

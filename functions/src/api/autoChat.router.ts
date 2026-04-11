@@ -36,7 +36,9 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
           greetings: cfg.categories?.greetings !== false,
           facts: cfg.categories?.facts !== false,
           questions: cfg.categories?.questions !== false,
-          celebrations: cfg.categories?.celebrations !== false,
+          follows: cfg.categories?.follows !== false,
+          subscriptions: cfg.categories?.subscriptions !== false,
+          raids: cfg.categories?.raids !== false,
           ads: cfg.categories?.ads === true,
         },
       },
@@ -76,7 +78,9 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       greetings: existingCategories.greetings !== false,
       facts: existingCategories.facts !== false,
       questions: existingCategories.questions !== false,
-      celebrations: existingCategories.celebrations !== false,
+      follows: existingCategories.follows !== false,
+      subscriptions: existingCategories.subscriptions !== false,
+      raids: existingCategories.raids !== false,
       ads: existingCategories.ads === true,
     };
 
@@ -90,8 +94,14 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (typeof inputCategories.questions === "boolean") {
       mergedCategories.questions = inputCategories.questions;
     }
-    if (typeof inputCategories.celebrations === "boolean") {
-      mergedCategories.celebrations = inputCategories.celebrations;
+    if (typeof inputCategories.follows === "boolean") {
+      mergedCategories.follows = inputCategories.follows;
+    }
+    if (typeof inputCategories.subscriptions === "boolean") {
+      mergedCategories.subscriptions = inputCategories.subscriptions;
+    }
+    if (typeof inputCategories.raids === "boolean") {
+      mergedCategories.raids = inputCategories.raids;
     }
     if (typeof inputCategories.ads === "boolean") {
       mergedCategories.ads = inputCategories.ads;

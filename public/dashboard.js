@@ -59,10 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const autoSectionEl = document.getElementById('auto-chat-section');
     const autoLoadingEl = document.getElementById('auto-chat-loading');
     const autoModeEl = document.getElementById('auto-mode');
-    const autoCatGreetingsEl = document.getElementById('auto-cat-greetings');
     const autoCatFactsEl = document.getElementById('auto-cat-facts');
     const autoCatQuestionsEl = document.getElementById('auto-cat-questions');
     const autoMsgEl = document.getElementById('auto-chat-message');
+    const streamEventsSectionEl = document.getElementById('stream-events-section');
+    const streamEventsLoadingEl = document.getElementById('stream-events-loading');
+    const streamGreetingsToggleEl = document.getElementById('stream-greetings-toggle');
+    const streamFollowsToggleEl = document.getElementById('stream-follows-toggle');
+    const streamSubscriptionsToggleEl = document.getElementById('stream-subscriptions-toggle');
+    const streamRaidsToggleEl = document.getElementById('stream-raids-toggle');
+    const streamEventsMsgEl = document.getElementById('stream-events-message');
     const adNotificationsSectionEl = document.getElementById('ad-notifications-section');
     const adNotificationsLoadingEl = document.getElementById('ad-notifications-loading');
     const autoCatAdsEl = document.getElementById('auto-cat-ads');
@@ -191,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
             updateBotStatusUI(true);
-            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
+            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadStreamEventsSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
             return;
         }
 
@@ -231,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
-                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
+                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadStreamEventsSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
                 } else {
                     showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                     botStatusEl.textContent = "Error";
@@ -256,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             removeBotBtn.style.display = 'inline-block';
             // Show settings sections when bot is active
             commandsSectionEl.style.display = 'block';
+            streamEventsSectionEl.style.display = 'block';
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
@@ -268,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             removeBotBtn.style.display = 'none';
             // Show settings even when inactive for pre-configuration
             commandsSectionEl.style.display = 'block';
+            streamEventsSectionEl.style.display = 'block';
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
@@ -335,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 autoLoadingEl.style.display = 'none';
                 autoModeEl.value = 'medium';
-                autoCatGreetingsEl.checked = true;
                 autoCatFactsEl.checked = true;
                 autoCatQuestionsEl.checked = false;
             }, 500);
@@ -354,7 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success && data.config) {
                 const cfg = data.config;
                 autoModeEl.value = cfg.mode || 'off';
-                autoCatGreetingsEl.checked = cfg.categories?.greetings !== false;
                 autoCatFactsEl.checked = cfg.categories?.facts !== false;
                 autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
             } else {
@@ -404,6 +410,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function loadStreamEventsSettings() {
+        if (!appSessionToken) return;
+
+        streamEventsLoadingEl.style.display = 'block';
+
+        // DEV MODE: Use mock data
+        if (DEV_MODE) {
+            setTimeout(() => {
+                streamEventsLoadingEl.style.display = 'none';
+                streamGreetingsToggleEl.checked = true;
+                streamFollowsToggleEl.checked = true;
+                streamSubscriptionsToggleEl.checked = true;
+                streamRaidsToggleEl.checked = true;
+            }, 500);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`
+                }
+            });
+            const data = await res.json();
+            streamEventsLoadingEl.style.display = 'none';
+            if (data.success && data.config) {
+                streamGreetingsToggleEl.checked = data.config.categories?.greetings !== false;
+                streamFollowsToggleEl.checked = data.config.categories?.follows !== false;
+                streamSubscriptionsToggleEl.checked = data.config.categories?.subscriptions !== false;
+                streamRaidsToggleEl.checked = data.config.categories?.raids !== false;
+            } else {
+                streamEventsMsgEl.textContent = 'Failed to load stream event settings.';
+                streamEventsMsgEl.style.color = '#ff6b6b';
+            }
+        } catch (e) {
+            console.error('Error loading stream events:', e);
+            streamEventsLoadingEl.style.display = 'none';
+            streamEventsMsgEl.textContent = 'Error loading stream event settings.';
+            streamEventsMsgEl.style.color = '#ff6b6b';
+        }
+    }
+
+    let streamEventsSaveRequestId = 0;
+    async function saveStreamEventsSettings() {
+        if (!appSessionToken) return;
+
+        const currentRequestId = ++streamEventsSaveRequestId;
+        streamEventsMsgEl.textContent = 'Saving...';
+
+        // DEV MODE: Mock save
+        if (DEV_MODE) {
+            setTimeout(() => {
+                if (currentRequestId === streamEventsSaveRequestId) {
+                    streamEventsMsgEl.textContent = 'Stream event settings saved (dev mode).';
+                    streamEventsMsgEl.style.color = '#4ecdc4';
+                }
+            }, 500);
+            return;
+        }
+
+        try {
+            const body = {
+                categories: {
+                    greetings: !!streamGreetingsToggleEl.checked,
+                    follows: !!streamFollowsToggleEl.checked,
+                    subscriptions: !!streamSubscriptionsToggleEl.checked,
+                    raids: !!streamRaidsToggleEl.checked,
+                }
+            };
+            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (currentRequestId === streamEventsSaveRequestId) {
+                if (data.success) {
+                    streamEventsMsgEl.textContent = 'Stream event settings saved.';
+                    streamEventsMsgEl.style.color = '#4ecdc4';
+                } else {
+                    streamEventsMsgEl.textContent = data.message || 'Failed to save stream event settings.';
+                    streamEventsMsgEl.style.color = '#ff6b6b';
+                }
+            }
+        } catch (e) {
+            console.error('Error saving stream events:', e);
+            streamEventsMsgEl.textContent = 'Error saving stream event settings.';
+            streamEventsMsgEl.style.color = '#ff6b6b';
+        }
+    }
+
     let autoSaveRequestId = 0;
     async function saveAutoChatSettings() {
         if (!appSessionToken) return;
@@ -426,7 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = {
                 mode: autoModeEl.value,
                 categories: {
-                    greetings: !!autoCatGreetingsEl.checked,
                     facts: !!autoCatFactsEl.checked,
                     questions: !!autoCatQuestionsEl.checked,
                 }
@@ -514,8 +614,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
     const debouncedAutoSave = debounce(saveAutoChatSettings, 600);
-    [autoModeEl, autoCatGreetingsEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
+    [autoModeEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
         el.addEventListener('change', debouncedAutoSave);
+    });
+
+    // Debounced auto-save for stream events
+    const debouncedStreamEventsSave = debounce(saveStreamEventsSettings, 600);
+    [streamGreetingsToggleEl, streamFollowsToggleEl, streamSubscriptionsToggleEl, streamRaidsToggleEl].forEach(el => {
+        el.addEventListener('change', debouncedStreamEventsSave);
     });
 
     // Debounced auto-save for ad notifications
