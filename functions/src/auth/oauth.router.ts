@@ -31,7 +31,7 @@ function buildTwitchAuthUrl(clientId: string, redirectUri: string, state: string
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("redirect_uri", redirectUri);
   authUrl.searchParams.set("response_type", "code");
-  authUrl.searchParams.set("scope", "user:read:email channel:read:ads channel:manage:moderators moderator:read:followers channel:manage:redemptions");
+  authUrl.searchParams.set("scope", "user:read:email channel:read:ads channel:read:subscriptions channel:manage:moderators moderator:read:followers channel:manage:redemptions");
   authUrl.searchParams.set("state", state);
   authUrl.searchParams.set("force_verify", "true");
   return authUrl;
