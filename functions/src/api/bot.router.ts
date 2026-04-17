@@ -98,7 +98,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
       logger.warn("Channel not approved in Firestore", { channelLogin, broadcasterUserId });
       return res.status(403).json({
         success: false,
-        message: "Your channel is not on the allow-list. Contact me for access: https://detekoi.github.io/index.html#contact-me",
+        message: "Your channel is not on the allow-list. Contact me for access: https://parfaitfair.com/#contact",
       });
     }
 

@@ -4,7 +4,7 @@
 
 ChatSage Bot Management is a web application that allows approved Twitch streamers to manage the ChatSage bot for their channel. Users can log in with their Twitch account to add or remove the bot, and view its current status. The application features a dynamic, animated background.
 
-> **Important:** Access to ChatSage is currently invite-only. The management interface will show an access denied message for unapproved channels. If you'd like to request access, please contact me via [this contact form](https://detekoi.github.io/#contact-me).
+> **Important:** Access to ChatSage is currently invite-only. The management interface will show an access denied message for unapproved channels. If you'd like to request access, please contact me via [this contact form](https://parfaitfair.com/#contact).
 
 ## Features
 
@@ -54,7 +54,7 @@ ChatSage Bot Management is a web application that allows approved Twitch streame
 
 ## Usage
 
-**Note:** Access is restricted to approved channels only. If your channel is not on the allow-list, you'll see an access denied message. [Request access via this contact form](https://detekoi.github.io/#contact-me).
+**Note:** Access is restricted to approved channels only. If your channel is not on the allow-list, you'll see an access denied message. [Request access via this contact form](https://parfaitfair.com/#contact).
 
 1.  Access the hosted application URL.
 2.  Click on the "Login with Twitch" button to authenticate.
