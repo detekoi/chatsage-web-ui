@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
             updateBotStatusUI(true);
-            await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadStreamEventsSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
+            await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
             return;
         }
 
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
-                    await Promise.all([loadCommandSettings(), loadAutoChatSettings(), loadStreamEventsSettings(), loadAdNotificationsSettings(), loadCustomCommands(), loadCheckinSettings()]);
+                    await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
                 } else {
                     showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                     botStatusEl.textContent = "Error";
@@ -333,122 +333,97 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function loadAutoChatSettings() {
-        if (!appSessionToken) return;
-
+    /**
+     * Fetches auto-chat config and applies it to all three UI sections.
+     * Shows loading spinners before fetch, hides them after apply.
+     */
+    async function loadAndApplyAutoChatConfig() {
         autoLoadingEl.style.display = 'block';
+        adNotificationsLoadingEl.style.display = 'block';
+        streamEventsLoadingEl.style.display = 'block';
+        const config = await fetchAutoChatConfig();
+        applyAutoChatSettings(config);
+        applyAdNotificationsSettings(config);
+        applyStreamEventsSettings(config);
+    }
 
-        // DEV MODE: Use mock data
+    async function fetchAutoChatConfig() {
+        if (!appSessionToken) return null;
+
+        // DEV MODE: Return mock config
         if (DEV_MODE) {
-            setTimeout(() => {
-                autoLoadingEl.style.display = 'none';
-                autoModeEl.value = 'medium';
-                autoCatFactsEl.checked = true;
-                autoCatQuestionsEl.checked = false;
-            }, 500);
-            return;
+            return {
+                mode: 'medium',
+                categories: {
+                    facts: true,
+                    questions: false,
+                    ads: true,
+                    greetings: true,
+                    follows: true,
+                    subscriptions: true,
+                    raids: true,
+                }
+            };
         }
 
         try {
             const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${appSessionToken}`
-                }
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
             });
             const data = await res.json();
-            autoLoadingEl.style.display = 'none';
             if (data.success && data.config) {
-                const cfg = data.config;
-                autoModeEl.value = cfg.mode || 'off';
-                autoCatFactsEl.checked = cfg.categories?.facts !== false;
-                autoCatQuestionsEl.checked = cfg.categories?.questions !== false;
-            } else {
-                showActionToast('Failed to load auto-chat settings.', 'danger');
+                return data.config;
             }
+            return null;
         } catch (e) {
-            console.error('Error loading auto-chat:', e);
-            autoLoadingEl.style.display = 'none';
-            showActionToast('Error loading auto-chat settings.', 'danger');
+            console.error('Error fetching auto-chat config:', e);
+            return null;
         }
     }
 
-    async function loadAdNotificationsSettings() {
-        if (!appSessionToken) return;
-
-        adNotificationsLoadingEl.style.display = 'block';
-
-        // DEV MODE: Use mock data
-        if (DEV_MODE) {
-            setTimeout(() => {
-                adNotificationsLoadingEl.style.display = 'none';
-                autoCatAdsEl.checked = true;
-            }, 500);
-            return;
+    /**
+     * Applies pre-fetched auto-chat config to the auto-chat UI section.
+     * @param {object|null} config - The auto-chat config from fetchAutoChatConfig().
+     */
+    function applyAutoChatSettings(config) {
+        autoLoadingEl.style.display = 'none';
+        if (config) {
+            autoModeEl.value = config.mode || 'off';
+            autoCatFactsEl.checked = config.categories?.facts !== false;
+            autoCatQuestionsEl.checked = config.categories?.questions !== false;
+        } else {
+            showActionToast('Failed to load auto-chat settings.', 'danger');
         }
+    }
 
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${appSessionToken}`
-                }
-            });
-            const data = await res.json();
-            adNotificationsLoadingEl.style.display = 'none';
-            if (data.success && data.config) {
-                autoCatAdsEl.checked = data.config.categories?.ads === true;
-            } else {
-                adNotificationsMsgEl.textContent = 'Failed to load ad notification settings.';
-                adNotificationsMsgEl.style.color = '#ff6b6b';
-            }
-        } catch (e) {
-            console.error('Error loading ad notifications:', e);
-            adNotificationsLoadingEl.style.display = 'none';
-            adNotificationsMsgEl.textContent = 'Error loading ad notification settings.';
+    /**
+     * Applies pre-fetched auto-chat config to the ad notifications UI section.
+     * @param {object|null} config - The auto-chat config from fetchAutoChatConfig().
+     */
+    function applyAdNotificationsSettings(config) {
+        adNotificationsLoadingEl.style.display = 'none';
+        if (config) {
+            autoCatAdsEl.checked = config.categories?.ads === true;
+        } else {
+            adNotificationsMsgEl.textContent = 'Failed to load ad notification settings.';
             adNotificationsMsgEl.style.color = '#ff6b6b';
         }
     }
 
-    async function loadStreamEventsSettings() {
-        if (!appSessionToken) return;
-
-        streamEventsLoadingEl.style.display = 'block';
-
-        // DEV MODE: Use mock data
-        if (DEV_MODE) {
-            setTimeout(() => {
-                streamEventsLoadingEl.style.display = 'none';
-                streamGreetingsToggleEl.checked = true;
-                streamFollowsToggleEl.checked = true;
-                streamSubscriptionsToggleEl.checked = true;
-                streamRaidsToggleEl.checked = true;
-            }, 500);
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/auto-chat`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${appSessionToken}`
-                }
-            });
-            const data = await res.json();
-            streamEventsLoadingEl.style.display = 'none';
-            if (data.success && data.config) {
-                streamGreetingsToggleEl.checked = data.config.categories?.greetings !== false;
-                streamFollowsToggleEl.checked = data.config.categories?.follows !== false;
-                streamSubscriptionsToggleEl.checked = data.config.categories?.subscriptions !== false;
-                streamRaidsToggleEl.checked = data.config.categories?.raids !== false;
-            } else {
-                streamEventsMsgEl.textContent = 'Failed to load stream event settings.';
-                streamEventsMsgEl.style.color = '#ff6b6b';
-            }
-        } catch (e) {
-            console.error('Error loading stream events:', e);
-            streamEventsLoadingEl.style.display = 'none';
-            streamEventsMsgEl.textContent = 'Error loading stream event settings.';
+    /**
+     * Applies pre-fetched auto-chat config to the stream events UI section.
+     * @param {object|null} config - The auto-chat config from fetchAutoChatConfig().
+     */
+    function applyStreamEventsSettings(config) {
+        streamEventsLoadingEl.style.display = 'none';
+        if (config) {
+            streamGreetingsToggleEl.checked = config.categories?.greetings !== false;
+            streamFollowsToggleEl.checked = config.categories?.follows !== false;
+            streamSubscriptionsToggleEl.checked = config.categories?.subscriptions !== false;
+            streamRaidsToggleEl.checked = config.categories?.raids !== false;
+        } else {
+            streamEventsMsgEl.textContent = 'Failed to load stream event settings.';
             streamEventsMsgEl.style.color = '#ff6b6b';
         }
     }
@@ -1018,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showActionToast(data.message, data.success ? 'success' : 'danger');
             if (data.success) {
                 updateBotStatusUI(true);
-                await loadCommandSettings();
+                await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
             } else {
                 // error already shown via showActionToast above
             }
