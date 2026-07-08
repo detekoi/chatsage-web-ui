@@ -108,6 +108,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const customCmdResponseLabelEl = document.getElementById('custom-cmd-response-label');
     let customCmdEditingName = null; // Track whether we're editing an existing command
 
+    // Timed messages elements
+    const timersSectionEl = document.getElementById('timers-section');
+    const timerLoadingEl = document.getElementById('timer-loading');
+    const timerListEl = document.getElementById('timer-list');
+    const timerEmptyEl = document.getElementById('timer-empty');
+    const timerFormEl = document.getElementById('timer-form');
+    const timerAddBtn = document.getElementById('timer-add-btn');
+    const timerSaveBtn = document.getElementById('timer-save-btn');
+    const timerCancelBtn = document.getElementById('timer-cancel-btn');
+    const timerNameEl = document.getElementById('timer-name');
+    const timerResponseEl = document.getElementById('timer-response');
+    const timerIntervalEl = document.getElementById('timer-interval');
+    const timerLinesEl = document.getElementById('timer-lines');
+    const timerFormMsgEl = document.getElementById('timer-form-msg');
+    const timerTypeToggleEl = document.getElementById('timer-type-toggle');
+    const timerResponseLabelEl = document.getElementById('timer-response-label');
+    let timerEditingName = null; // Track whether we're editing an existing timer
+
+    // Toggle label when timer AI mode changes
+    timerTypeToggleEl.addEventListener('change', () => {
+        if (timerTypeToggleEl.checked) {
+            timerResponseLabelEl.textContent = 'AI Prompt';
+            timerResponseEl.placeholder = 'Remind chat about the Discord in a fun way that fits the current game.';
+        } else {
+            timerResponseLabelEl.textContent = 'Message';
+            timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+        }
+    });
+
+    // Timer variable chip click → insert at cursor in message field
+    document.querySelector('.timer-chips')?.addEventListener('click', (e) => {
+        const chip = e.target.closest('.var-chip');
+        if (!chip) return;
+        const varText = chip.dataset.var;
+        const input = timerResponseEl;
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        input.focus();
+        input.setRangeText(varText, start, end, 'end');
+    });
+
     // Toggle label when AI mode changes
     customCmdTypeToggleEl.addEventListener('change', () => {
         if (customCmdTypeToggleEl.checked) {
@@ -197,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             twitchUsernameEl.textContent = loggedInUser.displayName;
             channelNameStatusEl.textContent = loggedInUser.login;
             updateBotStatusUI(true);
-            await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
+            await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadTimers(), loadCheckinSettings()]);
             return;
         }
 
@@ -237,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusData.success) {
                     updateBotStatusUI(statusData.isActive);
                     // Load command, auto-chat, and ad notifications settings after bot status is loaded
-                    await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
+                    await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadTimers(), loadCheckinSettings()]);
                 } else {
                     showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                     botStatusEl.textContent = "Error";
@@ -266,6 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
+            timersSectionEl.style.display = 'block';
             checkinSectionEl.style.display = 'block';
         } else {
             botStatusEl.textContent = 'Inactive / Not Joined';
@@ -279,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             autoSectionEl.style.display = 'block';
             adNotificationsSectionEl.style.display = 'block';
             customCmdSectionEl.style.display = 'block';
+            timersSectionEl.style.display = 'block';
             checkinSectionEl.style.display = 'block';
         }
         // Clear previous toast
@@ -879,6 +922,350 @@ document.addEventListener('DOMContentLoaded', () => {
     customCmdSaveBtn.addEventListener('click', saveCustomCommand);
     customCmdCancelBtn.addEventListener('click', closeForm);
 
+    // ─── Timed Messages ──────────────────────────────────────────────────────
+
+    async function loadTimers() {
+        if (!appSessionToken) return;
+
+        timerLoadingEl.style.display = 'block';
+        timerListEl.innerHTML = '';
+        timerEmptyEl.style.display = 'none';
+
+        // DEV MODE: Use mock data
+        if (DEV_MODE) {
+            setTimeout(() => {
+                timerLoadingEl.style.display = 'none';
+                const mockTimers = [
+                    { name: 'discord', response: 'Enjoying the stream? Join the Discord!', type: 'text', intervalMinutes: 30, minChatLines: 5, enabled: true },
+                    { name: 'hype', response: 'Write a short hype message about the current game that invites chat to share their opinion.', type: 'prompt', intervalMinutes: 20, minChatLines: 10, enabled: false },
+                ];
+                renderTimersList(mockTimers);
+            }, 500);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/timers`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+            const data = await res.json();
+            timerLoadingEl.style.display = 'none';
+
+            if (data.success && data.timers) {
+                renderTimersList(data.timers);
+            } else {
+                timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load timers.</div>';
+            }
+        } catch (error) {
+            console.error('Error loading timers:', error);
+            timerLoadingEl.style.display = 'none';
+            timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Error loading timers.</div>';
+        }
+    }
+
+    function renderTimersList(timers) {
+        timerListEl.innerHTML = '';
+
+        if (!timers || timers.length === 0) {
+            timerEmptyEl.style.display = 'block';
+            return;
+        }
+
+        timerEmptyEl.style.display = 'none';
+
+        timers.forEach(timer => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item';
+
+            const row = document.createElement('div');
+            row.className = 'cmd-row';
+
+            // Info column
+            const info = document.createElement('div');
+            info.className = 'cmd-info';
+
+            const name = document.createElement('p');
+            name.className = 'cmd-name';
+            name.textContent = timer.name;
+
+            const response = document.createElement('p');
+            response.className = 'cmd-response';
+            response.textContent = timer.response;
+
+            const meta = document.createElement('div');
+            meta.className = 'cmd-meta';
+
+            const interval = document.createElement('span');
+            interval.className = 'cmd-badge';
+            interval.textContent = `every ${timer.intervalMinutes}m`;
+            meta.appendChild(interval);
+
+            if (timer.minChatLines > 0) {
+                const lines = document.createElement('span');
+                lines.className = 'cmd-cooldown';
+                lines.textContent = `${timer.minChatLines} chat lines`;
+                meta.appendChild(lines);
+            }
+
+            if (timer.type === 'prompt') {
+                const aiBadge = document.createElement('span');
+                aiBadge.className = 'cmd-badge';
+                aiBadge.style.background = 'var(--bs-purple, #7c3aed)';
+                aiBadge.style.color = '#fff';
+                aiBadge.textContent = 'AI';
+                meta.appendChild(aiBadge);
+            }
+
+            info.appendChild(name);
+            info.appendChild(response);
+            info.appendChild(meta);
+
+            // Actions column: enabled toggle + edit/delete
+            const actions = document.createElement('div');
+            actions.className = 'cmd-actions';
+
+            const switchDiv = document.createElement('div');
+            switchDiv.className = 'form-check form-switch';
+
+            const checkbox = document.createElement('input');
+            checkbox.className = 'form-check-input';
+            checkbox.type = 'checkbox';
+            checkbox.id = `timer-enabled-${timer.name}`;
+            checkbox.checked = timer.enabled !== false;
+            checkbox.role = 'switch';
+            checkbox.title = 'Enable/disable this timer';
+            checkbox.addEventListener('change', async function () {
+                await toggleTimer(timer.name, this.checked, this);
+            });
+            switchDiv.appendChild(checkbox);
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'btn btn-outline-primary btn-sm';
+            editBtn.textContent = 'Edit';
+            editBtn.addEventListener('click', () => openTimerEditForm(timer));
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-outline-danger btn-sm';
+            deleteBtn.textContent = 'Del';
+            deleteBtn.addEventListener('click', () => deleteTimer(timer.name));
+
+            actions.appendChild(switchDiv);
+            actions.appendChild(editBtn);
+            actions.appendChild(deleteBtn);
+
+            row.appendChild(info);
+            row.appendChild(actions);
+            item.appendChild(row);
+            timerListEl.appendChild(item);
+        });
+    }
+
+    async function toggleTimer(name, enabled, checkboxEl) {
+        if (!appSessionToken) {
+            showActionToast("Authentication token missing. Please log in again.", 'danger');
+            checkboxEl.checked = !enabled;
+            return;
+        }
+
+        checkboxEl.disabled = true;
+
+        // DEV MODE: Mock toggle
+        if (DEV_MODE) {
+            setTimeout(() => {
+                showActionToast(`Timer "${name}" ${enabled ? 'enabled' : 'disabled'} (dev mode).`, 'success');
+                checkboxEl.disabled = false;
+            }, 500);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/timers/${encodeURIComponent(name)}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ enabled })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                showActionToast(`Timer "${name}" ${enabled ? 'enabled' : 'disabled'}.`, 'success');
+            } else {
+                showActionToast(data.message || 'Error updating timer.', 'danger');
+                checkboxEl.checked = !enabled; // Revert on error
+            }
+        } catch (error) {
+            console.error('Error toggling timer:', error);
+            showActionToast('Failed to update timer.', 'danger');
+            checkboxEl.checked = !enabled; // Revert on error
+        } finally {
+            checkboxEl.disabled = false;
+        }
+    }
+
+    function openTimerAddForm() {
+        timerEditingName = null;
+        timerNameEl.value = '';
+        timerNameEl.disabled = false;
+        timerResponseEl.value = '';
+        timerIntervalEl.value = '15';
+        timerLinesEl.value = '5';
+        timerTypeToggleEl.checked = false;
+        timerResponseLabelEl.textContent = 'Message';
+        timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+        timerFormMsgEl.textContent = '';
+        timerFormEl.style.display = 'block';
+        timerNameEl.focus();
+    }
+
+    function openTimerEditForm(timer) {
+        timerEditingName = timer.name;
+        timerNameEl.value = timer.name;
+        timerNameEl.disabled = true;
+        timerResponseEl.value = timer.response;
+        timerIntervalEl.value = String(timer.intervalMinutes || 15);
+        timerLinesEl.value = String(timer.minChatLines ?? 5);
+        timerTypeToggleEl.checked = timer.type === 'prompt';
+        timerResponseLabelEl.textContent = timer.type === 'prompt' ? 'AI Prompt' : 'Message';
+        timerResponseEl.placeholder = timer.type === 'prompt'
+            ? 'Remind chat about the Discord in a fun way that fits the current game.'
+            : 'Enjoying the stream? Join the Discord!';
+        timerFormMsgEl.textContent = '';
+        timerFormEl.style.display = 'block';
+        timerResponseEl.focus();
+    }
+
+    function closeTimerForm() {
+        timerFormEl.style.display = 'none';
+        timerEditingName = null;
+        timerFormMsgEl.textContent = '';
+    }
+
+    async function saveTimer() {
+        if (!appSessionToken) return;
+
+        const name = timerNameEl.value.trim().toLowerCase();
+        const response = timerResponseEl.value.trim();
+        const intervalMinutes = parseInt(timerIntervalEl.value, 10);
+        const minChatLines = parseInt(timerLinesEl.value, 10);
+
+        if (!name) {
+            timerFormMsgEl.textContent = 'Timer name is required.';
+            timerFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        if (!response) {
+            timerFormMsgEl.textContent = 'Message text is required.';
+            timerFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        if (isNaN(intervalMinutes) || intervalMinutes < 2 || intervalMinutes > 1440) {
+            timerFormMsgEl.textContent = 'Interval must be between 2 and 1440 minutes.';
+            timerFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        if (isNaN(minChatLines) || minChatLines < 0 || minChatLines > 100) {
+            timerFormMsgEl.textContent = 'Min chat lines must be between 0 and 100.';
+            timerFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
+        timerFormMsgEl.textContent = 'Saving...';
+        timerFormMsgEl.style.color = 'var(--text-muted)';
+        timerSaveBtn.disabled = true;
+
+        // DEV MODE: Mock save
+        if (DEV_MODE) {
+            setTimeout(() => {
+                timerFormMsgEl.textContent = `Timer "${name}" saved (dev mode).`;
+                timerFormMsgEl.style.color = '#4ecdc4';
+                timerSaveBtn.disabled = false;
+                closeTimerForm();
+                loadTimers();
+            }, 500);
+            return;
+        }
+
+        try {
+            const isEditing = !!timerEditingName;
+            const url = isEditing
+                ? `${API_BASE_URL}/api/timers/${encodeURIComponent(timerEditingName)}`
+                : `${API_BASE_URL}/api/timers`;
+            const method = isEditing ? 'PUT' : 'POST';
+
+            const body = {
+                response,
+                intervalMinutes,
+                minChatLines,
+                type: timerTypeToggleEl.checked ? 'prompt' : 'text',
+            };
+            if (!isEditing) body.name = name;
+
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${appSessionToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                closeTimerForm();
+                await loadTimers();
+            } else {
+                timerFormMsgEl.textContent = data.message || 'Failed to save timer.';
+                timerFormMsgEl.style.color = 'var(--danger-primary)';
+            }
+        } catch (error) {
+            console.error('Error saving timer:', error);
+            timerFormMsgEl.textContent = 'Error saving timer.';
+            timerFormMsgEl.style.color = 'var(--danger-primary)';
+        } finally {
+            timerSaveBtn.disabled = false;
+        }
+    }
+
+    async function deleteTimer(name) {
+        if (!confirm(`Delete timer "${name}"?`)) return;
+        if (!appSessionToken) return;
+
+        // DEV MODE: Mock delete
+        if (DEV_MODE) {
+            setTimeout(() => loadTimers(), 300);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/timers/${encodeURIComponent(name)}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${appSessionToken}` }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                await loadTimers();
+            } else {
+                showActionToast(data.message || 'Failed to delete timer.', 'danger');
+            }
+        } catch (error) {
+            console.error('Error deleting timer:', error);
+            showActionToast('Error deleting timer.', 'danger');
+        }
+    }
+
+    // Wire up timer form buttons
+    timerAddBtn.addEventListener('click', openTimerAddForm);
+    timerSaveBtn.addEventListener('click', saveTimer);
+    timerCancelBtn.addEventListener('click', closeTimerForm);
+
     function renderCommandsList(commands) {
         commandsListEl.innerHTML = '';
 
@@ -993,7 +1380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showActionToast(data.message, data.success ? 'success' : 'danger');
             if (data.success) {
                 updateBotStatusUI(true);
-                await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadCheckinSettings()]);
+                await Promise.all([loadAndApplyAutoChatConfig(), loadCommandSettings(), loadCustomCommands(), loadTimers(), loadCheckinSettings()]);
             } else {
                 // error already shown via showActionToast above
             }

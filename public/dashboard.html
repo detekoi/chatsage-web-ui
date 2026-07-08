@@ -320,6 +320,87 @@
             </div>
         </div>
 
+        <!-- Timed Messages Section -->
+        <div id="timers-section" style="display:none;">
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">Timed Messages</h5>
+                    <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon"></i> Add</button>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:0.8125rem;">
+                        Post messages on a schedule while the stream is live and chat is active.
+                    </p>
+
+                    <!-- Inline Add/Edit Form (hidden by default) -->
+                    <div id="timer-form" class="cmd-form" style="display:none;">
+                        <div class="mb-2">
+                            <label for="timer-name" class="form-label">Timer Name</label>
+                            <input type="text" class="form-control" id="timer-name" placeholder="discord"
+                                maxlength="25" autocomplete="off">
+                        </div>
+                        <div class="mb-2">
+                            <label for="timer-response" class="form-label" id="timer-response-label">Message</label>
+                            <input type="text" class="form-control" id="timer-response"
+                                placeholder="Enjoying the stream? Join the Discord!" maxlength="500" autocomplete="off">
+                            <div class="variable-chips timer-chips">
+                                <span class="var-chip" data-var="$(channel)">$(channel)</span>
+                                <span class="var-chip" data-var="$(game)">$(game)</span>
+                                <span class="var-chip" data-var="$(uptime)">$(uptime)</span>
+                                <span class="var-chip" data-var="$(count)">$(count)</span>
+                                <span class="var-chip" data-var="$(random X-Y)">$(random X-Y)</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="timer-type-toggle">
+                                <label class="form-check-label" for="timer-type-toggle">AI Mode <small
+                                        class="text-muted">(generates a unique message each time)</small></label>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label for="timer-interval" class="form-label">Interval (min)</label>
+                                <input type="number" class="form-control" id="timer-interval" value="15" min="2"
+                                    max="1440">
+                            </div>
+                            <div class="col">
+                                <label for="timer-lines" class="form-label">Min chat lines</label>
+                                <input type="number" class="form-control" id="timer-lines" value="5" min="0"
+                                    max="100">
+                                <small class="text-muted">Only fires after this many chat messages</small>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button id="timer-save-btn" class="btn btn-outline-primary btn-sm"
+                                type="button">Save</button>
+                            <button id="timer-cancel-btn" class="btn btn-outline-danger btn-sm"
+                                type="button">Cancel</button>
+                        </div>
+                        <p id="timer-form-msg" class="text-muted mt-2 mb-0"></p>
+                    </div>
+
+                    <!-- Loading spinner -->
+                    <div id="timer-loading" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading timers...</p>
+                    </div>
+
+                    <!-- Timer list -->
+                    <div id="timer-list" class="list-group"></div>
+
+                    <!-- Empty state -->
+                    <div id="timer-empty" class="text-center py-3" style="display:none;">
+                        <p class="text-muted mb-1">No timed messages yet.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Use the <strong>+ Add</strong> button or
+                            type <code>!timer add</code> / <code>!timer addai</code> in chat.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Daily Check-In (Channel Point Reward) Section -->
         <div id="checkin-section" style="display:none;">
             <div class="card mb-4 shadow">

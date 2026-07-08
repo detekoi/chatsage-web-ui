@@ -28,6 +28,7 @@ export const CHANNELS_COLLECTION = "managedChannels";
 export const AUTO_CHAT_COLLECTION = "autoChatConfigs";
 export const CHANNEL_COMMANDS_COLLECTION = "channelCommands";
 export const CUSTOM_COMMANDS_COLLECTION = "customCommands";
+export const CHANNEL_TIMERS_COLLECTION = "channelTimers";
 
 // Internal bot configuration
 export const WEBUI_INTERNAL_TOKEN = process.env.WEBUI_INTERNAL_TOKEN || "";

@@ -12,6 +12,7 @@ import autoChatRouter from "./autoChat.router";
 import authStatusRouter from "./authStatus.router";
 import customCommandsRouter from "./customCommands.router";
 import checkinRouter from "./checkin.router";
+import timersRouter from "./timers.router";
 
 const router = Router();
 
@@ -27,5 +28,6 @@ router.use("/auto-chat", autoChatRouter);
 router.use("/auth", authStatusRouter);
 router.use("/custom-commands", customCommandsRouter);
 router.use("/checkin", checkinRouter);
+router.use("/timers", timersRouter);
 
 export default router;
