@@ -222,7 +222,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       t.set(
         getDb().collection(CHANNEL_TIMERS_COLLECTION).doc(channelLogin),
         { channelName: channelLogin, updatedAt: FieldValue.serverTimestamp() },
-        { merge: true }
+        { merge: true },
       );
 
       return { status: 200 };
@@ -306,8 +306,6 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
           message: `Message must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
         });
       }
-      // Validate against the type the timer will have after this update
-      const effectiveType = (updates.type as string) || (existing.data()?.type ?? "text");
       const offenders = findUnsupportedTimerVariables(response);
       if (offenders.length > 0) {
         return res.status(400).json({
