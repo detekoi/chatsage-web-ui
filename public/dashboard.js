@@ -1152,8 +1152,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/[\s\-]+/g, '_')       // spaces and hyphens → underscores
             .replace(/[^a-z0-9_]/g, '')     // strip anything else
             .replace(/_{2,}/g, '_')          // collapse multiple underscores
-            .replace(/^_|_$/g, '')           // trim leading/trailing underscores
-            .slice(0, 25);
+            .slice(0, 25)
+            .replace(/^_|_$/g, '');          // trim leading/trailing underscores
     }
 
     async function saveTimer() {

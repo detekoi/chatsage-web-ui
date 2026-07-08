@@ -116,3 +116,19 @@ export function validateMode(mode: unknown, validModes: readonly string[]): stri
 
   return sanitized;
 }
+
+/**
+ * Sanitize a user-typed timer name into a valid slug.
+ * "Gaming news" → "gaming_news", "gaming-news" → "gaming_news"
+ */
+export function sanitizeTimerName(raw: unknown): string {
+  if (!raw || typeof raw !== "string") return "";
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .replace(/_{2,}/g, "_")
+    .slice(0, 25)
+    .replace(/^_|_$/g, "");
+}

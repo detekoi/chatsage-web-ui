@@ -13,6 +13,7 @@ import { getDb, FieldValue } from "@/config/database";
 import { CHANNEL_TIMERS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
+import { sanitizeTimerName } from "@/utils/validation";
 
 const router = Router();
 
@@ -64,22 +65,6 @@ function findUnsupportedTimerVariables(template: string): string[] {
     }
   }
   return offenders;
-}
-
-/**
- * Sanitize a user-typed timer name into a valid slug.
- * "Gaming news" → "gaming_news", "gaming-news" → "gaming_news"
- */
-function sanitizeTimerName(raw: unknown): string {
-  if (!raw || typeof raw !== "string") return "";
-  return raw
-    .trim()
-    .toLowerCase()
-    .replace(/[\s-]+/g, "_")
-    .replace(/[^a-z0-9_]/g, "")
-    .replace(/_{2,}/g, "_")
-    .replace(/^_|_$/g, "")
-    .slice(0, 25);
 }
 
 /**
@@ -268,9 +253,9 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── PUT /api/timers/:name ───────────────────────────────────────────────────
 router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const timerName = sanitizeTimerName(req.params.name);
+  const timerName = req.params.name?.trim().toLowerCase();
 
-  if (!timerName || !isValidTimerName(timerName)) {
+  if (!isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
       message: "Invalid timer name.",
@@ -387,9 +372,9 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 // ─── DELETE /api/timers/:name ────────────────────────────────────────────────
 router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const timerName = sanitizeTimerName(req.params.name);
+  const timerName = req.params.name?.trim().toLowerCase();
 
-  if (!timerName || !isValidTimerName(timerName)) {
+  if (!isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
       message: "Invalid timer name.",
