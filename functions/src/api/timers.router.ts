@@ -47,13 +47,13 @@ const RESERVED_TIMER_NAMES = [
  * findUnsupportedTimerVariables in timersStorage.js).
  */
 const UNSUPPORTED_TIMER_VARIABLES = [
-  /\$\(user\)/i,
-  /\$\(args\)/i,
-  /\$\(\d+\)/,
-  /\$\(followage\)/i,
-  /\$\(pronouns?\)/i,
-  /\$\(pronoun_[a-z]+\)/i,
-  /\$\(checkin_count\)/i,
+  /\$\(\s*user\s*\)/i,
+  /\$\(\s*args\s*\)/i,
+  /\$\(\s*\d+\s*\)/,
+  /\$\(\s*followage\s*\)/i,
+  /\$\(\s*pronouns?\s*\)/i,
+  /\$\(\s*pronoun_[a-z]+\s*\)/i,
+  /\$\(\s*checkin_count\s*\)/i,
 ];
 
 function findUnsupportedTimerVariables(template: string): string[] {
@@ -160,15 +160,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // Text timers fire without a triggering user — reject user-dependent variables
-    if (timerType === "text") {
-      const offenders = findUnsupportedTimerVariables(response);
-      if (offenders.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
-        });
-      }
+    // Timers fire without a triggering user — reject user-dependent variables
+    const offenders = findUnsupportedTimerVariables(response);
+    if (offenders.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
+      });
     }
 
     // Validate interval (optional, defaults to 15 minutes)
@@ -193,44 +191,49 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // Check if timer already exists
     const docRef = getTimersRef(channelLogin).doc(timerName);
-    const existing = await docRef.get();
+    const colRef = getTimersRef(channelLogin);
 
-    if (existing.exists) {
-      return res.status(409).json({
-        success: false,
-        message: `Timer "${timerName}" already exists. Use edit to update it.`,
+    const txResult = await getDb().runTransaction(async (t) => {
+      const existing = await t.get(docRef);
+      if (existing.exists) {
+        return { status: 409, message: `Timer "${timerName}" already exists. Use edit to update it.` };
+      }
+
+      const allTimers = await t.get(colRef);
+      if (allTimers.size >= MAX_TIMERS_PER_CHANNEL) {
+        return { status: 400, message: `Maximum of ${MAX_TIMERS_PER_CHANNEL} timers reached.` };
+      }
+
+      t.create(docRef, {
+        response: response.trim(),
+        type: timerType,
+        intervalMinutes: interval,
+        minChatLines: lines,
+        enabled: true,
+        useCount: 0,
+        lastRunAt: null,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+        createdBy: channelLogin,
       });
-    }
 
-    // Check limit
-    const countSnap = await getTimersRef(channelLogin).count().get();
-    if (countSnap.data().count >= MAX_TIMERS_PER_CHANNEL) {
-      return res.status(400).json({
-        success: false,
-        message: `Maximum of ${MAX_TIMERS_PER_CHANNEL} timers reached.`,
-      });
-    }
+      // Ensure the parent channel doc exists so the bot's loaders can list it
+      t.set(
+        getDb().collection(CHANNEL_TIMERS_COLLECTION).doc(channelLogin),
+        { channelName: channelLogin, updatedAt: FieldValue.serverTimestamp() },
+        { merge: true }
+      );
 
-    await docRef.set({
-      response: response.trim(),
-      type: timerType,
-      intervalMinutes: interval,
-      minChatLines: lines,
-      enabled: true,
-      useCount: 0,
-      lastRunAt: null,
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-      createdBy: channelLogin,
+      return { status: 200 };
     });
 
-    // Ensure the parent channel doc exists so the bot's loaders can list it
-    await getDb()
-      .collection(CHANNEL_TIMERS_COLLECTION)
-      .doc(channelLogin)
-      .set({ channelName: channelLogin, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    if (txResult.status !== 200) {
+      return res.status(txResult.status).json({
+        success: false,
+        message: txResult.message,
+      });
+    }
 
     logger.info("Timer created", { channelLogin, timerName });
 
@@ -305,14 +308,12 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       }
       // Validate against the type the timer will have after this update
       const effectiveType = (updates.type as string) || (existing.data()?.type ?? "text");
-      if (effectiveType === "text") {
-        const offenders = findUnsupportedTimerVariables(response);
-        if (offenders.length > 0) {
-          return res.status(400).json({
-            success: false,
-            message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
-          });
-        }
+      const offenders = findUnsupportedTimerVariables(response);
+      if (offenders.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
+        });
       }
       updates.response = response.trim();
     }

@@ -31,7 +31,11 @@ const mockTimerDoc = jest.fn().mockReturnValue({
   delete: mockDelete,
 });
 
-const mockSnapshotGet = jest.fn();
+const mockSnapshotGet = jest.fn().mockResolvedValue({
+  empty: true,
+  size: 0,
+  docs: [],
+});
 const mockOrderBy = jest.fn().mockReturnValue({ get: mockSnapshotGet });
 const mockCount = jest.fn().mockReturnValue({
   get: jest.fn().mockResolvedValue({ data: () => ({ count: 0 }) }),
@@ -54,8 +58,17 @@ const mockTopCollection = jest.fn().mockReturnValue({
   doc: mockChannelDoc,
 });
 
+const mockTransaction = {
+  get: jest.fn(async (ref) => ref.get()),
+  create: mockSet,
+  set: mockParentSet,
+};
+
 jest.mock("@/config/database", () => ({
-  getDb: () => ({ collection: mockTopCollection }),
+  getDb: () => ({
+    collection: mockTopCollection,
+    runTransaction: jest.fn(async (cb) => cb(mockTransaction)),
+  }),
   FieldValue: {
     serverTimestamp: jest.fn(() => "SERVER_TIMESTAMP"),
   },
@@ -140,6 +153,7 @@ describe("Timers Router", () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(mockSet).toHaveBeenCalledWith(
+        expect.anything(),
         expect.objectContaining({
           response: "Follow the socials!",
           type: "text",
@@ -153,6 +167,7 @@ describe("Timers Router", () => {
       );
       // Parent channel doc is created so the bot's loaders can list it
       expect(mockParentSet).toHaveBeenCalledWith(
+        expect.anything(),
         expect.objectContaining({ channelName: "testuser" }),
         { merge: true },
       );
@@ -173,6 +188,7 @@ describe("Timers Router", () => {
 
       expect(res.status).toBe(200);
       expect(mockSet).toHaveBeenCalledWith(
+        expect.anything(),
         expect.objectContaining({ type: "prompt", intervalMinutes: 20, minChatLines: 10 }),
       );
     });
@@ -262,9 +278,7 @@ describe("Timers Router", () => {
     });
 
     it("returns 400 when the timer limit is reached", async () => {
-      mockCount.mockReturnValue({
-        get: jest.fn().mockResolvedValue({ data: () => ({ count: 20 }) }),
-      });
+      mockSnapshotGet.mockResolvedValue({ size: 20 });
 
       const app = createApp();
       const res = await request(app)
