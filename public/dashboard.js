@@ -1143,10 +1143,24 @@ document.addEventListener('DOMContentLoaded', () => {
         timerFormMsgEl.textContent = '';
     }
 
+    // Sanitize a user-typed timer name into a valid slug:
+    // "Gaming news" → "gaming_news", "gaming-news" → "gaming_news"
+    function sanitizeTimerName(raw) {
+        return raw
+            .trim()
+            .toLowerCase()
+            .replace(/[\s\-]+/g, '_')       // spaces and hyphens → underscores
+            .replace(/[^a-z0-9_]/g, '')     // strip anything else
+            .replace(/_{2,}/g, '_')          // collapse multiple underscores
+            .replace(/^_|_$/g, '')           // trim leading/trailing underscores
+            .slice(0, 25);
+    }
+
     async function saveTimer() {
         if (!appSessionToken) return;
 
-        const name = timerNameEl.value.trim().toLowerCase();
+        const name = sanitizeTimerName(timerNameEl.value);
+        timerNameEl.value = name; // show the user what it became
         const response = timerResponseEl.value.trim();
         const intervalMinutes = parseInt(timerIntervalEl.value, 10);
         const minChatLines = parseInt(timerLinesEl.value, 10);

@@ -67,13 +67,27 @@ function findUnsupportedTimerVariables(template: string): string[] {
 }
 
 /**
- * Validate a timer name.
+ * Sanitize a user-typed timer name into a valid slug.
+ * "Gaming news" → "gaming_news", "gaming-news" → "gaming_news"
+ */
+function sanitizeTimerName(raw: unknown): string {
+  if (!raw || typeof raw !== "string") return "";
+  return raw
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .replace(/_{2,}/g, "_")
+    .replace(/^_|_$/g, "")
+    .slice(0, 25);
+}
+
+/**
+ * Validate a (already-sanitized) timer name.
  * Must be 1-25 lowercase alphanumeric + underscores and not a reserved word.
  */
-function isValidTimerName(name: unknown): name is string {
-  if (!name || typeof name !== "string") return false;
-  const trimmed = name.trim().toLowerCase();
-  return /^[a-z0-9_]{1,25}$/.test(trimmed) && !RESERVED_TIMER_NAMES.includes(trimmed);
+function isValidTimerName(name: string): boolean {
+  return /^[a-z0-9_]{1,25}$/.test(name) && !RESERVED_TIMER_NAMES.includes(name);
 }
 
 /**
@@ -126,17 +140,16 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
 
   try {
-    const { name, response, type, intervalMinutes, minChatLines } = req.body;
+    const { name: rawName, response, type, intervalMinutes, minChatLines } = req.body;
 
-    // Validate name
-    if (!isValidTimerName(name)) {
+    // Sanitize then validate name
+    const timerName = sanitizeTimerName(rawName);
+    if (!timerName || !isValidTimerName(timerName)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid timer name. Use 1-25 lowercase letters, numbers, or underscores (reserved words not allowed).",
+        message: "Timer name is required (letters, numbers, or underscores; reserved words not allowed).",
       });
     }
-
-    const timerName = (name as string).trim().toLowerCase();
 
     // Validate response
     if (!response || typeof response !== "string" || response.trim().length === 0) {
@@ -255,9 +268,9 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── PUT /api/timers/:name ───────────────────────────────────────────────────
 router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const timerName = req.params.name?.trim().toLowerCase();
+  const timerName = sanitizeTimerName(req.params.name);
 
-  if (!isValidTimerName(timerName)) {
+  if (!timerName || !isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
       message: "Invalid timer name.",
@@ -374,9 +387,9 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 // ─── DELETE /api/timers/:name ────────────────────────────────────────────────
 router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const timerName = req.params.name?.trim().toLowerCase();
+  const timerName = sanitizeTimerName(req.params.name);
 
-  if (!isValidTimerName(timerName)) {
+  if (!timerName || !isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
       message: "Invalid timer name.",
