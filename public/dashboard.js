@@ -1,3 +1,4 @@
+/* global lucide */
 document.addEventListener('DOMContentLoaded', () => {
     const twitchUsernameEl = document.getElementById('twitch-username');
     const channelNameStatusEl = document.getElementById('channel-name-status');
@@ -1333,7 +1334,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const originalState = checkboxEl.checked;
         checkboxEl.disabled = true; // Disable during request
 
         // DEV MODE: Mock toggle

@@ -191,7 +191,7 @@ export async function requireFirestore(
     const { getDb } = await import("./database");
     getDb(); // Will throw if not initialized
     next();
-  } catch (error) {
+  } catch {
     res.status(500).json({
       success: false,
       message: "Database not available",
