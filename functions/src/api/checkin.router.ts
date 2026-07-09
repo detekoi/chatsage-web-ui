@@ -61,10 +61,11 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     return res.json({ success: true, config: docSnap.data() });
-  } catch (error: any) {
+  } catch (error) {
+    const e = error as Error;
     logger.error("Error fetching check-in config", {
       channel: channelLogin,
-      error: error.message,
+      error: e.message,
     });
     return res.status(500).json({
       success: false,
@@ -135,9 +136,10 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
         } else {
           throw new Error("No reward data returned from Twitch");
         }
-      } catch (err: any) {
-        const errMsg = err?.response?.data?.message || err.message || "";
-        const errStatus = err?.response?.status;
+      } catch (err) {
+        const e = err as Error & { response?: { data?: { message?: string }; status?: number } };
+        const errMsg = e?.response?.data?.message || e.message || "";
+        const errStatus = e?.response?.status;
 
         if (errStatus === 403) {
           return res.status(403).json({
@@ -168,8 +170,9 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
                 message: `A Channel Point Reward named "${title}" already exists but was created outside this app. Please delete it from your Twitch Dashboard and try again.`,
               });
             }
-          } catch (listErr: any) {
-            log.error("Failed to list rewards for duplicate resolution", { error: listErr.message });
+          } catch (listErr) {
+            const e = listErr as Error;
+            log.error("Failed to list rewards for duplicate resolution", { error: e.message });
             return res.status(500).json({ success: false, message: "Failed to resolve duplicate reward" });
           }
         } else {
@@ -185,8 +188,9 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
           twitchRewardBody,
         );
         log.info("Updated Channel Point Reward on Twitch", { rewardId });
-      } catch (err: any) {
-        const errStatus = err?.response?.status;
+      } catch (err) {
+        const e = err as Error & { response?: { status?: number } };
+        const errStatus = e?.response?.status;
         if (errStatus === 404 && enabled) {
           // Reward was deleted externally — recreate
           log.info("Reward not found on Twitch, recreating");
@@ -196,18 +200,19 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
               twitchRewardBody,
             );
             rewardId = createResp.data?.data?.[0]?.id || null;
-          } catch (createErr: any) {
-            log.error("Failed to recreate reward", { error: createErr.message });
+          } catch (createErr) {
+            const createE = createErr as Error;
+            log.error("Failed to recreate reward", { error: createE.message });
             return res.status(500).json({ success: false, message: "Failed to recreate reward on Twitch" });
           }
         } else {
-          log.warn("Failed to update reward on Twitch (non-fatal)", { status: errStatus, error: err.message });
+          log.warn("Failed to update reward on Twitch (non-fatal)", { status: errStatus, error: e.message });
         }
       }
     }
 
     // Save config in Firestore
-    const configData: Record<string, any> = {
+    const configData: Record<string, unknown> = {
       enabled: !!enabled,
       rewardId,
       title,
@@ -226,10 +231,11 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
       config: configData,
       message: enabled ? "Daily Check-In enabled!" : "Check-in settings saved",
     });
-  } catch (error: any) {
-    log.error("Error in PUT /api/checkin", { error: error.message });
+  } catch (error) {
+    const e = error as Error;
+    log.error("Error in PUT /api/checkin", { error: e.message });
 
-    if (error.message?.includes("re-authenticate") || error.message?.includes("token")) {
+    if (e.message?.includes("re-authenticate") || e.message?.includes("token")) {
       return res.status(401).json({
         success: false,
         message: "Please re-authenticate with Twitch to manage Channel Point Rewards",
@@ -264,13 +270,14 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
         );
         twitchDeleted = true;
         log.info("Deleted Channel Point Reward from Twitch", { rewardId });
-      } catch (err: any) {
-        const status = err?.response?.status;
+      } catch (err) {
+        const e = err as Error & { response?: { status?: number } };
+        const status = e?.response?.status;
         // 404 = already deleted on Twitch; treat as success
         if (status === 404) {
           twitchDeleted = true;
         } else {
-          log.warn("Twitch delete failed (non-fatal)", { status, error: err.message });
+          log.warn("Twitch delete failed (non-fatal)", { status, error: e.message });
         }
       }
     }
@@ -288,8 +295,9 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
       twitchDeleted,
       message: twitchDeleted ? "Check-in reward disabled & deleted" : "Check-in disabled locally",
     });
-  } catch (error: any) {
-    log.error("Error in DELETE /api/checkin", { error: error.message });
+  } catch (error) {
+    const e = error as Error;
+    log.error("Error in DELETE /api/checkin", { error: e.message });
     return res.status(500).json({ success: false, message: "Failed to disable check-in" });
   }
 });

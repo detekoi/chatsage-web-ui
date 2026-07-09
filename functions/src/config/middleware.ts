@@ -26,7 +26,7 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
   getSecret: () => CSRF_SECRET,
   getSessionIdentifier: (req) => {
     // Use JWT user ID if authenticated, otherwise a static identifier
-    const authReq = req as any;
+    const authReq = req as Request & { user?: { userId?: string } };
     return authReq.user?.userId || "anonymous";
   },
   cookieName: IS_PRODUCTION
