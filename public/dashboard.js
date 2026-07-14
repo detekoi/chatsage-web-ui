@@ -197,6 +197,16 @@ document.addEventListener('DOMContentLoaded', () => {
         input.setRangeText(varText, start, end, 'end');
     });
 
+    // Numeric fields: strip non-digits on input (covers typing, paste, autofill)
+    document.querySelectorAll('input[inputmode="numeric"]').forEach((input) => {
+        input.addEventListener('input', () => {
+            const digitsOnly = input.value.replace(/\D/g, '');
+            if (input.value !== digitsOnly) {
+                input.value = digitsOnly;
+            }
+        });
+    });
+
     // Check-in AI toggle: show AI prompt OR response template (not both)
     function updateCheckinAiVisibility() {
         const aiOn = checkinAiToggleEl.checked;
@@ -832,6 +842,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (isNaN(cooldownSec) || cooldownSec < 0 || cooldownSec > 300) {
+            customCmdFormMsgEl.textContent = 'Cooldown must be between 0 and 300 seconds.';
+            customCmdFormMsgEl.style.color = 'var(--danger-primary)';
+            return;
+        }
+
         customCmdFormMsgEl.textContent = 'Saving...';
         customCmdFormMsgEl.style.color = 'var(--text-muted)';
         customCmdSaveBtn.disabled = true;
@@ -858,7 +874,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = {
                 response,
                 permission,
-                cooldown: (isNaN(cooldownSec) ? 5 : cooldownSec) * 1000,
+                cooldown: cooldownSec * 1000,
                 type: customCmdTypeToggleEl.checked ? 'prompt' : 'text',
             };
             if (!isEditing) body.name = name;
@@ -1498,13 +1514,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveCheckinSettings() {
         if (!appSessionToken) return;
+
+        const cost = parseInt(checkinCostEl.value, 10);
+        if (isNaN(cost) || cost < 1 || cost > 999999) {
+            checkinMsgEl.textContent = 'Cost must be between 1 and 999999 points.';
+            checkinMsgEl.className = 'text-danger mt-2 mb-0';
+            return;
+        }
+
         checkinMsgEl.textContent = 'Saving...';
         checkinMsgEl.className = 'text-muted mt-2 mb-0';
 
         const body = {
             enabled: checkinEnabledEl.checked,
             title: checkinTitleEl.value.trim() || 'Daily Check-In',
-            cost: parseInt(checkinCostEl.value, 10) || 100,
+            cost,
             responseTemplate: checkinResponseEl.value,
             useAi: checkinAiToggleEl.checked,
             aiPrompt: checkinAiPromptEl.value,
