@@ -92,3 +92,28 @@ export function setupChipInsertion(containerSelector, targetInput) {
         insertAtCursor(targetInput, varText);
     });
 }
+
+/**
+ * Sets up a listener on all numeric inputs to strip non-digits while preserving the caret position
+ */
+export function setupNumericInputs() {
+    document.querySelectorAll('input[inputmode="numeric"]').forEach((input) => {
+        input.addEventListener('input', () => {
+            const originalValue = input.value;
+            const digitsOnly = originalValue.replace(/\D/g, '');
+            
+            if (originalValue !== digitsOnly) {
+                // Calculate how many non-digits were stripped *before* the current cursor position
+                const selectionStart = input.selectionStart || 0;
+                const textBeforeCursor = originalValue.substring(0, selectionStart);
+                const nonDigitsBeforeCursor = (textBeforeCursor.match(/\D/g) || []).length;
+                
+                input.value = digitsOnly;
+                
+                // Restore cursor, shifting left by the number of invalid characters that were removed
+                const newPos = Math.max(0, selectionStart - nonDigitsBeforeCursor);
+                input.setSelectionRange(newPos, newPos);
+            }
+        });
+    });
+}

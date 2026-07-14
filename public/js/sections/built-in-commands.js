@@ -1,6 +1,6 @@
-import { apiGet, apiPost, getToken } from '../api.js';
-import { showActionToast } from '../ui.js';
+import { apiGet } from '../api.js';
 import { DEV_MODE, mockCommands, mockDelay } from '../dev-mocks.js';
+import { toggleItem } from '../crud-helpers.js';
 
 let commandsLoadingEl;
 let commandsListEl;
@@ -11,8 +11,6 @@ export function initBuiltInCommands() {
 }
 
 export async function loadCommandSettings() {
-    if (!getToken()) return;
-
     commandsLoadingEl.style.display = 'block';
     commandsListEl.innerHTML = '';
 
@@ -86,39 +84,6 @@ function renderCommandsList(commands) {
 }
 
 async function toggleCommand(commandName, enabled, checkboxEl) {
-    if (!getToken()) {
-        showActionToast("Authentication token missing. Please log in again.", 'danger');
-        checkboxEl.checked = !enabled;
-        return;
-    }
-
-    checkboxEl.disabled = true; // Disable during request
-
-    if (DEV_MODE) {
-        await mockDelay(500);
-        showActionToast(`Command !${commandName} ${enabled ? 'enabled' : 'disabled'} (dev mode).`, 'success');
-        checkboxEl.disabled = false;
-        return;
-    }
-
-    try {
-        const res = await apiPost('/api/commands', {
-            command: commandName,
-            enabled: enabled
-        });
-        const data = await res.json();
-
-        if (data.success) {
-            showActionToast(`Command !${commandName} ${enabled ? 'enabled' : 'disabled'}.`, 'success');
-        } else {
-            showActionToast(data.message || 'Error updating command settings.', 'danger');
-            checkboxEl.checked = !enabled; // Revert on error
-        }
-    } catch (error) {
-        console.error('Error toggling command:', error);
-        showActionToast('Failed to update command settings.', 'danger');
-        checkboxEl.checked = !enabled; // Revert on error
-    } finally {
-        checkboxEl.disabled = false; // Re-enable checkbox
-    }
+    const payload = { command: commandName, enabled };
+    await toggleItem('POST', '/api/commands', payload, `Command !${commandName}`, enabled, checkboxEl);
 }

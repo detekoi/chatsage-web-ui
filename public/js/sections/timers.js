@@ -1,6 +1,7 @@
-import { apiGet, apiPost, apiPut, apiDelete, getToken } from '../api.js';
+import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockTimers, mockDelay } from '../dev-mocks.js';
+import { toggleItem, deleteItem } from '../crud-helpers.js';
 
 let timerLoadingEl;
 let timerListEl;
@@ -56,8 +57,6 @@ export function initTimers() {
 }
 
 export async function loadTimers() {
-    if (!getToken()) return;
-
     timerLoadingEl.style.display = 'block';
     timerListEl.innerHTML = '';
     timerEmptyEl.style.display = 'none';
@@ -184,38 +183,7 @@ function renderTimersList(timers) {
 }
 
 async function toggleTimer(name, enabled, checkboxEl) {
-    if (!getToken()) {
-        showActionToast("Authentication token missing. Please log in again.", 'danger');
-        checkboxEl.checked = !enabled;
-        return;
-    }
-
-    checkboxEl.disabled = true;
-
-    if (DEV_MODE) {
-        await mockDelay(500);
-        showActionToast(`Timer "${name}" ${enabled ? 'enabled' : 'disabled'} (dev mode).`, 'success');
-        checkboxEl.disabled = false;
-        return;
-    }
-
-    try {
-        const res = await apiPut(`/api/timers/${encodeURIComponent(name)}`, { enabled });
-        const data = await res.json();
-
-        if (data.success) {
-            showActionToast(`Timer "${name}" ${enabled ? 'enabled' : 'disabled'}.`, 'success');
-        } else {
-            showActionToast(data.message || 'Error updating timer.', 'danger');
-            checkboxEl.checked = !enabled; // Revert on error
-        }
-    } catch (error) {
-        console.error('Error toggling timer:', error);
-        showActionToast('Failed to update timer.', 'danger');
-        checkboxEl.checked = !enabled; // Revert on error
-    } finally {
-        checkboxEl.disabled = false;
-    }
+    await toggleItem('PUT', `/api/timers/${encodeURIComponent(name)}`, { enabled }, `Timer "${name}"`, enabled, checkboxEl);
 }
 
 function openTimerAddForm() {
@@ -269,8 +237,6 @@ function sanitizeTimerName(raw) {
 }
 
 async function saveTimer() {
-    if (!getToken()) return;
-
     const name = sanitizeTimerName(timerNameEl.value);
     timerNameEl.value = name; // show the user what it became
     const response = timerResponseEl.value.trim();
@@ -351,26 +317,5 @@ async function saveTimer() {
 }
 
 async function deleteTimer(name) {
-    if (!confirm(`Delete timer "${name}"?`)) return;
-    if (!getToken()) return;
-
-    if (DEV_MODE) {
-        await mockDelay(300);
-        loadTimers();
-        return;
-    }
-
-    try {
-        const res = await apiDelete(`/api/timers/${encodeURIComponent(name)}`);
-        const data = await res.json();
-        
-        if (data.success) {
-            await loadTimers();
-        } else {
-            showActionToast(data.message || 'Failed to delete timer.', 'danger');
-        }
-    } catch (error) {
-        console.error('Error deleting timer:', error);
-        showActionToast('Error deleting timer.', 'danger');
-    }
+    await deleteItem(`/api/timers/${encodeURIComponent(name)}`, `Timer "${name}"`, loadTimers);
 }

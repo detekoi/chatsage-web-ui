@@ -41,19 +41,6 @@ export function initCheckin() {
     setupChipInsertion('.checkin-chips', checkinResponseEl);
     setupChipInsertion('.checkin-ai-chips', checkinAiPromptEl);
 
-    // Numeric fields logic (since this is specific to standardizing numbers across the whole app,
-    // wait, we can just grab all numeric inputs here, or should we put it in ui.js? 
-    // Putting it here specifically for check-in if there's only one. But there is a global query.
-    // Let's do a global query here just like in the monolith, or put it in main.js. Let's do it in checkin.js since cost is numeric.)
-    document.querySelectorAll('input[inputmode="numeric"]').forEach((input) => {
-        input.addEventListener('input', () => {
-            const digitsOnly = input.value.replace(/\D/g, '');
-            if (input.value !== digitsOnly) {
-                input.value = digitsOnly;
-            }
-        });
-    });
-
     checkinSaveBtn.addEventListener('click', saveCheckinSettings);
     checkinDeleteBtn.addEventListener('click', deleteCheckinReward);
 }

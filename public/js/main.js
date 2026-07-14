@@ -1,5 +1,5 @@
 import { apiGet, getToken, setToken } from './api.js';
-import { showActionToast } from './ui.js';
+import { showActionToast, setupNumericInputs } from './ui.js';
 import { DEV_MODE, mockUser } from './dev-mocks.js';
 import { initBotStatus, updateBotStatusUI } from './sections/bot-status.js';
 import { initBuiltInCommands, loadCommandSettings } from './sections/built-in-commands.js';
@@ -23,7 +23,6 @@ async function reloadAllConfigs() {
 }
 
 async function initializeDashboard() {
-    let appSessionToken = getToken();
     const userLoginFromStorage = localStorage.getItem('twitch_user_login');
     const userIdFromStorage = localStorage.getItem('twitch_user_id');
 
@@ -46,7 +45,7 @@ async function initializeDashboard() {
         twitchUsernameEl.textContent = loggedInUser.displayName;
         channelNameStatusEl.textContent = loggedInUser.login;
 
-        if (!appSessionToken) {
+        if (!getToken()) {
             console.warn("No session token found, redirecting to login");
             showActionToast("Authentication token missing. Please log in again.", 'danger', 0);
             setTimeout(() => window.location.href = 'index.html', 2000);
@@ -111,6 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initCustomCommands();
     initTimers();
     initCheckin();
+
+    // Setup global UI listeners
+    setupNumericInputs();
 
     // 3. Start dashboard initialization
     initializeDashboard();

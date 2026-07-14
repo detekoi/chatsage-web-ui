@@ -1,6 +1,7 @@
-import { apiGet, apiPost, apiPut, apiDelete, getToken } from '../api.js';
+import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockCustomCommands, mockDelay } from '../dev-mocks.js';
+import { deleteItem } from '../crud-helpers.js';
 
 let customCmdLoadingEl;
 let customCmdListEl;
@@ -56,8 +57,6 @@ export function initCustomCommands() {
 }
 
 export async function loadCustomCommands() {
-    if (!getToken()) return;
-
     customCmdLoadingEl.style.display = 'block';
     customCmdListEl.innerHTML = '';
     customCmdEmptyEl.style.display = 'none';
@@ -208,14 +207,12 @@ function closeForm() {
 }
 
 async function saveCustomCommand() {
-    if (!getToken()) return;
-
-    const name = customCmdNameEl.value.trim().toLowerCase();
+    const commandName = customCmdNameEl.value.trim().toLowerCase();
     const response = customCmdResponseEl.value.trim();
     const permission = customCmdPermissionEl.value;
     const cooldownSec = parseInt(customCmdCooldownEl.value, 10);
 
-    if (!name) {
+    if (!commandName) {
         customCmdFormMsgEl.textContent = 'Command name is required.';
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
         return;
@@ -239,7 +236,7 @@ async function saveCustomCommand() {
 
     if (DEV_MODE) {
         await mockDelay(500);
-        customCmdFormMsgEl.textContent = `Command !${name} saved (dev mode).`;
+        customCmdFormMsgEl.textContent = `Command !${commandName} saved (dev mode).`;
         customCmdFormMsgEl.style.color = '#4ecdc4';
         customCmdSaveBtn.disabled = false;
         closeForm();
@@ -255,7 +252,7 @@ async function saveCustomCommand() {
             cooldown: cooldownSec * 1000,
             type: customCmdTypeToggleEl.checked ? 'prompt' : 'text',
         };
-        if (!isEditing) body.name = name;
+        if (!isEditing) body.name = commandName;
 
         let res;
         if (isEditing) {
@@ -283,26 +280,5 @@ async function saveCustomCommand() {
 }
 
 async function deleteCustomCommand(name) {
-    if (!confirm(`Delete command !${name}?`)) return;
-    if (!getToken()) return;
-
-    if (DEV_MODE) {
-        await mockDelay(300);
-        loadCustomCommands();
-        return;
-    }
-
-    try {
-        const res = await apiDelete(`/api/custom-commands/${encodeURIComponent(name)}`);
-        const data = await res.json();
-        
-        if (data.success) {
-            await loadCustomCommands();
-        } else {
-            showActionToast(data.message || 'Failed to delete command.', 'danger');
-        }
-    } catch (error) {
-        console.error('Error deleting custom command:', error);
-        showActionToast('Error deleting command.', 'danger');
-    }
+    await deleteItem(`/api/commands/custom/${encodeURIComponent(name)}`, `Command !${name}`, loadCustomCommands);
 }

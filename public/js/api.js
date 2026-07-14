@@ -1,3 +1,5 @@
+import { showActionToast } from './ui.js';
+
 export const API_BASE_URL = 'https://api.wildcat.chat';
 
 let appSessionToken = null;
@@ -22,6 +24,13 @@ export function clearToken() {
     setToken(null);
 }
 
+export class AuthError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'AuthError';
+    }
+}
+
 /**
  * Helper to perform authenticated API calls
  * @param {string} method - HTTP method (GET, POST, PUT, DELETE)
@@ -31,6 +40,12 @@ export function clearToken() {
  */
 export async function apiFetch(method, path, body = null) {
     const token = getToken();
+    
+    if (!token) {
+        showActionToast("Authentication token missing. Please log in again.", 'danger');
+        throw new AuthError("No authentication token available");
+    }
+
     const headers = {
         'Authorization': `Bearer ${token}`
     };

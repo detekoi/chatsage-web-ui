@@ -1,4 +1,4 @@
-import { apiGet, apiPost, getToken } from '../api.js';
+import { apiGet, apiPost, AuthError } from '../api.js';
 import { debounce, showActionToast } from '../ui.js';
 import { DEV_MODE, mockAutoChatConfig, mockDelay } from '../dev-mocks.js';
 
@@ -55,9 +55,9 @@ export function initAutoChat() {
 }
 
 export async function loadAndApplyAutoChatConfig() {
-    autoLoadingEl.style.display = 'block';
-    adNotificationsLoadingEl.style.display = 'block';
-    streamEventsLoadingEl.style.display = 'block';
+    if (autoLoadingEl) autoLoadingEl.style.display = 'block';
+    if (adNotificationsLoadingEl) adNotificationsLoadingEl.style.display = 'block';
+    if (streamEventsLoadingEl) streamEventsLoadingEl.style.display = 'block';
     
     const config = await fetchAutoChatConfig();
     applyAutoChatSettings(config);
@@ -66,7 +66,6 @@ export async function loadAndApplyAutoChatConfig() {
 }
 
 async function fetchAutoChatConfig() {
-    if (!getToken()) return null;
 
     if (DEV_MODE) {
         await mockDelay(500);
@@ -87,7 +86,7 @@ async function fetchAutoChatConfig() {
 }
 
 function applyAutoChatSettings(config) {
-    autoLoadingEl.style.display = 'none';
+    if (autoLoadingEl) autoLoadingEl.style.display = 'none';
     if (config) {
         autoModeEl.value = config.mode || 'off';
         autoCatFactsEl.checked = config.categories?.facts !== false;
@@ -98,7 +97,7 @@ function applyAutoChatSettings(config) {
 }
 
 function applyAdNotificationsSettings(config) {
-    adNotificationsLoadingEl.style.display = 'none';
+    if (adNotificationsLoadingEl) adNotificationsLoadingEl.style.display = 'none';
     if (config) {
         autoCatAdsEl.checked = config.categories?.ads === true;
     } else {
@@ -108,7 +107,7 @@ function applyAdNotificationsSettings(config) {
 }
 
 function applyStreamEventsSettings(config) {
-    streamEventsLoadingEl.style.display = 'none';
+    if (streamEventsLoadingEl) streamEventsLoadingEl.style.display = 'none';
     if (config) {
         streamGreetingsToggleEl.checked = config.categories?.greetings !== false;
         streamFollowsToggleEl.checked = config.categories?.follows !== false;
@@ -120,127 +119,76 @@ function applyStreamEventsSettings(config) {
     }
 }
 
-let streamEventsSaveRequestId = 0;
+const saveRequestIds = new Map();
+
+async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
+    const contextId = statusEl.id;
+    const currentRequestId = (saveRequestIds.get(contextId) || 0) + 1;
+    saveRequestIds.set(contextId, currentRequestId);
+
+    statusEl.textContent = 'Saving...';
+    statusEl.style.color = 'var(--text-muted, #6c757d)';
+
+    if (DEV_MODE) {
+        await mockDelay(500);
+        if (currentRequestId === saveRequestIds.get(contextId)) {
+            statusEl.textContent = `${successMsg} (dev mode).`;
+            statusEl.style.color = '#4ecdc4';
+        }
+        return;
+    }
+
+    try {
+        const res = await apiPost(endpoint, payload);
+        const data = await res.json();
+        
+        if (currentRequestId === saveRequestIds.get(contextId)) {
+            if (data.success) {
+                statusEl.textContent = successMsg;
+                statusEl.style.color = '#4ecdc4';
+            } else {
+                statusEl.textContent = data.message || 'Failed to save settings.';
+                statusEl.style.color = '#ff6b6b';
+            }
+        }
+    } catch (e) {
+        if (e instanceof AuthError) return;
+        console.error(`Error saving to ${endpoint}:`, e);
+        if (currentRequestId === saveRequestIds.get(contextId)) {
+            statusEl.textContent = 'Error saving settings.';
+            statusEl.style.color = '#ff6b6b';
+        }
+    }
+}
+
 async function saveStreamEventsSettings() {
-    if (!getToken()) return;
-
-    const currentRequestId = ++streamEventsSaveRequestId;
-    streamEventsMsgEl.textContent = 'Saving...';
-
-    if (DEV_MODE) {
-        await mockDelay(500);
-        if (currentRequestId === streamEventsSaveRequestId) {
-            streamEventsMsgEl.textContent = 'Stream event settings saved (dev mode).';
-            streamEventsMsgEl.style.color = '#4ecdc4';
+    const payload = {
+        categories: {
+            greetings: !!streamGreetingsToggleEl.checked,
+            follows: !!streamFollowsToggleEl.checked,
+            subscriptions: !!streamSubscriptionsToggleEl.checked,
+            raids: !!streamRaidsToggleEl.checked,
         }
-        return;
-    }
-
-    try {
-        const res = await apiPost('/api/auto-chat', {
-            categories: {
-                greetings: !!streamGreetingsToggleEl.checked,
-                follows: !!streamFollowsToggleEl.checked,
-                subscriptions: !!streamSubscriptionsToggleEl.checked,
-                raids: !!streamRaidsToggleEl.checked,
-            }
-        });
-        const data = await res.json();
-        
-        if (currentRequestId === streamEventsSaveRequestId) {
-            if (data.success) {
-                streamEventsMsgEl.textContent = 'Stream event settings saved.';
-                streamEventsMsgEl.style.color = '#4ecdc4';
-            } else {
-                streamEventsMsgEl.textContent = data.message || 'Failed to save stream event settings.';
-                streamEventsMsgEl.style.color = '#ff6b6b';
-            }
-        }
-    } catch (e) {
-        console.error('Error saving stream events:', e);
-        streamEventsMsgEl.textContent = 'Error saving stream event settings.';
-        streamEventsMsgEl.style.color = '#ff6b6b';
-    }
+    };
+    await saveSectionSettings('/api/auto-chat', payload, streamEventsMsgEl, 'Stream event settings saved.');
 }
 
-let autoSaveRequestId = 0;
 async function saveAutoChatSettings() {
-    if (!getToken()) return;
-
-    const currentRequestId = ++autoSaveRequestId;
-    autoMsgEl.textContent = 'Saving auto-chat...';
-
-    if (DEV_MODE) {
-        await mockDelay(500);
-        if (currentRequestId === autoSaveRequestId) {
-            autoMsgEl.textContent = 'Auto-chat settings saved (dev mode).';
-            autoMsgEl.style.color = '#4ecdc4';
+    const payload = {
+        mode: autoModeEl.value,
+        categories: {
+            facts: !!autoCatFactsEl.checked,
+            questions: !!autoCatQuestionsEl.checked,
         }
-        return;
-    }
-
-    try {
-        const res = await apiPost('/api/auto-chat', {
-            mode: autoModeEl.value,
-            categories: {
-                facts: !!autoCatFactsEl.checked,
-                questions: !!autoCatQuestionsEl.checked,
-            }
-        });
-        const data = await res.json();
-        
-        if (currentRequestId === autoSaveRequestId) {
-            if (data.success) {
-                autoMsgEl.textContent = 'Auto-chat settings saved.';
-                autoMsgEl.style.color = '#4ecdc4';
-            } else {
-                autoMsgEl.textContent = data.message || 'Failed to save auto-chat settings.';
-                autoMsgEl.style.color = '#ff6b6b';
-            }
-        }
-    } catch (e) {
-        console.error('Error saving auto-chat:', e);
-        autoMsgEl.textContent = 'Error saving auto-chat settings.';
-        autoMsgEl.style.color = '#ff6b6b';
-    }
+    };
+    await saveSectionSettings('/api/auto-chat', payload, autoMsgEl, 'Auto-chat settings saved.');
 }
 
-let adNotificationsSaveRequestId = 0;
 async function saveAdNotificationsSettings() {
-    if (!getToken()) return;
-
-    const currentRequestId = ++adNotificationsSaveRequestId;
-    adNotificationsMsgEl.textContent = 'Saving ad notifications...';
-
-    if (DEV_MODE) {
-        await mockDelay(500);
-        if (currentRequestId === adNotificationsSaveRequestId) {
-            adNotificationsMsgEl.textContent = 'Ad notification settings saved (dev mode).';
-            adNotificationsMsgEl.style.color = '#4ecdc4';
+    const payload = {
+        categories: {
+            ads: !!autoCatAdsEl.checked,
         }
-        return;
-    }
-
-    try {
-        const res = await apiPost('/api/auto-chat', {
-            categories: {
-                ads: !!autoCatAdsEl.checked,
-            }
-        });
-        const data = await res.json();
-        
-        if (currentRequestId === adNotificationsSaveRequestId) {
-            if (data.success) {
-                adNotificationsMsgEl.textContent = 'Ad notification settings saved.';
-                adNotificationsMsgEl.style.color = '#4ecdc4';
-            } else {
-                adNotificationsMsgEl.textContent = data.message || 'Failed to save ad notification settings.';
-                adNotificationsMsgEl.style.color = '#ff6b6b';
-            }
-        }
-    } catch (e) {
-        console.error('Error saving ad notifications:', e);
-        adNotificationsMsgEl.textContent = 'Error saving ad notification settings.';
-        adNotificationsMsgEl.style.color = '#ff6b6b';
-    }
+    };
+    await saveSectionSettings('/api/auto-chat', payload, adNotificationsMsgEl, 'Ad notification settings saved.');
 }
