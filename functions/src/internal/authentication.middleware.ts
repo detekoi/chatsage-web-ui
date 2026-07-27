@@ -4,6 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from "express";
+import * as crypto from "crypto";
 import { logger } from "@/config/logger";
 import { getInternalBotTokenValue } from "@/utils/secrets";
 
@@ -33,7 +34,10 @@ export async function authenticateInternalRequest(
   try {
     const expected = await getInternalBotTokenValue();
 
-    if (token !== expected) {
+    if (
+      token.length !== expected.length ||
+      !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected))
+    ) {
       logger.warn("Invalid internal authorization token", {
         path: req.path,
       });
