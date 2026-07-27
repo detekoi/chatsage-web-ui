@@ -160,6 +160,102 @@ export async function ensureStreamEventSubscriptions(
 }
 
 /**
+ * Deletes every EventSub subscription Twitch holds for a broadcaster.
+ *
+ * Called when a user removes the bot. Without this, Twitch keeps delivering
+ * stream.online/offline, chat and ad-break webhooks for a channel that has
+ * uninstalled — "phantom subscriptions" that consume the app's subscription
+ * quota indefinitely and leave the bot's allowlist as the only thing standing
+ * between a removed channel and the bot acting in it.
+ *
+ * Teardown must not depend on the bot service being warm, so it runs here
+ * rather than relying on the bot's Firestore listener.
+ *
+ * @param channelLogin - Channel login name (for logging)
+ * @param broadcasterUserId - Twitch user ID of the broadcaster
+ * @returns Counts of deleted and failed subscription deletions
+ */
+export async function deleteAllSubscriptionsForUser(
+  channelLogin: string,
+  broadcasterUserId: string,
+): Promise<{ deleted: number; failed: number }> {
+  const appAccessToken = await getAppAccessToken();
+
+  const headers = {
+    Authorization: `Bearer ${appAccessToken}`,
+    "Client-ID": TWITCH_CLIENT_ID,
+    "Content-Type": "application/json",
+  };
+
+  // Collect every subscription for this broadcaster. Twitch paginates this
+  // endpoint, so follow the cursor — a partial page would silently leave
+  // subscriptions behind, which is the exact failure this function prevents.
+  const subscriptions: { id: string; type: string }[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const list = await axios.get(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
+      headers,
+      params: {
+        user_id: String(broadcasterUserId),
+        ...(cursor ? { after: cursor } : {}),
+      },
+    });
+
+    subscriptions.push(...(list.data?.data || []));
+    cursor = list.data?.pagination?.cursor;
+  } while (cursor);
+
+  let deleted = 0;
+  let failed = 0;
+
+  // Delete each individually so one failure cannot abandon the rest.
+  for (const sub of subscriptions) {
+    try {
+      await axios.delete(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
+        headers,
+        params: { id: sub.id },
+      });
+
+      deleted++;
+      logger.info("Deleted EventSub subscription", {
+        channelLogin,
+        subscriptionId: sub.id,
+        type: sub.type,
+      });
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; data?: unknown }; message: string };
+
+      // A 404 means it is already gone, which is the outcome we wanted.
+      if (err.response?.status === 404) {
+        deleted++;
+        continue;
+      }
+
+      failed++;
+      logger.error("Failed to delete EventSub subscription", {
+        channelLogin,
+        subscriptionId: sub.id,
+        type: sub.type,
+        message: err.message,
+        status: err.response?.status,
+        twitchError: err.response?.data,
+      });
+    }
+  }
+
+  logger.info("EventSub teardown complete", {
+    channelLogin,
+    broadcasterUserId,
+    found: subscriptions.length,
+    deleted,
+    failed,
+  });
+
+  return { deleted, failed };
+}
+
+/**
  * Ensures an ad break EventSub subscription exists or is removed
  * @param channelLogin - Channel login name
  * @param adsEnabled - Whether ads notifications should be enabled

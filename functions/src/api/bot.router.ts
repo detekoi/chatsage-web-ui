@@ -9,7 +9,12 @@ import { CHANNELS_COLLECTION, TWITCH_BOT_USERNAME } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
-import { getUserIdFromUsername, addModerator, ensureStreamEventSubscriptions } from "@/twitch";
+import {
+  getUserIdFromUsername,
+  addModerator,
+  ensureStreamEventSubscriptions,
+  deleteAllSubscriptionsForUser,
+} from "@/twitch";
 
 const router = Router();
 
@@ -220,15 +225,58 @@ router.post("/remove", async (req: AuthenticatedRequest, res: Response) => {
     const docSnap = await docRef.get();
 
     if (docSnap.exists) {
+      // Deactivate first so the bot stops acting on the channel immediately,
+      // even if the EventSub teardown below fails.
       await docRef.update({
         isActive: false,
         removedAt: FieldValue.serverTimestamp(),
       });
 
       logger.info("Channel deactivated successfully", { channelLogin });
+
+      // Tear down EventSub subscriptions here rather than leaving it to the
+      // bot's Firestore listener: the bot scales to zero, so a removal while
+      // it is cold would otherwise never unsubscribe, and its startup path
+      // only queries isActive == true so it never reconciles stale ones.
+      const broadcasterUserId = docSnap.data()?.twitchUserId || req.user.userId;
+      let eventsubTeardown: { deleted: number; failed: number } | null = null;
+
+      try {
+        eventsubTeardown = await deleteAllSubscriptionsForUser(
+          channelLogin,
+          String(broadcasterUserId),
+        );
+
+        if (eventsubTeardown.failed > 0) {
+          await docRef.update({
+            eventsubTeardownPending: true,
+            eventsubTeardownFailedAt: FieldValue.serverTimestamp(),
+          });
+        } else {
+          await docRef.update({
+            eventsubTeardownPending: false,
+            eventsubTeardownAt: FieldValue.serverTimestamp(),
+          });
+        }
+      } catch (eventsubError) {
+        logger.error("Failed to tear down EventSub subscriptions on removal", {
+          channelLogin,
+          broadcasterUserId,
+          error: (eventsubError as Error).message,
+        });
+
+        // Flag for reconciliation. The channel is already deactivated, so the
+        // bot's allowlist rejects any webhook that keeps arriving.
+        await docRef.update({
+          eventsubTeardownPending: true,
+          eventsubTeardownFailedAt: FieldValue.serverTimestamp(),
+        }).catch(() => undefined);
+      }
+
       res.json({
         success: true,
         message: `Bot successfully removed from ${channelLogin}.`,
+        eventsubTeardown,
       });
     } else {
       logger.warn("No document found for channel", { channelLogin });

@@ -1,14 +1,12 @@
 /**
  * Tests for tokens/cache.service.ts
- * In-memory token caching service
+ * Firestore-backed token caching service (shared across instances)
  */
 
 import {
   getCachedToken,
   cacheToken,
   clearCachedToken,
-  clearAllCachedTokens,
-  getCacheStats,
 } from "@/tokens/cache.service";
 
 // Mock dependencies
@@ -21,86 +19,121 @@ jest.mock("@/config/logger", () => ({
   },
 }));
 
+const mockGet = jest.fn();
+const mockSet = jest.fn();
+
+jest.mock("@/config/database", () => ({
+  getDb: jest.fn(() => ({})),
+  FieldValue: {
+    serverTimestamp: jest.fn(() => "SERVER_TIMESTAMP"),
+    delete: jest.fn(() => "DELETE_SENTINEL"),
+  },
+}));
+
+jest.mock("@/tokens/firestoreRefreshToken.service", () => ({
+  getOauthDocRef: jest.fn(() => ({
+    get: mockGet,
+    set: mockSet,
+  })),
+}));
+
 describe("Token Cache Service", () => {
   beforeEach(() => {
-    clearAllCachedTokens();
+    jest.clearAllMocks();
+    mockSet.mockResolvedValue(undefined);
   });
 
-  describe("cacheToken + getCachedToken", () => {
-    it("stores a token and retrieves it", () => {
-      cacheToken("testuser", "access-token-123", 3600);
-      const result = getCachedToken("testuser");
-      expect(result).toBe("access-token-123");
+  describe("getCachedToken", () => {
+    it("returns a cached token that has not expired", async () => {
+      mockGet.mockResolvedValue({
+        data: () => ({
+          cachedAccessToken: "access-token-123",
+          accessTokenExpiresAt: Date.now() + 60_000,
+        }),
+      });
+
+      await expect(getCachedToken("testuser")).resolves.toBe("access-token-123");
     });
 
-    it("returns null for a non-existent user", () => {
-      expect(getCachedToken("unknownuser")).toBeNull();
+    it("returns null when no token is stored", async () => {
+      mockGet.mockResolvedValue({ data: () => undefined });
+
+      await expect(getCachedToken("unknownuser")).resolves.toBeNull();
     });
 
-    it("returns null for an expired token", () => {
-      // Cache with 0 seconds expiry (already expired after buffer subtraction)
-      cacheToken("testuser", "expired-token", 0);
-      expect(getCachedToken("testuser")).toBeNull();
+    it("returns null for an expired token", async () => {
+      mockGet.mockResolvedValue({
+        data: () => ({
+          cachedAccessToken: "expired-token",
+          accessTokenExpiresAt: Date.now() - 1_000,
+        }),
+      });
+
+      await expect(getCachedToken("testuser")).resolves.toBeNull();
     });
 
-    it("properly respects the cache buffer (TOKEN_CACHE_BUFFER_SECONDS = 300)", () => {
-      // Cache with exactly the buffer seconds — should be expired immediately
-      cacheToken("testuser", "token", 300);
-      expect(getCachedToken("testuser")).toBeNull();
+    it("returns null when the expiry field is malformed", async () => {
+      mockGet.mockResolvedValue({
+        data: () => ({
+          cachedAccessToken: "token",
+          accessTokenExpiresAt: "not-a-number",
+        }),
+      });
 
-      // Cache with more than the buffer — should be valid
-      cacheToken("testuser2", "token2", 600);
-      expect(getCachedToken("testuser2")).toBe("token2");
+      await expect(getCachedToken("testuser")).resolves.toBeNull();
+    });
+
+    it("fails open and returns null when Firestore read fails", async () => {
+      mockGet.mockRejectedValue(new Error("firestore unavailable"));
+
+      await expect(getCachedToken("testuser")).resolves.toBeNull();
+    });
+  });
+
+  describe("cacheToken", () => {
+    it("writes the token with a buffered expiry", async () => {
+      const before = Date.now();
+      await cacheToken("testuser", "token", 3600);
+
+      expect(mockSet).toHaveBeenCalledTimes(1);
+      const [payload, options] = mockSet.mock.calls[0];
+
+      expect(payload.cachedAccessToken).toBe("token");
+      expect(options).toEqual({ merge: true });
+
+      // 3600s minus the 300s buffer
+      expect(payload.accessTokenExpiresAt).toBeGreaterThanOrEqual(before + 3300 * 1000);
+      expect(payload.accessTokenExpiresAt).toBeLessThanOrEqual(Date.now() + 3300 * 1000);
+    });
+
+    it("does not throw when the write fails", async () => {
+      mockSet.mockRejectedValue(new Error("write failed"));
+
+      await expect(cacheToken("testuser", "token", 3600)).resolves.toBeUndefined();
+    });
+
+    it("produces an already-expired entry when expiresIn equals the buffer", async () => {
+      await cacheToken("testuser", "token", 300);
+
+      const [payload] = mockSet.mock.calls[0];
+      expect(payload.accessTokenExpiresAt).toBeLessThanOrEqual(Date.now());
     });
   });
 
   describe("clearCachedToken", () => {
-    it("removes a specific cached token", () => {
-      cacheToken("user1", "token1", 3600);
-      cacheToken("user2", "token2", 3600);
+    it("deletes the cached token fields and reports success", async () => {
+      await expect(clearCachedToken("user1")).resolves.toBe(true);
 
-      clearCachedToken("user1");
-
-      expect(getCachedToken("user1")).toBeNull();
-      expect(getCachedToken("user2")).toBe("token2");
+      const [payload, options] = mockSet.mock.calls[0];
+      expect(payload.cachedAccessToken).toBe("DELETE_SENTINEL");
+      expect(payload.accessTokenExpiresAt).toBe("DELETE_SENTINEL");
+      expect(options).toEqual({ merge: true });
     });
 
-    it("does not throw for non-existent user", () => {
-      expect(() => clearCachedToken("nonexistent")).not.toThrow();
-    });
-  });
+    it("reports failure when the write fails so revocation is not assumed", async () => {
+      mockSet.mockRejectedValue(new Error("write failed"));
 
-  describe("clearAllCachedTokens", () => {
-    it("empties the entire cache", () => {
-      cacheToken("user1", "token1", 3600);
-      cacheToken("user2", "token2", 3600);
-
-      clearAllCachedTokens();
-
-      expect(getCachedToken("user1")).toBeNull();
-      expect(getCachedToken("user2")).toBeNull();
-      expect(getCacheStats().size).toBe(0);
-    });
-  });
-
-  describe("getCacheStats", () => {
-    it("returns the correct cache size", () => {
-      expect(getCacheStats().size).toBe(0);
-
-      cacheToken("user1", "token1", 3600);
-      expect(getCacheStats().size).toBe(1);
-
-      cacheToken("user2", "token2", 3600);
-      expect(getCacheStats().size).toBe(2);
-    });
-
-    it("returns the cached entry keys", () => {
-      cacheToken("alpha", "t1", 3600);
-      cacheToken("bravo", "t2", 3600);
-
-      const stats = getCacheStats();
-      expect(stats.entries).toContain("alpha");
-      expect(stats.entries).toContain("bravo");
+      await expect(clearCachedToken("user1")).resolves.toBe(false);
     });
   });
 });

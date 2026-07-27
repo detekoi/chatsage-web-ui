@@ -15,7 +15,11 @@ const USERS_COLLECTION = "users";
 const PRIVATE_SUBCOLLECTION = "private";
 const OAUTH_DOC_ID = "oauth";
 
-function getOauthDocRef(db: Firestore, twitchUserId: string) {
+/**
+ * Reference to a user's private OAuth document.
+ * Exported so the access-token cache can share the same document.
+ */
+export function getOauthDocRef(db: Firestore, twitchUserId: string) {
   return db
     .collection(USERS_COLLECTION)
     .doc(twitchUserId)

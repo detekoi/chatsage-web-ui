@@ -22,8 +22,8 @@ import { AuthError } from "@/utils/errors";
 export async function getValidTwitchTokenForUser(userId: string): Promise<string> {
   const db = getDb();
 
-  // Step 1: Check cache first
-  const cachedToken = getCachedToken(userId);
+  // Step 1: Check cache first (shared across instances via Firestore)
+  const cachedToken = await getCachedToken(userId);
   if (cachedToken) {
     return cachedToken;
   }
@@ -108,7 +108,7 @@ export async function getValidTwitchTokenForUser(userId: string): Promise<string
     }
 
     // Step 6: Cache the new access token
-    cacheToken(userId, newTokens.accessToken, newTokens.expiresIn);
+    await cacheToken(userId, newTokens.accessToken, newTokens.expiresIn);
 
     logger.info("Successfully obtained valid access token", {
       userId,
@@ -124,7 +124,7 @@ export async function getValidTwitchTokenForUser(userId: string): Promise<string
     });
 
     // Clear cache on error
-    clearCachedToken(userId);
+    await clearCachedToken(userId);
 
     // Mark user as needing re-auth in Firestore
     try {
@@ -169,8 +169,17 @@ export async function clearUserTokens(
   }
 
   try {
-    // Clear from cache
-    clearCachedToken(userId);
+    // Clear from the shared cache. If this fails the revocation has NOT taken
+    // effect — other instances would keep serving the token until it expires —
+    // so report failure rather than reporting a revocation that did not happen.
+    const cacheCleared = await clearCachedToken(userId);
+    if (!cacheCleared) {
+      logger.error("Token revocation incomplete: cached token could not be cleared", {
+        userId,
+        reason,
+      });
+      return false;
+    }
 
     // Update Firestore
     const userDocRef = db.collection(CHANNELS_COLLECTION).doc(userId);

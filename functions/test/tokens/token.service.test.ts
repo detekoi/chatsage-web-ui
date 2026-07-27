@@ -63,7 +63,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("returns cached token if available", async () => {
-    mockGetCachedToken.mockReturnValue("cached-access-token");
+    mockGetCachedToken.mockResolvedValue("cached-access-token");
 
     const result = await getValidTwitchTokenForUser("testuser");
 
@@ -72,7 +72,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("refreshes token when cache is empty and user exists", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({
       exists: true,
       data: () => ({ twitchUserId: "twitch-123" }),
@@ -92,7 +92,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("stores rotated refresh token in Firestore", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({
       exists: true,
       data: () => ({ twitchUserId: "twitch-123" }),
@@ -115,7 +115,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("throws AuthError when user document does not exist", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({ exists: false });
 
     await expect(getValidTwitchTokenForUser("unknownuser")).rejects.toThrow(
@@ -124,7 +124,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("resolves when twitchUserId is missing from doc (uses userId arg directly)", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({
       exists: true,
       data: () => ({}), // no twitchUserId — impl now ignores this field
@@ -140,7 +140,7 @@ describe("getValidTwitchTokenForUser", () => {
 
 
   it("throws AuthError when no refresh token is stored", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({
       exists: true,
       data: () => ({ twitchUserId: "twitch-123" }),
@@ -153,7 +153,7 @@ describe("getValidTwitchTokenForUser", () => {
   });
 
   it("marks user as needing re-auth on refresh failure", async () => {
-    mockGetCachedToken.mockReturnValue(null);
+    mockGetCachedToken.mockResolvedValue(null);
     mockGet.mockResolvedValue({
       exists: true,
       data: () => ({ twitchUserId: "twitch-123" }),
@@ -173,6 +173,7 @@ describe("getValidTwitchTokenForUser", () => {
 describe("clearUserTokens", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockClearCachedToken.mockResolvedValue(true);
   });
 
   it("clears cache and updates Firestore", async () => {
@@ -207,5 +208,17 @@ describe("clearUserTokens", () => {
 
     const result = await clearUserTokens("testuser");
     expect(result).toBe(false);
+  });
+
+  it("returns false without claiming revocation when the shared cache cannot be cleared", async () => {
+    mockClearCachedToken.mockResolvedValue(false);
+    mockGet.mockResolvedValue({ exists: true });
+
+    const result = await clearUserTokens("testuser");
+
+    expect(result).toBe(false);
+    // Must not mark the user re-authed when the token is still being served
+    // by other instances.
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });

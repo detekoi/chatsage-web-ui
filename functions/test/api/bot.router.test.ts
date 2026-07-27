@@ -24,9 +24,15 @@ jest.mock("@/tokens", () => ({
 
 jest.mock("@/twitch", () => ({
   ensureStreamEventSubscriptions: jest.fn().mockResolvedValue(undefined),
+  deleteAllSubscriptionsForUser: jest.fn().mockResolvedValue({ deleted: 0, failed: 0 }),
   addModerator: jest.fn().mockResolvedValue({ success: true }),
   getUserIdFromUsername: jest.fn().mockResolvedValue("bot-user-id"),
 }));
+
+import { deleteAllSubscriptionsForUser } from "@/twitch";
+
+const mockDeleteSubscriptions =
+  deleteAllSubscriptionsForUser as jest.MockedFunction<typeof deleteAllSubscriptionsForUser>;
 
 jest.mock("@/utils/secrets", () => ({
   getAllowedChannelsList: jest.fn().mockResolvedValue(["testuser"]),
@@ -169,12 +175,11 @@ describe("Bot Router", () => {
   });
 
   describe("POST /remove", () => {
+    const removeToken = () =>
+      makeToken({ login: "testuser", userId: "123", displayName: "TestUser" });
+
     it("removes bot from channel", async () => {
-      const token = makeToken({
-        login: "testuser",
-        userId: "123",
-        displayName: "TestUser",
-      });
+      const token = removeToken();
       mockGet.mockResolvedValue({
         exists: true,
         data: () => ({ isActive: true }),
@@ -187,6 +192,70 @@ describe("Bot Router", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+    });
+
+    it("deletes EventSub subscriptions using the stored broadcaster id", async () => {
+      const token = removeToken();
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ isActive: true, twitchUserId: "twitch-456" }),
+      });
+      mockDeleteSubscriptions.mockResolvedValue({ deleted: 3, failed: 0 });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/remove")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(mockDeleteSubscriptions).toHaveBeenCalledWith("testuser", "twitch-456");
+      expect(res.body.eventsubTeardown).toEqual({ deleted: 3, failed: 0 });
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ eventsubTeardownPending: false }),
+      );
+    });
+
+    it("still deactivates and flags for reconciliation when teardown throws", async () => {
+      const token = removeToken();
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ isActive: true, twitchUserId: "twitch-456" }),
+      });
+      mockDeleteSubscriptions.mockRejectedValue(new Error("Twitch unavailable"));
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/remove")
+        .set("Authorization", `Bearer ${token}`);
+
+      // Removal must still succeed — the channel is deactivated either way.
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ isActive: false }),
+      );
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ eventsubTeardownPending: true }),
+      );
+    });
+
+    it("flags for reconciliation when some deletions fail", async () => {
+      const token = removeToken();
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ isActive: true, twitchUserId: "twitch-456" }),
+      });
+      mockDeleteSubscriptions.mockResolvedValue({ deleted: 1, failed: 2 });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/remove")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ eventsubTeardownPending: true }),
+      );
     });
   });
 });
