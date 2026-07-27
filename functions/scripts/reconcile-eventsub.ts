@@ -23,9 +23,18 @@
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 // Register module alias before the "@"-prefixed imports below are required.
+// TypeScript resolves "@/*" to src/*.ts for type-checking; at runtime it has to
+// resolve to the compiled output instead. Anchor on the functions root so the
+// alias is correct both under ts-node (scripts/) and when the compiled copy in
+// lib/scripts/ is executed — resolving relative to __dirname alone gives
+// lib/lib/src for the latter, which does not exist.
 import moduleAlias from "module-alias";
 import * as path from "path";
-moduleAlias.addAlias("@", path.join(__dirname, "../lib/src"));
+
+const functionsRoot = __filename.endsWith(".ts")
+  ? path.join(__dirname, "..") // scripts/ -> functions/
+  : path.join(__dirname, "..", ".."); // lib/scripts/ -> functions/
+moduleAlias.addAlias("@", path.join(functionsRoot, "lib", "src"));
 
 import { getAppAccessToken } from "@/twitch/appToken.service";
 import { getTwitchSubscriptionsPaginated, deleteTwitchSubscription } from "@/twitch/eventsub.service";
@@ -149,14 +158,34 @@ async function runReconciliation() {
         await deleteTwitchSubscription(appAccessToken, sub.id);
         deleted++;
         logger.info(`Deleted ${sub.type} for broadcaster ${broadcasterId} (${sub.id})`);
-        
-        // Rate limiting: sleep 100ms between deletes to respect Twitch API limits (max 800/min)
-        await new Promise(resolve => setTimeout(resolve, 100));
       } catch (err: unknown) {
         failed++;
         failedBroadcasterIds.add(broadcasterId);
         const message = err instanceof Error ? err.message : String(err);
         logger.error(`Failed to delete subscription ${sub.id}: ${message}`);
+
+        // Back off on rate limiting. deleteTwitchSubscription only suppresses
+        // 404s, so a 429 lands here — without this the loop would retry the
+        // next subscription immediately, hammering hardest exactly when Twitch
+        // has asked us to slow down.
+        const response = (err as {
+          response?: { status?: number; headers?: Record<string, string> };
+        })?.response;
+
+        if (response?.status === 429) {
+          // Twitch's Helix API signals rate limits via Ratelimit-Reset (a Unix
+          // timestamp, in seconds) rather than the standard Retry-After header.
+          const resetAt = Number(response.headers?.["ratelimit-reset"]);
+          const waitMs = Number.isFinite(resetAt) && resetAt > 0
+            ? Math.max(resetAt * 1000 - Date.now(), 0)
+            : 5000;
+          logger.warn(`Rate limited by Twitch. Backing off ${waitMs}ms.`);
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+        }
+      } finally {
+        // Throttle every request, not only the successful ones (~10/s, well
+        // under Twitch's 800/min).
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
 
