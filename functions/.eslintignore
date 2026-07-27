@@ -1,8 +1,6 @@
 # Build output
 lib/
 
-# Scripts (CommonJS, not TypeScript)
-scripts/
-
+# Scripts are now TypeScript and should be linted
 # Dependencies
 node_modules/

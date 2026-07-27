@@ -81,6 +81,28 @@ describe("authenticateInternalRequest", () => {
     expect(mockRes.status).not.toHaveBeenCalled();
   });
 
+  it("returns 401, not 500, for a multi-byte token of equal character length", async () => {
+    // "é" and "a" are both String.length 1 but 2 and 1 UTF-8 bytes. A raw
+    // timingSafeEqual guarded only by String.length throws a RangeError here.
+    mockGetToken.mockResolvedValue("a");
+    mockReq.headers.authorization = "Bearer é";
+
+    await authenticateInternalRequest(mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
+  it("returns 401 for tokens differing only in length", async () => {
+    mockGetToken.mockResolvedValue("correct-token");
+    mockReq.headers.authorization = "Bearer correct-token-with-suffix";
+
+    await authenticateInternalRequest(mockReq, mockRes, mockNext);
+
+    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
   it("returns 500 when secret fetch fails", async () => {
     mockGetToken.mockRejectedValue(new Error("Secret Manager error"));
     mockReq.headers.authorization = "Bearer some-token";

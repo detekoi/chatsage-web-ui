@@ -159,6 +159,61 @@ export async function ensureStreamEventSubscriptions(
   }
 }
 
+export async function getTwitchSubscriptionsPaginated(
+  appAccessToken: string,
+  userId?: string,
+): Promise<{ id: string; type: string; condition?: Record<string, string | undefined> }[]> {
+  const headers = {
+    Authorization: `Bearer ${appAccessToken}`,
+    "Client-ID": TWITCH_CLIENT_ID,
+    "Content-Type": "application/json",
+  };
+
+  const subscriptions: { id: string; type: string; condition?: Record<string, string | undefined> }[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const list = await axios.get(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
+      headers,
+      params: {
+        ...(userId ? { user_id: String(userId) } : {}),
+        ...(cursor ? { after: cursor } : {}),
+      },
+    });
+
+    subscriptions.push(...(list.data?.data || []));
+    cursor = list.data?.pagination?.cursor;
+  } while (cursor);
+
+  return subscriptions;
+}
+
+/**
+ * Helper to delete a single EventSub subscription and suppress 404s.
+ * Throws on other errors.
+ */
+export async function deleteTwitchSubscription(
+  appAccessToken: string,
+  subId: string,
+): Promise<boolean> {
+  const headers = {
+    Authorization: `Bearer ${appAccessToken}`,
+    "Client-ID": TWITCH_CLIENT_ID,
+    "Content-Type": "application/json",
+  };
+  try {
+    await axios.delete(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
+      headers,
+      params: { id: subId },
+    });
+    return true;
+  } catch (error: unknown) {
+    const err = error as { response?: { status?: number } };
+    if (err.response?.status === 404) return true;
+    throw error;
+  }
+}
+
 /**
  * Deletes every EventSub subscription Twitch holds for a broadcaster.
  *
@@ -181,30 +236,10 @@ export async function deleteAllSubscriptionsForUser(
 ): Promise<{ deleted: number; failed: number }> {
   const appAccessToken = await getAppAccessToken();
 
-  const headers = {
-    Authorization: `Bearer ${appAccessToken}`,
-    "Client-ID": TWITCH_CLIENT_ID,
-    "Content-Type": "application/json",
-  };
-
   // Collect every subscription for this broadcaster. Twitch paginates this
   // endpoint, so follow the cursor — a partial page would silently leave
   // subscriptions behind, which is the exact failure this function prevents.
-  const subscriptions: { id: string; type: string }[] = [];
-  let cursor: string | undefined;
-
-  do {
-    const list = await axios.get(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
-      headers,
-      params: {
-        user_id: String(broadcasterUserId),
-        ...(cursor ? { after: cursor } : {}),
-      },
-    });
-
-    subscriptions.push(...(list.data?.data || []));
-    cursor = list.data?.pagination?.cursor;
-  } while (cursor);
+  const subscriptions = await getTwitchSubscriptionsPaginated(appAccessToken, broadcasterUserId);
 
   let deleted = 0;
   let failed = 0;
@@ -212,11 +247,7 @@ export async function deleteAllSubscriptionsForUser(
   // Delete each individually so one failure cannot abandon the rest.
   for (const sub of subscriptions) {
     try {
-      await axios.delete(`${TWITCH_HELIX_URL}/eventsub/subscriptions`, {
-        headers,
-        params: { id: sub.id },
-      });
-
+      await deleteTwitchSubscription(appAccessToken, sub.id);
       deleted++;
       logger.info("Deleted EventSub subscription", {
         channelLogin,
@@ -225,13 +256,6 @@ export async function deleteAllSubscriptionsForUser(
       });
     } catch (error: unknown) {
       const err = error as { response?: { status?: number; data?: unknown }; message: string };
-
-      // A 404 means it is already gone, which is the outcome we wanted.
-      if (err.response?.status === 404) {
-        deleted++;
-        continue;
-      }
-
       failed++;
       logger.error("Failed to delete EventSub subscription", {
         channelLogin,

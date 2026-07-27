@@ -34,10 +34,16 @@ export async function authenticateInternalRequest(
   try {
     const expected = await getInternalBotTokenValue();
 
-    if (
-      token.length !== expected.length ||
-      !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected))
-    ) {
+    // Compare fixed-length digests rather than the raw tokens. A raw comparison
+    // needs a length guard, and a guard on String.length (UTF-16 code units)
+    // does not imply equal Buffer byte length — "é" and "a" are both length 1
+    // but 2 and 1 bytes — so timingSafeEqual would still throw a RangeError.
+    // Hashing makes both operands 32 bytes, so the comparison cannot throw and
+    // does not leak the token's length.
+    const tokenDigest = crypto.createHash("sha256").update(token, "utf8").digest();
+    const expectedDigest = crypto.createHash("sha256").update(expected, "utf8").digest();
+
+    if (!crypto.timingSafeEqual(tokenDigest, expectedDigest)) {
       logger.warn("Invalid internal authorization token", {
         path: req.path,
       });
