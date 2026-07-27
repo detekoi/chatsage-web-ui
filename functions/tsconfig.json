@@ -21,7 +21,8 @@
   "compileOnSave": true,
   "include": [
     "src/**/*",
-    "test/**/*"
+    "test/**/*",
+    "scripts/**/*"
   ],
   "exclude": [
     "node_modules",
