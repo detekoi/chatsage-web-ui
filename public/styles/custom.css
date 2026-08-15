@@ -262,20 +262,8 @@ label,
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 
-.form-switch .form-check-input {
-    width: 2.5em;
-    height: 1.4em;
-    background-color: var(--border-color);
-    border: 2px solid var(--border-color);
-    border-radius: 2em;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
-}
-
-.form-switch .form-check-input:checked {
-    background-color: var(--text-primary);
-    border-color: var(--text-primary);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23f5f5f5'/%3e%3c/svg%3e");
-}
+/* Switch appearance (40x22 rectangle, square knob) is owned by
+   design-system.css — the old pill rules lived here and were removed. */
 
 .form-check-input:focus {
     border-color: var(--text-primary);
@@ -287,9 +275,6 @@ label,
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 
-[data-theme="dark"] .form-switch .form-check-input:checked {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23000'/%3e%3c/svg%3e");
-}
 
 /* Static background canvas */
 #staticCanvas {
@@ -687,14 +672,16 @@ strong,
 }
 
 /* Links - Post-Industrial: Simple underlined links */
-a:not(.btn):not(.button-3d) {
+/* [class*="wc-"] opts design-system components out: they carry their own
+   link treatment in design-system.css. */
+a:not(.btn):not(.button-3d):not([class*="wc-"]) {
     color: var(--text-primary);
     text-decoration: underline;
     transition: color 0.2s ease;
 }
 
-a:not(.btn):not(.button-3d):hover,
-a:not(.btn):not(.button-3d):focus {
+a:not(.btn):not(.button-3d):not([class*="wc-"]):hover,
+a:not(.btn):not(.button-3d):not([class*="wc-"]):focus {
     color: var(--color-accent-grey);
 }
 

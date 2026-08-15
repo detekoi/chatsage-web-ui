@@ -4,13 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Error - WildcatSage</title>
+    <title>WildcatSage - Authentication Error</title>
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/logo192.png">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
@@ -19,6 +22,7 @@
 
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/design-system.css">
 
     <!-- Apply theme early to prevent flash -->
     <script>
@@ -32,24 +36,60 @@
     </script>
 
     <script src="https://app.rybbit.io/api/script.js" data-site-id="107" defer></script>
+</head>
+
+<body>
+    <main class="wc-stage wc-stage--transient">
+        <div class="wc-frame">
+            <div class="wc-frame-head">
+                <span class="wc-lockup">Wildcat<b>Sage</b></span>
+                <span class="wc-readout wc-readout--danger">Auth failed</span>
+            </div>
+
+            <div class="wc-frame-body">
+                <h1 id="error-title" class="wc-title wc-title--sm">Authentication failed</h1>
+                <p class="wc-lede" id="error-message-details">Sorry, there was a problem during the Twitch
+                    authentication process.</p>
+
+                <div class="wc-code">
+                    <span class="wc-code-label">Error</span>
+                    <span class="wc-code-value" id="error-code">unknown</span>
+                </div>
+
+                <a href="index.html" class="wc-btn">Try again</a>
+            </div>
+
+            <div class="wc-frame-foot">
+                <a class="wc-link" href="https://parfaitfair.com/#contact" target="_blank" rel="noopener">Request access</a>
+                <span>bot.wildcat.chat</span>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // Optional: Script to display error details from URL parameters
+        // Display error details from URL parameters
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             const error = params.get('error');
             const errorDescription = params.get('error_description');
             const errorMessageEl = document.getElementById('error-message-details');
             const errorTitleEl = document.getElementById('error-title');
+            const errorCodeEl = document.getElementById('error-code');
+
+            if (errorCodeEl) {
+                errorCodeEl.textContent = error ? decodeURIComponent(error) : 'unspecified';
+            }
 
             if (errorMessageEl) {
                 let message = '';
                 if (errorDescription) {
                     message = decodeURIComponent(errorDescription);
+                } else if (error === 'access_denied') {
+                    message = "You cancelled the login process or didn't authorize the application.";
                 } else if (error) {
-                    message = `Error code: ${decodeURIComponent(error)}`;
+                    message = 'Twitch returned an error during authentication.';
                 } else {
-                    message = "An unspecified error occurred.";
+                    message = 'An unspecified error occurred.';
                 }
                 errorMessageEl.textContent = message;
 
@@ -67,62 +107,10 @@
             }
 
             if (errorTitleEl && error === 'access_denied') {
-                errorTitleEl.textContent = "Authentication Denied";
+                errorTitleEl.textContent = 'Login canceled';
             }
         });
     </script>
-</head>
-
-<body>
-    <!-- Dark mode toggle in top-right corner -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="darkModeToggle">
-            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-        </div>
-    </div>
-
-    <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-        <div class="card shadow-lg" style="max-width: 600px; width: 100%;">
-            <div class="card-body text-center p-4">
-                <h1 id="error-title" class="h3 mb-3 text-danger">Authentication Failed</h1>
-                <p class="mb-3">Sorry, there was a problem during the Twitch authentication process.</p>
-
-                <div class="alert alert-danger text-start" role="alert">
-                    <p id="error-message-details" class="mb-0">Loading error details...</p>
-                </div>
-
-                <div class="d-grid">
-                    <a href="index.html" class="button-3d btn-primary">Try Logging In Again</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Dark mode toggle functionality -->
-    <script>
-        // Initialize dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const currentTheme = localStorage.getItem('chatsage-theme') ||
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-
-        darkModeToggle.checked = currentTheme === 'dark';
-
-        darkModeToggle.addEventListener('change', function () {
-            if (this.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('chatsage-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('chatsage-theme', 'light');
-            }
-        });
-    </script>
-
-    <!-- Bootstrap 5 Bundle JS (with Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>

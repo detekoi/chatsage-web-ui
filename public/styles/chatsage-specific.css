@@ -224,14 +224,8 @@
   text-transform: uppercase;
 }
 
-#commands-section {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  padding: var(--spacing-medium);
-  box-shadow: none;
-  border-radius: 0;
-  margin-top: var(--spacing-medium);
-}
+/* The section frame now comes from .wc-card in design-system.css; this
+   wrapper is just a visibility container. */
 
 #commands-section h3 {
   margin-top: 0;
@@ -242,12 +236,8 @@
   letter-spacing: 0.02em;
 }
 
-#commands-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-unit);
-  margin-top: var(--spacing-medium);
-}
+/* Commands are stacked setting rows, not a multi-column grid — one control
+   column down the card, per the design system. */
 
 .command-item {
   display: flex;
@@ -376,11 +366,6 @@
 
   .container h1 {
     font-size: 2rem;
-  }
-
-  #commands-list {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-small);
   }
 
   .command-item {

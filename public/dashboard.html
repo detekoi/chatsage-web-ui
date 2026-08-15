@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Cabin+Condensed:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
@@ -20,6 +20,7 @@
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
     <link rel="stylesheet" href="styles/chatsage-specific.css">
+    <link rel="stylesheet" href="styles/design-system.css">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js"></script>
@@ -73,40 +74,48 @@
 
     <p id="action-message" class="alert alert-info action-toast" style="display:none;"></p>
 
-    <div class="container my-4">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <h1 class="h3 mb-0 dashboard-title" id="darkModeToggle" title="Click to toggle dark mode">WildcatSage
-                Dashboard</h1>
-            <a href="#" id="logout-link" class="btn btn-outline-danger btn-sm">Logout</a>
+    <header class="wc-appbar">
+        <div class="wc-appbar-brand">
+            <span class="wc-lockup">Wildcat<b>Sage</b></span>
+            <span class="wc-sep"></span>
+            <span class="wc-appbar-page">Dashboard</span>
         </div>
-        <p class="text-center mb-3">
-            <a href="https://docs.wildcat.chat/botcommands.html" target="_blank" class="link-primary">Commands
-                Documentation</a>
-        </p>
+        <div class="wc-appbar-actions">
+            <button class="wc-iconbtn" type="button" id="darkModeToggle" title="Toggle dark mode"
+                aria-label="Toggle dark mode">
+                <i data-lucide="moon" aria-hidden="true"></i>
+            </button>
+            <a href="#" id="logout-link" class="wc-chipbtn wc-chipbtn--danger">Logout</a>
+        </div>
+    </header>
 
+    <div class="wc-page-head">
+        <h1>Channel dashboard</h1>
+        <p>Commands, stream events and automated chat for your channel.</p>
+    </div>
 
-        <!-- Bot Status & Control -->
-        <div class="card mb-4 shadow">
-            <div class="card-body">
-                <p class="mb-1">Welcome, <span id="twitch-username">loading...</span>!</p>
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 bot-status-row">
-                    <p class="mb-0">Bot status for channel <strong id="channel-name-status">your channel</strong>:
-                        <strong id="bot-status">Loading...</strong>
-                    </p>
-                    <div class="d-flex gap-2 bot-action-buttons">
-                        <button id="add-bot-btn" class="btn btn-outline-primary btn-sm" style="display:none;"
-                            type="button">Add Bot
-                            to My Channel</button>
-                        <button id="remove-bot-btn" class="btn btn-outline-danger btn-sm" style="display:none;"
-                            type="button">Remove Bot from My Channel</button>
-                    </div>
-                </div>
+    <div class="wc-main">
+        <dl class="wc-stats">
+            <div class="wc-stat">
+                <dt>Bot</dt>
+                <dd><span id="bot-status">Loading…</span></dd>
             </div>
-        </div>
+            <div class="wc-stat">
+                <dt>Channel</dt>
+                <dd><span id="channel-name-status">your channel</span></dd>
+            </div>
+            <div class="wc-stat">
+                <dt>Signed in as</dt>
+                <dd><span id="twitch-username">loading…</span></dd>
+            </div>
+        </dl>
+
+        <div class="wc-shell">
+            <div class="wc-shell-main">
 
         <!-- Command Settings Section -->
         <div id="commands-section" style="display:none;">
-            <div class="card mb-4 shadow">
+            <div class="card wc-card">
                 <div class="card-header">
                     <h5 class="mb-0">Command Settings</h5>
                 </div>
@@ -125,7 +134,7 @@
 
         <!-- Stream Events Section -->
         <div id="stream-events-section" style="display:none;">
-            <div class="card mb-4 shadow">
+            <div class="card wc-card">
                 <div class="card-header">
                     <h5 class="mb-0">Stream Events</h5>
                 </div>
@@ -169,7 +178,7 @@
 
         <!-- Auto-Chat Settings Section -->
         <div id="auto-chat-section" style="display:none;">
-            <div class="card mb-4 shadow">
+            <div class="card wc-card">
                 <div class="card-header">
                     <h5 class="mb-0">Auto-Chat Settings</h5>
                 </div>
@@ -209,7 +218,7 @@
 
         <!-- Ad Notifications Section -->
         <div id="ad-notifications-section" style="display:none;">
-            <div class="card mb-4 shadow">
+            <div class="card wc-card">
                 <div class="card-header">
                     <h5 class="mb-0">Ad Notifications</h5>
                 </div>
@@ -233,7 +242,7 @@
 
         <!-- Custom Commands Section -->
         <div id="custom-commands-section" style="display:none;">
-            <div class="card mb-4">
+            <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">Custom Commands</h5>
                     <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon"></i> Add</button>
@@ -321,7 +330,7 @@
 
         <!-- Timed Messages Section -->
         <div id="timers-section" style="display:none;">
-            <div class="card mb-4">
+            <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="mb-0">Timed Messages</h5>
                     <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon"></i> Add</button>
@@ -400,7 +409,7 @@
 
         <!-- Daily Check-In (Channel Point Reward) Section -->
         <div id="checkin-section" style="display:none;">
-            <div class="card mb-4 shadow">
+            <div class="card wc-card">
                 <div class="card-header">
                     <h5 class="mb-0">Daily Check-In</h5>
                 </div>
@@ -476,8 +485,39 @@
                 </div>
             </div>
         </div>
+            </div>
 
+            <aside class="wc-shell-aside">
+                <!-- Channel service: a once-a-year action, kept beside the
+                     status readouts it changes rather than in the header. -->
+                <section class="wc-aside-card">
+                    <header>Channel service</header>
+                    <div class="wc-aside-body">
+                        <span class="wc-aside-headline">Bot in your channel</span>
+                        <button id="add-bot-btn" class="wc-btn wc-btn--aside" style="display:none;"
+                            type="button">Add bot to my channel</button>
+                        <button id="remove-bot-btn" class="wc-btn wc-btn--aside wc-btn--danger" style="display:none;"
+                            type="button">Remove bot from my channel</button>
+                        <p class="wc-aside-note">Removing the bot stops it posting in your channel and leaves your
+                            settings untouched. You can add it back any time.</p>
+                    </div>
+                </section>
 
+                <section class="wc-aside-card">
+                    <header>Quick links</header>
+                    <div class="wc-aside-body">
+                        <div class="wc-links">
+                            <a class="wc-link wc-link--muted" href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener">
+                                <i data-lucide="book" aria-hidden="true"></i>Documentation
+                            </a>
+                            <a class="wc-link wc-link--muted" href="https://wildcat.chat" target="_blank" rel="noopener">
+                                <i data-lucide="external-link" aria-hidden="true"></i>Wildcat Chat
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </div>
     </div>
 
     <!-- Dark mode toggle (hidden behind title click) -->

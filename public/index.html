@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WildcatSage Bot Management</title>
-    
+
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="/logo192.png">
 
@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Cabin+Condensed:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
@@ -22,6 +22,7 @@
 
     <!-- Custom overrides -->
     <link rel="stylesheet" href="styles/custom.css">
+    <link rel="stylesheet" href="styles/design-system.css">
 
     <!-- Apply theme based on system preference -->
     <script>
@@ -72,71 +73,92 @@
 </head>
 
 <body>
-    <video id="staticVideo" autoplay loop muted playsinline
-        style="width:100vw; height:100vh; position:fixed; top:0; left:0; z-index:-1; object-fit:cover;">
-        <source src="assets/video/Pixelated_static_pattern_web_balanced.mp4" type="video/mp4">
+    <video id="staticVideo" class="wc-stage-video" autoplay loop muted playsinline aria-hidden="true">
+        <source src="assets/video/Pixelated_static_pattern_web_ultralight.mp4" type="video/mp4">
     </video>
+    <div class="wc-stage-dim"></div>
 
-    <!-- Light mode overlay for video -->
-    <div class="video-overlay"></div>
-
-    <!-- Dark mode toggle in top-right corner -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-        <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="darkModeToggle">
-            <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
-        </div>
-    </div>
-
-
-    <div class="container" style="max-width: 600px; margin-top: 10vh;">
-        <div class="card shadow-lg">
-            <div class="card-body text-center p-4">
-                <h1 class="h2 mb-3">WildcatSage Bot Management</h1>
-                <p class="mb-3">Manage <a href="https://docs.wildcat.chat/botcommands.html" target="_blank"
-                        class="link-primary">WildcatSage</a> for your Twitch channel.</p>
-
-                <div class="alert alert-warning text-start mb-4" role="alert">
-                    <strong>Note:</strong> Access is currently invite-only. Unapproved channels will see an access
-                    denied message. <a href="https://parfaitfair.com/#contact" target="_blank"
-                        class="alert-link">Request access here</a>.
-                </div>
-
-                <div class="d-grid gap-2">
-                    <a href="#" id="twitchLoginBtn" class="button-3d btn-primary"><i data-lucide="twitch" class="inline-icon" style="margin-right: 4px;"></i> Login with Twitch</a>
-                </div>
-
-                <p id="loginError" class="text-danger mt-3 mb-0"></p>
+    <main class="wc-stage">
+        <div style="width:100%; max-width:620px; display:flex; justify-content:flex-end;">
+            <div class="wc-themeswitch" role="group" aria-label="Colour theme">
+                <button type="button" id="themeLightBtn" aria-pressed="false">Light</button>
+                <button type="button" id="themeDarkBtn" aria-pressed="false">Dark</button>
             </div>
         </div>
-    </div>
 
+        <div class="wc-frame">
+            <div class="wc-frame-head">
+                <span class="wc-lockup">Wildcat<b>Sage</b></span>
+                <span class="wc-readout">Invite-only</span>
+            </div>
 
-    <!-- Dark mode toggle functionality -->
+            <div style="padding:28px 20px 0; display:flex; flex-direction:column; gap:12px;">
+                <h1 class="wc-title">
+                    <span class="wc-title-brand">Wildcat</span><span class="wc-title-suffix">Sage</span>
+                    <span class="wc-title-line">Bot management</span>
+                </h1>
+                <p class="wc-lede">Manage the bot for your Twitch channel.</p>
+            </div>
+
+            <div class="wc-note" style="margin:22px 20px 0;">
+                <span class="wc-note-label">Access</span>
+                <p>Access is currently invite-only. Unapproved channels will see an access denied message.
+                    <a class="wc-link wc-link--underline" href="https://parfaitfair.com/#contact" target="_blank" rel="noopener">Request access here</a>.
+                </p>
+            </div>
+
+            <div class="wc-frame-body">
+                <div class="wc-action">
+                    <button type="button" id="twitchLoginBtn" class="wc-btn">
+                        <i data-lucide="twitch" aria-hidden="true"></i>Log in with Twitch
+                    </button>
+                    <p class="wc-help">Add or remove the bot • Enable commands and stream events • Auto-chat and ad
+                        notifications • Custom commands, timed messages and daily check-in</p>
+                </div>
+
+                <p id="loginError" class="wc-code-value" role="alert" aria-live="assertive"
+                    style="color:var(--wc-danger); margin:0;"></p>
+            </div>
+
+            <div class="wc-frame-foot">
+                <a class="wc-link" href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener">Documentation</a>
+                <span>bot.wildcat.chat</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Segmented light/dark switch -->
     <script>
-        // Initialize dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const savedTheme = localStorage.getItem('chatsage-theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+        (function () {
+            const lightBtn = document.getElementById('themeLightBtn');
+            const darkBtn = document.getElementById('themeDarkBtn');
 
-        darkModeToggle.checked = currentTheme === 'dark';
-
-        darkModeToggle.addEventListener('change', function () {
-            if (this.checked) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('chatsage-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('chatsage-theme', 'light');
+            function sync() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                darkBtn.setAttribute('aria-pressed', String(isDark));
+                lightBtn.setAttribute('aria-pressed', String(!isDark));
             }
-        });
+
+            function pick(theme) {
+                localStorage.setItem('chatsage-theme', theme);
+                if (theme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                }
+                sync();
+            }
+
+            lightBtn.addEventListener('click', () => pick('light'));
+            darkBtn.addEventListener('click', () => pick('dark'));
+            sync();
+        })();
     </script>
 
     <!-- Login functionality -->
     <script>
         document.getElementById('twitchLoginBtn').addEventListener('click', (event) => {
-            event.preventDefault();
+            event.currentTarget.classList.add('is-busy');
             const apiBaseUrl = 'https://api.wildcat.chat';
             window.location.href = `${apiBaseUrl}/auth/twitch`;
         });

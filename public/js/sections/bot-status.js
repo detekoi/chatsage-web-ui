@@ -106,12 +106,14 @@ export function updateBotStatusUI(isActive) {
         botStatusEl.classList.remove('text-danger');
         botStatusEl.classList.add('text-success');
         addBotBtn.style.display = 'none';
-        removeBotBtn.style.display = 'inline-block';
+        // Empty string restores the stylesheet's display so button layout is
+        // owned by CSS, not hardcoded here.
+        removeBotBtn.style.display = '';
     } else {
         botStatusEl.textContent = 'Inactive / Not Joined';
         botStatusEl.classList.remove('text-success');
         botStatusEl.classList.add('text-danger');
-        addBotBtn.style.display = 'inline-block';
+        addBotBtn.style.display = '';
         removeBotBtn.style.display = 'none';
     }
     
