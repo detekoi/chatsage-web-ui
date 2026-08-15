@@ -168,6 +168,51 @@ body {
 .wc-link--muted { color: var(--wc-text-2); }
 .wc-link--muted:hover { color: var(--wc-accent); text-decoration: none; }
 
+/* Diagonal arrow for links that open in a new tab. Ported from the Wildcat
+   homepage (src/styles/unified.css) so the family reads the same. Drawn as a
+   currentColor mask so it inherits the link colour in both themes. */
+a[target="_blank"]::after {
+    content: "";
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    margin-left: 0.25em;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='7' y1='17' x2='17' y2='7' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/line%3E%3Cpolyline points='7 7 17 7 17 17' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/polyline%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='7' y1='17' x2='17' y2='7' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/line%3E%3Cpolyline points='7 7 17 7 17 17' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/polyline%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    vertical-align: middle;
+    opacity: 0.75;
+    transition: transform 0.15s ease-in-out, opacity 0.15s ease-in-out;
+}
+
+a[target="_blank"]:hover::after,
+a[target="_blank"]:focus-visible::after {
+    transform: translate(1px, -1px);
+    opacity: 1;
+}
+
+/* A link that already carries an icon says "external" on its own — the Quick
+   Links list is the case that matters. i[data-lucide] is matched as well as
+   svg so the arrow never flashes before lucide.createIcons() swaps them. */
+a[target="_blank"]:has(svg)::after,
+a[target="_blank"]:has(img)::after,
+a[target="_blank"]:has(i[data-lucide])::after,
+a[target="_blank"].wc-btn::after,
+a[target="_blank"].wc-chipbtn::after,
+a[target="_blank"].no-arrow::after {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    a[target="_blank"]::after { transition: none; }
+}
+
 /* Focus is never removed, only restyled. */
 :root :is(a, button, input, select, textarea, [tabindex]):focus-visible {
     outline: 2px solid var(--wc-accent);
