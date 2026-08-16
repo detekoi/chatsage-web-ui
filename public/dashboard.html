@@ -395,7 +395,7 @@
             </div>
         </div>
 
-        <!-- Daily Check-In (Channel Point Reward) Section -->
+        <!-- Bot Personality Section -->
         <div id="persona-section" style="display:none;">
             <div class="card wc-card">
                 <div class="card-header">
@@ -413,30 +413,32 @@
                         <p class="wc-loading-label">Loading personality…</p>
                     </div>
 
-                    <div class="mb-2">
-                        <label for="persona-instructions" class="form-label">Personality instructions</label>
-                        <textarea class="form-control" id="persona-instructions" rows="12"
-                            spellcheck="true" aria-describedby="persona-counter persona-msg"></textarea>
-                        <p id="persona-counter" class="text-muted mt-1 mb-0" style="font-size:0.75rem;"></p>
+                    <div class="persona-form">
+                        <div class="mb-2">
+                            <label for="persona-instructions" class="form-label">Personality instructions</label>
+                            <textarea class="form-control" id="persona-instructions" rows="12"
+                                spellcheck="true" aria-describedby="persona-counter persona-msg"></textarea>
+                            <p id="persona-counter" class="text-muted mt-1 mb-0" style="font-size:0.75rem;"></p>
+                        </div>
+
+                        <details class="mb-3">
+                            <summary style="font-size:0.8125rem; cursor:pointer;">
+                                Rules that always apply
+                            </summary>
+                            <p class="text-muted mt-2 mb-1" style="font-size:0.75rem;">
+                                These are fixed for every channel and cannot be edited or overridden by
+                                the text above.
+                            </p>
+                            <pre id="persona-core" class="text-muted mb-0"
+                                style="font-size:0.75rem; white-space:pre-wrap; overflow-x:auto;"></pre>
+                        </details>
+
+                        <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button">Save</button>
+                        <button id="persona-reset-btn" class="btn btn-outline-danger btn-sm ms-2" type="button">
+                            Reset to default
+                        </button>
+                        <p id="persona-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
-
-                    <details class="mb-3">
-                        <summary style="font-size:0.8125rem; cursor:pointer;">
-                            Rules that always apply
-                        </summary>
-                        <p class="text-muted mt-2 mb-1" style="font-size:0.75rem;">
-                            These are fixed for every channel and cannot be edited or overridden by
-                            the text above.
-                        </p>
-                        <pre id="persona-core" class="text-muted mb-0"
-                            style="font-size:0.75rem; white-space:pre-wrap; overflow-x:auto;"></pre>
-                    </details>
-
-                    <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button">Save</button>
-                    <button id="persona-reset-btn" class="btn btn-outline-danger btn-sm ms-2" type="button">
-                        Reset to default
-                    </button>
-                    <p id="persona-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                 </div>
             </div>
         </div>
