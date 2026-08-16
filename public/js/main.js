@@ -55,8 +55,11 @@ async function initializeDashboard() {
         }
 
         try {
-            console.log("Dashboard: Sending request to /api/bot/status with Authorization header");
-            const statusRes = await apiGet('/api/bot/status');
+            console.log("Dashboard: Fetching bot status and configs in parallel");
+            const [statusRes] = await Promise.all([
+                apiGet('/api/bot/status'),
+                reloadAllConfigs()
+            ]);
 
             if (!statusRes.ok) {
                 if (statusRes.status === 401) {
@@ -70,8 +73,6 @@ async function initializeDashboard() {
 
             if (statusData.success) {
                 updateBotStatusUI(statusData.isActive);
-                // Load configs after bot status is loaded
-                await reloadAllConfigs();
             } else {
                 showActionToast(`Error: ${statusData.message}`, 'danger', 0);
                 const botStatusEl = document.getElementById('bot-status');

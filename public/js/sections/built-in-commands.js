@@ -12,7 +12,6 @@ export function initBuiltInCommands() {
 
 export async function loadCommandSettings() {
     commandsLoadingEl.style.display = 'block';
-    commandsListEl.innerHTML = '';
 
     if (DEV_MODE) {
         await mockDelay(500);

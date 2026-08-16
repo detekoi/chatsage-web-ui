@@ -241,9 +241,11 @@
                         .catch((error) => {
                             console.error('Exchange failed:', error);
                             fail(`${error.message} Sign in again.`);
-                            setTimeout(() => {
-                                window.location.href = 'index.html';
-                            }, 4000);
+                            if (!window.location.search.includes('disable_redirect=true') && !window.location.search.includes('dev=true')) {
+                                setTimeout(() => {
+                                    window.location.href = 'index.html';
+                                }, 4000);
+                            }
                         });
                 } else {
                     completeSignIn(legacyToken);
@@ -251,9 +253,11 @@
             } else {
                 console.error("Missing required parameters:", { userLogin, userId, code: exchangeCode ? 'present' : 'missing' });
                 fail("Authentication data is missing from the Twitch response. Sign in again.");
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
+                if (!window.location.search.includes('disable_redirect=true') && !window.location.search.includes('dev=true')) {
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 3000);
+                }
             }
         });
     </script>

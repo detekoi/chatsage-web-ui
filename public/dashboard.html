@@ -9,21 +9,25 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap"
-            rel="stylesheet">
-    </noscript>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Public+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=optional">
 
-    <!-- Custom overrides -->
-    <link rel="stylesheet" href="styles/custom.css">
-    <link rel="stylesheet" href="styles/chatsage-specific.css">
-    <link rel="stylesheet" href="styles/design-system.css">
+    <!-- Stylesheet bundle -->
+    <link rel="stylesheet" href="styles/dashboard.min.css">
+
+    <!-- Module Preloads to eliminate request waterfall -->
+    <link rel="modulepreload" href="js/main.js">
+    <link rel="modulepreload" href="js/api.js">
+    <link rel="modulepreload" href="js/ui.js">
+    <link rel="modulepreload" href="js/dev-mocks.js">
+    <link rel="modulepreload" href="js/crud-helpers.js">
+    <link rel="modulepreload" href="js/sections/bot-status.js">
+    <link rel="modulepreload" href="js/sections/built-in-commands.js">
+    <link rel="modulepreload" href="js/sections/auto-chat.js">
+    <link rel="modulepreload" href="js/sections/custom-commands.js">
+    <link rel="modulepreload" href="js/sections/timers.js">
+    <link rel="modulepreload" href="js/sections/checkin.js">
+    <link rel="modulepreload" href="js/sections/persona.js">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js" defer></script>
@@ -128,7 +132,7 @@
                         <div class="wc-bar" role="progressbar" aria-label="Loading command settings"><span></span></div>
                         <p class="wc-loading-label">Loading command settings…</p>
                     </div>
-                    <div id="commands-list" class="list-group"></div>
+                    <div id="commands-list" class="list-group" style="min-height: 200px;"></div>
                 </div>
             </div>
         </div>
@@ -424,7 +428,7 @@
                         </div>
 
                         <details class="mb-3">
-                            <summary style="font-size:0.8125rem; cursor:pointer;">
+                            <summary style="font-size:0.8125rem; cursor:pointer; min-height:32px; display:flex; align-items:center; padding:4px 0;">
                                 Rules that always apply
                             </summary>
                             <p class="text-muted mt-2 mb-1" style="font-size:0.75rem;">
@@ -434,10 +438,12 @@
                                 style="font-size:0.75rem; white-space:pre-wrap; overflow-x:auto;"></pre>
                         </details>
 
-                        <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button">Save</button>
-                        <button id="persona-reset-btn" class="btn btn-outline-danger btn-sm ms-2" type="button">
-                            Reset to default
-                        </button>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button" style="min-height:32px; min-width:60px; padding:6px 14px;">Save</button>
+                            <button id="persona-reset-btn" class="btn btn-outline-danger btn-sm" type="button" style="min-height:32px; min-width:60px; padding:6px 14px;">
+                                Reset to default
+                            </button>
+                        </div>
                         <p id="persona-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>

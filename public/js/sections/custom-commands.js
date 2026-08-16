@@ -58,7 +58,6 @@ export function initCustomCommands() {
 
 export async function loadCustomCommands() {
     customCmdLoadingEl.style.display = 'block';
-    customCmdListEl.innerHTML = '';
     customCmdEmptyEl.style.display = 'none';
 
     if (DEV_MODE) {
@@ -153,6 +152,7 @@ function renderCustomCommandsList(commands) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = 'Edit';
         editBtn.setAttribute('aria-label', `Edit command !${cmd.name}`);
+        editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openEditForm(cmd));
 
         const deleteBtn = document.createElement('button');
@@ -160,6 +160,7 @@ function renderCustomCommandsList(commands) {
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = 'Del';
         deleteBtn.setAttribute('aria-label', `Delete command !${cmd.name}`);
+        deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteCustomCommand(cmd.name));
 
         actions.appendChild(editBtn);

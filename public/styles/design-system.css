@@ -662,6 +662,28 @@ a[target="_blank"].no-arrow::after {
     line-height: 1;
 }
 
+:root .btn-sm,
+:root :is(.settings-section, .wc-card) .btn-sm,
+.btn-sm {
+    min-height: 32px !important;
+    min-width: 44px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+summary,
+details > summary {
+    min-height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 6px 0 !important;
+    cursor: pointer !important;
+}
+
 /* Segmented light/dark indicator on the login card. */
 .wc-themeswitch {
     display: flex;
@@ -776,6 +798,42 @@ a[target="_blank"].no-arrow::after {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--wc-text-3);
+}
+
+/* Card-level loaders — zero layout shift top indicator */
+:root .wc-card > .card-body {
+    position: relative;
+}
+
+:root .wc-card > .card-body > .wc-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    gap: 0;
+    pointer-events: none;
+}
+
+:root .wc-card > .card-body > .wc-loading .wc-bar {
+    height: 2px;
+    background: transparent;
+    border-radius: 0;
+}
+
+:root .wc-card > .card-body > .wc-loading .wc-loading-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 /* Page-level overlay sits in the content column rather than edge to edge. */
@@ -1234,15 +1292,16 @@ a[target="_blank"].no-arrow::after {
 .form-switch .form-check-input {
     appearance: none !important;
     -webkit-appearance: none !important;
-    width: 40px !important;
-    height: 22px !important;
+    width: 44px !important;
+    height: 24px !important;
+    min-height: 24px !important;
     flex: none;
     margin: 0;
     border-radius: var(--wc-radius-card);
     border: 1px solid var(--wc-border-strong);
     background-color: var(--wc-field);
     background-image: linear-gradient(var(--wc-knob-off), var(--wc-knob-off)) !important;
-    background-size: 16px 16px !important;
+    background-size: 18px 18px !important;
     background-position: 2px center !important;
     background-repeat: no-repeat !important;
     cursor: pointer;
@@ -1257,6 +1316,23 @@ a[target="_blank"].no-arrow::after {
     border-color: var(--wc-accent) !important;
     background-image: linear-gradient(var(--wc-knob-on), var(--wc-knob-on)) !important;
     background-position: calc(100% - 2px) center !important;
+}
+
+.cmd-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.cmd-actions .btn {
+    min-height: 28px !important;
+    min-width: 44px !important;
+    padding: 4px 10px !important;
+    font-size: 11.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 :root .form-switch .form-check-input:focus-visible {
@@ -1355,6 +1431,10 @@ textarea.form-control {
     align-items: center;
     justify-content: center;
     width: auto;
+    min-height: 32px !important;
+    min-width: 60px !important;
+    padding: 6px 14px !important;
+    margin-top: 8px !important;
 }
 
 /* Input groups — ensure inputs and buttons align seamlessly at --wc-control-h */
@@ -1669,6 +1749,27 @@ textarea.form-control {
     :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto:has(> .form-check.form-switch:only-child) {
         width: auto;
         justify-content: flex-end;
+    }
+    .cmd-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+    .cmd-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+    .cmd-actions .btn {
+        min-height: 32px !important;
+        min-width: 52px !important;
+        padding: 6px 12px !important;
+    }
+    .cmd-actions .form-switch .form-check-input {
+        min-height: 24px !important;
+        width: 44px !important;
     }
     .wc-tags { justify-content: flex-start; max-width: none; }
     .wc-stage { padding: 16px 16px 40px; }

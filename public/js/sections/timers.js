@@ -58,7 +58,6 @@ export function initTimers() {
 
 export async function loadTimers() {
     timerLoadingEl.style.display = 'block';
-    timerListEl.innerHTML = '';
     timerEmptyEl.style.display = 'none';
 
     if (DEV_MODE) {
@@ -148,6 +147,7 @@ function renderTimersList(timers) {
 
         const switchDiv = document.createElement('div');
         switchDiv.className = 'form-check form-switch';
+        switchDiv.style.cssText = 'min-height: 28px; display: flex; align-items: center;';
 
         const checkbox = document.createElement('input');
         checkbox.className = 'form-check-input';
@@ -157,6 +157,7 @@ function renderTimersList(timers) {
         checkbox.role = 'switch';
         checkbox.setAttribute('aria-label', `Enable timer ${timer.name}`);
         checkbox.title = 'Enable or disable this timed message';
+        checkbox.style.cssText = 'width: 44px; height: 24px; min-height: 24px; flex-shrink: 0;';
         checkbox.addEventListener('change', async function () {
             await toggleTimer(timer.name, this.checked, this);
         });
@@ -167,6 +168,7 @@ function renderTimersList(timers) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = 'Edit';
         editBtn.setAttribute('aria-label', `Edit timer ${timer.name}`);
+        editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openTimerEditForm(timer));
 
         const deleteBtn = document.createElement('button');
@@ -174,6 +176,7 @@ function renderTimersList(timers) {
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = 'Del';
         deleteBtn.setAttribute('aria-label', `Delete timer ${timer.name}`);
+        deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteTimer(timer.name));
 
         actions.appendChild(switchDiv);
