@@ -279,10 +279,12 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
 router.post("/exchange", async (req: Request, res: Response) => {
   const { code } = req.body ?? {};
 
-  if (typeof code !== "string" || !code) {
+  // Shape-check before hashing and hitting Firestore: createExchangeCode only
+  // ever mints 32 hex-encoded bytes, so anything else cannot match a row.
+  if (typeof code !== "string" || !/^[0-9a-f]{64}$/.test(code)) {
     return res.status(400).json({
       success: false,
-      message: "Missing exchange code",
+      message: "Missing or malformed exchange code",
     });
   }
 

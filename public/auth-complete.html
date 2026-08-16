@@ -32,19 +32,27 @@
     </script>
 
     <!-- Runs first, synchronously, and stays above the analytics loader below.
-         The callback hands this page a seven-day session JWT in the query
-         string, and the injected analytics script would observe that URL long
-         before the sign-in code further down gets to read it. Take the token
-         out of the URL immediately and pass it along in memory instead. -->
+         The callback hands this page a one-time exchange code in the query
+         string (and, for anyone mid-flow across the deploy, possibly still a
+         session JWT). The analytics script is fetched before DOMContentLoaded,
+         so its request would carry whichever of those is in the URL as its
+         Referer. Take both out of the URL here and pass them on in memory. -->
     <script>
         (function () {
             var params = new URLSearchParams(window.location.search);
             var token = params.get('session_token');
-            if (!token) return;
+            var code = params.get('code');
+            if (!token && !code) return;
 
-            window.__sessionToken = token;
+            if (token) {
+                window.__sessionToken = token;
+                params.delete('session_token');
+            }
+            if (code) {
+                window.__exchangeCode = code;
+                params.delete('code');
+            }
 
-            params.delete('session_token');
             var query = params.toString();
             window.history.replaceState({}, '',
                 window.location.pathname + (query ? '?' + query : '') + window.location.hash);
@@ -158,11 +166,16 @@
             const userLogin = queryParams.get('user_login');
             const userId = queryParams.get('user_id');
 
-            // The callback hands over a single-use code, not the token, so the
-            // token never appears in the URL. `__sessionToken` is the old shape,
-            // still accepted for anyone mid-flow across the deploy.
-            const exchangeCode = queryParams.get('code');
+            // Both handed over in memory by the head script, which already took
+            // them out of the URL; the query reads only cover that script not
+            // having run. `__sessionToken` is the old shape, still accepted for
+            // anyone mid-flow across the deploy.
+            const exchangeCode = window.__exchangeCode || queryParams.get('code');
             const legacyToken = window.__sessionToken || queryParams.get('session_token');
+
+            // Nothing below needs them on the global object.
+            delete window.__exchangeCode;
+            delete window.__sessionToken;
 
             // The server compares the `state` it receives from Twitch against a
             // one-use HttpOnly cookie and rejects the callback before minting a
