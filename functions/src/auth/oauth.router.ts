@@ -5,7 +5,6 @@
 
 import { Router, Request, Response } from "express";
 import axios from "axios";
-import crypto from "crypto";
 import { getDb, FieldValue } from "@/config/database";
 import {
   TWITCH_CLIENT_ID,
@@ -20,6 +19,7 @@ import { logger } from "@/config/logger";
 import { redirectToFrontendWithError } from "@/utils/errors";
 import { createSessionToken } from "./jwt.middleware";
 import { storeTwitchRefreshToken } from "@/tokens/firestoreRefreshToken.service";
+import { issueState, consumeState } from "./state";
 
 const router = Router();
 
@@ -45,10 +45,11 @@ router.get("/twitch", (req: Request, res: Response) => {
   logger.info("Initiating Twitch OAuth flow");
 
   const frontendRedirect = (req.query.redirect as string) || "/";
-  const state = JSON.stringify({
-    frontendRedirect,
-    nonce: crypto.randomBytes(16).toString("hex"),
-  });
+
+  // `state` is now just the nonce. frontendRedirect moves into the cookie so
+  // the callback reads a server-set value rather than one that round-tripped
+  // through Twitch and the browser.
+  const state = issueState(res, { r: frontendRedirect });
 
   logger.debug("Generated OAuth state", {
     frontendRedirect,
@@ -82,6 +83,15 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
     error_description: twitchErrorDescription,
   } = req.query;
 
+  // Bind this callback to the browser that started the flow, before the
+  // authorization code is exchanged and before any token is minted. The cookie
+  // is consumed and cleared here on every path, so a state cannot be replayed.
+  const stateResult = consumeState(req, res);
+  // This repo compiles with `strict: false`, so narrowing the result union via
+  // `!stateResult.ok` does not work. Destructure both arms up front instead.
+  const frontendRedirect = stateResult.ok ? stateResult.payload.r : null;
+  const stateFailure = stateResult.ok ? null : stateResult.reason;
+
   // Handle explicit Twitch errors
   if (twitchError) {
     logger.error("Twitch OAuth error", {
@@ -93,38 +103,21 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       twitchError as string,
       twitchErrorDescription as string,
       twitchQueryState as string,
+      frontendRedirect,
     );
   }
 
-  // Validate state parameter (CSRF protection)
-  if (!twitchQueryState) {
-    logger.error("Missing state parameter in callback");
-    return redirectToFrontendWithError(
-      res,
-      "invalid_request",
-      "Missing state parameter",
-      null,
-    );
-  }
-
-  let parsedState: { nonce?: string; frontendRedirect?: string };
-  try {
-    parsedState = JSON.parse(twitchQueryState as string);
-    if (!parsedState.nonce || !parsedState.frontendRedirect) {
-      throw new Error("Invalid state structure");
-    }
-    logger.debug("State validated successfully");
-  } catch (stateError) {
-    logger.error("State validation failed", {
-      error: (stateError as Error).message,
-    });
+  if (stateFailure) {
+    logger.error("State validation failed", { reason: stateFailure });
     return redirectToFrontendWithError(
       res,
       "invalid_state",
-      "State validation failed - possible CSRF attack",
+      "Could not verify that this login started in your browser. Please try signing in again.",
       twitchQueryState as string,
     );
   }
+
+  logger.debug("State validated successfully");
 
   try {
     const db = getDb();
@@ -207,6 +200,7 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
         "not_authorized",
         "Your channel is not on the allow-list.",
         twitchQueryState as string,
+        frontendRedirect,
       );
     }
 
@@ -266,6 +260,7 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       "auth_failed",
       "Authentication failed with Twitch due to an internal server error",
       twitchQueryState as string,
+      frontendRedirect,
     );
   }
 });

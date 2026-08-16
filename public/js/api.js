@@ -1,6 +1,10 @@
 import { showActionToast } from './ui.js';
 
-export const API_BASE_URL = 'https://api.wildcat.chat';
+// app.wildcat.chat and api.wildcat.chat are two Hosting targets in front of the
+// same webUi function, so this is a host change, not a backend change. Pointing
+// at app keeps the whole OAuth round trip — start, callback, and landing — on
+// one origin, which is what lets the host-only state cookie survive it.
+export const API_BASE_URL = 'https://app.wildcat.chat';
 
 let appSessionToken = null;
 

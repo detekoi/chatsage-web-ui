@@ -159,7 +159,10 @@
     <script>
         document.getElementById('twitchLoginBtn').addEventListener('click', (event) => {
             event.currentTarget.classList.add('is-busy');
-            const apiBaseUrl = 'https://api.wildcat.chat';
+            // Must be the same host as CALLBACK_URL. The server binds the flow
+            // with a host-only cookie, so starting it anywhere else means the
+            // cookie is never sent back and the callback is rejected.
+            const apiBaseUrl = 'https://app.wildcat.chat';
             window.location.href = `${apiBaseUrl}/auth/twitch`;
         });
     </script>

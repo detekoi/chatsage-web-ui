@@ -12,13 +12,18 @@ import { logger } from "@/config/logger";
  * @param res - Express response object
  * @param errorCode - Error code for categorization
  * @param errorMessage - User-friendly error message
- * @param twitchQueryState - Optional Twitch OAuth state for redirect preservation
+ * @param twitchQueryState - Optional Twitch OAuth state for redirect preservation.
+ *   Since state binding landed this is an opaque nonce and carries no redirect;
+ *   the parameter stays for older callers that still pass a JSON state.
+ * @param frontendRedirect - Redirect recovered from the server-set state cookie.
+ *   Takes precedence over anything parsed out of `twitchQueryState`.
  */
 export function redirectToFrontendWithError(
   res: Response,
   errorCode: string,
   errorMessage: string,
   twitchQueryState?: string | null,
+  frontendRedirect?: string | null,
 ) {
   let errorUrl: URL;
 
@@ -27,7 +32,9 @@ export function redirectToFrontendWithError(
     errorUrl.searchParams.set("error", errorCode);
     errorUrl.searchParams.set("error_description", errorMessage);
 
-    if (twitchQueryState) {
+    if (frontendRedirect) {
+      errorUrl.searchParams.set("frontendRedirect", frontendRedirect);
+    } else if (twitchQueryState) {
       try {
         const parsedState = JSON.parse(twitchQueryState);
         if (parsedState.frontendRedirect) {

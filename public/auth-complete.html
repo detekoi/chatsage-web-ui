@@ -139,7 +139,9 @@
             const userId = queryParams.get('user_id');
             const sessionToken = queryParams.get('session_token');
 
-            // Server has already validated the OAuth state
+            // The server compares the `state` it receives from Twitch against a
+            // one-use HttpOnly cookie and rejects the callback before minting a
+            // token, so reaching this page means state binding already passed.
             console.log("Processing authentication for user:", userLogin);
 
             if (userLogin && userId && sessionToken) {
