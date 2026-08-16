@@ -84,7 +84,7 @@
                     <li class="wc-step" data-step="redirect">Loading dashboard</li>
                 </ol>
 
-                <!-- Indeterminate: a 25% segment on a 1.5s loop, no fake percentage. -->
+                <!-- Determinate: driven by the three real steps below, not a timer. -->
                 <div class="wc-bar" id="auth-bar" role="progressbar" aria-label="Sign-in progress"><span></span></div>
             </div>
 
@@ -103,9 +103,24 @@
             const sessionStateEl = document.getElementById('session-state');
             const barEl = document.getElementById('auth-bar');
 
+            // The three steps are real and discrete, so the bar reports actual
+            // completion here instead of looping. It only ever advances on a
+            // step that genuinely happened.
             function markStep(name) {
                 const el = document.querySelector(`.wc-step[data-step="${name}"]`);
                 if (el) el.classList.add('is-done');
+
+                const steps = document.querySelectorAll('.wc-step');
+                const done = document.querySelectorAll('.wc-step.is-done').length;
+                const fill = barEl && barEl.querySelector('span');
+                if (!fill || !steps.length) return;
+
+                const pct = Math.round((done / steps.length) * 100);
+                barEl.setAttribute('data-progress', String(pct));
+                barEl.setAttribute('aria-valuemin', '0');
+                barEl.setAttribute('aria-valuemax', '100');
+                barEl.setAttribute('aria-valuenow', String(pct));
+                fill.style.width = pct + '%';
             }
 
             function fail(message) {

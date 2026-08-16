@@ -276,12 +276,8 @@
   cursor: help;
 }
 
-#commands-loading {
-  text-align: center;
-  font-style: italic;
-  color: #666;
-  padding: var(--spacing-medium);
-}
+/* Loading indicator styling is owned by .wc-loading in design-system.css —
+   the centred italic spinner caption that lived here was removed with it. */
 
 #text-response-container {
   margin-top: var(--spacing-medium);

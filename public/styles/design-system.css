@@ -732,15 +732,44 @@ a[target="_blank"].no-arrow::after {
     100% { transform: translateX(400%); }
 }
 
-/* If the flow can report real progress, drive the width instead. */
+/* Determinate mode. Set data-progress and an inline width from real completed
+   work — never from a timer. See setProgress() in common/ui.ts. */
 .wc-bar[data-progress] span {
     animation: none;
     transform: none;
+    width: 0;
     transition: width 0.3s ease;
+}
+
+/* The one loading indicator. Page-level overlays and per-section loaders both
+   use this, so nothing anywhere spins. */
+.wc-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 0;
+}
+
+.wc-loading .wc-bar { width: 100%; }
+
+.wc-loading-label {
+    margin: 0;
+    font-family: var(--wc-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wc-text-3);
+}
+
+/* Page-level overlay sits in the content column rather than edge to edge. */
+.wc-loading--page {
+    max-width: 420px;
+    padding: 40px 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .wc-bar span { animation-duration: 3s; }
+    .wc-bar[data-progress] span { transition: none; }
     .wc-btn, .wc-iconbtn, .wc-chipbtn { transition: none; }
 }
 
