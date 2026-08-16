@@ -4,55 +4,34 @@
  */
 
 import express, { Request, Response, NextFunction } from "express";
-import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
-import { doubleCsrf } from "csrf-csrf";
 import {
   ALLOWED_ORIGINS,
   RATE_LIMIT,
   IS_PRODUCTION,
   REQUEST_TIMEOUT_MS,
-  CSRF_SECRET,
 } from "./constants";
 import { requestIdMiddleware } from "./logger";
 
-/**
- * CSRF protection middleware
- * Uses the Double Submit Cookie Pattern via csrf-csrf.
- * HMAC-signed tokens are stored in a cookie; the frontend must send
- * the token back in the `x-csrf-token` header on state-changing requests.
+/*
+ * There is deliberately no CSRF middleware here.
+ *
+ * CSRF defends credentials the browser attaches on its own. Every
+ * authenticated route on this service reads `Authorization: Bearer`, which is
+ * set by our own JavaScript and which another origin cannot make the browser
+ * send. The one cookie in the app — the `__session` OAuth state cookie — is
+ * only ever read on a top-level GET, where the state binding is the control.
+ *
+ * A double-submit implementation did live here. It protected nothing: its
+ * token was never issued to any client, the frontend never sent one, every
+ * non-GET route was on the skip list, and Firebase Hosting strips every cookie
+ * except `__session` before a request reaches this function, so its cookie
+ * never arrived either.
+ *
+ * Bring it back — with an endpoint that actually issues tokens — if the session
+ * ever moves from `Authorization` into a cookie. That change, and only that
+ * change, is what would make this necessary.
  */
-const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
-  getSecret: () => CSRF_SECRET,
-  getSessionIdentifier: (req) => {
-    // Use JWT user ID if authenticated, otherwise a static identifier
-    const authReq = req as Request & { user?: { userId?: string } };
-    return authReq.user?.userId || "anonymous";
-  },
-  cookieName: IS_PRODUCTION
-    ? "__Host-psifi.x-csrf-token"
-    : "x-csrf-token",
-  cookieOptions: {
-    sameSite: "strict",
-    path: "/",
-    secure: IS_PRODUCTION,
-    httpOnly: true,
-  },
-  // Skip CSRF for API and internal routes — they use JWT Bearer tokens
-  // (not cookies), so they are not vulnerable to CSRF attacks.
-  //
-  // /auth/exchange is skipped for the same reason: it carries no ambient
-  // authority. Its only credential is a single-use code the caller must
-  // already hold, and a forged cross-site POST could not read the response.
-  skipCsrfProtection: (req) => {
-    return req.path.startsWith("/api/") ||
-      req.path.startsWith("/internal/") ||
-      req.path === "/auth/exchange";
-  },
-});
-
-export { generateCsrfToken };
-export const csrfProtectionMiddleware = doubleCsrfProtection;
 
 /**
  * CORS and security headers middleware
@@ -76,7 +55,7 @@ export function corsAndSecurityMiddleware(
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, x-csrf-token",
+    "Content-Type, Authorization",
   );
 
   // Security headers
@@ -170,12 +149,10 @@ export function setupMiddleware(app: express.Application) {
   // CORS and security headers (must be first so error responses include CORS headers)
   app.use(corsAndSecurityMiddleware);
 
-  // Body parsing and cookies
+  // Body parsing. No cookie parser: the only cookie this service reads is the
+  // OAuth state cookie, and auth/state.ts reads it straight off the header so
+  // state binding does not depend on middleware order.
   app.use(express.json());
-  app.use(cookieParser());
-
-  // CSRF protection (skips /api/ and /internal/ routes via skipCsrfProtection config)
-  app.use(csrfProtectionMiddleware);
 
   // Request tracking
   app.use(requestIdMiddleware);

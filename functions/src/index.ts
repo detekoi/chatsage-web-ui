@@ -118,7 +118,6 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
 import { defineSecret } from "firebase-functions/params";
 
 // Declare secrets so Firebase knows to bind them to the function
-const csrfSecret = defineSecret("CSRF_SECRET");
 const twitchClientId = defineSecret("TWITCH_CLIENT_ID");
 const twitchClientSecret = defineSecret("TWITCH_CLIENT_SECRET");
 const callbackUrl = defineSecret("CALLBACK_URL");
@@ -130,7 +129,6 @@ const sessionCookieSecret = defineSecret("SESSION_COOKIE_SECRET");
 export const webUi = functions.https.onRequest(
   {
     secrets: [
-      csrfSecret,
       twitchClientId,
       twitchClientSecret,
       callbackUrl,
