@@ -1166,7 +1166,7 @@ a[target="_blank"].no-arrow::after {
 /* Sage states a setting as .form-check.form-switch with an inline label and
    description. Lay it out as a row: label + description left, toggle right. */
 :root .wc-card > .card-body > .form-check.form-switch,
-:root .wc-card > .card-body > * > .form-check.form-switch {
+:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "label toggle" "desc toggle";
@@ -1178,7 +1178,7 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .wc-card > .card-body > .form-check.form-switch .form-check-label,
-:root .wc-card > .card-body > * > .form-check.form-switch .form-check-label {
+:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch .form-check-label {
     grid-area: label;
     font-size: 13.5px;
     font-weight: 600;
@@ -1187,13 +1187,13 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .wc-card > .card-body > .form-check.form-switch .form-check-input,
-:root .wc-card > .card-body > * > .form-check.form-switch .form-check-input {
+:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch .form-check-input {
     grid-area: toggle;
     align-self: center;
 }
 
 :root .wc-card > .card-body > .form-check.form-switch small,
-:root .wc-card > .card-body > * > .form-check.form-switch small {
+:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch small {
     grid-area: desc;
     font-size: 12px;
     line-height: 1.5;
