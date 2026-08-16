@@ -85,13 +85,13 @@
                 aria-label="Toggle dark mode">
                 <i data-lucide="moon" aria-hidden="true"></i>
             </button>
-            <a href="#" id="logout-link" class="wc-chipbtn wc-chipbtn--danger">Logout</a>
+            <a href="#" id="logout-link" class="wc-chipbtn wc-chipbtn--danger">Sign out</a>
         </div>
     </header>
 
     <div class="wc-page-head">
         <h1>Channel dashboard</h1>
-        <p>Commands, stream events and automated chat for your channel.</p>
+        <p>Commands, stream events, and automated chat for your channel.</p>
     </div>
 
     <div class="wc-main">
@@ -122,8 +122,8 @@
                 <div class="card-body">
                     <p class="text-muted mb-3">Enable or disable commands for your channel:</p>
                     <div id="commands-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading command options"><span></span></div>
-                        <p class="wc-loading-label">Loading command options…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading command settings"><span></span></div>
+                        <p class="wc-loading-label">Loading command settings…</p>
                     </div>
                     <div id="commands-list" class="list-group"></div>
                 </div>
@@ -138,7 +138,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        AI-generated messages for stream lifecycle events.
+                        AI messages for stream events.
                     </p>
                     <div id="stream-events-loading" style="display:none;" class="wc-loading">
                         <div class="wc-bar" role="progressbar" aria-label="Loading stream event settings"><span></span></div>
@@ -148,23 +148,22 @@
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-greetings-toggle" checked>
                             <label class="form-check-label" for="stream-greetings-toggle">Stream Greetings</label>
-                            <small class="d-block text-muted">Greet when the stream goes live and say farewell when it
-                                ends</small>
+                            <small class="d-block text-muted">Send a greeting when the stream starts and a farewell when the stream ends.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-follows-toggle" checked>
                             <label class="form-check-label" for="stream-follows-toggle">New Followers</label>
-                            <small class="d-block text-muted">Celebrate when someone follows the channel</small>
+                            <small class="d-block text-muted">Send a greeting when a user follows the channel.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-subscriptions-toggle" checked>
                             <label class="form-check-label" for="stream-subscriptions-toggle">Subscriptions</label>
-                            <small class="d-block text-muted">Celebrate new subscribers</small>
+                            <small class="d-block text-muted">Send a greeting for new subscriptions.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-raids-toggle" checked>
                             <label class="form-check-label" for="stream-raids-toggle">Raids</label>
-                            <small class="d-block text-muted">Welcome incoming raiders</small>
+                            <small class="d-block text-muted">Send a greeting when another channel raids the stream.</small>
                         </div>
                         <p id="stream-events-message" class="text-muted mt-2 mb-0"></p>
                     </div>
@@ -310,9 +309,9 @@
 
                     <!-- Empty state -->
                     <div id="custom-cmd-empty" class="text-center py-3" style="display:none;">
-                        <p class="text-muted mb-1">No custom commands yet.</p>
-                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Use the <strong>+ Add</strong> button or
-                            type <code>!command add</code> / <code>!command addai</code> in chat.</p>
+                        <p class="text-muted mb-1">No custom commands exist.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Select the <strong>+ Add</strong> button, or
+                            send <code>!command add</code> or <code>!command addai</code> in chat.</p>
                     </div>
                 </div>
             </div>
@@ -327,7 +326,7 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Post messages on a schedule while the stream is live and chat is active.
+                        Post scheduled messages when the stream is live and chat is active.
                     </p>
 
                     <!-- Inline Add/Edit Form (hidden by default) -->
@@ -364,7 +363,7 @@
                             <div class="col">
                                 <label for="timer-lines" class="form-label">Min chat lines</label>
                                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="timer-lines" value="5">
-                                <small class="text-muted">Only fires after this many chat messages</small>
+                                <small class="text-muted">The timer sends a message only after this number of chat messages.</small>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
@@ -378,8 +377,8 @@
 
                     <!-- Loading spinner -->
                     <div id="timer-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading timers"><span></span></div>
-                        <p class="wc-loading-label">Loading timers…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading timed messages"><span></span></div>
+                        <p class="wc-loading-label">Loading timed messages…</p>
                     </div>
 
                     <!-- Timer list -->
@@ -387,9 +386,9 @@
 
                     <!-- Empty state -->
                     <div id="timer-empty" class="text-center py-3" style="display:none;">
-                        <p class="text-muted mb-1">No timed messages yet.</p>
-                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Use the <strong>+ Add</strong> button or
-                            type <code>!timer add</code> / <code>!timer addai</code> in chat.</p>
+                        <p class="text-muted mb-1">No timed messages exist.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Select the <strong>+ Add</strong> button, or
+                            send <code>!timer add</code> or <code>!timer addai</code> in chat.</p>
                     </div>
                 </div>
             </div>
@@ -403,9 +402,9 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Shape how the bot sounds in your channel — its voice, humour, and quirks.
-                        Edit the text below, or leave it as-is to keep the default personality.
-                        Saved text is checked automatically against Twitch's rules.
+                        Shape how the bot speaks in your channel, including tone, humor, and style.
+                        Edit the text below, or keep the default personality.
+                        The server checks saved text automatically against Twitch rules.
                     </p>
 
                     <div id="persona-loading" style="display:none;" class="wc-loading">
@@ -426,8 +425,7 @@
                                 Rules that always apply
                             </summary>
                             <p class="text-muted mt-2 mb-1" style="font-size:0.75rem;">
-                                These are fixed for every channel and cannot be edited or overridden by
-                                the text above.
+                                These rules apply to all channels. The instructions above cannot override these rules.
                             </p>
                             <pre id="persona-core" class="text-muted mb-0"
                                 style="font-size:0.75rem; white-space:pre-wrap; overflow-x:auto;"></pre>
@@ -450,13 +448,13 @@
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Viewers redeem a Channel Point Reward to check in daily.
-                        <em>Requires Twitch Affiliate or Partner status.</em>
+                        Viewers redeem a Channel Point reward to check in daily.
+                        <em>This feature requires Twitch Affiliate or Partner status.</em>
                     </p>
 
                     <div id="checkin-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading"><span></span></div>
-                        <p class="wc-loading-label">Loading…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading check-in settings"><span></span></div>
+                        <p class="wc-loading-label">Loading check-in settings…</p>
                     </div>
 
                     <div class="checkin-form">
@@ -501,7 +499,7 @@
                             <div class="mb-2" id="checkin-ai-prompt-group" style="display:none;">
                                 <label for="checkin-ai-prompt" class="form-label">AI Prompt</label>
                                 <input type="text" class="form-control" id="checkin-ai-prompt"
-                                    placeholder="Write a fun, short congratulatory message for $(user) on their $(checkin_count)th daily check-in."
+                                    placeholder="Write a short congratulation message for $(user) on their $(checkin_count) daily check-in."
                                     maxlength="500" autocomplete="off">
                                 <div class="variable-chips checkin-ai-chips">
                                     <span class="var-chip" data-var="$(user)">$(user)</span>
@@ -532,8 +530,8 @@
                             type="button">Add bot to my channel</button>
                         <button id="remove-bot-btn" class="wc-btn wc-btn--aside wc-btn--danger" style="display:none;"
                             type="button">Remove bot from my channel</button>
-                        <p class="wc-aside-note">Removing the bot stops it posting in your channel and leaves your
-                            settings untouched. You can add it back any time.</p>
+                        <p class="wc-aside-note">If you remove the bot, the bot stops posting in your channel. Your
+                            settings remain saved. You can add the bot again at any time.</p>
                     </div>
                 </section>
 

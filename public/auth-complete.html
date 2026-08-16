@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildcatSage - Completing sign in</title>
+    <title>WildcatSage - Sign-in</title>
 
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="apple-touch-icon" href="/logo192.png">
@@ -109,7 +109,7 @@
                 <ol class="wc-steps" id="auth-steps">
                     <li class="wc-step" data-step="authorized">Twitch authorized</li>
                     <li class="wc-step" data-step="token">Session token stored</li>
-                    <li class="wc-step" data-step="redirect">Loading dashboard</li>
+                    <li class="wc-step" data-step="redirect">Opening dashboard</li>
                 </ol>
 
                 <!-- Determinate: driven by the three real steps below, not a timer. -->
@@ -197,7 +197,7 @@
 
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.success || !data.session_token) {
-                    throw new Error(data.message || 'Could not complete sign-in.');
+                    throw new Error(data.message || 'Sign-in failed.');
                 }
                 return data.session_token;
             }
@@ -214,7 +214,7 @@
                 sessionStateEl.textContent = 'Session established';
 
                 titleEl.textContent = `Welcome, ${userLogin}`;
-                messageEl.textContent = 'Redirecting to your dashboard.';
+                messageEl.textContent = 'Opening your dashboard.';
                 markStep('redirect');
 
                 setTimeout(() => {
@@ -232,7 +232,7 @@
                         .then(completeSignIn)
                         .catch((error) => {
                             console.error('Exchange failed:', error);
-                            fail(`${error.message} Please try signing in again.`);
+                            fail(`${error.message} Sign in again.`);
                             setTimeout(() => {
                                 window.location.href = 'index.html';
                             }, 4000);
@@ -242,7 +242,7 @@
                 }
             } else {
                 console.error("Missing required parameters:", { userLogin, userId, code: exchangeCode ? 'present' : 'missing' });
-                fail("Missing authentication information from the Twitch callback. Please try again.");
+                fail("Authentication data is missing from the Twitch response. Sign in again.");
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 3000);

@@ -40,7 +40,7 @@ export function initCustomCommands() {
     customCmdTypeToggleEl.addEventListener('change', () => {
         if (customCmdTypeToggleEl.checked) {
             customCmdResponseLabelEl.textContent = 'AI Prompt';
-            customCmdResponseEl.placeholder = 'Write a fun greeting for $(user) in exactly one sentence.';
+            customCmdResponseEl.placeholder = 'Write a greeting for $(user) in one sentence.';
         } else {
             customCmdResponseLabelEl.textContent = 'Response';
             customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
@@ -193,7 +193,7 @@ function openEditForm(cmd) {
     customCmdTypeToggleEl.checked = cmd.type === 'prompt';
     customCmdResponseLabelEl.textContent = cmd.type === 'prompt' ? 'AI Prompt' : 'Response';
     customCmdResponseEl.placeholder = cmd.type === 'prompt'
-        ? 'Write a fun greeting for $(user) in exactly one sentence.'
+        ? 'Write a greeting for $(user) in one sentence.'
         : 'Hello $(user), welcome to $(channel)!';
     customCmdFormMsgEl.textContent = '';
     customCmdFormEl.style.display = 'block';
@@ -230,7 +230,7 @@ async function saveCustomCommand() {
         return;
     }
 
-    customCmdFormMsgEl.textContent = 'Saving...';
+    customCmdFormMsgEl.textContent = 'Saving…';
     customCmdFormMsgEl.style.color = 'var(--text-muted)';
     customCmdSaveBtn.disabled = true;
 
@@ -272,7 +272,7 @@ async function saveCustomCommand() {
         }
     } catch (error) {
         console.error('Error saving custom command:', error);
-        customCmdFormMsgEl.textContent = 'Error saving command.';
+        customCmdFormMsgEl.textContent = 'Failed to save command.';
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
     } finally {
         customCmdSaveBtn.disabled = false;

@@ -140,10 +140,10 @@ async function saveCheckinSettings() {
             // Update delete button visibility from returned config
             if (data.config?.rewardId) updateCheckinDeleteBtn(data.config.rewardId);
         } else {
-            checkinMsgEl.textContent = data.message || 'Error saving settings';
+            checkinMsgEl.textContent = data.message || 'Failed to save settings.';
             checkinMsgEl.className = 'text-danger mt-2 mb-0';
             if (data.needsReauth) {
-                showActionToast('Please log in again to manage Channel Point Rewards.', 'danger', 0);
+                showActionToast('Sign in again to manage Channel Point rewards.', 'danger', 0);
             }
         }
     } catch (error) {
@@ -155,9 +155,9 @@ async function saveCheckinSettings() {
 
 async function deleteCheckinReward() {
     if (!getToken()) return;
-    if (!confirm('Delete the Daily Check-In reward from your channel? This cannot be undone.')) return;
+    if (!confirm('Delete the Daily Check-In reward from your channel? You cannot undo this action.')) return;
 
-    checkinMsgEl.textContent = 'Deleting...';
+    checkinMsgEl.textContent = 'Deleting…';
     checkinMsgEl.className = 'text-muted mt-2 mb-0';
 
     if (DEV_MODE) {
@@ -181,7 +181,7 @@ async function deleteCheckinReward() {
             updateCheckinDeleteBtn(null);
             showActionToast(data.message || 'Check-in reward deleted.', 'success');
         } else {
-            checkinMsgEl.textContent = data.message || 'Error deleting reward';
+            checkinMsgEl.textContent = data.message || 'Failed to delete reward.';
             checkinMsgEl.className = 'text-danger mt-2 mb-0';
         }
     } catch (error) {

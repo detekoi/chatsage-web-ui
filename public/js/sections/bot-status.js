@@ -32,11 +32,11 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
     const logoutLink = document.getElementById('logout-link');
 
     addBotBtn.addEventListener('click', async () => {
-        showActionToast('Requesting bot to join...', 'info', 0);
+        showActionToast('Adding bot to channel…', 'info', 0);
         
         if (DEV_MODE) {
             await mockDelay(500);
-            showActionToast('Bot added (dev mode)', 'success');
+            showActionToast('Bot added to channel (dev mode).', 'success');
             updateBotStatusUI(true);
             if (onBotAdded) await onBotAdded();
             return;
@@ -54,16 +54,16 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
         } catch (error) {
             if (error instanceof AuthError) return;
             console.error('Error adding bot:', error);
-            showActionToast('Failed to send request to add bot.', 'danger');
+            showActionToast('Failed to add bot to channel.', 'danger');
         }
     });
 
     removeBotBtn.addEventListener('click', async () => {
-        showActionToast('Requesting bot to leave...', 'info', 0);
+        showActionToast('Removing bot from channel…', 'info', 0);
 
         if (DEV_MODE) {
             await mockDelay(500);
-            showActionToast('Bot removed (dev mode)', 'success');
+            showActionToast('Bot removed from channel (dev mode).', 'success');
             updateBotStatusUI(false);
             if (onBotRemoved) await onBotRemoved();
             return;
@@ -81,7 +81,7 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
         } catch (error) {
             if (error instanceof AuthError) return;
             console.error('Error removing bot:', error);
-            showActionToast('Failed to send request to remove bot.', 'danger');
+            showActionToast('Failed to remove bot from channel.', 'danger');
         }
     });
 
@@ -112,7 +112,7 @@ export function updateBotStatusUI(isActive) {
         // owned by CSS, not hardcoded here.
         removeBotBtn.style.display = '';
     } else {
-        botStatusEl.textContent = 'Inactive / Not Joined';
+        botStatusEl.textContent = 'Inactive';
         botStatusEl.classList.remove('text-success');
         botStatusEl.classList.add('text-danger');
         addBotBtn.style.display = '';

@@ -28,7 +28,7 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
         if (data.success) {
             showActionToast(`${itemName} ${enabled ? 'enabled' : 'disabled'}.`, 'success');
         } else {
-            showActionToast(data.message || `Error updating ${itemName}.`, 'danger');
+            showActionToast(data.message || `Failed to update ${itemName}.`, 'danger');
             checkboxEl.checked = !enabled; // Revert on error
         }
     } catch (error) {
@@ -77,6 +77,6 @@ export async function deleteItem(apiPath, itemName, onReload) {
     } catch (error) {
         if (error instanceof AuthError) return;
         console.error(`Error deleting ${itemName}:`, error);
-        showActionToast(`Error deleting ${itemName}.`, 'danger');
+        showActionToast(`Failed to delete ${itemName}.`, 'danger');
     }
 }

@@ -49,7 +49,7 @@ async function initializeDashboard() {
 
         if (!getToken()) {
             console.warn("No session token found, redirecting to login");
-            showActionToast("Authentication token missing. Please log in again.", 'danger', 0);
+            showActionToast("Authentication token is missing. Sign in again.", 'danger', 0);
             setTimeout(() => window.location.href = 'index.html', 2000);
             return;
         }
@@ -60,11 +60,11 @@ async function initializeDashboard() {
 
             if (!statusRes.ok) {
                 if (statusRes.status === 401) {
-                    showActionToast("Session potentially expired or not fully established. Try logging in again.", 'danger', 0);
+                    showActionToast("Your session expired or is not active. Sign in again.", 'danger', 0);
                     return;
                 }
                 const errorData = await statusRes.json().catch(() => ({ message: statusRes.statusText }));
-                throw new Error(`Failed to fetch status: ${errorData.message || statusRes.statusText}`);
+                throw new Error(`Failed to get bot status: ${errorData.message || statusRes.statusText}`);
             }
             const statusData = await statusRes.json();
 

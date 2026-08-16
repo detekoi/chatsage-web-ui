@@ -126,7 +126,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
     const currentRequestId = (saveRequestIds.get(contextId) || 0) + 1;
     saveRequestIds.set(contextId, currentRequestId);
 
-    statusEl.textContent = 'Saving...';
+    statusEl.textContent = 'Saving…';
     statusEl.style.color = 'var(--text-muted, #6c757d)';
 
     if (DEV_MODE) {
@@ -155,7 +155,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
         if (e instanceof AuthError) return;
         console.error(`Error saving to ${endpoint}:`, e);
         if (currentRequestId === saveRequestIds.get(contextId)) {
-            statusEl.textContent = 'Error saving settings.';
+            statusEl.textContent = 'Failed to save settings.';
             statusEl.style.color = '#ff6b6b';
         }
     }

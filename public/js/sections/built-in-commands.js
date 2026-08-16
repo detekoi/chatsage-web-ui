@@ -34,7 +34,7 @@ export async function loadCommandSettings() {
     } catch (error) {
         console.error('Error loading command settings:', error);
         commandsLoadingEl.style.display = 'none';
-        commandsListEl.innerHTML = '<div class="alert alert-danger" role="alert">Error loading command settings.</div>';
+        commandsListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load command settings.</div>';
     }
 }
 

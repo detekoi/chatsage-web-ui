@@ -40,7 +40,7 @@ export function initTimers() {
     timerTypeToggleEl.addEventListener('change', () => {
         if (timerTypeToggleEl.checked) {
             timerResponseLabelEl.textContent = 'AI Prompt';
-            timerResponseEl.placeholder = 'Remind chat about the Discord in a fun way that fits the current game.';
+            timerResponseEl.placeholder = 'Remind chat about Discord for the current game.';
         } else {
             timerResponseLabelEl.textContent = 'Message';
             timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
@@ -76,12 +76,12 @@ export async function loadTimers() {
         if (data.success && data.timers) {
             renderTimersList(data.timers);
         } else {
-            timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load timers.</div>';
+            timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load timed messages.</div>';
         }
     } catch (error) {
         console.error('Error loading timers:', error);
         timerLoadingEl.style.display = 'none';
-        timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Error loading timers.</div>';
+        timerListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load timed messages.</div>';
     }
 }
 
@@ -155,7 +155,7 @@ function renderTimersList(timers) {
         checkbox.id = `timer-enabled-${timer.name}`;
         checkbox.checked = timer.enabled !== false;
         checkbox.role = 'switch';
-        checkbox.title = 'Enable/disable this timer';
+        checkbox.title = 'Enable or disable this timed message';
         checkbox.addEventListener('change', async function () {
             await toggleTimer(timer.name, this.checked, this);
         });
@@ -211,7 +211,7 @@ function openTimerEditForm(timer) {
     timerTypeToggleEl.checked = timer.type === 'prompt';
     timerResponseLabelEl.textContent = timer.type === 'prompt' ? 'AI Prompt' : 'Message';
     timerResponseEl.placeholder = timer.type === 'prompt'
-        ? 'Remind chat about the Discord in a fun way that fits the current game.'
+        ? 'Remind chat about Discord for the current game.'
         : 'Enjoying the stream? Join the Discord!';
     timerFormMsgEl.textContent = '';
     timerFormEl.style.display = 'block';
@@ -262,12 +262,12 @@ async function saveTimer() {
     }
 
     if (isNaN(minChatLines) || minChatLines < 0 || minChatLines > 100) {
-        timerFormMsgEl.textContent = 'Min chat lines must be between 0 and 100.';
+        timerFormMsgEl.textContent = 'Minimum chat lines must be between 0 and 100.';
         timerFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
-    timerFormMsgEl.textContent = 'Saving...';
+    timerFormMsgEl.textContent = 'Saving…';
     timerFormMsgEl.style.color = 'var(--text-muted)';
     timerSaveBtn.disabled = true;
 
@@ -309,7 +309,7 @@ async function saveTimer() {
         }
     } catch (error) {
         console.error('Error saving timer:', error);
-        timerFormMsgEl.textContent = 'Error saving timer.';
+        timerFormMsgEl.textContent = 'Failed to save timer.';
         timerFormMsgEl.style.color = 'var(--danger-primary)';
     } finally {
         timerSaveBtn.disabled = false;

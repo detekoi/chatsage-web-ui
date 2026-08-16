@@ -66,13 +66,13 @@ function applyPersona(config) {
     textareaEl.value = config.instructions || '';
     refreshCounter();
 
-    coreEl.textContent = config.core || 'Unavailable right now.';
+    coreEl.textContent = config.core || 'Not available.';
 
     // Reset only does something when there is a custom persona to clear.
     resetBtnEl.style.display = config.isDefault ? 'none' : '';
 
     if (config.isFallback) {
-        setMessage('Showing a placeholder default — the bot has not published its personality yet.', 'muted');
+        setMessage('Showing the default personality. The bot has not published personality settings yet.', 'muted');
     } else {
         setMessage('');
     }
@@ -103,7 +103,7 @@ async function savePersona() {
 
     const instructions = textareaEl.value.trim();
     if (!instructions) {
-        setMessage('Personality instructions cannot be empty. Use "Reset to default" to clear them.', 'danger');
+        setMessage('Personality instructions cannot be empty. Select "Reset to default" to clear instructions.', 'danger');
         return;
     }
     if (instructions.length > maxLength) {
@@ -112,7 +112,7 @@ async function savePersona() {
     }
 
     saveBtnEl.disabled = true;
-    setMessage('Saving and running safety check…');
+    setMessage('Saving settings and running safety check…');
 
     if (DEV_MODE) {
         await mockDelay(500);
@@ -139,7 +139,7 @@ async function savePersona() {
     } catch (e) {
         if (e instanceof AuthError) return;
         console.error('Error saving persona:', e);
-        setMessage('Error saving personality. Please try again.', 'danger');
+        setMessage('Failed to save personality. Try again.', 'danger');
     } finally {
         saveBtnEl.disabled = false;
     }
@@ -147,7 +147,7 @@ async function savePersona() {
 
 async function resetPersona() {
     if (!getToken()) return;
-    if (!window.confirm('Reset the bot to its default personality? Your custom text will be lost.')) {
+    if (!window.confirm('Reset the bot to its default personality? This action deletes your custom text.')) {
         return;
     }
 
@@ -174,7 +174,7 @@ async function resetPersona() {
     } catch (e) {
         if (e instanceof AuthError) return;
         console.error('Error resetting persona:', e);
-        setMessage('Error resetting personality. Please try again.', 'danger');
+        setMessage('Failed to reset personality. Try again.', 'danger');
     } finally {
         resetBtnEl.disabled = false;
     }

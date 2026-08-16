@@ -48,8 +48,7 @@
 
             <div class="wc-frame-body">
                 <h1 id="error-title" class="wc-title wc-title--sm">Authentication failed</h1>
-                <p class="wc-lede" id="error-message-details">Sorry, there was a problem during the Twitch
-                    authentication process.</p>
+                <p class="wc-lede" id="error-message-details">An error occurred during Twitch authentication.</p>
 
                 <div class="wc-code" id="error-code-block">
                     <span class="wc-code-label">Error</span>
@@ -87,7 +86,7 @@
             const wasCanceled = error === 'access_denied';
 
             if (wasCanceled) {
-                document.title = 'WildcatSage - Login canceled';
+                document.title = 'WildcatSage - Sign-in canceled';
 
                 const readoutEl = document.getElementById('error-readout');
                 if (readoutEl) {
@@ -100,7 +99,7 @@
                 if (codeBlockEl) codeBlockEl.remove();
 
                 const actionEl = document.getElementById('error-action');
-                if (actionEl) actionEl.textContent = 'Back to sign in';
+                if (actionEl) actionEl.textContent = 'Return to sign-in';
             }
 
             // URLSearchParams has already decoded these. Decoding a second time
@@ -109,7 +108,7 @@
             if (errorMessageEl) {
                 let message = '';
                 if (wasCanceled) {
-                    message = 'No changes were made. You can sign in whenever you’re ready.';
+                    message = 'No changes were made. You can sign in when you are ready.';
                 } else if (errorDescription) {
                     message = errorDescription;
                 } else if (error) {
@@ -133,7 +132,7 @@
             }
 
             if (errorTitleEl && error === 'access_denied') {
-                errorTitleEl.textContent = 'Login canceled';
+                errorTitleEl.textContent = 'Sign-in canceled';
             }
         });
     </script>
