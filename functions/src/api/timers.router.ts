@@ -13,6 +13,7 @@ import { getDb, FieldValue } from "@/config/database";
 import { CHANNEL_TIMERS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
+import { screenPromptField } from "@/utils/promptSafety";
 import { sanitizeTimerName } from "@/utils/validation";
 
 const router = Router();
@@ -194,6 +195,17 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     const docRef = getTimersRef(channelLogin).doc(timerName);
     const colRef = getTimersRef(channelLogin);
 
+    // "prompt" timers send their text to the LLM, so the broadcaster is authoring
+    // a prompt and it has to be screened. Plain "text" timers post verbatim.
+    // Screened before the transaction opens: this is a slow network call and
+    // must not be held inside one.
+    if (timerType === "prompt") {
+      const rejection = await screenPromptField(response.trim(), "timer");
+      if (rejection) {
+        return res.status(rejection.status).json(rejection.body);
+      }
+    }
+
     const txResult = await getDb().runTransaction(async (t) => {
       const existing = await t.get(docRef);
       if (existing.exists) {
@@ -346,6 +358,22 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
         });
       }
       updates.enabled = enabled;
+    }
+
+    // Screen whatever text this timer will actually run as a prompt once the
+    // update lands. Both halves can come from either the request or the stored
+    // doc, so flipping type to "prompt" without resending the text still screens
+    // the stored text, instead of promoting it unscreened.
+    const existingData = existing.data() || {};
+    const effectiveType = type !== undefined ? type : existingData.type || "text";
+    const effectiveResponse =
+      typeof updates.response === "string" ? updates.response : existingData.response;
+
+    if (effectiveType === "prompt" && typeof effectiveResponse === "string" && effectiveResponse.trim()) {
+      const rejection = await screenPromptField(effectiveResponse, "timer");
+      if (rejection) {
+        return res.status(rejection.status).json(rejection.body);
+      }
     }
 
     await docRef.update(updates);

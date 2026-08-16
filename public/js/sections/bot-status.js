@@ -12,6 +12,7 @@ let adNotificationsSectionEl;
 let customCmdSectionEl;
 let timersSectionEl;
 let checkinSectionEl;
+let personaSectionEl;
 let actionMessageEl;
 
 export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
@@ -25,6 +26,7 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
     customCmdSectionEl = document.getElementById('custom-commands-section');
     timersSectionEl = document.getElementById('timers-section');
     checkinSectionEl = document.getElementById('checkin-section');
+    personaSectionEl = document.getElementById('persona-section');
     actionMessageEl = document.getElementById('action-message');
 
     const logoutLink = document.getElementById('logout-link');
@@ -125,6 +127,7 @@ export function updateBotStatusUI(isActive) {
     if (customCmdSectionEl) customCmdSectionEl.style.display = 'block';
     if (timersSectionEl) timersSectionEl.style.display = 'block';
     if (checkinSectionEl) checkinSectionEl.style.display = 'block';
+    if (personaSectionEl) personaSectionEl.style.display = 'block';
     
     // Clear previous toast
     if (actionMessageEl) {

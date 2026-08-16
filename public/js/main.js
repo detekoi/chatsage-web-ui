@@ -7,6 +7,7 @@ import { initAutoChat, loadAndApplyAutoChatConfig } from './sections/auto-chat.j
 import { initCustomCommands, loadCustomCommands } from './sections/custom-commands.js';
 import { initTimers, loadTimers } from './sections/timers.js';
 import { initCheckin, loadCheckinSettings } from './sections/checkin.js';
+import { initPersona, loadPersona } from './sections/persona.js';
 
 let twitchUsernameEl;
 let channelNameStatusEl;
@@ -18,7 +19,8 @@ async function reloadAllConfigs() {
         loadCommandSettings(),
         loadCustomCommands(),
         loadTimers(),
-        loadCheckinSettings()
+        loadCheckinSettings(),
+        loadPersona()
     ]);
 }
 
@@ -110,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCustomCommands();
     initTimers();
     initCheckin();
+    initPersona();
 
     // Setup global UI listeners
     setupNumericInputs();

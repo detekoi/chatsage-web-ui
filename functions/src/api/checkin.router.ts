@@ -14,6 +14,7 @@ import { CUSTOM_COMMANDS_COLLECTION, TWITCH_CLIENT_ID } from "@/config/constants
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
+import { screenPromptField } from "@/utils/promptSafety";
 
 const router = Router();
 
@@ -101,6 +102,16 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     }
     if (aiPrompt && typeof aiPrompt === "string" && aiPrompt.length > 500) {
       return res.status(400).json({ success: false, message: "AI prompt must be 500 characters or fewer" });
+    }
+
+    // The AI prompt is broadcaster-authored text that gets sent to the LLM, so
+    // it is screened before anything is persisted. Only when AI mode is on —
+    // responseTemplate is posted verbatim and is a different risk class.
+    if (useAi && aiPrompt && typeof aiPrompt === "string" && aiPrompt.trim()) {
+      const rejection = await screenPromptField(aiPrompt.trim(), "checkin");
+      if (rejection) {
+        return res.status(rejection.status).json(rejection.body);
+      }
     }
 
     // Load existing config

@@ -117,3 +117,30 @@ export function setupNumericInputs() {
         });
     });
 }
+
+/**
+ * Wires a live character counter to a text field.
+ *
+ * `maxlength` truncates silently, which is confusing on a long field — this
+ * shows remaining budget and flags when the limit is reached. The counter is a
+ * polite live region so screen readers announce it without interrupting typing.
+ *
+ * @param {HTMLTextAreaElement|HTMLInputElement} field
+ * @param {HTMLElement} counterEl
+ * @param {number} maxLength
+ */
+export function setupCharCounter(field, counterEl, maxLength) {
+    if (!field || !counterEl) return;
+
+    counterEl.setAttribute('aria-live', 'polite');
+    counterEl.setAttribute('aria-atomic', 'true');
+
+    const update = () => {
+        const used = field.value.length;
+        counterEl.textContent = `${used} / ${maxLength} characters`;
+        counterEl.classList.toggle('char-counter--full', used >= maxLength);
+    };
+
+    field.addEventListener('input', update);
+    update();
+}

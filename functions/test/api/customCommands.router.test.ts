@@ -8,6 +8,16 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
 import customCommandsRouter from "@/api/customCommands.router";
+import { screenPromptField } from "@/utils/promptSafety";
+
+const mockScreen = screenPromptField as jest.MockedFunction<typeof screenPromptField>;
+
+// Screening of broadcaster-authored prompt text is exercised in
+// test/utils/promptSafety.test.ts. Here it is stubbed to "allowed" so these
+// tests cover routing and validation; the enforcement case is asserted below.
+jest.mock("@/utils/promptSafety", () => ({
+  screenPromptField: jest.fn().mockResolvedValue(null),
+}));
 
 jest.mock("@/config/logger", () => ({
   logger: {
@@ -89,6 +99,7 @@ describe("Custom Commands Router", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset default mock returns
+    mockScreen.mockResolvedValue(null);
     mockSnapshotGet.mockResolvedValue({ docs: [], size: 0 });
     mockDocGet.mockResolvedValue({ exists: false });
     mockCount.mockReturnValue({
@@ -125,6 +136,101 @@ describe("Custom Commands Router", () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.commands).toBeDefined();
+    });
+  });
+
+  describe("prompt safety screening", () => {
+    const token = () => makeToken({ login: "testuser", userId: "123", displayName: "TestUser" });
+
+    it("screens the text of a prompt-typed command", async () => {
+      await request(createApp())
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "lore", response: "Tell a short story", type: "prompt" });
+
+      expect(mockScreen).toHaveBeenCalledWith("Tell a short story", "custom-command");
+    });
+
+    it("does not screen a plain text command", async () => {
+      await request(createApp())
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "greet", response: "Hello {user}!" });
+
+      expect(mockScreen).not.toHaveBeenCalled();
+    });
+
+    it("rejects and persists nothing when screening blocks", async () => {
+      mockScreen.mockResolvedValue({
+        status: 400,
+        body: { success: false, message: "Prompt rejected: nope." },
+      });
+
+      const res = await request(createApp())
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "bad", response: "do something awful", type: "prompt" });
+
+      expect(res.status).toBe(400);
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("fails closed with 503 when screening is unavailable", async () => {
+      mockScreen.mockResolvedValue({
+        status: 503,
+        body: { success: false, message: "Safety check unavailable — please try again." },
+      });
+
+      const res = await request(createApp())
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "any", response: "anything", type: "prompt" });
+
+      expect(res.status).toBe(503);
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("screens the stored text when a PUT flips type to prompt without resending it", async () => {
+      // Otherwise a two-step edit would promote never-screened text into a prompt.
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "text", response: "previously unscreened text" }),
+      });
+
+      await request(createApp())
+        .put("/lore")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ type: "prompt" });
+
+      expect(mockScreen).toHaveBeenCalledWith("previously unscreened text", "custom-command");
+    });
+
+    it("screens the new text when a PUT edits an already-prompt command", async () => {
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "prompt", response: "old prompt" }),
+      });
+
+      await request(createApp())
+        .put("/lore")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ response: "new prompt text" });
+
+      expect(mockScreen).toHaveBeenCalledWith("new prompt text", "custom-command");
+    });
+
+    it("does not screen a PUT that leaves the command text-typed", async () => {
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "text", response: "old text" }),
+      });
+
+      await request(createApp())
+        .put("/greet")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ response: "new plain text" });
+
+      expect(mockScreen).not.toHaveBeenCalled();
     });
   });
 

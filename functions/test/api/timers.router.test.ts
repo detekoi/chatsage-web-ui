@@ -8,6 +8,16 @@ import request from "supertest";
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
 import timersRouter from "@/api/timers.router";
+import { screenPromptField } from "@/utils/promptSafety";
+
+const mockScreen = screenPromptField as jest.MockedFunction<typeof screenPromptField>;
+
+// Screening of broadcaster-authored prompt text is exercised in
+// test/utils/promptSafety.test.ts. Here it is stubbed to "allowed" so these
+// tests cover routing and validation; the enforcement case is asserted below.
+jest.mock("@/utils/promptSafety", () => ({
+  screenPromptField: jest.fn().mockResolvedValue(null),
+}));
 
 jest.mock("@/config/logger", () => ({
   logger: {
@@ -105,6 +115,7 @@ const token = () => makeToken({ login: "testuser", userId: "123", displayName: "
 describe("Timers Router", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockScreen.mockResolvedValue(null);
     mockSnapshotGet.mockResolvedValue({ docs: [], size: 0 });
     mockDocGet.mockResolvedValue({ exists: false });
     mockCount.mockReturnValue({
@@ -139,6 +150,61 @@ describe("Timers Router", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.timers).toHaveLength(1);
       expect(res.body.timers[0].name).toBe("promo");
+    });
+  });
+
+  describe("prompt safety screening", () => {
+    it("screens the text of a prompt-typed timer", async () => {
+      const app = createApp();
+      await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "hype", response: "Hype up chat", type: "prompt" });
+
+      expect(mockScreen).toHaveBeenCalledWith("Hype up chat", "timer");
+    });
+
+    it("does not screen a plain text timer", async () => {
+      const app = createApp();
+      await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "promo", response: "Follow the socials!" });
+
+      expect(mockScreen).not.toHaveBeenCalled();
+    });
+
+    it("rejects and persists nothing when screening blocks", async () => {
+      mockScreen.mockResolvedValue({
+        status: 400,
+        body: { success: false, message: "Prompt rejected: nope." },
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "bad", response: "do something awful", type: "prompt" });
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain("Prompt rejected");
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("fails closed with 503 when screening is unavailable", async () => {
+      mockScreen.mockResolvedValue({
+        status: 503,
+        body: { success: false, message: "Safety check unavailable — please try again." },
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ name: "bad", response: "anything", type: "prompt" });
+
+      expect(res.status).toBe(503);
+      expect(mockSet).not.toHaveBeenCalled();
     });
   });
 

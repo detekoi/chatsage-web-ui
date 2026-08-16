@@ -4,7 +4,7 @@
  */
 
 import express, { Request, Response, NextFunction } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import {
   ALLOWED_ORIGINS,
   RATE_LIMIT,
@@ -114,6 +114,25 @@ export const apiLimiter = rateLimit({
   message: "Too many requests, please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
+});
+
+/**
+ * Rate limiter for writes that trigger an LLM safety check.
+ *
+ * Applied on top of apiLimiter. Keyed by authenticated user rather than IP: the
+ * cost being limited is per-account LLM spend, and several broadcasters can
+ * share an IP. Reads are exempt — only the screened writes are expensive.
+ */
+export const promptWriteLimiter = rateLimit({
+  windowMs: RATE_LIMIT.PROMPT_WRITE.windowMs,
+  max: RATE_LIMIT.PROMPT_WRITE.max,
+  message: "Too many personality or prompt saves. Please wait a moment and try again.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req: Request) => req.method === "GET" || req.method === "DELETE",
+  keyGenerator: (req: Request) =>
+    (req as Request & { user?: { userId?: string } }).user?.userId ||
+    ipKeyGenerator(req.ip || ""),
 });
 
 /**

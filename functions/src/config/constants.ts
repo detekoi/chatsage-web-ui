@@ -38,6 +38,21 @@ export const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_
 export const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL || "";
 export const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET || "";
 
+// Custom bot personas, keyed by immutable Twitch broadcaster ID rather than
+// login name: Twitch lets users rename and eventually releases old names, so a
+// name-keyed persona could be inherited by a later registrant of that name.
+export const PERSONA_COLLECTION = "channelPersonas";
+
+// Written by the bot at startup, holding the authoritative default persona,
+// immutable core, and length limit. Read-only from this side — it exists so the
+// dashboard never keeps its own copy of that text.
+export const BOT_DEFAULTS_COLLECTION = "botDefaults";
+export const BOT_DEFAULTS_DOC = "persona";
+
+// Safety screening for broadcaster-authored prompt text.
+export const GEMINI_API_KEY_SECRET = process.env.GEMINI_API_KEY_SECRET || "";
+export const GEMINI_SAFETY_MODEL = process.env.GEMINI_SAFETY_MODEL || "gemini-flash-lite-latest";
+
 // Environment flags
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 export const IS_TEST = process.env.NODE_ENV === "test";
@@ -76,6 +91,13 @@ export const RATE_LIMIT = {
   API: {
     windowMs: 1 * 60 * 1000, // 1 minute
     max: 60, // 60 requests per window
+  },
+  // Routes that run an LLM safety check on save. Each request costs a Gemini
+  // call, so these are limited far more tightly than ordinary config writes —
+  // and keyed per user rather than per IP, since the JWT identifies the caller.
+  PROMPT_WRITE: {
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 20,
   },
 };
 

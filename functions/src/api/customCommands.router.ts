@@ -10,6 +10,7 @@ import { getDb, FieldValue } from "@/config/database";
 import { CUSTOM_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
+import { screenPromptField } from "@/utils/promptSafety";
 
 const router = Router();
 
@@ -143,6 +144,16 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    // "prompt" commands send their text to the LLM, so the broadcaster is
+    // authoring a prompt and it has to be screened. Plain "text" responses are
+    // posted verbatim and are a different risk class, left unscreened for now.
+    if (commandType === "prompt") {
+      const rejection = await screenPromptField(response.trim(), "custom-command");
+      if (rejection) {
+        return res.status(rejection.status).json(rejection.body);
+      }
+    }
+
     await docRef.set({
       response: response.trim(),
       type: commandType,
@@ -256,6 +267,22 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
         });
       }
       updates.type = type;
+    }
+
+    // Screen whatever text this command will actually run as a prompt once the
+    // update lands. Both halves can come from either the request or the stored
+    // doc, so flipping type to "prompt" without resending the text still screens
+    // the stored text, instead of promoting it unscreened.
+    const existingData = existing.data() || {};
+    const effectiveType = type !== undefined ? type : existingData.type || "text";
+    const effectiveResponse =
+      typeof updates.response === "string" ? updates.response : existingData.response;
+
+    if (effectiveType === "prompt" && typeof effectiveResponse === "string" && effectiveResponse.trim()) {
+      const rejection = await screenPromptField(effectiveResponse, "custom-command");
+      if (rejection) {
+        return res.status(rejection.status).json(rejection.body);
+      }
     }
 
     await docRef.update(updates);
