@@ -645,6 +645,17 @@ a[target="_blank"].no-arrow::after {
     background-color: transparent;
 }
 
+:root :is(.settings-section, .wc-card) .btn:not(.btn-sm):not(.wc-btn):not(.wc-chipbtn):not(.wc-iconbtn) {
+    height: var(--wc-control-h);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11.5px;
+    font-family: var(--wc-font-name);
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
 /* Segmented light/dark indicator on the login card. */
 .wc-themeswitch {
     display: flex;
@@ -1016,6 +1027,11 @@ a[target="_blank"].no-arrow::after {
     border-radius: 0;
     background: transparent;
     color: var(--wc-text-1);
+}
+
+:root :is(.settings-section, .wc-card) .list-group-item.text-center {
+    justify-content: center;
+    text-align: center;
 }
 
 /* Label + description left, control right at a fixed width, so the
@@ -1585,13 +1601,14 @@ a[target="_blank"].no-arrow::after {
         margin-left: auto;
     }
 
-    /* Stacking earns its keep for wide controls, but a toggle is 40px — keep
-       switch rows inline so the switches hold one column down every card. */
-    :root :is(.settings-section, .wc-card) .list-group-item > .row:has(> .col-auto > .form-check.form-switch) {
+    /* Stacking earns its keep for wide controls, but a lone toggle is 40px —
+       keep those rows inline so the switches hold one column down every card.
+       A cell pairing the switch with a button is wide again, so it still stacks. */
+    :root :is(.settings-section, .wc-card) .list-group-item > .row:has(> .col-auto > .form-check.form-switch:only-child) {
         flex-direction: row;
         align-items: center;
     }
-    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto:has(> .form-check.form-switch) {
+    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto:has(> .form-check.form-switch:only-child) {
         width: auto;
         justify-content: flex-end;
     }
