@@ -2,7 +2,7 @@
 
 ## Description
 
-WildcatSage Bot Management is a web application for Twitch streamers. Approved streamers can use the application to manage the WildcatSage bot on their Twitch channel, configure built-in commands, create custom commands, manage scheduled timers, configure auto-chat, and configure daily check-in rewards.
+WildcatSage Bot Management is a web application for Twitch streamers. Approved streamers can use the application to manage the WildcatSage bot on their Twitch channel, configure built-in commands, create custom commands, manage scheduled timers, configure auto-chat, customize bot personality instructions, and configure daily check-in rewards.
 
 > **IMPORTANT:** Access to WildcatSage is invite-only. The interface shows an access denied message for unapproved channels. If you want to request access, use [this contact form](https://parfaitfair.com/#contact).
 
@@ -16,6 +16,7 @@ WildcatSage Bot Management is a web application for Twitch streamers. Approved s
 - **Ad Break Notifications:** Enable automated chat alerts when ad breaks run on your channel.
 - **Custom Commands:** Create and edit custom commands with static responses or AI Mode, custom permissions, cooldowns, and template variables.
 - **Timed Messages:** Schedule recurring chat messages with minimum line counts, custom intervals, and static text or AI Mode.
+- **Bot Personality:** Customize tone, humor, and style instructions for AI responses, with automatic Twitch rule checks and default reset.
 - **Daily Check-In:** Configure a Twitch Channel Points reward for viewer daily check-ins with streak tracking and custom responses.
 - **Dynamic Background:** Display an animated background in the user interface.
 - **Firebase Integration:** Host the application and run backend functions on Firebase.
@@ -90,5 +91,6 @@ firebase deploy
    - Turn on chat notifications for Twitch ad breaks.
    - Add, edit, or delete custom chat commands with static text or AI Mode.
    - Add, edit, or delete timed chat messages with custom intervals and chat line thresholds.
+   - Customize the bot's personality instructions or reset them to default settings.
    - Configure Channel Point daily check-in rewards and streak tracking.
    - Sign out from the application.
