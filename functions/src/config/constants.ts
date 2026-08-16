@@ -66,7 +66,10 @@ export const ALLOWED_ORIGINS = (() => {
 export const RATE_LIMIT = {
   AUTH: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 10 requests per window
+    // Keyed by IP, and these routes carry no credential to brute-force — they
+    // build a Twitch redirect and exchange a single-use code. The old limit of
+    // 10 locked out everyone sharing a NAT (offices, dorms, carrier CGNAT).
+    max: 60,
   },
   API: {
     windowMs: 1 * 60 * 1000, // 1 minute
