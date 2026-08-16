@@ -43,7 +43,7 @@
         <div class="wc-frame">
             <div class="wc-frame-head">
                 <span class="wc-lockup">Wildcat<b>Sage</b></span>
-                <span class="wc-readout wc-readout--danger">Auth failed</span>
+                <span class="wc-readout wc-readout--danger" id="error-readout">Auth failed</span>
             </div>
 
             <div class="wc-frame-body">
@@ -51,12 +51,12 @@
                 <p class="wc-lede" id="error-message-details">Sorry, there was a problem during the Twitch
                     authentication process.</p>
 
-                <div class="wc-code">
+                <div class="wc-code" id="error-code-block">
                     <span class="wc-code-label">Error</span>
                     <span class="wc-code-value" id="error-code">unknown</span>
                 </div>
 
-                <a href="index.html" class="wc-btn">Try again</a>
+                <a href="index.html" class="wc-btn" id="error-action">Try again</a>
             </div>
 
             <div class="wc-frame-foot">
@@ -77,15 +77,41 @@
             const errorCodeEl = document.getElementById('error-code');
 
             if (errorCodeEl) {
-                errorCodeEl.textContent = error ? decodeURIComponent(error) : 'unspecified';
+                errorCodeEl.textContent = error || 'unspecified';
             }
 
+            // Cancelling is a choice, not a failure. Twitch reports it as
+            // access_denied with "The user denied you access" — machine wording
+            // from our side of the transaction — so this page drops the failure
+            // framing entirely rather than accusing someone of denying us.
+            const wasCanceled = error === 'access_denied';
+
+            if (wasCanceled) {
+                document.title = 'WildcatSage - Login canceled';
+
+                const readoutEl = document.getElementById('error-readout');
+                if (readoutEl) {
+                    readoutEl.textContent = 'Canceled';
+                    readoutEl.classList.remove('wc-readout--danger');
+                }
+
+                // The error code is noise when nothing went wrong.
+                const codeBlockEl = document.getElementById('error-code-block');
+                if (codeBlockEl) codeBlockEl.remove();
+
+                const actionEl = document.getElementById('error-action');
+                if (actionEl) actionEl.textContent = 'Back to sign in';
+            }
+
+            // URLSearchParams has already decoded these. Decoding a second time
+            // throws URIError on any literal "%" in the text, which would halt
+            // this script and leave the page blank.
             if (errorMessageEl) {
                 let message = '';
-                if (errorDescription) {
-                    message = decodeURIComponent(errorDescription);
-                } else if (error === 'access_denied') {
-                    message = "You cancelled the login process or didn't authorize the application.";
+                if (wasCanceled) {
+                    message = 'No changes were made. You can sign in whenever you’re ready.';
+                } else if (errorDescription) {
+                    message = errorDescription;
                 } else if (error) {
                     message = 'Twitch returned an error during authentication.';
                 } else {
