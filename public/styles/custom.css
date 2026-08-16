@@ -1,6 +1,12 @@
 /* ChatSage custom Bootstrap overrides and theming */
 /* Post-Industrial Modernism Design System */
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 /* CSS Custom Properties for Theme Support */
 :root {
     /* Typography */
@@ -52,7 +58,7 @@
     --bg-tertiary: #0a0a0a;
     --text-primary: #ffffff;
     --text-secondary: #ffffff;
-    --text-muted: #666666;
+    --text-muted: #999999;
     --border-color: #333333;
     --border-hover: #555555;
     --accent-primary: #ffffff;
@@ -224,54 +230,31 @@ label,
     border-color: var(--danger-primary);
 }
 
-/* Custom switch and checkbox styling for post-industrial look */
-/* Dark Mode Toggle Alignment */
-.form-check.form-switch {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-left: 0;
-}
-
-.form-check.form-switch .form-check-input {
-    margin-left: 0;
-    margin-right: 0;
-    margin-top: 0;
-}
-
-.form-check.form-switch .form-check-label {
-    margin-bottom: 0;
-    padding-top: 0;
-}
-
-/* Light Mode */
-.form-check-input {
+/* Custom checkbox styling (non-switch) for post-industrial look */
+.form-check:not(.form-switch) .form-check-input {
+    appearance: none;
+    -webkit-appearance: none;
     background-color: transparent;
     border: 2px solid var(--border-color);
     width: 1.2em;
     height: 1.2em;
-}
-
-.form-check-input[type="checkbox"] {
     border-radius: 0;
+    cursor: pointer;
 }
 
-.form-check-input[type="checkbox"]:checked {
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
     background-color: var(--text-primary);
     border-color: var(--text-primary);
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 
-/* Switch appearance (40x22 rectangle, square knob) is owned by
-   design-system.css — the old pill rules lived here and were removed. */
-
-.form-check-input:focus {
+.form-check:not(.form-switch) .form-check-input:focus {
     border-color: var(--text-primary);
     box-shadow: none;
 }
 
 /* Dark Mode */
-[data-theme="dark"] .form-check-input[type="checkbox"]:checked {
+[data-theme="dark"] .form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 

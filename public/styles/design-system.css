@@ -16,6 +16,12 @@
                     is used only for decorative hairlines.
    ===================================================== */
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 /* =====================================================
    1. TOKENS
    ===================================================== */
@@ -789,7 +795,7 @@ a[target="_blank"].no-arrow::after {
     font-family: var(--wc-font-mono);
     font-size: 52px;
     line-height: 0.9;
-    color: var(--wc-track);
+    color: var(--wc-border-strong);
 }
 
 /* =====================================================
@@ -1142,7 +1148,7 @@ a[target="_blank"].no-arrow::after {
     border-bottom: 1px solid var(--wc-border);
 }
 
-:root .wc-card > .card-header h5 {
+:root .wc-card > .card-header :is(h2, h3, h5, .wc-card-title) {
     font-family: var(--wc-font-name);
     font-weight: 600;
     font-size: 12px;
@@ -1224,29 +1230,33 @@ a[target="_blank"].no-arrow::after {
 
 /* Toggle — 40x22 rectangle, 2px radius, 16x16 knob. */
 :root .form-switch .form-check-input,
-:root .form-check-input[type="checkbox"][role="switch"] {
-    width: 40px;
-    height: 22px;
+:root .form-check-input[type="checkbox"][role="switch"],
+.form-switch .form-check-input {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    width: 40px !important;
+    height: 22px !important;
     flex: none;
     margin: 0;
     border-radius: var(--wc-radius-card);
     border: 1px solid var(--wc-border-strong);
     background-color: var(--wc-field);
-    background-image: linear-gradient(var(--wc-knob-off), var(--wc-knob-off));
-    background-size: 16px 16px;
-    background-position: 2px center;
-    background-repeat: no-repeat;
+    background-image: linear-gradient(var(--wc-knob-off), var(--wc-knob-off)) !important;
+    background-size: 16px 16px !important;
+    background-position: 2px center !important;
+    background-repeat: no-repeat !important;
     cursor: pointer;
     transition: background-position 0.15s ease, background-color 0.15s ease,
                 border-color 0.15s ease, background-image 0.15s ease;
 }
 
 :root .form-switch .form-check-input:checked,
-:root .form-check-input[type="checkbox"][role="switch"]:checked {
-    background-color: var(--wc-accent);
-    border-color: var(--wc-accent);
-    background-image: linear-gradient(var(--wc-knob-on), var(--wc-knob-on));
-    background-position: calc(100% - 2px) center;
+:root .form-check-input[type="checkbox"][role="switch"]:checked,
+.form-switch .form-check-input:checked {
+    background-color: var(--wc-accent) !important;
+    border-color: var(--wc-accent) !important;
+    background-image: linear-gradient(var(--wc-knob-on), var(--wc-knob-on)) !important;
+    background-position: calc(100% - 2px) center !important;
 }
 
 :root .form-switch .form-check-input:focus-visible {
@@ -1258,7 +1268,12 @@ a[target="_blank"].no-arrow::after {
 /* Selects, text and number fields — 34px tall at 3px radius. */
 :root :is(.settings-section, .wc-card) .form-select,
 :root :is(.settings-section, .wc-card) .form-control:not(textarea),
-.wc-field {
+.wc-field,
+.form-control:not(textarea),
+.form-select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     height: var(--wc-control-h);
     min-width: 0;
     max-width: 100%;
@@ -1289,14 +1304,57 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root :is(.settings-section, .wc-card) textarea.form-control,
-:root .wc-shell-aside textarea.form-control {
+:root .wc-shell-aside textarea.form-control,
+textarea.form-control {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 200px;
     border: 1px solid var(--wc-border-strong);
     border-radius: var(--wc-radius-field);
     background-color: var(--wc-field);
     color: var(--wc-text-1);
-    font-size: 12.5px;
+    font-family: var(--wc-font-body);
+    font-size: 13px;
     line-height: 1.5;
-    padding: 9px 11px;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+/* Persona form layout */
+.persona-form {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.persona-form > .mb-2 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px !important;
+}
+
+.persona-form .form-label,
+:root :is(.settings-section, .wc-card) .persona-form .form-label {
+    display: block;
+    width: 100%;
+    font-family: var(--wc-font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--wc-text-1);
+    margin-bottom: 8px;
+}
+
+.persona-form .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
 }
 
 /* Input groups — ensure inputs and buttons align seamlessly at --wc-control-h */
@@ -1616,3 +1674,170 @@ a[target="_blank"].no-arrow::after {
     .wc-stage { padding: 16px 16px 40px; }
     .wc-title { font-size: 24px; }
 }
+
+/* =====================================================
+   13. ACCESSIBILITY & MODERN NATIVE UTILITIES
+   Eliminates external framework dependencies with lean,
+   zero-runtime native CSS layout rules.
+   ===================================================== */
+
+/* Skip Link */
+.wc-skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    z-index: 10000;
+    padding: 10px 18px;
+    background: var(--wc-surface-1);
+    color: var(--wc-text-1);
+    border: 2px solid var(--wc-accent);
+    border-radius: var(--wc-radius-card);
+    font-family: var(--wc-font-name);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    transition: top 0.15s ease-out;
+}
+
+.wc-skip-link:focus,
+.wc-skip-link:focus-visible {
+    top: 16px;
+    outline: 2px solid var(--wc-accent);
+    outline-offset: 2px;
+}
+
+/* Native Layout Grid & Flex Utilities */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -8px;
+    margin-left: -8px;
+}
+
+.row > * {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-right: 8px;
+    padding-left: 8px;
+}
+
+.col { flex: 1 0 0%; }
+.col-auto { flex: 0 0 auto; width: auto; }
+.col-4 { flex: 0 0 auto; width: 33.33333333%; }
+.col-8 { flex: 0 0 auto; width: 66.66666667%; }
+
+.d-flex { display: flex !important; }
+.d-block { display: block !important; }
+.align-items-center { align-items: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-end { justify-content: flex-end !important; }
+
+.gap-1 { gap: 4px !important; }
+.gap-2 { gap: 8px !important; }
+.gap-3 { gap: 16px !important; }
+
+/* Spacing */
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 4px !important; }
+.mb-2 { margin-bottom: 8px !important; }
+.mb-3 { margin-bottom: 16px !important; }
+.mt-1 { margin-top: 4px !important; }
+.mt-2 { margin-top: 8px !important; }
+.mt-3 { margin-top: 16px !important; }
+.ms-2 { margin-left: 8px !important; }
+.py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
+
+/* Native Forms & Controls */
+.form-label {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 11.5px;
+    font-family: var(--wc-font-name);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wc-text-1);
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    min-height: 24px;
+}
+
+.form-check-label {
+    font-size: 13px;
+    color: var(--wc-text-1);
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0;
+}
+
+.form-check-input {
+    flex-shrink: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.form-switch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Standalone Alert Styles */
+.alert {
+    position: relative;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--wc-border);
+    border-radius: var(--wc-radius-card);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--wc-surface-1);
+    color: var(--wc-text-1);
+}
+
+.alert-info {
+    border-color: var(--wc-border-strong);
+    background: var(--wc-surface-2);
+    color: var(--wc-text-1);
+}
+
+.alert-danger {
+    border-color: var(--wc-danger-border);
+    background: var(--wc-danger-bg);
+    color: var(--wc-danger);
+}
+
+.alert-success {
+    border-color: color-mix(in oklab, var(--wc-ok) 40%, transparent);
+    background: color-mix(in oklab, var(--wc-ok) 12%, var(--wc-surface-1));
+    color: var(--wc-ok);
+}
+
+.alert-warning {
+    border-color: color-mix(in oklab, #d97706 40%, transparent);
+    background: color-mix(in oklab, #d97706 12%, var(--wc-surface-1));
+    color: var(--wc-text-1);
+}
+
+/* Card titles */
+.wc-card-title {
+    font-family: var(--wc-font-name);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--wc-text-1);
+    margin: 0;
+}
+

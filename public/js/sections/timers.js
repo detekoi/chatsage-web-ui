@@ -155,6 +155,7 @@ function renderTimersList(timers) {
         checkbox.id = `timer-enabled-${timer.name}`;
         checkbox.checked = timer.enabled !== false;
         checkbox.role = 'switch';
+        checkbox.setAttribute('aria-label', `Enable timer ${timer.name}`);
         checkbox.title = 'Enable or disable this timed message';
         checkbox.addEventListener('change', async function () {
             await toggleTimer(timer.name, this.checked, this);
@@ -162,13 +163,17 @@ function renderTimersList(timers) {
         switchDiv.appendChild(checkbox);
 
         const editBtn = document.createElement('button');
+        editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = 'Edit';
+        editBtn.setAttribute('aria-label', `Edit timer ${timer.name}`);
         editBtn.addEventListener('click', () => openTimerEditForm(timer));
 
         const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = 'Del';
+        deleteBtn.setAttribute('aria-label', `Delete timer ${timer.name}`);
         deleteBtn.addEventListener('click', () => deleteTimer(timer.name));
 
         actions.appendChild(switchDiv);

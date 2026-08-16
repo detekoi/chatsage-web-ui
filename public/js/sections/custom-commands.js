@@ -149,13 +149,17 @@ function renderCustomCommandsList(commands) {
         actions.className = 'cmd-actions';
 
         const editBtn = document.createElement('button');
+        editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = 'Edit';
+        editBtn.setAttribute('aria-label', `Edit command !${cmd.name}`);
         editBtn.addEventListener('click', () => openEditForm(cmd));
 
         const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = 'Del';
+        deleteBtn.setAttribute('aria-label', `Delete command !${cmd.name}`);
         deleteBtn.addEventListener('click', () => deleteCustomCommand(cmd.name));
 
         actions.appendChild(editBtn);

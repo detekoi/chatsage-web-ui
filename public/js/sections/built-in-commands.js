@@ -51,8 +51,12 @@ function renderCommandsList(commands) {
         const col = document.createElement('div');
         col.className = 'col';
 
-        const label = document.createElement('strong');
-        label.textContent = `!${cmd.name}`;
+        const label = document.createElement('label');
+        label.htmlFor = `cmd-${cmd.primaryName}`;
+        label.className = 'form-check-label';
+        const strong = document.createElement('strong');
+        strong.textContent = `!${cmd.name}`;
+        label.appendChild(strong);
         col.appendChild(label);
 
         const colAuto = document.createElement('div');
@@ -68,6 +72,7 @@ function renderCommandsList(commands) {
         checkbox.checked = cmd.enabled;
         checkbox.dataset.command = cmd.primaryName;
         checkbox.role = 'switch';
+        checkbox.setAttribute('aria-label', `Enable command !${cmd.name}`);
 
         checkbox.addEventListener('change', async function () {
             await toggleCommand(cmd.primaryName, this.checked, this);
