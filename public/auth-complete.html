@@ -31,6 +31,26 @@
         })();
     </script>
 
+    <!-- Runs first, synchronously, and stays above the analytics loader below.
+         The callback hands this page a seven-day session JWT in the query
+         string, and the injected analytics script would observe that URL long
+         before the sign-in code further down gets to read it. Take the token
+         out of the URL immediately and pass it along in memory instead. -->
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var token = params.get('session_token');
+            if (!token) return;
+
+            window.__sessionToken = token;
+
+            params.delete('session_token');
+            var query = params.toString();
+            window.history.replaceState({}, '',
+                window.location.pathname + (query ? '?' + query : '') + window.location.hash);
+        })();
+    </script>
+
     <script>
         // Spam domain blocker
         const spamDomains = [
@@ -137,7 +157,10 @@
 
             const userLogin = queryParams.get('user_login');
             const userId = queryParams.get('user_id');
-            const sessionToken = queryParams.get('session_token');
+            // Handed over in memory by the head script, which already removed
+            // it from the URL. The query fallback only covers that script not
+            // having run; it should normally be null by now.
+            const sessionToken = window.__sessionToken || queryParams.get('session_token');
 
             // The server compares the `state` it receives from Twitch against a
             // one-use HttpOnly cookie and rejects the callback before minting a
