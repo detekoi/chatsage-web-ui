@@ -1254,8 +1254,7 @@ a[target="_blank"].no-arrow::after {
     line-height: var(--wc-control-h);
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto :is(.form-select, .form-control:not(textarea)),
-.wc-field {
+:root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto :is(.form-select, .form-control:not(textarea):not([type="number"]):not([inputmode="numeric"]), .wc-field:not(.wc-field--number)) {
     min-width: 172px;
 }
 
@@ -1290,7 +1289,7 @@ a[target="_blank"].no-arrow::after {
     width: 100%;
 }
 
-:root .input-group > .form-control:not(textarea) {
+:root .input-group > :is(.form-control, .form-select):not(textarea) {
     min-width: 0;
     height: var(--wc-control-h);
 }
@@ -1580,7 +1579,7 @@ a[target="_blank"].no-arrow::after {
         justify-content: space-between;
         width: 100%;
     }
-    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto > :is(.btn, button) {
+    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto > :is(.btn, button, .form-switch) {
         margin-left: auto;
     }
     .wc-tags { justify-content: flex-start; max-width: none; }
