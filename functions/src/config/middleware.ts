@@ -40,8 +40,14 @@ const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
   },
   // Skip CSRF for API and internal routes — they use JWT Bearer tokens
   // (not cookies), so they are not vulnerable to CSRF attacks.
+  //
+  // /auth/exchange is skipped for the same reason: it carries no ambient
+  // authority. Its only credential is a single-use code the caller must
+  // already hold, and a forged cross-site POST could not read the response.
   skipCsrfProtection: (req) => {
-    return req.path.startsWith("/api/") || req.path.startsWith("/internal/");
+    return req.path.startsWith("/api/") ||
+      req.path.startsWith("/internal/") ||
+      req.path === "/auth/exchange";
   },
 });
 

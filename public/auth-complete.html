@@ -157,25 +157,46 @@
 
             const userLogin = queryParams.get('user_login');
             const userId = queryParams.get('user_id');
-            // Handed over in memory by the head script, which already removed
-            // it from the URL. The query fallback only covers that script not
-            // having run; it should normally be null by now.
-            const sessionToken = window.__sessionToken || queryParams.get('session_token');
+
+            // The callback hands over a single-use code, not the token, so the
+            // token never appears in the URL. `__sessionToken` is the old shape,
+            // still accepted for anyone mid-flow across the deploy.
+            const exchangeCode = queryParams.get('code');
+            const legacyToken = window.__sessionToken || queryParams.get('session_token');
 
             // The server compares the `state` it receives from Twitch against a
             // one-use HttpOnly cookie and rejects the callback before minting a
             // token, so reaching this page means state binding already passed.
             console.log("Processing authentication for user:", userLogin);
 
-            if (userLogin && userId && sessionToken) {
-                markStep('authorized');
+            /**
+             * Trades the one-time code for the session token.
+             */
+            async function redeemCode(code) {
+                // Relative on purpose: this page is served from the same host
+                // that rewrites /auth/** to the function, so the exchange is
+                // same-origin and needs no CORS.
+                const response = await fetch('/auth/exchange', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
 
-                // Store user info and session token
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.success || !data.session_token) {
+                    throw new Error(data.message || 'Could not complete sign-in.');
+                }
+                return data.session_token;
+            }
+
+            /**
+             * Stores the session and moves the user on to the dashboard.
+             */
+            function completeSignIn(sessionToken) {
                 localStorage.setItem('twitch_user_login', userLogin);
                 localStorage.setItem('twitch_user_id', userId);
                 localStorage.setItem('app_session_token', sessionToken);
 
-                console.log("Authentication successful. Session token stored.");
                 markStep('token');
                 sessionStateEl.textContent = 'Session established';
 
@@ -183,12 +204,31 @@
                 messageEl.textContent = 'Redirecting to your dashboard.';
                 markStep('redirect');
 
-                // Redirect to dashboard after brief delay
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
+            }
+
+            if (userLogin && userId && (exchangeCode || legacyToken)) {
+                markStep('authorized');
+
+                if (exchangeCode) {
+                    // A code is single-use, so a failure here cannot be retried
+                    // by reloading — send the user back to sign in again.
+                    redeemCode(exchangeCode)
+                        .then(completeSignIn)
+                        .catch((error) => {
+                            console.error('Exchange failed:', error);
+                            fail(`${error.message} Please try signing in again.`);
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 4000);
+                        });
+                } else {
+                    completeSignIn(legacyToken);
+                }
             } else {
-                console.error("Missing required parameters:", { userLogin, userId, sessionToken: sessionToken ? 'present' : 'missing' });
+                console.error("Missing required parameters:", { userLogin, userId, code: exchangeCode ? 'present' : 'missing' });
                 fail("Missing authentication information from the Twitch callback. Please try again.");
                 setTimeout(() => {
                     window.location.href = 'index.html';

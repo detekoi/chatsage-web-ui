@@ -30,6 +30,11 @@ export const CHANNEL_COMMANDS_COLLECTION = "channelCommands";
 export const CUSTOM_COMMANDS_COLLECTION = "customCommands";
 export const CHANNEL_TIMERS_COLLECTION = "channelTimers";
 
+// Single-use codes exchanged for a session token after OAuth. Short-lived by
+// design; a Firestore TTL policy on `expiresAt` collects abandoned rows.
+export const EXCHANGE_CODES_COLLECTION = "authExchangeCodes";
+export const EXCHANGE_CODE_TTL_MS = 60 * 1000;
+
 // Internal bot configuration
 export const WEBUI_INTERNAL_TOKEN = process.env.WEBUI_INTERNAL_TOKEN || "";
 export const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME || "";

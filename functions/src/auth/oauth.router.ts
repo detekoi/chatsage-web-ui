@@ -20,6 +20,7 @@ import { redirectToFrontendWithError } from "@/utils/errors";
 import { createSessionToken } from "./jwt.middleware";
 import { storeTwitchRefreshToken } from "@/tokens/firestoreRefreshToken.service";
 import { issueState, consumeState } from "./state";
+import { createExchangeCode, redeemExchangeCode } from "./exchange";
 
 const router = Router();
 
@@ -232,15 +233,17 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
 
     logger.info("JWT session token created", { login: twitchUser.login });
 
-    // Redirect to frontend auth-complete page
-    // NOTE: Session token in URL is a known limitation due to cross-origin setup
-    // For same-domain setup, use HTTP-only cookies instead
+    // The redirect carries a single-use code, not the token. The token itself
+    // would otherwise sit in browser history, in the Referer of anything the
+    // landing page loads, and in reach of that page's analytics.
+    const exchangeCode = await createExchangeCode(db, sessionToken);
+
     const frontendAuthCompleteUrl = new URL(FRONTEND_URL_CONFIG);
     frontendAuthCompleteUrl.pathname = "/auth-complete.html";
     frontendAuthCompleteUrl.searchParams.append("user_login", twitchUser.login);
     frontendAuthCompleteUrl.searchParams.append("user_id", twitchUser.id);
     frontendAuthCompleteUrl.searchParams.append("state", twitchQueryState as string);
-    frontendAuthCompleteUrl.searchParams.append("session_token", sessionToken);
+    frontendAuthCompleteUrl.searchParams.append("code", exchangeCode);
 
     logger.info("Redirecting to frontend auth-complete", {
       login: twitchUser.login,
@@ -262,6 +265,48 @@ router.get("/twitch/callback", async (req: Request, res: Response) => {
       twitchQueryState as string,
       frontendRedirect,
     );
+  }
+});
+
+/**
+ * POST /auth/exchange
+ * Trades the single-use code from the callback redirect for the session token.
+ *
+ * Unauthenticated by necessity — this is how a session is obtained in the first
+ * place. Its only credential is the code, which is high-entropy, one-minute,
+ * single-use, and stored only as a hash.
+ */
+router.post("/exchange", async (req: Request, res: Response) => {
+  const { code } = req.body ?? {};
+
+  if (typeof code !== "string" || !code) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing exchange code",
+    });
+  }
+
+  try {
+    const result = await redeemExchangeCode(getDb(), code);
+
+    if (!result.ok) {
+      logger.warn("Exchange code refused", { reason: result.reason });
+      return res.status(400).json({
+        success: false,
+        message: "This sign-in link has already been used or has expired. Please sign in again.",
+      });
+    }
+
+    logger.info("Exchange code redeemed");
+    return res.json({ success: true, session_token: result.sessionToken });
+  } catch (error) {
+    logger.error("Exchange code redemption failed", {
+      error: (error as Error).message,
+    });
+    return res.status(500).json({
+      success: false,
+      message: "Could not complete sign-in. Please try again.",
+    });
   }
 });
 
