@@ -1068,9 +1068,11 @@ a[target="_blank"].no-arrow::after {
 }
 
 /* Section cards also host free-form blocks — ignore lists, the channel-point
-   reward form. Pad and rule them so they sit inside the card like rows do. */
+   reward form. Pad and rule them so they sit inside the card like rows do.
+   .list-group and .stream-events-form are row stacks, not blocks: their rows
+   carry their own padding, so padding here would inset them a second time. */
 :root .settings-section > *:not(.settings-section-title):not(.settings-section-description):not(.list-group):not(:empty),
-:root .wc-card > .card-body > *:not(.list-group):not(:empty) {
+:root .wc-card > .card-body > *:not(.list-group):not(.stream-events-form):not(:empty) {
     margin: 0;
     padding: 14px 16px;
     border-top: 1px solid var(--wc-hairline);
@@ -1581,6 +1583,17 @@ a[target="_blank"].no-arrow::after {
     }
     :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto > :is(.btn, button, .form-switch) {
         margin-left: auto;
+    }
+
+    /* Stacking earns its keep for wide controls, but a toggle is 40px — keep
+       switch rows inline so the switches hold one column down every card. */
+    :root :is(.settings-section, .wc-card) .list-group-item > .row:has(> .col-auto > .form-check.form-switch) {
+        flex-direction: row;
+        align-items: center;
+    }
+    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto:has(> .form-check.form-switch) {
+        width: auto;
+        justify-content: flex-end;
     }
     .wc-tags { justify-content: flex-start; max-width: none; }
     .wc-stage { padding: 16px 16px 40px; }
