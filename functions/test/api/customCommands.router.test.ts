@@ -190,6 +190,24 @@ describe("Custom Commands Router", () => {
       expect(mockSet).not.toHaveBeenCalled();
     });
 
+    it("does not re-screen a metadata-only edit of an existing prompt command", async () => {
+      // Toggling enabled or changing a cooldown leaves the prompt text untouched,
+      // so a repeat check is wasted spend — and a screening outage would otherwise
+      // block an unrelated toggle.
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "prompt", response: "already screened text" }),
+      });
+
+      const res = await request(createApp())
+        .put("/lore")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ cooldown: 30000 });
+
+      expect(res.status).toBe(200);
+      expect(mockScreen).not.toHaveBeenCalled();
+    });
+
     it("screens the stored text when a PUT flips type to prompt without resending it", async () => {
       // Otherwise a two-step edit would promote never-screened text into a prompt.
       mockDocGet.mockResolvedValue({

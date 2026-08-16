@@ -25,6 +25,9 @@ import { logger } from "@/config/logger";
 
 const GEMINI_TIMEOUT_MS = 8000;
 
+/** The markers that delimit candidate text in the classifier prompt. */
+const CANDIDATE_DELIMITER_PATTERN = /<<<\s*CANDIDATE_TEXT_(?:BEGIN|END)\s*>>>/gi;
+
 export type PromptKind = "persona" | "custom-command" | "timer" | "checkin";
 
 export interface SafetyResult {
@@ -118,7 +121,10 @@ const KIND_LABELS: Record<PromptKind, string> = {
  *   must respond 503 and persist nothing.
  */
 export async function checkPromptSafety(text: string, kind: PromptKind): Promise<SafetyResult> {
-  const candidate = (text || "").trim();
+  // Strip our own delimiters first. Text containing the closing marker would
+  // otherwise end the candidate block early, so anything after it would read as
+  // classifier instructions — letting a crafted prompt talk its way to "allow".
+  const candidate = (text || "").replace(CANDIDATE_DELIMITER_PATTERN, "[removed]").trim();
 
   // Nothing to screen. An empty value clears the field rather than setting one.
   if (!candidate) {

@@ -9,6 +9,7 @@ let coreEl;
 let saveBtnEl;
 let resetBtnEl;
 let msgEl;
+let refreshCounter = () => {};
 
 // The bot publishes the authoritative default persona and length limit, so both
 // arrive from the API rather than being hardcoded here. These are only the
@@ -33,6 +34,10 @@ export function initPersona() {
     resetBtnEl = document.getElementById('persona-reset-btn');
     msgEl = document.getElementById('persona-msg');
 
+    // Attached once here, not per load: setupCharCounter adds an input listener,
+    // and applyPersona runs on every load and reset.
+    refreshCounter = setupCharCounter(textareaEl, counterEl);
+
     // Deliberately not debounced auto-save like auto-chat: every save runs an LLM
     // safety check, so it costs money and a second or two of latency. The user
     // decides when to spend that.
@@ -56,9 +61,10 @@ function applyPersona(config) {
     defaultPersona = config.isDefault ? config.instructions : defaultPersona;
     maxLength = config.maxLength || maxLength;
 
-    textareaEl.value = config.instructions || '';
+    // maxlength must be set before refreshing — the counter reads it from the DOM.
     textareaEl.setAttribute('maxlength', String(maxLength));
-    setupCharCounter(textareaEl, counterEl, maxLength);
+    textareaEl.value = config.instructions || '';
+    refreshCounter();
 
     coreEl.textContent = config.core || 'Unavailable right now.';
 

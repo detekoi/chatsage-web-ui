@@ -191,6 +191,38 @@ describe("Timers Router", () => {
       expect(mockSet).not.toHaveBeenCalled();
     });
 
+    it("does not re-screen a metadata-only edit of an existing prompt timer", async () => {
+      // Toggling enabled or changing an interval leaves the prompt text untouched,
+      // so a repeat check is wasted spend — and a screening outage would otherwise
+      // block an unrelated toggle.
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "prompt", response: "already screened text" }),
+      });
+
+      const res = await request(createApp())
+        .put("/hype")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ enabled: false });
+
+      expect(res.status).toBe(200);
+      expect(mockScreen).not.toHaveBeenCalled();
+    });
+
+    it("screens the stored text when a PUT flips type to prompt without resending it", async () => {
+      mockDocGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ type: "text", response: "previously unscreened text" }),
+      });
+
+      await request(createApp())
+        .put("/hype")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ type: "prompt" });
+
+      expect(mockScreen).toHaveBeenCalledWith("previously unscreened text", "timer");
+    });
+
     it("fails closed with 503 when screening is unavailable", async () => {
       mockScreen.mockResolvedValue({
         status: 503,

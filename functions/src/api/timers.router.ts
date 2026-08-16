@@ -360,16 +360,27 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       updates.enabled = enabled;
     }
 
-    // Screen whatever text this timer will actually run as a prompt once the
-    // update lands. Both halves can come from either the request or the stored
-    // doc, so flipping type to "prompt" without resending the text still screens
-    // the stored text, instead of promoting it unscreened.
+    // Screen only text that is newly prompt-bound: either the prompt text itself
+    // changed, or a text timer was just promoted to a prompt (in which case the
+    // stored text becomes prompt input and has never been screened).
+    //
+    // Metadata-only edits on an existing prompt — toggling enabled, changing an
+    // interval — deliberately do not re-screen. The text is unchanged, so a repeat
+    // check costs an LLM call for nothing, and worse, would let a screening outage
+    // block an unrelated toggle.
     const existingData = existing.data() || {};
     const effectiveType = type !== undefined ? type : existingData.type || "text";
     const effectiveResponse =
       typeof updates.response === "string" ? updates.response : existingData.response;
+    const textChanged = typeof updates.response === "string";
+    const promotedToPrompt = type === "prompt" && existingData.type !== "prompt";
 
-    if (effectiveType === "prompt" && typeof effectiveResponse === "string" && effectiveResponse.trim()) {
+    if (
+      effectiveType === "prompt" &&
+      (textChanged || promotedToPrompt) &&
+      typeof effectiveResponse === "string" &&
+      effectiveResponse.trim()
+    ) {
       const rejection = await screenPromptField(effectiveResponse, "timer");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);

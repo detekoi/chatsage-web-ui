@@ -125,22 +125,34 @@ export function setupNumericInputs() {
  * shows remaining budget and flags when the limit is reached. The counter is a
  * polite live region so screen readers announce it without interrupting typing.
  *
+ * The limit is read from the field's `maxlength` attribute on each update rather
+ * than captured here, so callers that learn the limit later (from an API) can
+ * set the attribute and refresh without re-attaching a listener.
+ *
+ * Call this ONCE per field, during setup. It returns a refresh function to call
+ * after changing the field's value programmatically — calling it again per load
+ * would stack duplicate listeners on the same field.
+ *
  * @param {HTMLTextAreaElement|HTMLInputElement} field
  * @param {HTMLElement} counterEl
- * @param {number} maxLength
+ * @returns {() => void} Refresh function.
  */
-export function setupCharCounter(field, counterEl, maxLength) {
-    if (!field || !counterEl) return;
+export function setupCharCounter(field, counterEl) {
+    if (!field || !counterEl) return () => {};
 
     counterEl.setAttribute('aria-live', 'polite');
     counterEl.setAttribute('aria-atomic', 'true');
 
     const update = () => {
+        const maxLength = parseInt(field.getAttribute('maxlength'), 10);
         const used = field.value.length;
-        counterEl.textContent = `${used} / ${maxLength} characters`;
-        counterEl.classList.toggle('char-counter--full', used >= maxLength);
+        counterEl.textContent = Number.isFinite(maxLength)
+            ? `${used} / ${maxLength} characters`
+            : `${used} characters`;
+        counterEl.classList.toggle('char-counter--full', Number.isFinite(maxLength) && used >= maxLength);
     };
 
     field.addEventListener('input', update);
     update();
+    return update;
 }

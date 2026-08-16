@@ -5,7 +5,13 @@
 
 import { Router } from "express";
 import { authenticateApiRequest } from "@/auth/jwt.middleware";
-import { apiLimiter, promptWriteLimiter, requireFirestore } from "@/config/middleware";
+import {
+  apiLimiter,
+  personaWriteLimiter,
+  aiPromptWriteLimiter,
+  checkinWriteLimiter,
+  requireFirestore,
+} from "@/config/middleware";
 import botRouter from "./bot.router";
 import commandsRouter from "./commands.router";
 import autoChatRouter from "./autoChat.router";
@@ -27,11 +33,11 @@ router.use("/bot", botRouter);
 router.use("/commands", commandsRouter);
 router.use("/auto-chat", autoChatRouter);
 router.use("/auth", authStatusRouter);
-router.use("/custom-commands", promptWriteLimiter, customCommandsRouter);
-router.use("/checkin", promptWriteLimiter, checkinRouter);
-router.use("/timers", promptWriteLimiter, timersRouter);
+router.use("/custom-commands", aiPromptWriteLimiter, customCommandsRouter);
+router.use("/checkin", checkinWriteLimiter, checkinRouter);
+router.use("/timers", aiPromptWriteLimiter, timersRouter);
 // Routers whose writes run an LLM safety check get a tighter, per-user limit on
 // top of apiLimiter. It must sit after authenticateApiRequest so req.user exists.
-router.use("/persona", promptWriteLimiter, personaRouter);
+router.use("/persona", personaWriteLimiter, personaRouter);
 
 export default router;

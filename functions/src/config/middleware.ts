@@ -117,22 +117,57 @@ export const apiLimiter = rateLimit({
 });
 
 /**
- * Rate limiter for writes that trigger an LLM safety check.
+ * Builds a rate limiter for writes that trigger an LLM safety check.
  *
  * Applied on top of apiLimiter. Keyed by authenticated user rather than IP: the
  * cost being limited is per-account LLM spend, and several broadcasters can
- * share an IP. Reads are exempt — only the screened writes are expensive.
+ * share an IP.
+ *
+ * `willScreen` decides which requests count against the budget. It must be
+ * conservative — returning true when unsure — since the cost of over-counting is
+ * a slower save, and the cost of under-counting is unmetered LLM spend.
+ *
+ * @param willScreen - True when this request may run a safety check.
  */
-export const promptWriteLimiter = rateLimit({
-  windowMs: RATE_LIMIT.PROMPT_WRITE.windowMs,
-  max: RATE_LIMIT.PROMPT_WRITE.max,
-  message: "Too many personality or prompt saves. Please wait a moment and try again.",
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req: Request) => req.method === "GET" || req.method === "DELETE",
-  keyGenerator: (req: Request) =>
-    (req as Request & { user?: { userId?: string } }).user?.userId ||
-    ipKeyGenerator(req.ip || ""),
+function createPromptWriteLimiter(willScreen: (req: Request) => boolean) {
+  return rateLimit({
+    windowMs: RATE_LIMIT.PROMPT_WRITE.windowMs,
+    max: RATE_LIMIT.PROMPT_WRITE.max,
+    message: "Too many personality or prompt saves. Please wait a moment and try again.",
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req: Request) => !willScreen(req),
+    keyGenerator: (req: Request) =>
+      (req as Request & { user?: { userId?: string } }).user?.userId ||
+      ipKeyGenerator(req.ip || ""),
+  });
+}
+
+/** Every persona POST screens; GET and DELETE never do. */
+export const personaWriteLimiter = createPromptWriteLimiter(
+  (req) => req.method === "POST",
+);
+
+/**
+ * Custom commands and timers only screen prompt-typed text, so plain "text"
+ * commands and metadata-only edits must not consume the budget — a streamer
+ * adding a batch of ordinary commands should never hit this.
+ *
+ * POST is fully determinable: type defaults to "text", so only an explicit
+ * "prompt" screens. PUT cannot see the stored type, so it counts any request
+ * that changes the text or sets the type, and skips pure metadata edits.
+ */
+export const aiPromptWriteLimiter = createPromptWriteLimiter((req) => {
+  if (req.method !== "POST" && req.method !== "PUT") return false;
+  const body = (req.body || {}) as { type?: unknown; response?: unknown };
+  if (req.method === "POST") return body.type === "prompt";
+  return body.type === "prompt" || body.response !== undefined;
+});
+
+/** Check-in only screens when AI mode is on and a prompt was supplied. */
+export const checkinWriteLimiter = createPromptWriteLimiter((req) => {
+  const body = (req.body || {}) as { useAi?: unknown; aiPrompt?: unknown };
+  return Boolean(body.useAi) && typeof body.aiPrompt === "string" && body.aiPrompt.trim() !== "";
 });
 
 /**
