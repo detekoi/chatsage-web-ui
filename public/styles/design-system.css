@@ -1942,3 +1942,163 @@ textarea.form-control {
     margin: 0;
 }
 
+/* =====================================================
+   FLOATING SUPPORT WIDGET & KO-FI MODAL
+   ===================================================== */
+.floating-support {
+    position: fixed;
+    bottom: clamp(1rem, 2.5vw, 1.5rem);
+    left: clamp(1rem, 2.5vw, 1.5rem);
+    z-index: 90;
+}
+
+.floating-support__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #794bc4;
+    color: #ffffff;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: var(--wc-radius-card);
+    font-family: var(--wc-font-name);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 var(--wc-ghost-shadow);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.floating-support__btn:hover,
+.floating-support__btn:focus-visible {
+    background: #683bb5;
+    color: #ffffff;
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 1px var(--wc-ghost-soft);
+}
+
+.floating-support__btn:focus-visible {
+    outline: 2px solid var(--wc-accent);
+    outline-offset: 2px;
+}
+
+.floating-support__btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--wc-ghost-shadow);
+}
+
+.floating-support__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ko-fi Modal Dialog */
+dialog.kofi-sheet {
+    border: 1px solid var(--wc-border);
+    border-radius: var(--wc-radius-card);
+    background: var(--wc-surface-1);
+    color: var(--wc-text-1);
+    padding: 0;
+    width: calc(100% - 2rem);
+    max-width: 480px;
+    margin: auto;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+dialog.kofi-sheet:not([open]) {
+    display: none !important;
+}
+
+dialog.kofi-sheet::backdrop {
+    background-color: var(--wc-overlay);
+    backdrop-filter: blur(2px);
+}
+
+.kofi-sheet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--wc-surface-2);
+    border-bottom: 1px solid var(--wc-border);
+}
+
+.kofi-sheet__title {
+    font-family: var(--wc-font-name);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wc-text-1);
+    margin: 0;
+}
+
+.kofi-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--wc-border);
+    border-radius: var(--wc-radius-card);
+    color: var(--wc-text-2);
+    padding: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.kofi-icon-btn:hover,
+.kofi-icon-btn:focus-visible {
+    background: var(--wc-surface-1);
+    border-color: var(--wc-border-strong);
+    color: var(--wc-text-1);
+}
+
+.kofi-icon-btn:focus-visible {
+    outline: 2px solid var(--wc-accent);
+    outline-offset: 2px;
+}
+
+.kofi-sheet__body {
+    padding: 16px 18px;
+}
+
+.kofi-embed-container {
+    width: 100%;
+    height: 520px;
+    max-height: 65vh;
+    border: 1px solid var(--wc-border);
+    background: var(--wc-surface-2);
+    border-radius: var(--wc-radius-field);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.kofi-embed-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.kofi-fallback {
+    text-align: center;
+    font-family: var(--wc-font-mono);
+    font-size: 11px;
+    color: var(--wc-text-3);
+}
+
+.kofi-direct-link {
+    color: var(--wc-accent);
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.kofi-direct-link:hover,
+.kofi-direct-link:focus-visible {
+    color: var(--wc-accent-dim);
+}
+
+
