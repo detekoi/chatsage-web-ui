@@ -31,8 +31,12 @@ const DEFAULT_LANGUAGE = 'en';
 let currentLanguage = DEFAULT_LANGUAGE;
 let translations = {};
 
-// Guards against out-of-order responses when someone clicks through several languages quickly:
-// only the most recently requested load is allowed to apply.
+// Guards against out-of-order responses when someone clicks through several languages quickly.
+// The token is claimed inside loadTranslations() and re-checked once the fetches resolve, because
+// that function mutates module state (translations, currentLanguage, localStorage, <html lang>,
+// the URL). Checking only in the caller let a slow earlier response overwrite all of that after a
+// faster later one had already rendered — leaving the page showing one language and every
+// subsequent t() call returning another.
 let loadToken = 0;
 
 // --- sanitizer (defense-in-depth for translation values containing inline HTML) ---
@@ -97,6 +101,7 @@ function mergeTranslations(base, override) {
 }
 
 async function loadTranslations(lang) {
+    const token = ++loadToken;
     try {
         const pageId = getCurrentPageId();
         const [commonResponse, pageResponse] = await Promise.all([
@@ -112,6 +117,10 @@ async function loadTranslations(lang) {
         let commonTranslations = {};
         if (commonResponse.ok) commonTranslations = await commonResponse.json();
         else console.error(`Failed to load shared translations for ${lang}`);
+
+        // A newer selection was made while these fetches were in flight — discard this result
+        // rather than clobbering the newer language's state.
+        if (token !== loadToken) return false;
 
         translations = mergeTranslations(commonTranslations, pageTranslations);
         currentLanguage = lang;
@@ -133,7 +142,11 @@ async function loadTranslations(lang) {
         return true;
     } catch (error) {
         console.error('Error loading translations:', error);
-        if (lang !== DEFAULT_LANGUAGE) await loadTranslations(DEFAULT_LANGUAGE);
+        // Only fall back if this is still the current request; otherwise a stale failure would
+        // yank a newer, successful language back to English.
+        if (lang !== DEFAULT_LANGUAGE && token === loadToken) {
+            return await loadTranslations(DEFAULT_LANGUAGE);
+        }
         return false;
     }
 }
@@ -289,13 +302,13 @@ function createLanguageSelector() {
         btn.textContent = LANGUAGE_ICONS[code] || code;
         btn.addEventListener('click', async () => {
             setOpen(false);
-            const token = ++loadToken;
             const loaded = await loadTranslations(code);
-            if (token !== loadToken) return; // a newer selection already won
+            // Superseded by a newer selection: that click owns the render, so do nothing here.
+            if (!loaded && currentLanguage !== code) return;
 
-            // loadTranslations() falls back to English when the catalog cannot be fetched, so
-            // report what is actually on screen rather than what was asked for.
-            const applied = loaded ? code : DEFAULT_LANGUAGE;
+            // currentLanguage is what actually got applied — loadTranslations() falls back to
+            // English when a catalog cannot be fetched, so report that rather than what was asked.
+            const applied = currentLanguage;
             translatePage();
             updateLanguageSelector(applied);
             currentBtn.focus(); // collapsing the grid would otherwise drop focus to <body>
@@ -360,13 +373,12 @@ export async function initI18n() {
     }
 
     createLanguageSelector();
-    const token = ++loadToken;
     const loaded = await loadTranslations(targetLang);
-    const applied = loaded ? targetLang : DEFAULT_LANGUAGE;
-    if (token === loadToken) {
-        updateLanguageSelector(applied);
-        translatePage();
-    }
+    if (!loaded && currentLanguage !== targetLang) return currentLanguage;
+
+    const applied = currentLanguage;
+    updateLanguageSelector(applied);
+    translatePage();
     return applied;
 }
 
