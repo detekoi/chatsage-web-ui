@@ -1,6 +1,7 @@
 import { apiGet, apiPost, apiDelete, getToken, AuthError } from '../api.js';
 import { showActionToast, setSuccessMessage, setupCharCounter } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
+import { t } from '../i18n.js';
 
 let loadingEl;
 let textareaEl;
@@ -117,7 +118,7 @@ async function savePersona() {
     if (DEV_MODE) {
         await mockDelay(500);
         saveBtnEl.disabled = false;
-        setSuccessMessage(msgEl, 'Personality saved (dev mode).');
+        setSuccessMessage(msgEl, t('toast.personaSavedDev', {}, 'Personality saved (dev mode).'));
         msgEl.className = 'text-success mt-2 mb-0';
         return;
     }
@@ -127,19 +128,19 @@ async function savePersona() {
         const data = await res.json();
 
         if (data.success) {
-            setSuccessMessage(msgEl, data.message || 'Personality saved.');
+            setSuccessMessage(msgEl, data.message || t('toast.personaSaved', {}, 'Personality saved.'));
             msgEl.className = 'text-success mt-2 mb-0';
-            showActionToast('Bot personality saved.', 'success');
+            showActionToast(t('toast.botPersonaSaved', {}, 'Bot personality saved.'), 'success');
             resetBtnEl.style.display = '';
         } else {
             // The rejection reason belongs on screen, and the text stays in the
             // box so the user can edit it rather than retype it.
-            setMessage(data.message || 'Failed to save personality.', 'danger');
+            setMessage(data.message || t('toast.personaSaveFailed', {}, 'Failed to save personality.'), 'danger');
         }
     } catch (e) {
         if (e instanceof AuthError) return;
         console.error('Error saving persona:', e);
-        setMessage('Failed to save personality. Try again.', 'danger');
+        setMessage(t('toast.personaSaveRetry', {}, 'Failed to save personality. Try again.'), 'danger');
     } finally {
         saveBtnEl.disabled = false;
     }
@@ -147,12 +148,12 @@ async function savePersona() {
 
 async function resetPersona() {
     if (!getToken()) return;
-    if (!window.confirm('Reset the bot to its default personality? This action deletes your custom text.')) {
+    if (!window.confirm(t('confirm.resetPersona', {}, 'Reset the bot to its default personality? This action deletes your custom text.'))) {
         return;
     }
 
     resetBtnEl.disabled = true;
-    setMessage('Resetting…');
+    setMessage(t('status.resetting', {}, 'Resetting…'));
 
     if (DEV_MODE) {
         await mockDelay(300);
@@ -166,15 +167,15 @@ async function resetPersona() {
         const data = await res.json();
 
         if (data.success) {
-            showActionToast('Personality reset to default.', 'success');
+            showActionToast(t('toast.personaReset', {}, 'Personality reset to default.'), 'success');
             await loadPersona();
         } else {
-            setMessage(data.message || 'Failed to reset personality.', 'danger');
+            setMessage(data.message || t('toast.personaResetFailed', {}, 'Failed to reset personality.'), 'danger');
         }
     } catch (e) {
         if (e instanceof AuthError) return;
         console.error('Error resetting persona:', e);
-        setMessage('Failed to reset personality. Try again.', 'danger');
+        setMessage(t('toast.personaResetRetry', {}, 'Failed to reset personality. Try again.'), 'danger');
     } finally {
         resetBtnEl.disabled = false;
     }

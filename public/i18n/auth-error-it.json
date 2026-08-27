@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "Nessuna modifica apportata. Puoi accedere quando vuoi.",
+    "canceledReadout": "Annullato",
+    "canceledTitle": "WildcatSage - Accesso annullato",
+    "canceledTitleHeading": "Accesso annullato",
+    "defaultMessage": "Si è verificato un errore durante l'autenticazione con Twitch.",
+    "errorLabel": "Errore",
+    "readout": "Autenticazione fallita",
+    "returnToSignIn": "Torna all'accesso",
+    "title": "Autenticazione fallita",
+    "tryAgain": "Riprova",
+    "twitchError": "Twitch ha restituito un errore durante l'autenticazione.",
+    "unknownCode": "sconosciuto",
+    "unspecifiedCode": "non specificato",
+    "unspecifiedError": "Si è verificato un errore non specificato."
+  }
+}

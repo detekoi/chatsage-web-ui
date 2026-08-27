@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Avvio della sessione",
+    "failedReadout": "Non riuscito",
+    "failedTitle": "Accesso non riuscito",
+    "missingData": "Dati di autenticazione mancanti dalla risposta di Twitch. Accedi di nuovo.",
+    "noSession": "Nessuna sessione",
+    "openingDashboard": "Apertura della tua dashboard.",
+    "pleaseWait": "Attendi per favore.",
+    "progressLabel": "Avanzamento accesso",
+    "sessionEstablished": "Sessione stabilita",
+    "signInFailed": "Accesso non riuscito.",
+    "stepAuthorized": "Twitch autorizzato",
+    "stepRedirect": "Apertura dashboard",
+    "stepToken": "Token di sessione salvato",
+    "title": "Accesso in corso",
+    "working": "Elaborazione in corso",
+    "welcome": "Benvenuto, {user}",
+    "signInAgain": "{message} Accedi di nuovo."
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Создание сессии",
+    "failedReadout": "Ошибка",
+    "failedTitle": "Ошибка входа",
+    "missingData": "В ответе от Twitch отсутствуют данные аутентификации. Войдите снова.",
+    "noSession": "Нет сессии",
+    "openingDashboard": "Открываем панель управления.",
+    "pleaseWait": "Пожалуйста, подождите.",
+    "progressLabel": "Прогресс входа",
+    "sessionEstablished": "Сессия установлена",
+    "signInFailed": "Ошибка входа.",
+    "stepAuthorized": "Twitch авторизован",
+    "stepRedirect": "Открытие панели управления",
+    "stepToken": "Токен сессии сохранён",
+    "title": "Выполняется вход",
+    "working": "Обработка",
+    "welcome": "Добро пожаловать, {user}",
+    "signInAgain": "{message} Войдите снова."
+  }
+}

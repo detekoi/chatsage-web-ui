@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "Nenhuma alteração foi feita. Você pode entrar quando estiver pronto.",
+    "canceledReadout": "Cancelado",
+    "canceledTitle": "WildcatSage - Login cancelado",
+    "canceledTitleHeading": "Login cancelado",
+    "defaultMessage": "Ocorreu um erro durante a autenticação da Twitch.",
+    "errorLabel": "Erro",
+    "readout": "Falha na autenticação",
+    "returnToSignIn": "Voltar ao login",
+    "title": "Falha na autenticação",
+    "tryAgain": "Tentar novamente",
+    "twitchError": "A Twitch retornou um erro durante a autenticação.",
+    "unknownCode": "desconhecido",
+    "unspecifiedCode": "não especificado",
+    "unspecifiedError": "Ocorreu um erro não especificado."
+  }
+}

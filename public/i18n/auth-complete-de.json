@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Sitzung wird aufgebaut",
+    "failedReadout": "Fehlgeschlagen",
+    "failedTitle": "Anmeldung fehlgeschlagen",
+    "missingData": "In der Twitch-Antwort fehlen Authentifizierungsdaten. Melde dich erneut an.",
+    "noSession": "Keine Sitzung",
+    "openingDashboard": "Dein Dashboard wird geöffnet.",
+    "pleaseWait": "Bitte warten.",
+    "progressLabel": "Anmeldefortschritt",
+    "sessionEstablished": "Sitzung aufgebaut",
+    "signInFailed": "Anmeldung fehlgeschlagen.",
+    "stepAuthorized": "Twitch autorisiert",
+    "stepRedirect": "Dashboard wird geöffnet",
+    "stepToken": "Sitzungs-Token gespeichert",
+    "title": "Du wirst angemeldet",
+    "working": "In Bearbeitung",
+    "welcome": "Willkommen, {user}",
+    "signInAgain": "{message} Melde dich erneut an."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "Aucune modification n'a été effectuée. Vous pouvez vous connecter dès que vous le souhaitez.",
+    "canceledReadout": "Annulé",
+    "canceledTitle": "WildcatSage - Connexion annulée",
+    "canceledTitleHeading": "Connexion annulée",
+    "defaultMessage": "Une erreur est survenue lors de l'authentification Twitch.",
+    "errorLabel": "Erreur",
+    "readout": "Échec de l'authentification",
+    "returnToSignIn": "Retour à la page de connexion",
+    "title": "Échec de l'authentification",
+    "tryAgain": "Réessayer",
+    "twitchError": "Twitch a renvoyé une erreur lors de l'authentification.",
+    "unknownCode": "inconnu",
+    "unspecifiedCode": "non spécifié",
+    "unspecifiedError": "Une erreur non spécifiée est survenue."
+  }
+}

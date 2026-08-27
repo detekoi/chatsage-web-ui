@@ -1,0 +1,16 @@
+{
+  "page": {
+    "accessLabel": "アクセス",
+    "accessNote": "アクセスは招待制です。未承認チャンネルではアクセス拒否メッセージが表示されます。利用申請は<a class=\"wc-link wc-link--underline\" href=\"https://parfaitfair.com/#contact\" target=\"_blank\" rel=\"noopener\">こちらの問い合わせフォーム</a>からどうぞ。",
+    "botManagement": "Bot管理",
+    "closeSupport": "サポートダイアログを閉じる",
+    "featureList": "Botの追加・削除 • コマンドと配信イベントの設定 • 自動チャットと広告アラートの管理 • カスタムコマンド、定期メッセージ、デイリーチェックインの管理",
+    "inviteOnly": "招待制",
+    "kofiFallback": "Ko-fi.com を新しいタブで開く",
+    "lede": "Twitchチャンネル用のBotを管理します。",
+    "signInWithTwitch": "Twitchでログイン",
+    "supportMe": "サポートする",
+    "supportRegion": "サポート",
+    "supportTitle": "parfaitfair をサポート"
+  }
+}

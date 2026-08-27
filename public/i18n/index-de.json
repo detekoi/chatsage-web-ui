@@ -1,0 +1,16 @@
+{
+  "page": {
+    "accessLabel": "Zugriff",
+    "accessNote": "Der Zugriff ist nur auf Einladung möglich. Für nicht freigeschaltete Kanäle wird der Zugriff verweigert. Wenn du Zugriff anfragen möchtest, nutze <a class=\"wc-link wc-link--underline\" href=\"https://parfaitfair.com/#contact\" target=\"_blank\" rel=\"noopener\">dieses Kontaktformular</a>.",
+    "botManagement": "Bot-Verwaltung",
+    "closeSupport": "Support-Dialog schließen",
+    "featureList": "Bot hinzufügen oder entfernen • Befehle und Stream-Events konfigurieren • Auto-Chat und Werbehinweise verwalten • Eigene Befehle, zeitgesteuerte Nachrichten und täglichen Check-in verwalten",
+    "inviteOnly": "Nur auf Einladung",
+    "kofiFallback": "In neuem Tab auf Ko-fi.com öffnen",
+    "lede": "Verwalte den Bot für deinen Twitch-Kanal.",
+    "signInWithTwitch": "Mit Twitch anmelden",
+    "supportMe": "Unterstütze mich",
+    "supportRegion": "Unterstützung",
+    "supportTitle": "parfaitfair unterstützen"
+  }
+}

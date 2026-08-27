@@ -1,3 +1,4 @@
+import { t, formatNumber } from './i18n.js';
 /* global lucide */
 
 let actionToastTimer = null;
@@ -147,8 +148,8 @@ export function setupCharCounter(field, counterEl) {
         const maxLength = parseInt(field.getAttribute('maxlength'), 10);
         const used = field.value.length;
         counterEl.textContent = Number.isFinite(maxLength)
-            ? `${used} / ${maxLength} characters`
-            : `${used} characters`;
+            ? t('label.charCounterMax', { used: formatNumber(used), max: formatNumber(maxLength) }, `${used} / ${maxLength} characters`)
+            : t('label.charCounter', { used: formatNumber(used) }, `${used} characters`);
         counterEl.classList.toggle('char-counter--full', Number.isFinite(maxLength) && used >= maxLength);
     };
 

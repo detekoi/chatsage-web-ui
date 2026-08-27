@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-manual>
 
 <head>
     <meta charset="UTF-8">
@@ -88,41 +88,41 @@
 </head>
 
 <body>
-    <a href="#main-content" class="wc-skip-link">Skip to main content</a>
+    <a href="#main-content" class="wc-skip-link" data-i18n="common.skipToContent">Skip to main content</a>
     <p id="action-message" class="alert alert-info action-toast" role="status" aria-live="polite" style="display:none;"></p>
 
     <header class="wc-appbar">
         <div class="wc-appbar-brand">
             <span class="wc-lockup">Wildcat<b>Sage</b></span>
             <span class="wc-sep"></span>
-            <span class="wc-appbar-page">Dashboard</span>
+            <span class="wc-appbar-page" data-i18n="page.appbarPage">Dashboard</span>
         </div>
         <div class="wc-appbar-actions">
             <button class="wc-iconbtn" type="button" id="darkModeToggle" title="Toggle dark mode"
-                aria-label="Toggle dark mode">
+                aria-label="Toggle dark mode" data-i18n-title="common.toggleDarkMode" data-i18n-aria-label="common.toggleDarkMode">
                 <i data-lucide="moon" aria-hidden="true"></i>
             </button>
-            <a href="#" id="logout-link" class="wc-chipbtn wc-chipbtn--danger">Sign out</a>
+            <a href="#" id="logout-link" class="wc-chipbtn wc-chipbtn--danger" data-i18n="page.signOut">Sign out</a>
         </div>
     </header>
 
     <div class="wc-page-head">
-        <h1>Channel dashboard</h1>
-        <p>Commands, stream events, and automated chat for your channel.</p>
+        <h1 data-i18n="page.title">Channel dashboard</h1>
+        <p data-i18n="page.subtitle">Commands, stream events, and automated chat for your channel.</p>
     </div>
 
     <main id="main-content" class="wc-main">
         <dl class="wc-stats">
             <div class="wc-stat">
-                <dt>Bot</dt>
-                <dd><span id="bot-status">Loading…</span></dd>
+                <dt data-i18n="page.statBot">Bot</dt>
+                <dd><span id="bot-status" data-i18n="common.loading">Loading…</span></dd>
             </div>
             <div class="wc-stat">
-                <dt>Channel</dt>
+                <dt data-i18n="page.statChannel">Channel</dt>
                 <dd><span id="channel-name-status">your channel</span></dd>
             </div>
             <div class="wc-stat">
-                <dt>Signed in as</dt>
+                <dt data-i18n="page.statSignedInAs">Signed in as</dt>
                 <dd><span id="twitch-username">loading…</span></dd>
             </div>
         </dl>
@@ -134,13 +134,13 @@
         <div id="commands-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Command Settings</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.commandsTitle">Command Settings</h2>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted mb-3">Enable or disable commands for your channel:</p>
+                    <p class="text-muted mb-3" data-i18n="page.commandsHelp">Enable or disable commands for your channel:</p>
                     <div id="commands-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading command settings"><span></span></div>
-                        <p class="wc-loading-label">Loading command settings…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading command settings" data-i18n-aria-label="page.loading.commandsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.commands">Loading command settings…</p>
                     </div>
                     <div id="commands-list" class="list-group" style="min-height: 200px;"></div>
                 </div>
@@ -151,36 +151,36 @@
         <div id="stream-events-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Stream Events</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.streamEventsTitle">Stream Events</h2>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        AI messages for stream events.
+                        <span data-i18n="page.streamEventsHelp">AI messages for stream events.</span>
                     </p>
                     <div id="stream-events-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading stream event settings"><span></span></div>
-                        <p class="wc-loading-label">Loading stream event settings…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading stream event settings" data-i18n-aria-label="page.loading.streamEventsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.streamEvents">Loading stream event settings…</p>
                     </div>
                     <div class="stream-events-form">
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-greetings-toggle" checked>
-                            <label class="form-check-label" for="stream-greetings-toggle">Stream Greetings</label>
-                            <small class="d-block text-muted">Send a greeting when the stream starts and a farewell when the stream ends.</small>
+                            <label class="form-check-label" for="stream-greetings-toggle" data-i18n="page.streamEvents.greetingsLabel">Stream Greetings</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.greetingsHelp">Send a greeting when the stream starts and a farewell when the stream ends.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-follows-toggle" checked>
-                            <label class="form-check-label" for="stream-follows-toggle">New Followers</label>
-                            <small class="d-block text-muted">Send a greeting when a user follows the channel.</small>
+                            <label class="form-check-label" for="stream-follows-toggle" data-i18n="page.streamEvents.followsLabel">New Followers</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.followsHelp">Send a greeting when a user follows the channel.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-subscriptions-toggle" checked>
-                            <label class="form-check-label" for="stream-subscriptions-toggle">Subscriptions</label>
-                            <small class="d-block text-muted">Send a greeting for new subscriptions.</small>
+                            <label class="form-check-label" for="stream-subscriptions-toggle" data-i18n="page.streamEvents.subscriptionsLabel">Subscriptions</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.subscriptionsHelp">Send a greeting for new subscriptions.</small>
                         </div>
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="stream-raids-toggle" checked>
-                            <label class="form-check-label" for="stream-raids-toggle">Raids</label>
-                            <small class="d-block text-muted">Send a greeting when another channel raids the stream.</small>
+                            <label class="form-check-label" for="stream-raids-toggle" data-i18n="page.streamEvents.raidsLabel">Raids</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.raidsHelp">Send a greeting when another channel raids the stream.</small>
                         </div>
                         <p id="stream-events-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
@@ -192,32 +192,32 @@
         <div id="auto-chat-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Auto-Chat Settings</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.autoChatTitle">Auto-Chat Settings</h2>
                 </div>
                 <div class="card-body">
                     <div id="auto-chat-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading auto-chat settings"><span></span></div>
-                        <p class="wc-loading-label">Loading auto-chat settings…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading auto-chat settings" data-i18n-aria-label="page.loading.autoChatAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.autoChat">Loading auto-chat settings…</p>
                     </div>
                     <div class="auto-chat-form">
                         <div class="mb-3">
-                            <label for="auto-mode" class="form-label">Mode:</label>
+                            <label for="auto-mode" class="form-label" data-i18n="page.autoChat.mode">Mode:</label>
                             <select id="auto-mode" class="form-select">
-                                <option value="off">Off</option>
-                                <option value="low">Low</option>
-                                <option value="medium">Medium</option>
-                                <option value="high">High</option>
+                                <option value="off" data-i18n="page.autoChat.modeOff">Off</option>
+                                <option value="low" data-i18n="page.autoChat.modeLow">Low</option>
+                                <option value="medium" data-i18n="page.autoChat.modeMedium">Medium</option>
+                                <option value="high" data-i18n="page.autoChat.modeHigh">High</option>
                             </select>
                         </div>
 
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
-                                <label class="form-check-label" for="auto-cat-facts">Facts/Tips</label>
+                                <label class="form-check-label" for="auto-cat-facts" data-i18n="page.autoChat.facts">Facts/Tips</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="auto-cat-questions" checked>
-                                <label class="form-check-label" for="auto-cat-questions">Questions</label>
+                                <label class="form-check-label" for="auto-cat-questions" data-i18n="page.autoChat.questions">Questions</label>
                             </div>
                         </div>
                         <p id="auto-chat-message" class="text-muted" role="status" aria-live="polite"></p>
@@ -230,17 +230,17 @@
         <div id="ad-notifications-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Ad Notifications</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.adNotificationsTitle">Ad Notifications</h2>
                 </div>
                 <div class="card-body">
                     <div id="ad-notifications-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading ad notification settings"><span></span></div>
-                        <p class="wc-loading-label">Loading ad notification settings…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading ad notification settings" data-i18n-aria-label="page.loading.adNotificationsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.adNotifications">Loading ad notification settings…</p>
                     </div>
                     <div class="ad-notifications-form">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="auto-cat-ads">
-                            <label class="form-check-label" for="auto-cat-ads">Enable ad break notifications</label>
+                            <label class="form-check-label" for="auto-cat-ads" data-i18n="page.adNotifications.enable">Enable ad break notifications</label>
                         </div>
                         <p id="ad-notifications-message" class="text-muted mt-2" role="status" aria-live="polite"></p>
                     </div>
@@ -252,26 +252,26 @@
         <div id="custom-commands-section">
             <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h2 class="wc-card-title mb-0">Custom Commands</h2>
-                    <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> Add</button>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.customCommandsTitle">Custom Commands</h2>
+                    <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
                 </div>
                 <div class="card-body">
                     <!-- Inline Add/Edit Form (hidden by default) -->
                     <div id="custom-cmd-form" class="cmd-form" style="display:none;">
                         <div class="mb-2">
-                            <label for="custom-cmd-name" class="form-label">Command Name</label>
+                            <label for="custom-cmd-name" class="form-label" data-i18n="page.customCommands.nameLabel">Command Name</label>
                             <div class="input-group">
                                 <span class="input-group-text"
                                     style="border-radius:0;background:var(--bg-tertiary);border-color:var(--border-color);color:var(--text-muted);">!</span>
-                                <input type="text" class="form-control" id="custom-cmd-name" placeholder="hello"
+                                <input type="text" class="form-control" id="custom-cmd-name" placeholder="hello" data-i18n-placeholder="page.customCommands.namePlaceholder"
                                     maxlength="25" autocomplete="off">
                             </div>
                         </div>
                         <div class="mb-2">
                             <label for="custom-cmd-response" class="form-label"
-                                id="custom-cmd-response-label">Response</label>
+                                id="custom-cmd-response-label" data-i18n="page.customCommands.responseLabel">Response</label>
                             <input type="text" class="form-control" id="custom-cmd-response"
-                                placeholder="Hello $(user), welcome to $(channel)!" maxlength="500" autocomplete="off">
+                                placeholder="Hello $(user), welcome to $(channel)!" data-i18n-placeholder="page.customCommands.responsePlaceholder" maxlength="500" autocomplete="off">
                             <div class="variable-chips">
                                 <span class="var-chip" data-var="$(user)">$(user)</span>
                                 <span class="var-chip" data-var="$(channel)">$(channel)</span>
@@ -286,39 +286,38 @@
                         <div class="mb-2">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="custom-cmd-type-toggle">
-                                <label class="form-check-label" for="custom-cmd-type-toggle">AI Mode <small
-                                        class="text-muted">(generates a unique response each time)</small></label>
+                                <label class="form-check-label" for="custom-cmd-type-toggle" data-i18n="page.customCommands.aiMode">AI Mode <small class="text-muted">(generates a unique response each time)</small></label>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col">
-                                <label for="custom-cmd-permission" class="form-label">Permission</label>
+                                <label for="custom-cmd-permission" class="form-label" data-i18n="page.customCommands.permission">Permission</label>
                                 <select id="custom-cmd-permission" class="form-select">
-                                    <option value="everyone">Everyone</option>
-                                    <option value="subscriber">Subscriber</option>
-                                    <option value="vip">VIP</option>
-                                    <option value="moderator">Moderator</option>
-                                    <option value="broadcaster">Broadcaster</option>
+                                    <option value="everyone" data-i18n="page.permission.everyone">Everyone</option>
+                                    <option value="subscriber" data-i18n="page.permission.subscriber">Subscriber</option>
+                                    <option value="vip" data-i18n="page.permission.vip">VIP</option>
+                                    <option value="moderator" data-i18n="page.permission.moderator">Moderator</option>
+                                    <option value="broadcaster" data-i18n="page.permission.broadcaster">Broadcaster</option>
                                 </select>
                             </div>
                             <div class="col">
-                                <label for="custom-cmd-cooldown" class="form-label">Cooldown (sec)</label>
+                                <label for="custom-cmd-cooldown" class="form-label" data-i18n="page.customCommands.cooldown">Cooldown (sec)</label>
                                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="custom-cmd-cooldown" value="5">
                             </div>
                         </div>
                         <div class="d-flex gap-2">
                             <button id="custom-cmd-save-btn" class="btn btn-outline-primary btn-sm"
-                                type="button">Save</button>
+                                type="button" data-i18n="common.save">Save</button>
                             <button id="custom-cmd-cancel-btn" class="btn btn-outline-danger btn-sm"
-                                type="button">Cancel</button>
+                                type="button" data-i18n="common.cancel">Cancel</button>
                         </div>
                         <p id="custom-cmd-form-msg" class="text-muted mt-2 mb-0"></p>
                     </div>
 
                     <!-- Loading spinner -->
                     <div id="custom-cmd-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading custom commands"><span></span></div>
-                        <p class="wc-loading-label">Loading custom commands…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading custom commands" data-i18n-aria-label="page.loading.customCommandsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.customCommands">Loading custom commands…</p>
                     </div>
 
                     <!-- Command list -->
@@ -326,9 +325,8 @@
 
                     <!-- Empty state -->
                     <div id="custom-cmd-empty" class="text-center py-3" style="display:none;">
-                        <p class="text-muted mb-1">No custom commands exist.</p>
-                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Select the <strong>+ Add</strong> button, or
-                            send <code>!command add</code> or <code>!command addai</code> in chat.</p>
+                        <p class="text-muted mb-1" data-i18n="page.customCommands.empty">No custom commands exist.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;" data-i18n="page.customCommands.emptyHint">Select the <strong>+ Add</strong> button, or send <code>!command add</code> or <code>!command addai</code> in chat.</p>
                     </div>
                 </div>
             </div>
@@ -338,25 +336,25 @@
         <div id="timers-section">
             <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h2 class="wc-card-title mb-0">Timed Messages</h2>
-                    <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> Add</button>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.timersTitle">Timed Messages</h2>
+                    <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Post scheduled messages when the stream is live and chat is active.
+                        <span data-i18n="page.timers.help">Post scheduled messages when the stream is live and chat is active.</span>
                     </p>
 
                     <!-- Inline Add/Edit Form (hidden by default) -->
                     <div id="timer-form" class="cmd-form" style="display:none;">
                         <div class="mb-2">
-                            <label for="timer-name" class="form-label">Timer Name</label>
-                            <input type="text" class="form-control" id="timer-name" placeholder="discord"
+                            <label for="timer-name" class="form-label" data-i18n="page.timers.nameLabel">Timer Name</label>
+                            <input type="text" class="form-control" id="timer-name" placeholder="discord" data-i18n-placeholder="page.timers.namePlaceholder"
                                 maxlength="25" autocomplete="off">
                         </div>
                         <div class="mb-2">
-                            <label for="timer-response" class="form-label" id="timer-response-label">Message</label>
+                            <label for="timer-response" class="form-label" id="timer-response-label" data-i18n="page.timers.messageLabel">Message</label>
                             <input type="text" class="form-control" id="timer-response"
-                                placeholder="Enjoying the stream? Join the Discord!" maxlength="500" autocomplete="off">
+                                placeholder="Enjoying the stream? Join the Discord!" data-i18n-placeholder="page.timers.messagePlaceholder" maxlength="500" autocomplete="off">
                             <div class="variable-chips timer-chips">
                                 <span class="var-chip" data-var="$(channel)">$(channel)</span>
                                 <span class="var-chip" data-var="$(game)">$(game)</span>
@@ -368,34 +366,33 @@
                         <div class="mb-2">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="timer-type-toggle">
-                                <label class="form-check-label" for="timer-type-toggle">AI Mode <small
-                                        class="text-muted">(generates a unique message each time)</small></label>
+                                <label class="form-check-label" for="timer-type-toggle" data-i18n="page.timers.aiMode">AI Mode <small class="text-muted">(generates a unique message each time)</small></label>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col">
-                                <label for="timer-interval" class="form-label">Interval (min)</label>
+                                <label for="timer-interval" class="form-label" data-i18n="page.timers.interval">Interval (min)</label>
                                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="timer-interval" value="15">
                             </div>
                             <div class="col">
-                                <label for="timer-lines" class="form-label">Min chat lines</label>
+                                <label for="timer-lines" class="form-label" data-i18n="page.timers.minLines">Min chat lines</label>
                                 <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="timer-lines" value="5">
-                                <small class="text-muted">The timer sends a message only after this number of chat messages.</small>
+                                <small class="text-muted" data-i18n="page.timers.minLinesHelp">The timer sends a message only after this number of chat messages.</small>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
                             <button id="timer-save-btn" class="btn btn-outline-primary btn-sm"
-                                type="button">Save</button>
+                                type="button" data-i18n="common.save">Save</button>
                             <button id="timer-cancel-btn" class="btn btn-outline-danger btn-sm"
-                                type="button">Cancel</button>
+                                type="button" data-i18n="common.cancel">Cancel</button>
                         </div>
                         <p id="timer-form-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
 
                     <!-- Loading spinner -->
                     <div id="timer-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading timed messages"><span></span></div>
-                        <p class="wc-loading-label">Loading timed messages…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading timed messages" data-i18n-aria-label="page.loading.timersAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.timers">Loading timed messages…</p>
                     </div>
 
                     <!-- Timer list -->
@@ -403,9 +400,8 @@
 
                     <!-- Empty state -->
                     <div id="timer-empty" class="text-center py-3" style="display:none;">
-                        <p class="text-muted mb-1">No timed messages exist.</p>
-                        <p class="text-muted mb-0" style="font-size:0.8125rem;">Select the <strong>+ Add</strong> button, or
-                            send <code>!timer add</code> or <code>!timer addai</code> in chat.</p>
+                        <p class="text-muted mb-1" data-i18n="page.timers.empty">No timed messages exist.</p>
+                        <p class="text-muted mb-0" style="font-size:0.8125rem;" data-i18n="page.timers.emptyHint">Select the <strong>+ Add</strong> button, or send <code>!timer add</code> or <code>!timer addai</code> in chat.</p>
                     </div>
                 </div>
             </div>
@@ -415,23 +411,21 @@
         <div id="persona-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Bot Personality</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.personaTitle">Bot Personality</h2>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Shape how the bot speaks in your channel, including tone, humor, and style.
-                        Edit the text below, or keep the default personality.
-                        The server checks saved text automatically against Twitch rules.
+                        <span data-i18n="page.persona.help">Shape how the bot speaks in your channel, including tone, humor, and style. Edit the text below, or keep the default personality. The server checks saved text automatically against Twitch rules.</span>
                     </p>
 
                     <div id="persona-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading personality settings"><span></span></div>
-                        <p class="wc-loading-label">Loading personality…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading personality settings" data-i18n-aria-label="page.loading.personaAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.persona">Loading personality…</p>
                     </div>
 
                     <div class="persona-form">
                         <div class="mb-2">
-                            <label for="persona-instructions" class="form-label">Personality instructions</label>
+                            <label for="persona-instructions" class="form-label" data-i18n="page.persona.instructionsLabel">Personality instructions</label>
                             <textarea class="form-control" id="persona-instructions" rows="12"
                                 spellcheck="true" aria-describedby="persona-counter persona-msg"></textarea>
                             <p id="persona-counter" class="text-muted mt-1 mb-0" style="font-size:0.75rem;" aria-live="polite" aria-atomic="true"></p>
@@ -439,19 +433,19 @@
 
                         <details class="mb-3">
                             <summary style="font-size:0.8125rem; cursor:pointer;">
-                                Rules that always apply
+                                <span data-i18n="page.persona.rulesSummary">Rules that always apply</span>
                             </summary>
                             <p class="text-muted mt-2 mb-1" style="font-size:0.75rem;">
-                                These rules apply to all channels. The instructions above cannot override these rules.
+                                <span data-i18n="page.persona.rulesNote">These rules apply to all channels. The instructions above cannot override these rules.</span>
                             </p>
                             <pre id="persona-core" class="text-muted mb-0"
                                 style="font-size:0.75rem; white-space:pre-wrap; overflow-x:auto;"></pre>
                         </details>
 
                         <div class="d-flex align-items-center gap-2 mt-2">
-                            <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button" style="min-height:32px; min-width:60px; padding:6px 14px;">Save</button>
+                            <button id="persona-save-btn" class="btn btn-outline-primary btn-sm" type="button" style="min-height:32px; min-width:60px; padding:6px 14px;" data-i18n="common.save">Save</button>
                             <button id="persona-reset-btn" class="btn btn-outline-danger btn-sm" type="button" style="min-height:32px; min-width:60px; padding:6px 14px;">
-                                Reset to default
+                                <span data-i18n="page.persona.resetToDefault">Reset to default</span>
                             </button>
                         </div>
                         <p id="persona-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
@@ -463,34 +457,33 @@
         <div id="checkin-section">
             <div class="card wc-card">
                 <div class="card-header">
-                    <h2 class="wc-card-title mb-0">Daily Check-In</h2>
+                    <h2 class="wc-card-title mb-0" data-i18n="page.checkinTitle">Daily Check-In</h2>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
-                        Viewers redeem a Channel Point reward to check in daily.
-                        <em>This feature requires Twitch Affiliate or Partner status.</em>
+                        <span data-i18n="page.checkin.help">Viewers redeem a Channel Point reward to check in daily. <em>This feature requires Twitch Affiliate or Partner status.</em></span>
                     </p>
 
                     <div id="checkin-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading check-in settings"><span></span></div>
-                        <p class="wc-loading-label">Loading check-in settings…</p>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading check-in settings" data-i18n-aria-label="page.loading.checkinAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.checkin">Loading check-in settings…</p>
                     </div>
 
                     <div class="checkin-form">
                         <div class="form-check form-switch mb-3">
                             <input class="form-check-input" type="checkbox" id="checkin-enabled">
-                            <label class="form-check-label" for="checkin-enabled">Enable Daily Check-In</label>
+                            <label class="form-check-label" for="checkin-enabled" data-i18n="page.checkin.enable">Enable Daily Check-In</label>
                         </div>
 
                         <div id="checkin-config-fields" style="display:none;">
                             <div class="row mb-2">
                                 <div class="col-8">
-                                    <label for="checkin-title" class="form-label">Reward Title</label>
+                                    <label for="checkin-title" class="form-label" data-i18n="page.checkin.rewardTitle">Reward Title</label>
                                     <input type="text" class="form-control" id="checkin-title" value="Daily Check-In"
                                         maxlength="45" autocomplete="off">
                                 </div>
                                 <div class="col-4">
-                                    <label for="checkin-cost" class="form-label">Cost</label>
+                                    <label for="checkin-cost" class="form-label" data-i18n="page.checkin.cost">Cost</label>
                                     <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" id="checkin-cost" value="100">
                                 </div>
                             </div>
@@ -498,15 +491,14 @@
                             <div class="mb-2">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="checkin-ai-toggle">
-                                    <label class="form-check-label" for="checkin-ai-toggle">AI Mode <small
-                                            class="text-muted">(generates a unique message each time)</small></label>
+                                    <label class="form-check-label" for="checkin-ai-toggle" data-i18n="page.checkin.aiMode">AI Mode <small class="text-muted">(generates a unique message each time)</small></label>
                                 </div>
                             </div>
 
                             <div class="mb-2" id="checkin-response-group">
-                                <label for="checkin-response" class="form-label">Response Template</label>
+                                <label for="checkin-response" class="form-label" data-i18n="page.checkin.responseTemplate">Response Template</label>
                                 <input type="text" class="form-control" id="checkin-response"
-                                    placeholder="$(user) checked in! Day #$(checkin_count) 🎉" maxlength="500"
+                                    placeholder="$(user) checked in! Day #$(checkin_count) 🎉" data-i18n-placeholder="page.checkin.responsePlaceholder" maxlength="500"
                                     autocomplete="off">
                                 <div class="variable-chips checkin-chips">
                                     <span class="var-chip" data-var="$(user)">$(user)</span>
@@ -516,9 +508,9 @@
                             </div>
 
                             <div class="mb-2" id="checkin-ai-prompt-group" style="display:none;">
-                                <label for="checkin-ai-prompt" class="form-label">AI Prompt</label>
+                                <label for="checkin-ai-prompt" class="form-label" data-i18n="page.checkin.aiPrompt">AI Prompt</label>
                                 <input type="text" class="form-control" id="checkin-ai-prompt"
-                                    placeholder="Write a short congratulation message for $(user) on their $(checkin_count) daily check-in."
+                                    placeholder="Write a short congratulation message for $(user) on their $(checkin_count) daily check-in." data-i18n-placeholder="page.checkin.aiPromptPlaceholder"
                                     maxlength="500" autocomplete="off">
                                 <div class="variable-chips checkin-ai-chips">
                                     <span class="var-chip" data-var="$(user)">$(user)</span>
@@ -528,9 +520,9 @@
                             </div>
                         </div>
 
-                        <button id="checkin-save-btn" class="btn btn-outline-primary btn-sm" type="button">Save</button>
+                        <button id="checkin-save-btn" class="btn btn-outline-primary btn-sm" type="button" data-i18n="common.save">Save</button>
                         <button id="checkin-delete-btn" class="btn btn-outline-danger btn-sm ms-2" type="button"
-                            style="display:none;">Delete Reward</button>
+                            style="display:none;" data-i18n="page.checkin.deleteReward">Delete Reward</button>
                         <p id="checkin-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>
@@ -542,27 +534,26 @@
                 <!-- Channel service: a once-a-year action, kept beside the
                      status readouts it changes rather than in the header. -->
                 <section class="wc-aside-card">
-                    <header><h2 class="wc-card-title mb-0">Channel service</h2></header>
+                    <header><h2 class="wc-card-title mb-0" data-i18n="page.aside.channelService">Channel service</h2></header>
                     <div class="wc-aside-body">
-                        <span class="wc-aside-headline">Bot in your channel</span>
+                        <span class="wc-aside-headline" data-i18n="page.aside.botInChannel">Bot in your channel</span>
                         <button id="add-bot-btn" class="wc-btn wc-btn--aside" style="display:none;"
-                            type="button">Add bot to my channel</button>
+                            type="button" data-i18n="page.aside.addBot">Add bot to my channel</button>
                         <button id="remove-bot-btn" class="wc-btn wc-btn--aside wc-btn--danger" style="display:none;"
-                            type="button">Remove bot from my channel</button>
-                        <p class="wc-aside-note">If you remove the bot, the bot stops posting in your channel. Your
-                            settings remain saved. You can add the bot again at any time.</p>
+                            type="button" data-i18n="page.aside.removeBot">Remove bot from my channel</button>
+                        <p class="wc-aside-note" data-i18n="page.aside.removeNote">If you remove the bot, the bot stops posting in your channel. Your settings remain saved. You can add the bot again at any time.</p>
                     </div>
                 </section>
 
                 <section class="wc-aside-card">
-                    <header><h2 class="wc-card-title mb-0">Quick links</h2></header>
+                    <header><h2 class="wc-card-title mb-0" data-i18n="page.aside.quickLinks">Quick links</h2></header>
                     <div class="wc-aside-body">
                         <div class="wc-links">
                             <a class="wc-link wc-link--muted" href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener">
-                                <i data-lucide="book" aria-hidden="true"></i>Documentation
+                                <i data-lucide="book" aria-hidden="true"></i><span data-i18n="common.documentation">Documentation</span>
                             </a>
                             <a class="wc-link wc-link--muted" href="https://wildcat.chat" target="_blank" rel="noopener">
-                                <i data-lucide="external-link" aria-hidden="true"></i>Wildcat Chat
+                                <i data-lucide="external-link" aria-hidden="true"></i><span>Wildcat Chat</span>
                             </a>
                         </div>
                     </div>

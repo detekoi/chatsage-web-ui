@@ -1,0 +1,16 @@
+{
+  "page": {
+    "accessLabel": "Acesso",
+    "accessNote": "O acesso é apenas por convite. A interface mostra uma mensagem de acesso negado para canais não aprovados. Se quiser solicitar acesso, use <a class=\"wc-link wc-link--underline\" href=\"https://parfaitfair.com/#contact\" target=\"_blank\" rel=\"noopener\">este formulário de contato</a>.",
+    "botManagement": "Gerenciamento do bot",
+    "closeSupport": "Fechar janela de apoio",
+    "featureList": "Adicione ou remova o bot • Configure comandos e eventos de stream • Gerencie o auto-chat e alertas de anúncios • Gerencie comandos personalizados, mensagens programadas e check-in diário",
+    "inviteOnly": "Apenas por convite",
+    "kofiFallback": "Abrir em nova aba no Ko-fi.com",
+    "lede": "Gerencie o bot do seu canal na Twitch.",
+    "signInWithTwitch": "Entrar com a Twitch",
+    "supportMe": "Apoie-me",
+    "supportRegion": "Apoio",
+    "supportTitle": "Apoiar parfaitfair"
+  }
+}

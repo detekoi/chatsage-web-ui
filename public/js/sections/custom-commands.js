@@ -2,6 +2,7 @@ import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockCustomCommands, mockDelay } from '../dev-mocks.js';
 import { deleteItem } from '../crud-helpers.js';
+import { t } from '../i18n.js';
 
 let customCmdLoadingEl;
 let customCmdListEl;
@@ -39,10 +40,10 @@ export function initCustomCommands() {
     // Toggle label when AI mode changes
     customCmdTypeToggleEl.addEventListener('change', () => {
         if (customCmdTypeToggleEl.checked) {
-            customCmdResponseLabelEl.textContent = 'AI Prompt';
+            customCmdResponseLabelEl.textContent = t('page.customCommands.aiPromptLabel', {}, 'AI Prompt');
             customCmdResponseEl.placeholder = 'Write a greeting for $(user) in one sentence.';
         } else {
-            customCmdResponseLabelEl.textContent = 'Response';
+            customCmdResponseLabelEl.textContent = t('page.customCommands.responseLabel', {}, 'Response');
             customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
         }
     });
@@ -126,7 +127,7 @@ function renderCustomCommandsList(commands) {
         if (cmd.cooldownMs && cmd.cooldownMs > 0) {
             const cooldown = document.createElement('span');
             cooldown.className = 'cmd-cooldown';
-            cooldown.textContent = `${cmd.cooldownMs / 1000}s cooldown`;
+            cooldown.textContent = t('label.cooldownSeconds', { seconds: cmd.cooldownMs / 1000 }, `${cmd.cooldownMs / 1000}s cooldown`);
             meta.appendChild(cooldown);
         }
 
@@ -135,7 +136,7 @@ function renderCustomCommandsList(commands) {
             aiBadge.className = 'cmd-badge';
             aiBadge.style.background = 'var(--bs-purple, #7c3aed)';
             aiBadge.style.color = '#fff';
-            aiBadge.textContent = 'AI';
+            aiBadge.textContent = 'AI'; // product term, not translated
             meta.appendChild(aiBadge);
         }
 
@@ -150,7 +151,7 @@ function renderCustomCommandsList(commands) {
         const editBtn = document.createElement('button');
         editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
-        editBtn.textContent = 'Edit';
+        editBtn.textContent = t('common.edit', {}, 'Edit');
         editBtn.setAttribute('aria-label', `Edit command !${cmd.name}`);
         editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openEditForm(cmd));
@@ -158,7 +159,7 @@ function renderCustomCommandsList(commands) {
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
-        deleteBtn.textContent = 'Del';
+        deleteBtn.textContent = t('common.delete', {}, 'Del');
         deleteBtn.setAttribute('aria-label', `Delete command !${cmd.name}`);
         deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteCustomCommand(cmd.name));
@@ -181,7 +182,7 @@ function openAddForm() {
     customCmdPermissionEl.value = 'everyone';
     customCmdCooldownEl.value = '5';
     customCmdTypeToggleEl.checked = false;
-    customCmdResponseLabelEl.textContent = 'Response';
+    customCmdResponseLabelEl.textContent = t('page.customCommands.responseLabel', {}, 'Response');
     customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
     customCmdFormMsgEl.textContent = '';
     customCmdFormEl.style.display = 'block';
@@ -218,30 +219,30 @@ async function saveCustomCommand() {
     const cooldownSec = parseInt(customCmdCooldownEl.value, 10);
 
     if (!commandName) {
-        customCmdFormMsgEl.textContent = 'Command name is required.';
+        customCmdFormMsgEl.textContent = t('validation.commandNameRequired', {}, 'Command name is required.');
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
     if (!response) {
-        customCmdFormMsgEl.textContent = 'Response text is required.';
+        customCmdFormMsgEl.textContent = t('validation.responseRequired', {}, 'Response text is required.');
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
     if (isNaN(cooldownSec) || cooldownSec < 0 || cooldownSec > 300) {
-        customCmdFormMsgEl.textContent = 'Cooldown must be between 0 and 300 seconds.';
+        customCmdFormMsgEl.textContent = t('validation.cooldownRange', {}, 'Cooldown must be between 0 and 300 seconds.');
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
-    customCmdFormMsgEl.textContent = 'Saving…';
+    customCmdFormMsgEl.textContent = t('status.saving', {}, 'Saving…');
     customCmdFormMsgEl.style.color = 'var(--text-muted)';
     customCmdSaveBtn.disabled = true;
 
     if (DEV_MODE) {
         await mockDelay(500);
-        customCmdFormMsgEl.textContent = `Command !${commandName} saved (dev mode).`;
+        customCmdFormMsgEl.textContent = t('toast.commandSavedDev', { name: commandName }, `Command !${commandName} saved (dev mode).`);
         customCmdFormMsgEl.style.color = '#4ecdc4';
         customCmdSaveBtn.disabled = false;
         closeForm();
@@ -277,7 +278,7 @@ async function saveCustomCommand() {
         }
     } catch (error) {
         console.error('Error saving custom command:', error);
-        customCmdFormMsgEl.textContent = 'Failed to save command.';
+        customCmdFormMsgEl.textContent = t('toast.commandSaveFailed', {}, 'Failed to save command.');
         customCmdFormMsgEl.style.color = 'var(--danger-primary)';
     } finally {
         customCmdSaveBtn.disabled = false;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-manual>
 
 <head>
     <meta charset="UTF-8">
@@ -100,39 +100,45 @@
 </head>
 
 <body>
-    <a href="#main-content" class="wc-skip-link">Skip to main content</a>
+    <a href="#main-content" class="wc-skip-link" data-i18n="common.skipToContent">Skip to main content</a>
     <main id="main-content" class="wc-stage wc-stage--transient">
         <div class="wc-frame">
             <div class="wc-frame-head">
                 <span class="wc-lockup">Wildcat<b>Sage</b></span>
                 <span class="wc-readout wc-readout--accent" id="status-readout">
-                    <span class="wc-dot"></span>Working
+                    <span class="wc-dot"></span><span data-i18n="page.working">Working</span>
                 </span>
             </div>
 
             <div class="wc-frame-body">
-                <h1 class="wc-title wc-title--sm" id="auth-title">Signing you in</h1>
-                <p class="wc-lede" id="auth-message" role="status" aria-live="polite">Please wait.</p>
+                <h1 class="wc-title wc-title--sm" id="auth-title" data-i18n="page.title">Signing you in</h1>
+                <p class="wc-lede" id="auth-message" role="status" aria-live="polite" data-i18n="page.pleaseWait">Please wait.</p>
 
                 <ol class="wc-steps" id="auth-steps">
-                    <li class="wc-step" data-step="authorized">Twitch authorized</li>
-                    <li class="wc-step" data-step="token">Session token stored</li>
-                    <li class="wc-step" data-step="redirect">Opening dashboard</li>
+                    <li class="wc-step" data-step="authorized" data-i18n="page.stepAuthorized">Twitch authorized</li>
+                    <li class="wc-step" data-step="token" data-i18n="page.stepToken">Session token stored</li>
+                    <li class="wc-step" data-step="redirect" data-i18n="page.stepRedirect">Opening dashboard</li>
                 </ol>
 
                 <!-- Determinate: driven by the three real steps below, not a timer. -->
-                <div class="wc-bar" id="auth-bar" role="progressbar" aria-label="Sign-in progress"><span></span></div>
+                <div class="wc-bar" id="auth-bar" role="progressbar" aria-label="Sign-in progress" data-i18n-aria-label="page.progressLabel"><span></span></div>
             </div>
 
             <div class="wc-frame-foot">
-                <span id="session-state">Establishing session</span>
+                <span id="session-state" data-i18n="page.establishingSession">Establishing session</span>
                 <span>bot.wildcat.chat</span>
             </div>
         </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script type="module">
+        import { t, initI18n } from '/js/i18n.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Catalog first: this script writes final status text, so translating afterwards
+            // would overwrite it with the markup defaults.
+            await initI18n();
+
             const messageEl = document.getElementById('auth-message');
             const titleEl = document.getElementById('auth-title');
             const readoutEl = document.getElementById('status-readout');
@@ -160,12 +166,12 @@
             }
 
             function fail(message) {
-                titleEl.textContent = 'Sign-in failed';
+                titleEl.textContent = t('page.failedTitle', {}, 'Sign-in failed');
                 messageEl.textContent = message;
-                readoutEl.innerHTML = 'Failed';
+                readoutEl.textContent = t('page.failedReadout', {}, 'Failed');
                 readoutEl.classList.remove('wc-readout--accent');
                 readoutEl.classList.add('wc-readout--danger');
-                sessionStateEl.textContent = 'No session';
+                sessionStateEl.textContent = t('page.noSession', {}, 'No session');
                 barEl.remove();
             }
 
@@ -205,7 +211,9 @@
 
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.success || !data.session_token) {
-                    throw new Error(data.message || 'Sign-in failed.');
+                    // data.message is server-authored and still English (see the plan's
+                    // out-of-scope note on the API message catalog).
+                    throw new Error(data.message || t('page.signInFailed', {}, 'Sign-in failed.'));
                 }
                 return data.session_token;
             }
@@ -219,10 +227,10 @@
                 localStorage.setItem('app_session_token', sessionToken);
 
                 markStep('token');
-                sessionStateEl.textContent = 'Session established';
+                sessionStateEl.textContent = t('page.sessionEstablished', {}, 'Session established');
 
-                titleEl.textContent = `Welcome, ${userLogin}`;
-                messageEl.textContent = 'Opening your dashboard.';
+                titleEl.textContent = t('page.welcome', { user: userLogin }, `Welcome, ${userLogin}`);
+                messageEl.textContent = t('page.openingDashboard', {}, 'Opening your dashboard.');
                 markStep('redirect');
 
                 setTimeout(() => {
@@ -240,7 +248,7 @@
                         .then(completeSignIn)
                         .catch((error) => {
                             console.error('Exchange failed:', error);
-                            fail(`${error.message} Sign in again.`);
+                            fail(t('page.signInAgain', { message: error.message }, `${error.message} Sign in again.`));
                             if (!window.location.search.includes('disable_redirect=true') && !window.location.search.includes('dev=true')) {
                                 setTimeout(() => {
                                     window.location.href = 'index.html';
@@ -252,7 +260,7 @@
                 }
             } else {
                 console.error("Missing required parameters:", { userLogin, userId, code: exchangeCode ? 'present' : 'missing' });
-                fail("Authentication data is missing from the Twitch response. Sign in again.");
+                fail(t('page.missingData', {}, 'Authentication data is missing from the Twitch response. Sign in again.'));
                 if (!window.location.search.includes('disable_redirect=true') && !window.location.search.includes('dev=true')) {
                     setTimeout(() => {
                         window.location.href = 'index.html';

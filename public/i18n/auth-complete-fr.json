@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Établissement de la session",
+    "failedReadout": "Échec",
+    "failedTitle": "Échec de la connexion",
+    "missingData": "Données d'authentification manquantes dans la réponse de Twitch. Reconnecte-toi.",
+    "noSession": "Aucune session",
+    "openingDashboard": "Ouverture de ton tableau de bord.",
+    "pleaseWait": "Patiente un instant.",
+    "progressLabel": "Progression de la connexion",
+    "sessionEstablished": "Session établie",
+    "signInFailed": "Échec de la connexion.",
+    "stepAuthorized": "Twitch autorisé",
+    "stepRedirect": "Ouverture du tableau de bord",
+    "stepToken": "Jeton de session enregistré",
+    "title": "Connexion en cours",
+    "working": "En cours",
+    "welcome": "Bienvenue, {user}",
+    "signInAgain": "{message} Reconnecte-toi."
+  }
+}

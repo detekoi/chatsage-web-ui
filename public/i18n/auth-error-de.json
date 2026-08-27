@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "Es wurden keine Änderungen vorgenommen. Du kannst dich anmelden, sobald du bereit bist.",
+    "canceledReadout": "Abgebrochen",
+    "canceledTitle": "WildcatSage - Anmeldung abgebrochen",
+    "canceledTitleHeading": "Anmeldung abgebrochen",
+    "defaultMessage": "Bei der Twitch-Authentifizierung ist ein Fehler aufgetreten.",
+    "errorLabel": "Fehler",
+    "readout": "Auth fehlgeschlagen",
+    "returnToSignIn": "Zurück zur Anmeldung",
+    "title": "Authentifizierung fehlgeschlagen",
+    "tryAgain": "Erneut versuchen",
+    "twitchError": "Twitch hat bei der Authentifizierung einen Fehler gemeldet.",
+    "unknownCode": "unbekannt",
+    "unspecifiedCode": "nicht angegeben",
+    "unspecifiedError": "Ein nicht spezifizierter Fehler ist aufgetreten."
+  }
+}

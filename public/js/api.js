@@ -1,4 +1,5 @@
 import { showActionToast } from './ui.js';
+import { t } from './i18n.js';
 
 // app.wildcat.chat and api.wildcat.chat are two Hosting targets in front of the
 // same webUi function, so this is a host change, not a backend change. Pointing
@@ -46,7 +47,7 @@ export async function apiFetch(method, path, body = null) {
     const token = getToken();
     
     if (!token) {
-        showActionToast("Authentication token missing. Please log in again.", 'danger');
+        showActionToast(t('toast.missingTokenLogin', {}, 'Authentication token missing. Please log in again.'), 'danger');
         throw new AuthError("No authentication token available");
     }
 

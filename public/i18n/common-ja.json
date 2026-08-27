@@ -1,0 +1,21 @@
+{
+  "common": {
+    "add": "追加",
+    "cancel": "キャンセル",
+    "colorTheme": "カラーテーマ",
+    "contactMe": "お問い合わせ",
+    "delete": "削除",
+    "documentation": "ドキュメント",
+    "edit": "編集",
+    "error": "エラー",
+    "loading": "読み込み中…",
+    "requestAccess": "アクセスをリクエスト",
+    "save": "保存",
+    "skipToContent": "メインコンテンツへスキップ",
+    "themeDark": "ダーク",
+    "themeLight": "ライト",
+    "toggleDarkMode": "ダークモード切り替え",
+    "opensInNewTab": "(新しいタブで開く)",
+    "languageSelector": "言語"
+  }
+}

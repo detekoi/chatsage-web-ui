@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Estableciendo sesión",
+    "failedReadout": "Falló",
+    "failedTitle": "Error al iniciar sesión",
+    "missingData": "Faltan datos de autenticación en la respuesta de Twitch. Inicia sesión de nuevo.",
+    "noSession": "Sin sesión",
+    "openingDashboard": "Abriendo tu panel.",
+    "pleaseWait": "Por favor, espera.",
+    "progressLabel": "Progreso de inicio de sesión",
+    "sessionEstablished": "Sesión establecida",
+    "signInFailed": "Error al iniciar sesión.",
+    "stepAuthorized": "Twitch autorizado",
+    "stepRedirect": "Abriendo el panel",
+    "stepToken": "Token de sesión guardado",
+    "title": "Iniciando sesión",
+    "working": "Procesando",
+    "welcome": "Bienvenido, {user}",
+    "signInAgain": "{message} Inicia sesión de nuevo."
+  }
+}

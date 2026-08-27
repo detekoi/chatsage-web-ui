@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "セッションを確立中",
+    "failedReadout": "失敗",
+    "failedTitle": "サインインに失敗しました",
+    "missingData": "Twitchからの応答に認証データがありません。もう一度サインインしてください。",
+    "noSession": "セッションがありません",
+    "openingDashboard": "ダッシュボードを開いています。",
+    "pleaseWait": "少々お待ちください。",
+    "progressLabel": "サインインの進行状況",
+    "sessionEstablished": "セッションが確立されました",
+    "signInFailed": "サインインに失敗しました。",
+    "stepAuthorized": "Twitch認証完了",
+    "stepRedirect": "ダッシュボードを開いています",
+    "stepToken": "セッショントークン保存完了",
+    "title": "サインイン中",
+    "working": "処理中",
+    "welcome": "ようこそ、{user}",
+    "signInAgain": "{message} もう一度サインインしてください。"
+  }
+}
