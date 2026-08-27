@@ -148,7 +148,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
                 statusEl.textContent = successMsg;
                 statusEl.style.color = '#4ecdc4';
             } else {
-                statusEl.textContent = data.message || 'Failed to save settings.';
+                statusEl.textContent = data.message || t('toast.saveSettingsFailed', {}, 'Failed to save settings.');
                 statusEl.style.color = '#ff6b6b';
             }
         }
@@ -171,7 +171,8 @@ async function saveStreamEventsSettings() {
             raids: !!streamRaidsToggleEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, streamEventsMsgEl, 'Stream event settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, streamEventsMsgEl,
+        t('toast.streamEventsSaved', {}, 'Stream event settings saved.'));
 }
 
 async function saveAutoChatSettings() {
@@ -182,7 +183,8 @@ async function saveAutoChatSettings() {
             questions: !!autoCatQuestionsEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, autoMsgEl, 'Auto-chat settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, autoMsgEl,
+        t('toast.autoChatSaved', {}, 'Auto-chat settings saved.'));
 }
 
 async function saveAdNotificationsSettings() {
@@ -191,5 +193,6 @@ async function saveAdNotificationsSettings() {
             ads: !!autoCatAdsEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, adNotificationsMsgEl, 'Ad notification settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, adNotificationsMsgEl,
+        t('toast.adNotificationsSaved', {}, 'Ad notification settings saved.'));
 }

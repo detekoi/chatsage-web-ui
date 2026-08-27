@@ -16,6 +16,7 @@
     "themeLight": "Claro",
     "toggleDarkMode": "Alternar modo oscuro",
     "opensInNewTab": "(se abre en una nueva pestaña)",
-    "languageSelector": "Idioma"
+    "languageSelector": "Idioma",
+    "notAvailable": "No disponible."
   }
 }

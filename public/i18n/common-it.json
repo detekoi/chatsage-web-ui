@@ -16,6 +16,7 @@
     "themeLight": "Chiaro",
     "toggleDarkMode": "Attiva/disattiva modalità scura",
     "opensInNewTab": "(si apre in una nuova scheda)",
-    "languageSelector": "Lingua"
+    "languageSelector": "Lingua",
+    "notAvailable": "Non disponibile."
   }
 }

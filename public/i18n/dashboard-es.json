@@ -53,7 +53,8 @@
       "namePlaceholder": "hola",
       "permission": "Permisos",
       "responseLabel": "Respuesta",
-      "responsePlaceholder": "¡Hola $(user), te damos la bienvenida a $(channel)!"
+      "responsePlaceholder": "¡Hola $(user), te damos la bienvenida a $(channel)!",
+      "aiPromptPlaceholder": "Escribe un saludo para $(user) en una sola frase."
     },
     "customCommandsTitle": "Comandos personalizados",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "Líneas mínimas de chat",
       "minLinesHelp": "El temporizador solo envía un mensaje tras esta cantidad de mensajes de chat.",
       "nameLabel": "Nombre del temporizador",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "Recuerda al chat sobre Discord para el juego actual."
     },
     "timersTitle": "Mensajes programados",
     "title": "Panel del canal"
@@ -129,7 +131,9 @@
     "inactive": "Inactivo",
     "resetting": "Restableciendo…",
     "saving": "Guardando…",
-    "savedDev": "{message} (modo dev)."
+    "savedDev": "{message} (modo dev).",
+    "savedDevShort": "Guardado (modo dev)",
+    "savingSafetyCheck": "Guardando configuración y comprobando seguridad…"
   },
   "toast": {
     "addBotFailed": "Error al añadir el bot al canal.",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item} activado (modo dev).",
     "itemDisabledDev": "{item} desactivado (modo dev).",
     "timerSavedDev": "Temporizador \"{name}\" guardado (modo dev).",
-    "updateFailed": "Error al actualizar {item}."
+    "updateFailed": "Error al actualizar {item}.",
+    "streamEventsSaved": "Ajustes de eventos de stream guardados.",
+    "autoChatSaved": "Ajustes de auto-chat guardados.",
+    "adNotificationsSaved": "Ajustes de avisos de anuncios guardados.",
+    "checkinSavedShort": "¡Ajustes de check-in guardados!",
+    "rewardDeletedDev": "Recompensa eliminada (modo dev)",
+    "rewardDeleted": "Recompensa eliminada",
+    "rewardDeleteFailed": "Error al eliminar la recompensa.",
+    "personaLoadFailed": "Error al cargar los ajustes de personalidad.",
+    "personaFallback": "Mostrando la personalidad por defecto. El bot aún no ha publicado los ajustes de personalidad."
   },
   "validation": {
     "checkinCost": "El costo debe estar entre 1 y 999999 puntos.",
@@ -180,7 +193,9 @@
     "messageRequired": "El texto del mensaje es obligatorio.",
     "minLinesRange": "El mínimo de líneas de chat debe estar entre 0 y 100.",
     "responseRequired": "El texto de la respuesta es obligatorio.",
-    "timerNameRequired": "El nombre del temporizador es obligatorio."
+    "timerNameRequired": "El nombre del temporizador es obligatorio.",
+    "personaEmpty": "Las instrucciones de personalidad no pueden estar vacías. Selecciona \"Restablecer por defecto\" para borrar las instrucciones.",
+    "personaTooLong": "Las instrucciones de personalidad deben tener {max} caracteres o menos."
   },
   "label": {
     "charCounter": "{used} caracteres",
@@ -188,6 +203,13 @@
     "chatLines": "{count} líneas de chat",
     "commandNamed": "Comando !{name}",
     "cooldownSeconds": "{seconds}s de cooldown",
-    "everyMinutes": "cada {minutes}m"
+    "everyMinutes": "cada {minutes}m",
+    "enableTimer": "Activar temporizador {name}",
+    "enableTimerTitle": "Activar o desactivar este mensaje programado",
+    "enableCommand": "Activar comando !{name}",
+    "editCommand": "Editar comando !{name}",
+    "deleteCommand": "Eliminar comando !{name}",
+    "editTimer": "Editar temporizador {name}",
+    "deleteTimer": "Eliminar temporizador {name}"
   }
 }

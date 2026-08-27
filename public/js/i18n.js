@@ -31,6 +31,10 @@ const DEFAULT_LANGUAGE = 'en';
 let currentLanguage = DEFAULT_LANGUAGE;
 let translations = {};
 
+// Guards against out-of-order responses when someone clicks through several languages quickly:
+// only the most recently requested load is allowed to apply.
+let loadToken = 0;
+
 // --- sanitizer (defense-in-depth for translation values containing inline HTML) ---
 
 const SAFE_TAGS = new Set(['a', 'br', 'code', 'em', 'i', 'small', 'span', 'strong']);
@@ -285,11 +289,17 @@ function createLanguageSelector() {
         btn.textContent = LANGUAGE_ICONS[code] || code;
         btn.addEventListener('click', async () => {
             setOpen(false);
-            await loadTranslations(code);
+            const token = ++loadToken;
+            const loaded = await loadTranslations(code);
+            if (token !== loadToken) return; // a newer selection already won
+
+            // loadTranslations() falls back to English when the catalog cannot be fetched, so
+            // report what is actually on screen rather than what was asked for.
+            const applied = loaded ? code : DEFAULT_LANGUAGE;
             translatePage();
-            updateLanguageSelector(code);
+            updateLanguageSelector(applied);
             currentBtn.focus(); // collapsing the grid would otherwise drop focus to <body>
-            status.textContent = AVAILABLE_LANGUAGES[code];
+            status.textContent = AVAILABLE_LANGUAGES[applied] || applied;
         });
         grid.appendChild(btn);
     }
@@ -350,10 +360,14 @@ export async function initI18n() {
     }
 
     createLanguageSelector();
-    await loadTranslations(targetLang);
-    updateLanguageSelector(targetLang);
-    translatePage();
-    return targetLang;
+    const token = ++loadToken;
+    const loaded = await loadTranslations(targetLang);
+    const applied = loaded ? targetLang : DEFAULT_LANGUAGE;
+    if (token === loadToken) {
+        updateLanguageSelector(applied);
+        translatePage();
+    }
+    return applied;
 }
 
 // Pages that are pure markup can just include this module. Pages that render DOM in JS set

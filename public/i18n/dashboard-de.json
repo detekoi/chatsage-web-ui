@@ -53,7 +53,8 @@
       "namePlaceholder": "hallo",
       "permission": "Berechtigung",
       "responseLabel": "Antwort",
-      "responsePlaceholder": "Hallo $(user), willkommen bei $(channel)!"
+      "responsePlaceholder": "Hallo $(user), willkommen bei $(channel)!",
+      "aiPromptPlaceholder": "Schreibe eine Begrüßung für $(user) in einem Satz."
     },
     "customCommandsTitle": "Eigene Befehle",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "Min. Chatzeilen",
       "minLinesHelp": "Der Timer sendet eine Nachricht erst nach dieser Anzahl von Chatnachrichten.",
       "nameLabel": "Timer-Name",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "Erinnere den Chat an Discord für das aktuelle Spiel."
     },
     "timersTitle": "Zeitgesteuerte Nachrichten",
     "title": "Kanal-Dashboard"
@@ -129,7 +131,9 @@
     "inactive": "Inaktiv",
     "resetting": "Wird zurückgesetzt…",
     "saving": "Wird gespeichert…",
-    "savedDev": "{message} (Dev-Modus)."
+    "savedDev": "{message} (Dev-Modus).",
+    "savedDevShort": "Gespeichert (Dev-Modus)",
+    "savingSafetyCheck": "Einstellungen werden gespeichert und Sicherheitsprüfung läuft…"
   },
   "toast": {
     "addBotFailed": "Bot konnte nicht zum Kanal hinzugefügt werden.",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item} aktiviert (Dev-Modus).",
     "itemDisabledDev": "{item} deaktiviert (Dev-Modus).",
     "timerSavedDev": "Timer \"{name}\" gespeichert (Dev-Modus).",
-    "updateFailed": "{item} konnte nicht aktualisiert werden."
+    "updateFailed": "{item} konnte nicht aktualisiert werden.",
+    "streamEventsSaved": "Stream-Event-Einstellungen gespeichert.",
+    "autoChatSaved": "Auto-Chat-Einstellungen gespeichert.",
+    "adNotificationsSaved": "Einstellungen für Werbebenachrichtigungen gespeichert.",
+    "checkinSavedShort": "Check-in-Einstellungen gespeichert!",
+    "rewardDeletedDev": "Belohnung gelöscht (Dev-Modus)",
+    "rewardDeleted": "Belohnung gelöscht",
+    "rewardDeleteFailed": "Belohnung konnte nicht gelöscht werden.",
+    "personaLoadFailed": "Persönlichkeitseinstellungen konnten nicht geladen werden.",
+    "personaFallback": "Standard-Persönlichkeit wird angezeigt. Der Bot hat noch keine Persönlichkeitseinstellungen veröffentlicht."
   },
   "validation": {
     "checkinCost": "Kosten müssen zwischen 1 und 999999 Punkten liegen.",
@@ -180,7 +193,9 @@
     "messageRequired": "Nachrichtentext ist erforderlich.",
     "minLinesRange": "Mindestanzahl an Chatzeilen muss zwischen 0 und 100 liegen.",
     "responseRequired": "Antworttext ist erforderlich.",
-    "timerNameRequired": "Timer-Name ist erforderlich."
+    "timerNameRequired": "Timer-Name ist erforderlich.",
+    "personaEmpty": "Persönlichkeitsanweisungen dürfen nicht leer sein. Wähle \"Auf Standard zurücksetzen\", um Anweisungen zurückzusetzen.",
+    "personaTooLong": "Persönlichkeitsanweisungen dürfen maximal {max} Zeichen lang sein."
   },
   "label": {
     "charCounter": "{used} Zeichen",
@@ -188,6 +203,13 @@
     "chatLines": "{count} Chatzeilen",
     "commandNamed": "Befehl !{name}",
     "cooldownSeconds": "{seconds}s Cooldown",
-    "everyMinutes": "alle {minutes}m"
+    "everyMinutes": "alle {minutes}m",
+    "enableTimer": "Timer {name} aktivieren",
+    "enableTimerTitle": "Diese zeitgesteuerte Nachricht aktivieren oder deaktivieren",
+    "enableCommand": "Befehl !{name} aktivieren",
+    "editCommand": "Befehl !{name} bearbeiten",
+    "deleteCommand": "Befehl !{name} löschen",
+    "editTimer": "Timer {name} bearbeiten",
+    "deleteTimer": "Timer {name} löschen"
   }
 }

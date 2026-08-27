@@ -16,6 +16,7 @@
     "themeLight": "Light",
     "toggleDarkMode": "Toggle dark mode",
     "opensInNewTab": "(opens in a new tab)",
-    "languageSelector": "Language"
+    "languageSelector": "Language",
+    "notAvailable": "Not available."
   }
 }

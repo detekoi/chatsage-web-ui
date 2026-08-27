@@ -16,6 +16,7 @@
     "themeLight": "Clair",
     "toggleDarkMode": "Basculer le mode sombre",
     "opensInNewTab": "(s'ouvre dans un nouvel onglet)",
-    "languageSelector": "Langue"
+    "languageSelector": "Langue",
+    "notAvailable": "Indisponible."
   }
 }

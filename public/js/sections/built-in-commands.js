@@ -72,7 +72,7 @@ function renderCommandsList(commands) {
         checkbox.checked = cmd.enabled;
         checkbox.dataset.command = cmd.primaryName;
         checkbox.role = 'switch';
-        checkbox.setAttribute('aria-label', `Enable command !${cmd.name}`);
+        checkbox.setAttribute('aria-label', t('label.enableCommand', { name: cmd.name }, `Enable command !${cmd.name}`));
 
         checkbox.addEventListener('change', async function () {
             await toggleCommand(cmd.primaryName, this.checked, this);

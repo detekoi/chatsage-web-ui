@@ -41,10 +41,10 @@ export function initCustomCommands() {
     customCmdTypeToggleEl.addEventListener('change', () => {
         if (customCmdTypeToggleEl.checked) {
             customCmdResponseLabelEl.textContent = t('page.customCommands.aiPromptLabel', {}, 'AI Prompt');
-            customCmdResponseEl.placeholder = 'Write a greeting for $(user) in one sentence.';
+            customCmdResponseEl.placeholder = t('page.customCommands.aiPromptPlaceholder', {}, 'Write a greeting for $(user) in one sentence.');
         } else {
             customCmdResponseLabelEl.textContent = t('page.customCommands.responseLabel', {}, 'Response');
-            customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
+            customCmdResponseEl.placeholder = t('page.customCommands.responsePlaceholder', {}, 'Hello $(user), welcome to $(channel)!');
         }
     });
 
@@ -152,7 +152,7 @@ function renderCustomCommandsList(commands) {
         editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
-        editBtn.setAttribute('aria-label', `Edit command !${cmd.name}`);
+        editBtn.setAttribute('aria-label', t('label.editCommand', { name: cmd.name }, `Edit command !${cmd.name}`));
         editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openEditForm(cmd));
 
@@ -160,7 +160,7 @@ function renderCustomCommandsList(commands) {
         deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = t('common.delete', {}, 'Del');
-        deleteBtn.setAttribute('aria-label', `Delete command !${cmd.name}`);
+        deleteBtn.setAttribute('aria-label', t('label.deleteCommand', { name: cmd.name }, `Delete command !${cmd.name}`));
         deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteCustomCommand(cmd.name));
 
@@ -183,7 +183,7 @@ function openAddForm() {
     customCmdCooldownEl.value = '5';
     customCmdTypeToggleEl.checked = false;
     customCmdResponseLabelEl.textContent = t('page.customCommands.responseLabel', {}, 'Response');
-    customCmdResponseEl.placeholder = 'Hello $(user), welcome to $(channel)!';
+    customCmdResponseEl.placeholder = t('page.customCommands.responsePlaceholder', {}, 'Hello $(user), welcome to $(channel)!');
     customCmdFormMsgEl.textContent = '';
     customCmdFormEl.style.display = 'block';
     customCmdNameEl.focus();
@@ -197,10 +197,12 @@ function openEditForm(cmd) {
     customCmdPermissionEl.value = cmd.permission || 'everyone';
     customCmdCooldownEl.value = String((cmd.cooldownMs || 5000) / 1000);
     customCmdTypeToggleEl.checked = cmd.type === 'prompt';
-    customCmdResponseLabelEl.textContent = cmd.type === 'prompt' ? 'AI Prompt' : 'Response';
+    customCmdResponseLabelEl.textContent = cmd.type === 'prompt'
+        ? t('page.customCommands.aiPromptLabel', {}, 'AI Prompt')
+        : t('page.customCommands.responseLabel', {}, 'Response');
     customCmdResponseEl.placeholder = cmd.type === 'prompt'
-        ? 'Write a greeting for $(user) in one sentence.'
-        : 'Hello $(user), welcome to $(channel)!';
+        ? t('page.customCommands.aiPromptPlaceholder', {}, 'Write a greeting for $(user) in one sentence.')
+        : t('page.customCommands.responsePlaceholder', {}, 'Hello $(user), welcome to $(channel)!');
     customCmdFormMsgEl.textContent = '';
     customCmdFormEl.style.display = 'block';
     customCmdResponseEl.focus();
@@ -273,7 +275,7 @@ async function saveCustomCommand() {
             closeForm();
             await loadCustomCommands();
         } else {
-            customCmdFormMsgEl.textContent = data.message || 'Failed to save command.';
+            customCmdFormMsgEl.textContent = data.message || t('toast.commandSaveFailed', {}, 'Failed to save command.');
             customCmdFormMsgEl.style.color = 'var(--danger-primary)';
         }
     } catch (error) {

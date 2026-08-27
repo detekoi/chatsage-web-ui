@@ -16,6 +16,7 @@
     "themeLight": "Светлая",
     "toggleDarkMode": "Переключить тёмную тему",
     "opensInNewTab": "(откроется в новой вкладке)",
-    "languageSelector": "Язык"
+    "languageSelector": "Язык",
+    "notAvailable": "Недоступно."
   }
 }

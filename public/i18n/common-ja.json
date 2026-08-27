@@ -16,6 +16,7 @@
     "themeLight": "ライト",
     "toggleDarkMode": "ダークモード切り替え",
     "opensInNewTab": "(新しいタブで開く)",
-    "languageSelector": "言語"
+    "languageSelector": "言語",
+    "notAvailable": "利用できません。"
   }
 }

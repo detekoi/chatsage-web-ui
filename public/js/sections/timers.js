@@ -41,10 +41,10 @@ export function initTimers() {
     timerTypeToggleEl.addEventListener('change', () => {
         if (timerTypeToggleEl.checked) {
             timerResponseLabelEl.textContent = t('page.timers.aiPromptLabel', {}, 'AI Prompt');
-            timerResponseEl.placeholder = 'Remind chat about Discord for the current game.';
+            timerResponseEl.placeholder = t('page.timers.aiPromptPlaceholder', {}, 'Remind chat about Discord for the current game.');
         } else {
             timerResponseLabelEl.textContent = t('page.timers.messageLabel', {}, 'Message');
-            timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+            timerResponseEl.placeholder = t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
         }
     });
 
@@ -156,8 +156,8 @@ function renderTimersList(timers) {
         checkbox.id = `timer-enabled-${timer.name}`;
         checkbox.checked = timer.enabled !== false;
         checkbox.role = 'switch';
-        checkbox.setAttribute('aria-label', `Enable timer ${timer.name}`);
-        checkbox.title = 'Enable or disable this timed message';
+        checkbox.setAttribute('aria-label', t('label.enableTimer', { name: timer.name }, `Enable timer ${timer.name}`));
+        checkbox.title = t('label.enableTimerTitle', {}, 'Enable or disable this timed message');
         checkbox.style.cssText = 'width: 44px; height: 24px; min-height: 24px; flex-shrink: 0;';
         checkbox.addEventListener('change', async function () {
             await toggleTimer(timer.name, this.checked, this);
@@ -168,7 +168,7 @@ function renderTimersList(timers) {
         editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
-        editBtn.setAttribute('aria-label', `Edit timer ${timer.name}`);
+        editBtn.setAttribute('aria-label', t('label.editTimer', { name: timer.name }, `Edit timer ${timer.name}`));
         editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openTimerEditForm(timer));
 
@@ -176,7 +176,7 @@ function renderTimersList(timers) {
         deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
         deleteBtn.textContent = t('common.delete', {}, 'Del');
-        deleteBtn.setAttribute('aria-label', `Delete timer ${timer.name}`);
+        deleteBtn.setAttribute('aria-label', t('label.deleteTimer', { name: timer.name }, `Delete timer ${timer.name}`));
         deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteTimer(timer.name));
 
@@ -204,7 +204,7 @@ function openTimerAddForm() {
     timerLinesEl.value = '5';
     timerTypeToggleEl.checked = false;
     timerResponseLabelEl.textContent = t('page.timers.messageLabel', {}, 'Message');
-    timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+    timerResponseEl.placeholder = t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
     timerFormEl.style.display = 'block';
     timerNameEl.focus();
@@ -218,10 +218,12 @@ function openTimerEditForm(timer) {
     timerIntervalEl.value = String(timer.intervalMinutes || 15);
     timerLinesEl.value = String(timer.minChatLines ?? 5);
     timerTypeToggleEl.checked = timer.type === 'prompt';
-    timerResponseLabelEl.textContent = timer.type === 'prompt' ? 'AI Prompt' : 'Message';
+    timerResponseLabelEl.textContent = timer.type === 'prompt'
+        ? t('page.timers.aiPromptLabel', {}, 'AI Prompt')
+        : t('page.timers.messageLabel', {}, 'Message');
     timerResponseEl.placeholder = timer.type === 'prompt'
-        ? 'Remind chat about Discord for the current game.'
-        : 'Enjoying the stream? Join the Discord!';
+        ? t('page.timers.aiPromptPlaceholder', {}, 'Remind chat about Discord for the current game.')
+        : t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
     timerFormEl.style.display = 'block';
     timerResponseEl.focus();

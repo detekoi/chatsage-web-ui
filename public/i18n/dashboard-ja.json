@@ -53,7 +53,8 @@
       "namePlaceholder": "hello",
       "permission": "権限",
       "responseLabel": "レスポンス",
-      "responsePlaceholder": "こんにちは $(user) さん、$(channel) へようこそ！"
+      "responsePlaceholder": "こんにちは $(user) さん、$(channel) へようこそ！",
+      "aiPromptPlaceholder": "$(user) への挨拶を1文で書いて。"
     },
     "customCommandsTitle": "カスタムコマンド",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "最小チャット行数",
       "minLinesHelp": "チャットがこのメッセージ数に達した後にのみタイマーメッセージを送信します。",
       "nameLabel": "タイマー名",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "プレイ中のゲームに合わせてDiscordの案内をして。"
     },
     "timersTitle": "タイマーメッセージ",
     "title": "チャンネルダッシュボード"
@@ -129,7 +131,9 @@
     "inactive": "無効",
     "resetting": "リセット中…",
     "saving": "保存中…",
-    "savedDev": "{message} (開発モード)。"
+    "savedDev": "{message} (開発モード)。",
+    "savedDevShort": "保存完了（開発モード）",
+    "savingSafetyCheck": "設定を保存して安全性チェックを実行中…"
   },
   "toast": {
     "addBotFailed": "ボットをチャンネルに追加できませんでした。",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item}を有効化しました（開発モード）。",
     "itemDisabledDev": "{item}を無効化しました（開発モード）。",
     "timerSavedDev": "タイマー「{name}」を保存しました（開発モード）。",
-    "updateFailed": "{item}の更新に失敗しました。"
+    "updateFailed": "{item}の更新に失敗しました。",
+    "streamEventsSaved": "配信イベント設定を保存しました。",
+    "autoChatSaved": "自動チャット設定を保存しました。",
+    "adNotificationsSaved": "広告通知設定を保存しました。",
+    "checkinSavedShort": "チェックイン設定を保存しました！",
+    "rewardDeletedDev": "リワードを削除しました（開発モード）",
+    "rewardDeleted": "リワードを削除しました",
+    "rewardDeleteFailed": "リワードの削除に失敗しました。",
+    "personaLoadFailed": "ペルソナ設定の読み込みに失敗しました。",
+    "personaFallback": "デフォルトのペルソナを表示しています。Botのペルソナ設定はまだ公開されていません。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",
@@ -180,7 +193,9 @@
     "messageRequired": "メッセージ内容は必須です。",
     "minLinesRange": "最小チャット行数は0〜100行の間で指定してください。",
     "responseRequired": "応答テキストは必須です。",
-    "timerNameRequired": "タイマー名は必須です。"
+    "timerNameRequired": "タイマー名は必須です。",
+    "personaEmpty": "ペルソナの指示は空にできません。指示をクリアするには「デフォルトに戻す」を選択してください。",
+    "personaTooLong": "ペルソナの指示は{max}文字以下にしてください。"
   },
   "label": {
     "charCounter": "{used} 文字",
@@ -188,6 +203,13 @@
     "chatLines": "{count} チャット行",
     "commandNamed": "コマンド !{name}",
     "cooldownSeconds": "クールダウン {seconds}秒",
-    "everyMinutes": "{minutes}分ごと"
+    "everyMinutes": "{minutes}分ごと",
+    "enableTimer": "タイマー「{name}」を有効化",
+    "enableTimerTitle": "この定期メッセージを有効/無効にする",
+    "enableCommand": "コマンド !{name} を有効化",
+    "editCommand": "コマンド !{name} を編集",
+    "deleteCommand": "コマンド !{name} を削除",
+    "editTimer": "タイマー {name} を編集",
+    "deleteTimer": "タイマー {name} を削除"
   }
 }

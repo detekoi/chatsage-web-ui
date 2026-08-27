@@ -55,7 +55,7 @@ function applyPersona(config) {
     if (loadingEl) loadingEl.style.display = 'none';
 
     if (!config) {
-        setMessage('Failed to load personality settings.', 'danger');
+        setMessage(t('toast.personaLoadFailed', {}, 'Failed to load personality settings.'), 'danger');
         return;
     }
 
@@ -67,13 +67,14 @@ function applyPersona(config) {
     textareaEl.value = config.instructions || '';
     refreshCounter();
 
-    coreEl.textContent = config.core || 'Not available.';
+    // config.core is bot-authored prose from the bot repo, so it stays in its source language.
+    coreEl.textContent = config.core || t('common.notAvailable', {}, 'Not available.');
 
     // Reset only does something when there is a custom persona to clear.
     resetBtnEl.style.display = config.isDefault ? 'none' : '';
 
     if (config.isFallback) {
-        setMessage('Showing the default personality. The bot has not published personality settings yet.', 'muted');
+        setMessage(t('toast.personaFallback', {}, 'Showing the default personality. The bot has not published personality settings yet.'), 'muted');
     } else {
         setMessage('');
     }
@@ -104,16 +105,16 @@ async function savePersona() {
 
     const instructions = textareaEl.value.trim();
     if (!instructions) {
-        setMessage('Personality instructions cannot be empty. Select "Reset to default" to clear instructions.', 'danger');
+        setMessage(t('validation.personaEmpty', {}, 'Personality instructions cannot be empty. Select "Reset to default" to clear instructions.'), 'danger');
         return;
     }
     if (instructions.length > maxLength) {
-        setMessage(`Personality instructions must be ${maxLength} characters or fewer.`, 'danger');
+        setMessage(t('validation.personaTooLong', { max: maxLength }, `Personality instructions must be ${maxLength} characters or fewer.`), 'danger');
         return;
     }
 
     saveBtnEl.disabled = true;
-    setMessage('Saving settings and running safety check…');
+    setMessage(t('status.savingSafetyCheck', {}, 'Saving settings and running safety check…'));
 
     if (DEV_MODE) {
         await mockDelay(500);

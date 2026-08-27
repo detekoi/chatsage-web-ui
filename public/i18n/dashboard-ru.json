@@ -53,7 +53,8 @@
       "namePlaceholder": "hello",
       "permission": "Права доступа",
       "responseLabel": "Ответ",
-      "responsePlaceholder": "Привет, $(user), добро пожаловать на $(channel)!"
+      "responsePlaceholder": "Привет, $(user), добро пожаловать на $(channel)!",
+      "aiPromptPlaceholder": "Напиши приветствие для $(user) одним предложением."
     },
     "customCommandsTitle": "Пользовательские команды",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "Мин. строк в чате",
       "minLinesHelp": "Таймер отправит сообщение только после указанного количества строк в чате.",
       "nameLabel": "Название таймера",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "Напомни чату про Discord для текущей игры."
     },
     "timersTitle": "Сообщения по таймеру",
     "title": "Панель управления каналом"
@@ -129,7 +131,9 @@
     "inactive": "Неактивен",
     "resetting": "Сброс…",
     "saving": "Сохранение…",
-    "savedDev": "{message} (dev-режим)."
+    "savedDev": "{message} (dev-режим).",
+    "savedDevShort": "Сохранено (dev-режим)",
+    "savingSafetyCheck": "Сохранение настроек и проверка безопасности…"
   },
   "toast": {
     "addBotFailed": "Не удалось добавить бота на канал.",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item} включен (режим разработки).",
     "itemDisabledDev": "{item} отключен (режим разработки).",
     "timerSavedDev": "Таймер \"{name}\" сохранен (режим разработки).",
-    "updateFailed": "Не удалось обновить {item}."
+    "updateFailed": "Не удалось обновить {item}.",
+    "streamEventsSaved": "Настройки событий стрима сохранены.",
+    "autoChatSaved": "Настройки авточата сохранены.",
+    "adNotificationsSaved": "Настройки уведомлений о рекламе сохранены.",
+    "checkinSavedShort": "Настройки чекинов сохранены!",
+    "rewardDeletedDev": "Награда удалена (dev-режим)",
+    "rewardDeleted": "Награда удалена",
+    "rewardDeleteFailed": "Не удалось удалить награду.",
+    "personaLoadFailed": "Не удалось загрузить настройки личности.",
+    "personaFallback": "Отображается стандартная личность. Бот ещё не опубликовал настройки личности."
   },
   "validation": {
     "checkinCost": "Стоимость должна быть от 1 до 999999 очков.",
@@ -180,7 +193,9 @@
     "messageRequired": "Укажите текст сообщения.",
     "minLinesRange": "Минимум строк чата должен быть от 0 до 100.",
     "responseRequired": "Укажите текст ответа.",
-    "timerNameRequired": "Укажите имя таймера."
+    "timerNameRequired": "Укажите имя таймера.",
+    "personaEmpty": "Инструкции для личности не могут быть пустыми. Выберите «Сбросить по умолчанию», чтобы очистить инструкции.",
+    "personaTooLong": "Инструкции для личности должны содержать не более {max} символов."
   },
   "label": {
     "charCounter": "{used} символов",
@@ -188,6 +203,13 @@
     "chatLines": "{count} строк чата",
     "commandNamed": "Команда !{name}",
     "cooldownSeconds": "Кулдаун {seconds} с",
-    "everyMinutes": "каждые {minutes} мин"
+    "everyMinutes": "каждые {minutes} мин",
+    "enableTimer": "Включить таймер {name}",
+    "enableTimerTitle": "Включить или отключить это сообщение по таймеру",
+    "enableCommand": "Включить команду !{name}",
+    "editCommand": "Редактировать команду !{name}",
+    "deleteCommand": "Удалить команду !{name}",
+    "editTimer": "Редактировать таймер {name}",
+    "deleteTimer": "Удалить таймер {name}"
   }
 }

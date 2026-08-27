@@ -53,7 +53,8 @@
       "namePlaceholder": "hello",
       "permission": "Permission",
       "responseLabel": "Response",
-      "responsePlaceholder": "Hello $(user), welcome to $(channel)!"
+      "responsePlaceholder": "Hello $(user), welcome to $(channel)!",
+      "aiPromptPlaceholder": "Write a greeting for $(user) in one sentence."
     },
     "customCommandsTitle": "Custom Commands",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "Min chat lines",
       "minLinesHelp": "The timer sends a message only after this number of chat messages.",
       "nameLabel": "Timer Name",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "Remind chat about Discord for the current game."
     },
     "timersTitle": "Timed Messages",
     "title": "Channel dashboard"
@@ -129,7 +131,9 @@
     "inactive": "Inactive",
     "resetting": "Resetting…",
     "saving": "Saving…",
-    "savedDev": "{message} (dev mode)."
+    "savedDev": "{message} (dev mode).",
+    "savedDevShort": "Saved (dev mode)",
+    "savingSafetyCheck": "Saving settings and running safety check…"
   },
   "toast": {
     "addBotFailed": "Failed to add bot to channel.",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item} enabled (dev mode).",
     "itemDisabledDev": "{item} disabled (dev mode).",
     "timerSavedDev": "Timer \"{name}\" saved (dev mode).",
-    "updateFailed": "Failed to update {item}."
+    "updateFailed": "Failed to update {item}.",
+    "streamEventsSaved": "Stream event settings saved.",
+    "autoChatSaved": "Auto-chat settings saved.",
+    "adNotificationsSaved": "Ad notification settings saved.",
+    "checkinSavedShort": "Check-in settings saved!",
+    "rewardDeletedDev": "Reward deleted (dev mode)",
+    "rewardDeleted": "Reward deleted",
+    "rewardDeleteFailed": "Failed to delete reward.",
+    "personaLoadFailed": "Failed to load personality settings.",
+    "personaFallback": "Showing the default personality. The bot has not published personality settings yet."
   },
   "validation": {
     "checkinCost": "Cost must be between 1 and 999999 points.",
@@ -180,7 +193,9 @@
     "messageRequired": "Message text is required.",
     "minLinesRange": "Minimum chat lines must be between 0 and 100.",
     "responseRequired": "Response text is required.",
-    "timerNameRequired": "Timer name is required."
+    "timerNameRequired": "Timer name is required.",
+    "personaEmpty": "Personality instructions cannot be empty. Select \"Reset to default\" to clear instructions.",
+    "personaTooLong": "Personality instructions must be {max} characters or fewer."
   },
   "label": {
     "charCounter": "{used} characters",
@@ -188,6 +203,13 @@
     "chatLines": "{count} chat lines",
     "commandNamed": "Command !{name}",
     "cooldownSeconds": "{seconds}s cooldown",
-    "everyMinutes": "every {minutes}m"
+    "everyMinutes": "every {minutes}m",
+    "enableTimer": "Enable timer {name}",
+    "enableTimerTitle": "Enable or disable this timed message",
+    "enableCommand": "Enable command !{name}",
+    "editCommand": "Edit command !{name}",
+    "deleteCommand": "Delete command !{name}",
+    "editTimer": "Edit timer {name}",
+    "deleteTimer": "Delete timer {name}"
   }
 }

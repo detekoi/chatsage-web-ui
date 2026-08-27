@@ -16,6 +16,7 @@
     "themeLight": "Hell",
     "toggleDarkMode": "Dunkelmodus umschalten",
     "opensInNewTab": "(öffnet in neuem Tab)",
-    "languageSelector": "Sprache"
+    "languageSelector": "Sprache",
+    "notAvailable": "Nicht verfügbar."
   }
 }

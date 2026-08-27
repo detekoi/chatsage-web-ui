@@ -53,7 +53,8 @@
       "namePlaceholder": "salut",
       "permission": "Permission",
       "responseLabel": "Réponse",
-      "responsePlaceholder": "Salut $(user), bienvenue sur $(channel) !"
+      "responsePlaceholder": "Salut $(user), bienvenue sur $(channel) !",
+      "aiPromptPlaceholder": "Écris un message de bienvenue pour $(user) en une phrase."
     },
     "customCommandsTitle": "Commandes personnalisées",
     "loading": {
@@ -118,7 +119,8 @@
       "minLines": "Lignes de chat min.",
       "minLinesHelp": "Le timer envoie un message uniquement après ce nombre de messages dans le chat.",
       "nameLabel": "Nom du timer",
-      "namePlaceholder": "discord"
+      "namePlaceholder": "discord",
+      "aiPromptPlaceholder": "Rappelle le Discord au chat pour le jeu en cours."
     },
     "timersTitle": "Messages programmés",
     "title": "Tableau de bord de la chaîne"
@@ -129,7 +131,9 @@
     "inactive": "Inactif",
     "resetting": "Réinitialisation…",
     "saving": "Enregistrement…",
-    "savedDev": "{message} (mode dev)."
+    "savedDev": "{message} (mode dev).",
+    "savedDevShort": "Enregistré (mode dev)",
+    "savingSafetyCheck": "Enregistrement des paramètres et vérification de sécurité…"
   },
   "toast": {
     "addBotFailed": "Impossible d'ajouter le bot à la chaîne.",
@@ -170,7 +174,16 @@
     "itemEnabledDev": "{item} activé (mode dev).",
     "itemDisabledDev": "{item} désactivé (mode dev).",
     "timerSavedDev": "Timer \"{name}\" enregistré (mode dev).",
-    "updateFailed": "Impossible de mettre à jour {item}."
+    "updateFailed": "Impossible de mettre à jour {item}.",
+    "streamEventsSaved": "Paramètres des événements de stream enregistrés.",
+    "autoChatSaved": "Paramètres de chat auto enregistrés.",
+    "adNotificationsSaved": "Paramètres des notifications de pub enregistrés.",
+    "checkinSavedShort": "Paramètres de check-in enregistrés !",
+    "rewardDeletedDev": "Récompense supprimée (mode dev)",
+    "rewardDeleted": "Récompense supprimée",
+    "rewardDeleteFailed": "Impossible de supprimer la récompense.",
+    "personaLoadFailed": "Impossible de charger les paramètres de personnalité.",
+    "personaFallback": "Affichage de la personnalité par défaut. Le bot n'a pas encore publié de paramètres de personnalité."
   },
   "validation": {
     "checkinCost": "Le coût doit être compris entre 1 et 999999 points.",
@@ -180,7 +193,9 @@
     "messageRequired": "Le texte du message est requis.",
     "minLinesRange": "Le nombre minimum de lignes de chat doit être compris entre 0 et 100.",
     "responseRequired": "Le texte de réponse est requis.",
-    "timerNameRequired": "Le nom du timer est requis."
+    "timerNameRequired": "Le nom du timer est requis.",
+    "personaEmpty": "Les instructions de personnalité ne peuvent pas être vides. Choisissez \"Réinitialiser par défaut\" pour effacer les instructions.",
+    "personaTooLong": "Les instructions de personnalité doivent comporter {max} caractères ou moins."
   },
   "label": {
     "charCounter": "{used} caractères",
@@ -188,6 +203,13 @@
     "chatLines": "{count} lignes de chat",
     "commandNamed": "Commande !{name}",
     "cooldownSeconds": "{seconds}s de cooldown",
-    "everyMinutes": "toutes les {minutes}m"
+    "everyMinutes": "toutes les {minutes}m",
+    "enableTimer": "Activer le minuteur {name}",
+    "enableTimerTitle": "Activer ou désactiver ce message programmé",
+    "enableCommand": "Activer la commande !{name}",
+    "editCommand": "Modifier la commande !{name}",
+    "deleteCommand": "Supprimer la commande !{name}",
+    "editTimer": "Modifier le minuteur {name}",
+    "deleteTimer": "Supprimer le minuteur {name}"
   }
 }
