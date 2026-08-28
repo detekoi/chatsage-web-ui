@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Establishing session",
+    "failedReadout": "Failed",
+    "failedTitle": "Sign-in failed",
+    "missingData": "Authentication data is missing from the Twitch response. Sign in again.",
+    "noSession": "No session",
+    "openingDashboard": "Opening your dashboard.",
+    "pleaseWait": "Please wait.",
+    "progressLabel": "Sign-in progress",
+    "sessionEstablished": "Session established",
+    "signInFailed": "Sign-in failed.",
+    "stepAuthorized": "Twitch authorized",
+    "stepRedirect": "Opening dashboard",
+    "stepToken": "Session token stored",
+    "title": "Signing you in",
+    "working": "Working",
+    "welcome": "Welcome, {user}",
+    "signInAgain": "{message} Sign in again."
+  }
+}

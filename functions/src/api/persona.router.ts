@@ -16,6 +16,7 @@ import {
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -106,7 +107,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
       channelLogin: login,
       error: (error as Error).message,
     });
-    res.status(500).json({ success: false, message: "Failed to load personality settings" });
+    res.status(500).json({ success: false, message: tr(req, "api.persona.FailedLoadPersonalitySettings", {}, "Failed to load personality settings") });
   }
 });
 
@@ -123,7 +124,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (typeof instructions !== "string" || instructions.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Personality instructions cannot be empty.",
+        message: tr(req, "api.persona.PersonalityInstructionsCannotEmpty", {}, "Personality instructions cannot be empty."),
       });
     }
 
@@ -135,7 +136,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (trimmed.length > maxLength) {
       return res.status(400).json({
         success: false,
-        message: `Personality instructions must be ${maxLength} characters or fewer.`,
+        message: tr(req, "api.persona.PersonalityInstructionsMustCharacters", { maxLength: maxLength }, `Personality instructions must be ${maxLength} characters or fewer.`),
       });
     }
 
@@ -160,13 +161,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     );
 
     logger.info("Persona saved", { channelLogin: login, length: trimmed.length });
-    res.json({ success: true, message: "Personality saved." });
+    res.json({ success: true, message: tr(req, "api.persona.PersonalitySaved", {}, "Personality saved.") });
   } catch (error) {
     logger.error("Error saving persona", {
       channelLogin: login,
       error: (error as Error).message,
     });
-    res.status(500).json({ success: false, message: "Failed to save personality settings" });
+    res.status(500).json({ success: false, message: tr(req, "api.persona.FailedSavePersonalitySettings", {}, "Failed to save personality settings") });
   }
 });
 
@@ -180,13 +181,13 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
   try {
     await getDb().collection(PERSONA_COLLECTION).doc(userId).delete();
     logger.info("Persona reset to default", { channelLogin: login });
-    res.json({ success: true, message: "Personality reset to default." });
+    res.json({ success: true, message: tr(req, "api.persona.PersonalityResetDefault", {}, "Personality reset to default.") });
   } catch (error) {
     logger.error("Error deleting persona", {
       channelLogin: login,
       error: (error as Error).message,
     });
-    res.status(500).json({ success: false, message: "Failed to reset personality" });
+    res.status(500).json({ success: false, message: tr(req, "api.persona.FailedResetPersonality", {}, "Failed to reset personality") });
   }
 });
 

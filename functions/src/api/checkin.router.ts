@@ -15,6 +15,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
 import { screenPromptField } from "@/utils/promptSafety";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -70,7 +71,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     return res.status(500).json({
       success: false,
-      message: "Failed to load check-in configuration",
+      message: tr(req, "api.checkin.FailedLoadCheckConfiguration", {}, "Failed to load check-in configuration"),
     });
   }
 });
@@ -98,10 +99,10 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
 
     // Validate lengths
     if (responseTemplate && typeof responseTemplate === "string" && responseTemplate.length > 500) {
-      return res.status(400).json({ success: false, message: "Response template must be 500 characters or fewer" });
+      return res.status(400).json({ success: false, message: tr(req, "api.checkin.ResponseTemplateMust500", {}, "Response template must be 500 characters or fewer") });
     }
     if (aiPrompt && typeof aiPrompt === "string" && aiPrompt.length > 500) {
-      return res.status(400).json({ success: false, message: "AI prompt must be 500 characters or fewer" });
+      return res.status(400).json({ success: false, message: tr(req, "api.checkin.AiPromptMust500", {}, "AI prompt must be 500 characters or fewer") });
     }
 
     // The AI prompt is broadcaster-authored text that gets sent to the LLM, so
@@ -155,7 +156,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
         if (errStatus === 403) {
           return res.status(403).json({
             success: false,
-            message: "Channel Point Rewards require Twitch Affiliate or Partner status.",
+            message: tr(req, "api.checkin.ChannelPointRewardsRequire", {}, "Channel Point Rewards require Twitch Affiliate or Partner status."),
           });
         }
 
@@ -178,17 +179,17 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
             } else {
               return res.status(400).json({
                 success: false,
-                message: `A Channel Point Reward named "${title}" already exists but was created outside this app. Please delete it from your Twitch Dashboard and try again.`,
+                message: tr(req, "api.checkin.ChannelPointRewardNamed", { title: title }, `A Channel Point Reward named "${title}" already exists but was created outside this app. Please delete it from your Twitch Dashboard and try again.`),
               });
             }
           } catch (listErr) {
             const e = listErr as Error;
             log.error("Failed to list rewards for duplicate resolution", { error: e.message });
-            return res.status(500).json({ success: false, message: "Failed to resolve duplicate reward" });
+            return res.status(500).json({ success: false, message: tr(req, "api.checkin.FailedResolveDuplicateReward", {}, "Failed to resolve duplicate reward") });
           }
         } else {
           log.error("Failed to create reward on Twitch", { status: errStatus, error: errMsg });
-          return res.status(500).json({ success: false, message: `Failed to create reward: ${errMsg}` });
+          return res.status(500).json({ success: false, message: tr(req, "api.checkin.FailedCreateReward", { errMsg: errMsg }, `Failed to create reward: ${errMsg}`) });
         }
       }
     } else if (rewardId) {
@@ -214,7 +215,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
           } catch (createErr) {
             const createE = createErr as Error;
             log.error("Failed to recreate reward", { error: createE.message });
-            return res.status(500).json({ success: false, message: "Failed to recreate reward on Twitch" });
+            return res.status(500).json({ success: false, message: tr(req, "api.checkin.FailedRecreateRewardOn", {}, "Failed to recreate reward on Twitch") });
           }
         } else {
           log.warn("Failed to update reward on Twitch (non-fatal)", { status: errStatus, error: e.message });
@@ -249,12 +250,12 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     if (e.message?.includes("re-authenticate") || e.message?.includes("token")) {
       return res.status(401).json({
         success: false,
-        message: "Please re-authenticate with Twitch to manage Channel Point Rewards",
-        needsReauth: true,
+        message: tr(req, "api.checkin.ReAuthenticateTwitchManage", {}, "Please re-authenticate with Twitch to manage Channel Point Rewards"),
+        needsReAuth: true,
       });
     }
 
-    return res.status(500).json({ success: false, message: "Failed to save check-in configuration" });
+    return res.status(500).json({ success: false, message: tr(req, "api.checkin.FailedSaveCheckConfiguration", {}, "Failed to save check-in configuration") });
   }
 });
 
@@ -309,7 +310,7 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
   } catch (error) {
     const e = error as Error;
     log.error("Error in DELETE /api/checkin", { error: e.message });
-    return res.status(500).json({ success: false, message: "Failed to disable check-in" });
+    return res.status(500).json({ success: false, message: tr(req, "api.checkin.FailedDisableCheck", {}, "Failed to disable check-in") });
   }
 });
 

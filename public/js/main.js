@@ -1,4 +1,5 @@
 import { apiGet, getToken, setToken } from './api.js';
+import { t, initI18n } from './i18n.js';
 import { showActionToast, setupNumericInputs } from './ui.js';
 import { DEV_MODE, mockUser } from './dev-mocks.js';
 import { initBotStatus, updateBotStatusUI } from './sections/bot-status.js';
@@ -49,7 +50,7 @@ async function initializeDashboard() {
 
         if (!getToken()) {
             console.warn("No session token found, redirecting to login");
-            showActionToast("Authentication token is missing. Sign in again.", 'danger', 0);
+            showActionToast(t('toast.missingToken', {}, 'Authentication token is missing. Sign in again.'), 'danger', 0);
             setTimeout(() => window.location.href = 'index.html', 2000);
             return;
         }
@@ -63,26 +64,29 @@ async function initializeDashboard() {
 
             if (!statusRes.ok) {
                 if (statusRes.status === 401) {
-                    showActionToast("Your session expired or is not active. Sign in again.", 'danger', 0);
+                    showActionToast(t('toast.sessionExpired', {}, 'Your session expired or is not active. Sign in again.'), 'danger', 0);
                     return;
                 }
                 const errorData = await statusRes.json().catch(() => ({ message: statusRes.statusText }));
-                throw new Error(`Failed to get bot status: ${errorData.message || statusRes.statusText}`);
+                throw new Error(t('toast.botStatusFailed', { message: errorData.message || statusRes.statusText },
+                    `Failed to get bot status: ${errorData.message || statusRes.statusText}`));
             }
             const statusData = await statusRes.json();
 
             if (statusData.success) {
                 updateBotStatusUI(statusData.isActive);
             } else {
-                showActionToast(`Error: ${statusData.message}`, 'danger', 0);
+                // statusData.message is server-authored and still English.
+                showActionToast(t('toast.errorPrefix', { message: statusData.message }, `Error: ${statusData.message}`), 'danger', 0);
                 const botStatusEl = document.getElementById('bot-status');
-                if (botStatusEl) botStatusEl.textContent = "Error";
+                if (botStatusEl) botStatusEl.textContent = t('common.error', {}, 'Error');
             }
         } catch (error) {
             console.error('Error fetching bot status:', error);
-            showActionToast('Failed to load bot status. ' + error.message, 'danger', 0);
+            showActionToast(t('toast.loadBotStatusFailed', { message: error.message },
+                'Failed to load bot status. ' + error.message), 'danger', 0);
             const botStatusEl = document.getElementById('bot-status');
-            if (botStatusEl) botStatusEl.textContent = 'Error';
+            if (botStatusEl) botStatusEl.textContent = t('common.error', {}, 'Error');
         }
     } else {
         // Not logged in or info missing, redirect to index.html
@@ -90,7 +94,11 @@ async function initializeDashboard() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 0. Catalog first. Every section below renders text through t(), so the strings have to be
+    //    available before the first paint rather than after it.
+    await initI18n();
+
     // 1. Grab top-level DOM elements
     twitchUsernameEl = document.getElementById('twitch-username');
     channelNameStatusEl = document.getElementById('channel-name-status');
@@ -117,6 +125,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Setup global UI listeners
     setupNumericInputs();
+
+    // translatePage() only rewrites markup carrying data-i18n. The command, timer and custom
+    // command lists are built in JS, so after a language switch they would keep the old language
+    // until the next reload. Registered here, after the initial initI18n() above has already
+    // dispatched once, so this only fires on an actual switch.
+    document.addEventListener('i18n:changed', () => {
+        if (!loggedInUser) return; // nothing rendered yet
+        reloadAllConfigs().catch(err =>
+            console.error('Failed to re-render sections after a language change:', err));
+    });
 
     // 3. Start dashboard initialization
     initializeDashboard();

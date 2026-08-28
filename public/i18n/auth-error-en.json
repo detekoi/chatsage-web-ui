@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "No changes were made. You can sign in when you are ready.",
+    "canceledReadout": "Canceled",
+    "canceledTitle": "WildcatSage - Sign-in canceled",
+    "canceledTitleHeading": "Sign-in canceled",
+    "defaultMessage": "An error occurred during Twitch authentication.",
+    "errorLabel": "Error",
+    "readout": "Auth failed",
+    "returnToSignIn": "Return to sign-in",
+    "title": "Authentication failed",
+    "tryAgain": "Try again",
+    "twitchError": "Twitch returned an error during authentication.",
+    "unknownCode": "unknown",
+    "unspecifiedCode": "unspecified",
+    "unspecifiedError": "An unspecified error occurred."
+  }
+}

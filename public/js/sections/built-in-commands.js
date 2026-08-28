@@ -1,6 +1,7 @@
 import { apiGet } from '../api.js';
 import { DEV_MODE, mockCommands, mockDelay } from '../dev-mocks.js';
 import { toggleItem } from '../crud-helpers.js';
+import { t } from '../i18n.js';
 
 let commandsLoadingEl;
 let commandsListEl;
@@ -71,7 +72,7 @@ function renderCommandsList(commands) {
         checkbox.checked = cmd.enabled;
         checkbox.dataset.command = cmd.primaryName;
         checkbox.role = 'switch';
-        checkbox.setAttribute('aria-label', `Enable command !${cmd.name}`);
+        checkbox.setAttribute('aria-label', t('label.enableCommand', { name: cmd.name }, `Enable command !${cmd.name}`));
 
         checkbox.addEventListener('change', async function () {
             await toggleCommand(cmd.primaryName, this.checked, this);
@@ -89,5 +90,6 @@ function renderCommandsList(commands) {
 
 async function toggleCommand(commandName, enabled, checkboxEl) {
     const payload = { command: commandName, enabled };
-    await toggleItem('POST', '/api/commands', payload, `Command !${commandName}`, enabled, checkboxEl);
+    await toggleItem('POST', '/api/commands', payload,
+        t('label.commandNamed', { name: commandName }, `Command !${commandName}`), enabled, checkboxEl);
 }

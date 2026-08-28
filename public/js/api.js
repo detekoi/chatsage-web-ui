@@ -1,4 +1,5 @@
 import { showActionToast } from './ui.js';
+import { t, getLanguage } from './i18n.js';
 
 // app.wildcat.chat and api.wildcat.chat are two Hosting targets in front of the
 // same webUi function, so this is a host change, not a backend change. Pointing
@@ -46,12 +47,16 @@ export async function apiFetch(method, path, body = null) {
     const token = getToken();
     
     if (!token) {
-        showActionToast("Authentication token missing. Please log in again.", 'danger');
+        showActionToast(t('toast.missingTokenLogin', {}, 'Authentication token missing. Please log in again.'), 'danger');
         throw new AuthError("No authentication token available");
     }
 
     const headers = {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        // The server localizes the `message` it returns, which the dashboard renders straight into
+        // a toast. Send the language actually on screen rather than letting the server guess from
+        // Accept-Language, which reflects the browser rather than the user's choice here.
+        'X-Locale': getLanguage()
     };
 
     const options = { method, headers };

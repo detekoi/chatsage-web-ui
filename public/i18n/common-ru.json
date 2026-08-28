@@ -1,0 +1,22 @@
+{
+  "common": {
+    "add": "Добавить",
+    "cancel": "Отмена",
+    "colorTheme": "Цветовая тема",
+    "contactMe": "Связаться со мной",
+    "delete": "Удалить",
+    "documentation": "Документация",
+    "edit": "Изменить",
+    "error": "Ошибка",
+    "loading": "Загрузка…",
+    "requestAccess": "Запросить доступ",
+    "save": "Сохранить",
+    "skipToContent": "Перейти к основному контенту",
+    "themeDark": "Тёмная",
+    "themeLight": "Светлая",
+    "toggleDarkMode": "Переключить тёмную тему",
+    "opensInNewTab": "(откроется в новой вкладке)",
+    "languageSelector": "Язык",
+    "notAvailable": "Недоступно."
+  }
+}

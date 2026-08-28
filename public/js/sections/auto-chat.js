@@ -1,6 +1,7 @@
 import { apiGet, apiPost, AuthError } from '../api.js';
 import { debounce, showActionToast } from '../ui.js';
 import { DEV_MODE, mockAutoChatConfig, mockDelay } from '../dev-mocks.js';
+import { t } from '../i18n.js';
 
 let autoLoadingEl;
 let autoModeEl;
@@ -92,7 +93,7 @@ function applyAutoChatSettings(config) {
         autoCatFactsEl.checked = config.categories?.facts !== false;
         autoCatQuestionsEl.checked = config.categories?.questions !== false;
     } else {
-        showActionToast('Failed to load auto-chat settings.', 'danger');
+        showActionToast(t('toast.loadAutoChatFailed', {}, 'Failed to load auto-chat settings.'), 'danger');
     }
 }
 
@@ -101,7 +102,7 @@ function applyAdNotificationsSettings(config) {
     if (config) {
         autoCatAdsEl.checked = config.categories?.ads === true;
     } else {
-        adNotificationsMsgEl.textContent = 'Failed to load ad notification settings.';
+        adNotificationsMsgEl.textContent = t('toast.loadAdNotificationsFailed', {}, 'Failed to load ad notification settings.');
         adNotificationsMsgEl.style.color = '#ff6b6b';
     }
 }
@@ -114,7 +115,7 @@ function applyStreamEventsSettings(config) {
         streamSubscriptionsToggleEl.checked = config.categories?.subscriptions !== false;
         streamRaidsToggleEl.checked = config.categories?.raids !== false;
     } else {
-        streamEventsMsgEl.textContent = 'Failed to load stream event settings.';
+        streamEventsMsgEl.textContent = t('toast.loadStreamEventsFailed', {}, 'Failed to load stream event settings.');
         streamEventsMsgEl.style.color = '#ff6b6b';
     }
 }
@@ -126,13 +127,13 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
     const currentRequestId = (saveRequestIds.get(contextId) || 0) + 1;
     saveRequestIds.set(contextId, currentRequestId);
 
-    statusEl.textContent = 'Saving…';
+    statusEl.textContent = t('status.saving', {}, 'Saving…');
     statusEl.style.color = 'var(--text-muted, #6c757d)';
 
     if (DEV_MODE) {
         await mockDelay(500);
         if (currentRequestId === saveRequestIds.get(contextId)) {
-            statusEl.textContent = `${successMsg} (dev mode).`;
+            statusEl.textContent = t('status.savedDev', { message: successMsg }, `${successMsg} (dev mode).`);
             statusEl.style.color = '#4ecdc4';
         }
         return;
@@ -147,7 +148,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
                 statusEl.textContent = successMsg;
                 statusEl.style.color = '#4ecdc4';
             } else {
-                statusEl.textContent = data.message || 'Failed to save settings.';
+                statusEl.textContent = data.message || t('toast.saveSettingsFailed', {}, 'Failed to save settings.');
                 statusEl.style.color = '#ff6b6b';
             }
         }
@@ -155,7 +156,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
         if (e instanceof AuthError) return;
         console.error(`Error saving to ${endpoint}:`, e);
         if (currentRequestId === saveRequestIds.get(contextId)) {
-            statusEl.textContent = 'Failed to save settings.';
+            statusEl.textContent = t('toast.saveSettingsFailed', {}, 'Failed to save settings.');
             statusEl.style.color = '#ff6b6b';
         }
     }
@@ -170,7 +171,8 @@ async function saveStreamEventsSettings() {
             raids: !!streamRaidsToggleEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, streamEventsMsgEl, 'Stream event settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, streamEventsMsgEl,
+        t('toast.streamEventsSaved', {}, 'Stream event settings saved.'));
 }
 
 async function saveAutoChatSettings() {
@@ -181,7 +183,8 @@ async function saveAutoChatSettings() {
             questions: !!autoCatQuestionsEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, autoMsgEl, 'Auto-chat settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, autoMsgEl,
+        t('toast.autoChatSaved', {}, 'Auto-chat settings saved.'));
 }
 
 async function saveAdNotificationsSettings() {
@@ -190,5 +193,6 @@ async function saveAdNotificationsSettings() {
             ads: !!autoCatAdsEl.checked,
         }
     };
-    await saveSectionSettings('/api/auto-chat', payload, adNotificationsMsgEl, 'Ad notification settings saved.');
+    await saveSectionSettings('/api/auto-chat', payload, adNotificationsMsgEl,
+        t('toast.adNotificationsSaved', {}, 'Ad notification settings saved.'));
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-manual data-i18n-page="auth-error">
 
 <head>
     <meta charset="UTF-8">
@@ -42,36 +42,42 @@
 </head>
 
 <body>
-    <a href="#main-content" class="wc-skip-link">Skip to main content</a>
+    <a href="#main-content" class="wc-skip-link" data-i18n="common.skipToContent">Skip to main content</a>
     <main id="main-content" class="wc-stage wc-stage--transient">
         <div class="wc-frame">
             <div class="wc-frame-head">
                 <span class="wc-lockup">Wildcat<b>Sage</b></span>
-                <span class="wc-readout wc-readout--danger" id="error-readout">Auth failed</span>
+                <span class="wc-readout wc-readout--danger" id="error-readout" data-i18n="page.readout">Auth failed</span>
             </div>
 
             <div class="wc-frame-body">
-                <h1 id="error-title" class="wc-title wc-title--sm">Authentication failed</h1>
-                <p class="wc-lede" id="error-message-details">An error occurred during Twitch authentication.</p>
+                <h1 id="error-title" class="wc-title wc-title--sm" data-i18n="page.title">Authentication failed</h1>
+                <p class="wc-lede" id="error-message-details" data-i18n="page.defaultMessage">An error occurred during Twitch authentication.</p>
 
                 <div class="wc-code" id="error-code-block">
-                    <span class="wc-code-label">Error</span>
-                    <span class="wc-code-value" id="error-code">unknown</span>
+                    <span class="wc-code-label" data-i18n="page.errorLabel">Error</span>
+                    <span class="wc-code-value" id="error-code" data-i18n="page.unknownCode">unknown</span>
                 </div>
 
-                <a href="index.html" class="wc-btn" id="error-action">Try again</a>
+                <a href="index.html" class="wc-btn" id="error-action" data-i18n="page.tryAgain">Try again</a>
             </div>
 
             <div class="wc-frame-foot">
-                <a class="wc-link" href="https://parfaitfair.com/#contact" target="_blank" rel="noopener">Request access</a>
+                <a class="wc-link" href="https://parfaitfair.com/#contact" target="_blank" rel="noopener" data-i18n="common.requestAccess">Request access</a>
                 <span>bot.wildcat.chat</span>
             </div>
         </div>
     </main>
 
-    <script>
+    <script type="module">
+        import { t, initI18n } from '/js/i18n.js';
+
         // Display error details from URL parameters
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Catalog first: everything below writes final text, so translating afterwards
+            // would only overwrite it with the markup defaults.
+            await initI18n();
+
             const params = new URLSearchParams(window.location.search);
             const error = params.get('error');
             const errorDescription = params.get('error_description');
@@ -80,7 +86,7 @@
             const errorCodeEl = document.getElementById('error-code');
 
             if (errorCodeEl) {
-                errorCodeEl.textContent = error || 'unspecified';
+                errorCodeEl.textContent = error || t('page.unspecifiedCode', {}, 'unspecified');
             }
 
             // Cancelling is a choice, not a failure. Twitch reports it as
@@ -90,11 +96,11 @@
             const wasCanceled = error === 'access_denied';
 
             if (wasCanceled) {
-                document.title = 'WildcatSage - Sign-in canceled';
+                document.title = t('page.canceledTitle', {}, 'WildcatSage - Sign-in canceled');
 
                 const readoutEl = document.getElementById('error-readout');
                 if (readoutEl) {
-                    readoutEl.textContent = 'Canceled';
+                    readoutEl.textContent = t('page.canceledReadout', {}, 'Canceled');
                     readoutEl.classList.remove('wc-readout--danger');
                 }
 
@@ -103,7 +109,7 @@
                 if (codeBlockEl) codeBlockEl.remove();
 
                 const actionEl = document.getElementById('error-action');
-                if (actionEl) actionEl.textContent = 'Return to sign-in';
+                if (actionEl) actionEl.textContent = t('page.returnToSignIn', {}, 'Return to sign-in');
             }
 
             // URLSearchParams has already decoded these. Decoding a second time
@@ -112,13 +118,14 @@
             if (errorMessageEl) {
                 let message = '';
                 if (wasCanceled) {
-                    message = 'No changes were made. You can sign in when you are ready.';
+                    message = t('page.canceledMessage', {}, 'No changes were made. You can sign in when you are ready.');
                 } else if (errorDescription) {
+                    // Supplied by Twitch, so it arrives in whatever language Twitch used.
                     message = errorDescription;
                 } else if (error) {
-                    message = 'Twitch returned an error during authentication.';
+                    message = t('page.twitchError', {}, 'Twitch returned an error during authentication.');
                 } else {
-                    message = 'An unspecified error occurred.';
+                    message = t('page.unspecifiedError', {}, 'An unspecified error occurred.');
                 }
                 errorMessageEl.textContent = message;
 
@@ -129,14 +136,14 @@
                     link.href = 'https://parfaitfair.com/#contact';
                     link.target = '_blank';
                     link.rel = 'noopener';
-                    link.textContent = 'Contact Me';
+                    link.textContent = t('common.contactMe', {}, 'Contact Me');
                     link.style.textDecoration = 'underline';
                     errorMessageEl.appendChild(link);
                 }
             }
 
             if (errorTitleEl && error === 'access_denied') {
-                errorTitleEl.textContent = 'Sign-in canceled';
+                errorTitleEl.textContent = t('page.canceledTitleHeading', {}, 'Sign-in canceled');
             }
         });
     </script>

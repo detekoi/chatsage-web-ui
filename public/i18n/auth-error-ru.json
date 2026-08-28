@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "Никаких изменений не внесено. Вы можете войти, когда будете готовы.",
+    "canceledReadout": "Отменено",
+    "canceledTitle": "WildcatSage — Вход отменён",
+    "canceledTitleHeading": "Вход отменён",
+    "defaultMessage": "Произошла ошибка при авторизации через Twitch.",
+    "errorLabel": "Ошибка",
+    "readout": "Ошибка авторизации",
+    "returnToSignIn": "Вернуться к входу",
+    "title": "Ошибка авторизации",
+    "tryAgain": "Попробовать снова",
+    "twitchError": "Twitch вернул ошибку при авторизации.",
+    "unknownCode": "неизвестно",
+    "unspecifiedCode": "не указано",
+    "unspecifiedError": "Произошла непредвиденная ошибка."
+  }
+}

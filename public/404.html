@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-i18n-page="404">
 
 <head>
     <meta charset="utf-8">
@@ -39,10 +39,11 @@
     </script>
 
     <script src="https://app.rybbit.io/api/script.js" data-site-id="107" defer></script>
+    <script type="module" src="/js/i18n.js"></script>
 </head>
 
 <body>
-    <a href="#main-content" class="wc-skip-link">Skip to main content</a>
+    <a href="#main-content" class="wc-skip-link" data-i18n="common.skipToContent">Skip to main content</a>
     <main id="main-content" class="wc-stage wc-stage--transient">
         <div class="wc-frame">
             <div class="wc-frame-head">
@@ -52,13 +53,13 @@
 
             <div class="wc-frame-body">
                 <div class="wc-bignum" aria-hidden="true">404</div>
-                <h1 class="wc-title wc-title--sm">Page not found</h1>
-                <p class="wc-lede">This URL is not part of this website. Make sure that the URL is correct, or return to the sign-in page.</p>
-                <a href="/index.html" class="wc-btn wc-btn--ghost">Return to sign-in</a>
+                <h1 class="wc-title wc-title--sm" data-i18n="page.title">Page not found</h1>
+                <p class="wc-lede" data-i18n="page.lede">This URL is not part of this website. Make sure that the URL is correct, or return to the sign-in page.</p>
+                <a href="/index.html" class="wc-btn wc-btn--ghost" data-i18n="page.returnToSignIn">Return to sign-in</a>
             </div>
 
             <div class="wc-frame-foot">
-                <a class="wc-link" href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener">Documentation</a>
+                <a class="wc-link" href="https://docs.wildcat.chat/botcommands.html" target="_blank" rel="noopener" data-i18n="common.documentation">Documentation</a>
                 <span>bot.wildcat.chat</span>
             </div>
         </div>

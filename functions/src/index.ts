@@ -14,6 +14,7 @@ import { logger } from "@/config/logger";
 import { oauthRouter, sessionRouter } from "@/auth";
 import apiRouter from "@/api";
 import internalRouter from "@/internal";
+import { localeMiddleware } from "@/i18n";
 
 // Initialize database connections
 try {
@@ -49,8 +50,14 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Test environment variables endpoint (for debugging)
+// Test environment variables endpoint (for debugging).
+// Emulator only: it reports which secrets are configured plus internal URLs, which is useful
+// locally and is reconnaissance for anyone else.
 app.get("/test/env", (req, res) => {
+  if (process.env.FUNCTIONS_EMULATOR !== "true") {
+    return res.status(404).json({ success: false, message: "Not found" });
+  }
+
   const {
     TWITCH_CLIENT_ID,
     TWITCH_CLIENT_SECRET,
@@ -80,8 +87,9 @@ app.get("/test/env", (req, res) => {
 app.use("/auth", authLimiter, oauthRouter);
 app.use("/", sessionRouter); // Logout routes at root
 
-// Mount API routes (authenticated endpoints)
-app.use("/api", apiRouter);
+// Mount API routes (authenticated endpoints). localeMiddleware first, so every response built
+// below can localize its `message` — the dashboard renders that string verbatim in a toast.
+app.use("/api", localeMiddleware, apiRouter);
 
 // Mount internal routes (bot service endpoints)
 app.use("/internal", internalRouter);

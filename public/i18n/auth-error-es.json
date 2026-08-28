@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "No se realizaron cambios. Puedes iniciar sesión cuando estés listo.",
+    "canceledReadout": "Cancelado",
+    "canceledTitle": "WildcatSage - Inicio de sesión cancelado",
+    "canceledTitleHeading": "Inicio de sesión cancelado",
+    "defaultMessage": "Ocurrió un error durante la autenticación con Twitch.",
+    "errorLabel": "Error",
+    "readout": "Error de autenticación",
+    "returnToSignIn": "Volver al inicio de sesión",
+    "title": "Error de autenticación",
+    "tryAgain": "Reintentar",
+    "twitchError": "Twitch devolvió un error durante la autenticación.",
+    "unknownCode": "desconocido",
+    "unspecifiedCode": "no especificado",
+    "unspecifiedError": "Ocurrió un error no especificado."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "common": {
+    "add": "Ajouter",
+    "cancel": "Annuler",
+    "colorTheme": "Thème de couleur",
+    "contactMe": "Me contacter",
+    "delete": "Suppr",
+    "documentation": "Documentation",
+    "edit": "Modifier",
+    "error": "Erreur",
+    "loading": "Chargement…",
+    "requestAccess": "Demander l'accès",
+    "save": "Enregistrer",
+    "skipToContent": "Passer au contenu principal",
+    "themeDark": "Sombre",
+    "themeLight": "Clair",
+    "toggleDarkMode": "Basculer le mode sombre",
+    "opensInNewTab": "(s'ouvre dans un nouvel onglet)",
+    "languageSelector": "Langue",
+    "notAvailable": "Indisponible."
+  }
+}

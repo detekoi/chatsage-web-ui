@@ -1,0 +1,16 @@
+{
+  "page": {
+    "accessLabel": "Accès",
+    "accessNote": "L'accès se fait sur invitation. L'interface affiche un message d'accès refusé pour les chaînes non approuvées. Pour demander un accès, utilisez <a class=\"wc-link wc-link--underline\" href=\"https://parfaitfair.com/#contact\" target=\"_blank\" rel=\"noopener\">ce formulaire de contact</a>.",
+    "botManagement": "Gestion du bot",
+    "closeSupport": "Fermer la fenêtre de soutien",
+    "featureList": "Ajoutez ou retirez le bot • Configurez les commandes et événements de stream • Gérez l'auto-chat et les alertes pub • Gérez les commandes personnalisées, les messages programmés et le check-in quotidien",
+    "inviteOnly": "Sur invitation",
+    "kofiFallback": "Ouvrir dans un nouvel onglet sur Ko-fi.com",
+    "lede": "Gérez le bot pour votre chaîne Twitch.",
+    "signInWithTwitch": "Se connecter avec Twitch",
+    "supportMe": "Me soutenir",
+    "supportRegion": "Soutien",
+    "supportTitle": "Soutenir parfaitfair"
+  }
+}

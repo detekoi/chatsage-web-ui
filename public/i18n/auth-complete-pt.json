@@ -1,0 +1,21 @@
+{
+  "page": {
+    "establishingSession": "Estabelecendo sessão",
+    "failedReadout": "Falhou",
+    "failedTitle": "Falha no login",
+    "missingData": "Dados de autenticação ausentes na resposta da Twitch. Faça login novamente.",
+    "noSession": "Sem sessão",
+    "openingDashboard": "Abrindo seu painel.",
+    "pleaseWait": "Aguarde.",
+    "progressLabel": "Progresso do login",
+    "sessionEstablished": "Sessão estabelecida",
+    "signInFailed": "Falha no login.",
+    "stepAuthorized": "Twitch autorizada",
+    "stepRedirect": "Abrindo painel",
+    "stepToken": "Token de sessão salvo",
+    "title": "Entrando na sua conta",
+    "working": "Processando",
+    "welcome": "Boas-vindas, {user}",
+    "signInAgain": "{message} Faça login novamente."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "page": {
+    "accessLabel": "Access",
+    "accessNote": "Access is invite-only. The interface shows an access denied message for unapproved channels. If you want to request access, use <a class=\"wc-link wc-link--underline\" href=\"https://parfaitfair.com/#contact\" target=\"_blank\" rel=\"noopener\">this contact form</a>.",
+    "botManagement": "Bot management",
+    "closeSupport": "Close support dialog",
+    "featureList": "Add or remove the bot • Configure commands and stream events • Manage auto-chat and ad alerts • Manage custom commands, timed messages, and daily check-in",
+    "inviteOnly": "Invite-only",
+    "kofiFallback": "Open in new tab on Ko-fi.com",
+    "lede": "Manage the bot for your Twitch channel.",
+    "signInWithTwitch": "Sign in with Twitch",
+    "supportMe": "Support me",
+    "supportRegion": "Support",
+    "supportTitle": "Support parfaitfair"
+  }
+}

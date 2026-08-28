@@ -15,6 +15,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
 import { sanitizeTimerName } from "@/utils/validation";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -116,7 +117,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error fetching timers",
+      message: tr(req, "api.timers.ErrorFetchingTimers", {}, "Error fetching timers"),
     });
   }
 });
@@ -133,7 +134,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!timerName || !isValidTimerName(timerName)) {
       return res.status(400).json({
         success: false,
-        message: "Timer name is required (letters, numbers, or underscores; reserved words not allowed).",
+        message: tr(req, "api.timers.TimerNameRequiredLetters", {}, "Timer name is required (letters, numbers, or underscores; reserved words not allowed)."),
       });
     }
 
@@ -141,14 +142,14 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!response || typeof response !== "string" || response.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Message text is required.",
+        message: tr(req, "api.timers.MessageTextRequired", {}, "Message text is required."),
       });
     }
 
     if (response.length > MAX_RESPONSE_LENGTH) {
       return res.status(400).json({
         success: false,
-        message: `Message must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
+        message: tr(req, "api.timers.MessageMustCharactersOr", { MAX_RESPONSE_LENGTH: MAX_RESPONSE_LENGTH }, `Message must be ${MAX_RESPONSE_LENGTH} characters or fewer.`),
       });
     }
 
@@ -157,7 +158,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!VALID_TYPES.includes(timerType)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+        message: tr(req, "api.timers.InvalidTypeMustOne", { p1: VALID_TYPES.join(", ") }, `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`),
       });
     }
 
@@ -166,7 +167,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (offenders.length > 0) {
       return res.status(400).json({
         success: false,
-        message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
+        message: tr(req, "api.timers.TheseVariablesArenT", { p1: offenders.join(", ") }, `These variables aren't supported in timers: ${offenders.join(", ")}`),
       });
     }
 
@@ -177,7 +178,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (interval === null) {
       return res.status(400).json({
         success: false,
-        message: `Interval must be between ${MIN_INTERVAL_MINUTES} and ${MAX_INTERVAL_MINUTES} minutes.`,
+        message: tr(req, "api.timers.IntervalMustBetweenMinutes", { MIN_INTERVAL_MINUTES: MIN_INTERVAL_MINUTES, MAX_INTERVAL_MINUTES: MAX_INTERVAL_MINUTES }, `Interval must be between ${MIN_INTERVAL_MINUTES} and ${MAX_INTERVAL_MINUTES} minutes.`),
       });
     }
 
@@ -188,7 +189,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (lines === null) {
       return res.status(400).json({
         success: false,
-        message: `Min chat lines must be between 0 and ${MAX_MIN_CHAT_LINES}.`,
+        message: tr(req, "api.timers.MinChatLinesMust", { MAX_MIN_CHAT_LINES: MAX_MIN_CHAT_LINES }, `Min chat lines must be between 0 and ${MAX_MIN_CHAT_LINES}.`),
       });
     }
 
@@ -209,12 +210,12 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     const txResult = await getDb().runTransaction(async (t) => {
       const existing = await t.get(docRef);
       if (existing.exists) {
-        return { status: 409, message: `Timer "${timerName}" already exists. Use edit to update it.` };
+        return { status: 409, message: tr(req, "api.timers.TimerAlreadyExistsUse", { timerName: timerName }, `Timer "${timerName}" already exists. Use edit to update it.`) };
       }
 
       const allTimers = await t.get(colRef);
       if (allTimers.size >= MAX_TIMERS_PER_CHANNEL) {
-        return { status: 400, message: `Maximum of ${MAX_TIMERS_PER_CHANNEL} timers reached.` };
+        return { status: 400, message: tr(req, "api.timers.MaximumTimersReached", { MAX_TIMERS_PER_CHANNEL: MAX_TIMERS_PER_CHANNEL }, `Maximum of ${MAX_TIMERS_PER_CHANNEL} timers reached.`) };
       }
 
       t.create(docRef, {
@@ -260,7 +261,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error creating timer",
+      message: tr(req, "api.timers.ErrorCreatingTimer", {}, "Error creating timer"),
     });
   }
 });
@@ -273,7 +274,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   if (!isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
-      message: "Invalid timer name.",
+      message: tr(req, "api.timers.InvalidTimerName", {}, "Invalid timer name."),
     });
   }
 
@@ -284,7 +285,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
     if (!existing.exists) {
       return res.status(404).json({
         success: false,
-        message: `Timer "${timerName}" does not exist.`,
+        message: tr(req, "api.timers.TimerDoesNotExist", { timerName: timerName }, `Timer "${timerName}" does not exist.`),
       });
     }
 
@@ -299,7 +300,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (!VALID_TYPES.includes(type)) {
         return res.status(400).json({
           success: false,
-          message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+          message: tr(req, "api.timers.InvalidTypeMustOne2", { p1: VALID_TYPES.join(", ") }, `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`),
         });
       }
       updates.type = type;
@@ -309,20 +310,20 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (typeof response !== "string" || response.trim().length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Message text cannot be empty.",
+          message: tr(req, "api.timers.MessageTextCannotEmpty", {}, "Message text cannot be empty."),
         });
       }
       if (response.length > MAX_RESPONSE_LENGTH) {
         return res.status(400).json({
           success: false,
-          message: `Message must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
+          message: tr(req, "api.timers.MessageMustCharactersOr2", { MAX_RESPONSE_LENGTH: MAX_RESPONSE_LENGTH }, `Message must be ${MAX_RESPONSE_LENGTH} characters or fewer.`),
         });
       }
       const offenders = findUnsupportedTimerVariables(response);
       if (offenders.length > 0) {
         return res.status(400).json({
           success: false,
-          message: `These variables aren't supported in timers: ${offenders.join(", ")}`,
+          message: tr(req, "api.timers.TheseVariablesArenT2", { p1: offenders.join(", ") }, `These variables aren't supported in timers: ${offenders.join(", ")}`),
         });
       }
       updates.response = response.trim();
@@ -333,7 +334,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (interval === null) {
         return res.status(400).json({
           success: false,
-          message: `Interval must be between ${MIN_INTERVAL_MINUTES} and ${MAX_INTERVAL_MINUTES} minutes.`,
+          message: tr(req, "api.timers.IntervalMustBetweenMinutes2", { MIN_INTERVAL_MINUTES: MIN_INTERVAL_MINUTES, MAX_INTERVAL_MINUTES: MAX_INTERVAL_MINUTES }, `Interval must be between ${MIN_INTERVAL_MINUTES} and ${MAX_INTERVAL_MINUTES} minutes.`),
         });
       }
       updates.intervalMinutes = interval;
@@ -344,7 +345,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (lines === null) {
         return res.status(400).json({
           success: false,
-          message: `Min chat lines must be between 0 and ${MAX_MIN_CHAT_LINES}.`,
+          message: tr(req, "api.timers.MinChatLinesMust2", { MAX_MIN_CHAT_LINES: MAX_MIN_CHAT_LINES }, `Min chat lines must be between 0 and ${MAX_MIN_CHAT_LINES}.`),
         });
       }
       updates.minChatLines = lines;
@@ -354,7 +355,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (typeof enabled !== "boolean") {
         return res.status(400).json({
           success: false,
-          message: "Enabled must be a boolean.",
+          message: tr(req, "api.timers.EnabledMustBoolean", {}, "Enabled must be a boolean."),
         });
       }
       updates.enabled = enabled;
@@ -402,7 +403,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error updating timer",
+      message: tr(req, "api.timers.ErrorUpdatingTimer", {}, "Error updating timer"),
     });
   }
 });
@@ -415,7 +416,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   if (!isValidTimerName(timerName)) {
     return res.status(400).json({
       success: false,
-      message: "Invalid timer name.",
+      message: tr(req, "api.timers.InvalidTimerName2", {}, "Invalid timer name."),
     });
   }
 
@@ -426,7 +427,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
     if (!existing.exists) {
       return res.status(404).json({
         success: false,
-        message: `Timer "${timerName}" does not exist.`,
+        message: tr(req, "api.timers.TimerDoesNotExist2", { timerName: timerName }, `Timer "${timerName}" does not exist.`),
       });
     }
 
@@ -445,7 +446,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error deleting timer",
+      message: tr(req, "api.timers.ErrorDeletingTimer", {}, "Error deleting timer"),
     });
   }
 });

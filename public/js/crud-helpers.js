@@ -1,6 +1,7 @@
 import { apiPost, apiPut, apiDelete, AuthError } from './api.js';
 import { showActionToast } from './ui.js';
 import { DEV_MODE, mockDelay } from './dev-mocks.js';
+import { t } from './i18n.js';
 
 /**
  * Shared helper to toggle an item's enabled state
@@ -16,7 +17,8 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
 
     if (DEV_MODE) {
         await mockDelay(500);
-        showActionToast(`${itemName} ${enabled ? 'enabled' : 'disabled'} (dev mode).`, 'success');
+        showActionToast(t(enabled ? 'toast.itemEnabledDev' : 'toast.itemDisabledDev', { item: itemName },
+            `${itemName} ${enabled ? 'enabled' : 'disabled'} (dev mode).`), 'success');
         checkboxEl.disabled = false;
         return;
     }
@@ -26,9 +28,12 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
         const data = await res.json();
 
         if (data.success) {
-            showActionToast(`${itemName} ${enabled ? 'enabled' : 'disabled'}.`, 'success');
+            // Two whole sentences rather than a concatenated adjective: word order and
+            // agreement around the item name differ by language.
+            showActionToast(t(enabled ? 'toast.itemEnabled' : 'toast.itemDisabled', { item: itemName },
+                `${itemName} ${enabled ? 'enabled' : 'disabled'}.`), 'success');
         } else {
-            showActionToast(data.message || `Failed to update ${itemName}.`, 'danger');
+            showActionToast(data.message || t('toast.updateFailed', { item: itemName }, `Failed to update ${itemName}.`), 'danger');
             checkboxEl.checked = !enabled; // Revert on error
         }
     } catch (error) {
@@ -37,7 +42,7 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
             return; // Toast is handled by apiFetch
         }
         console.error(`Error toggling ${itemName}:`, error);
-        showActionToast(`Failed to update ${itemName}.`, 'danger');
+        showActionToast(t('toast.updateFailed', { item: itemName }, `Failed to update ${itemName}.`), 'danger');
         checkboxEl.checked = !enabled; // Revert on error
     } finally {
         checkboxEl.disabled = false;
@@ -51,12 +56,12 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
  * @param {Function} onReload - Callback to reload the list on success
  */
 export async function deleteItem(apiPath, itemName, onReload) {
-    if (!confirm(`Delete ${itemName}?`)) return;
+    if (!confirm(t('confirm.deleteItem', { item: itemName }, `Delete ${itemName}?`))) return;
 
     if (DEV_MODE) {
         await mockDelay(300);
         await onReload();
-        showActionToast(`${itemName} deleted (dev mode).`, 'success');
+        showActionToast(t('toast.itemDeletedDev', { item: itemName }, `${itemName} deleted (dev mode).`), 'success');
         return;
     }
 
@@ -72,11 +77,11 @@ export async function deleteItem(apiPath, itemName, onReload) {
             // Oh, actually the original code only showed a toast on failure for both.
             // Let's just do reload on success.
         } else {
-            showActionToast(data.message || `Failed to delete ${itemName}.`, 'danger');
+            showActionToast(data.message || t('toast.deleteFailed', { item: itemName }, `Failed to delete ${itemName}.`), 'danger');
         }
     } catch (error) {
         if (error instanceof AuthError) return;
         console.error(`Error deleting ${itemName}:`, error);
-        showActionToast(`Failed to delete ${itemName}.`, 'danger');
+        showActionToast(t('toast.deleteFailed', { item: itemName }, `Failed to delete ${itemName}.`), 'danger');
     }
 }

@@ -1,6 +1,7 @@
 import { apiGet, apiPut, apiDelete, getToken } from '../api.js';
 import { showActionToast, setSuccessMessage, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
+import { t } from '../i18n.js';
 
 let checkinLoadingEl;
 let checkinEnabledEl;
@@ -105,12 +106,12 @@ async function saveCheckinSettings() {
 
     const cost = parseInt(checkinCostEl.value, 10);
     if (isNaN(cost) || cost < 1 || cost > 999999) {
-        checkinMsgEl.textContent = 'Cost must be between 1 and 999999 points.';
+        checkinMsgEl.textContent = t('validation.checkinCost', {}, 'Cost must be between 1 and 999999 points.');
         checkinMsgEl.className = 'text-danger mt-2 mb-0';
         return;
     }
 
-    checkinMsgEl.textContent = 'Saving...';
+    checkinMsgEl.textContent = t('status.saving', {}, 'Saving…');
     checkinMsgEl.className = 'text-muted mt-2 mb-0';
 
     const body = {
@@ -124,7 +125,7 @@ async function saveCheckinSettings() {
 
     if (DEV_MODE) {
         await mockDelay(300);
-        setSuccessMessage(checkinMsgEl, 'Saved (dev mode)');
+        setSuccessMessage(checkinMsgEl, t('status.savedDevShort', {}, 'Saved (dev mode)'));
         checkinMsgEl.className = 'text-success mt-2 mb-0';
         return;
     }
@@ -134,39 +135,39 @@ async function saveCheckinSettings() {
         const data = await res.json();
 
         if (data.success) {
-            setSuccessMessage(checkinMsgEl, data.message || 'Check-in settings saved!');
+            setSuccessMessage(checkinMsgEl, data.message || t('toast.checkinSavedShort', {}, 'Check-in settings saved!'));
             checkinMsgEl.className = 'text-success mt-2 mb-0';
-            showActionToast(data.message || 'Daily check-in settings saved.', 'success');
+            showActionToast(data.message || t('toast.checkinSaved', {}, 'Daily check-in settings saved.'), 'success');
             // Update delete button visibility from returned config
             if (data.config?.rewardId) updateCheckinDeleteBtn(data.config.rewardId);
         } else {
-            checkinMsgEl.textContent = data.message || 'Failed to save settings.';
+            checkinMsgEl.textContent = data.message || t('toast.saveSettingsFailed', {}, 'Failed to save settings.');
             checkinMsgEl.className = 'text-danger mt-2 mb-0';
-            if (data.needsReauth) {
-                showActionToast('Sign in again to manage Channel Point rewards.', 'danger', 0);
+            if (data.needsReAuth) {
+                showActionToast(t('toast.checkinReauth', {}, 'Sign in again to manage Channel Point rewards.'), 'danger', 0);
             }
         }
     } catch (error) {
         console.error('Error saving check-in settings:', error);
-        checkinMsgEl.textContent = 'Network error. Try again.';
+        checkinMsgEl.textContent = t('toast.networkError', {}, 'Network error. Try again.');
         checkinMsgEl.className = 'text-danger mt-2 mb-0';
     }
 }
 
 async function deleteCheckinReward() {
     if (!getToken()) return;
-    if (!confirm('Delete the Daily Check-In reward from your channel? You cannot undo this action.')) return;
+    if (!confirm(t('confirm.deleteCheckin', {}, 'Delete the Daily Check-In reward from your channel? You cannot undo this action.'))) return;
 
-    checkinMsgEl.textContent = 'Deleting…';
+    checkinMsgEl.textContent = t('status.deleting', {}, 'Deleting…');
     checkinMsgEl.className = 'text-muted mt-2 mb-0';
 
     if (DEV_MODE) {
         await mockDelay(300);
-        setSuccessMessage(checkinMsgEl, 'Reward deleted (dev mode)');
+        setSuccessMessage(checkinMsgEl, t('toast.rewardDeletedDev', {}, 'Reward deleted (dev mode)'));
         checkinMsgEl.className = 'text-success mt-2 mb-0';
         checkinEnabledEl.checked = false;
         updateCheckinDeleteBtn(null);
-        showActionToast('Check-in reward deleted.', 'success');
+        showActionToast(t('toast.checkinDeleted', {}, 'Check-in reward deleted.'), 'success');
         return;
     }
 
@@ -175,18 +176,18 @@ async function deleteCheckinReward() {
         const data = await res.json();
 
         if (data.success) {
-            setSuccessMessage(checkinMsgEl, data.message || 'Reward deleted');
+            setSuccessMessage(checkinMsgEl, data.message || t('toast.rewardDeleted', {}, 'Reward deleted'));
             checkinMsgEl.className = 'text-success mt-2 mb-0';
             checkinEnabledEl.checked = false;
             updateCheckinDeleteBtn(null);
-            showActionToast(data.message || 'Check-in reward deleted.', 'success');
+            showActionToast(data.message || t('toast.checkinDeleted', {}, 'Check-in reward deleted.'), 'success');
         } else {
-            checkinMsgEl.textContent = data.message || 'Failed to delete reward.';
+            checkinMsgEl.textContent = data.message || t('toast.rewardDeleteFailed', {}, 'Failed to delete reward.');
             checkinMsgEl.className = 'text-danger mt-2 mb-0';
         }
     } catch (error) {
         console.error('Error deleting check-in reward:', error);
-        checkinMsgEl.textContent = 'Network error. Try again.';
+        checkinMsgEl.textContent = t('toast.networkError', {}, 'Network error. Try again.');
         checkinMsgEl.className = 'text-danger mt-2 mb-0';
     }
 }

@@ -1,0 +1,18 @@
+{
+  "page": {
+    "canceledMessage": "変更は行われませんでした。準備ができたらサインインしてください。",
+    "canceledReadout": "キャンセルされました",
+    "canceledTitle": "WildcatSage - サインインがキャンセルされました",
+    "canceledTitleHeading": "サインインがキャンセルされました",
+    "defaultMessage": "Twitch認証中にエラーが発生しました。",
+    "errorLabel": "エラー",
+    "readout": "認証に失敗しました",
+    "returnToSignIn": "サインインに戻る",
+    "title": "認証に失敗しました",
+    "tryAgain": "再試行",
+    "twitchError": "Twitch認証中にエラーが返されました。",
+    "unknownCode": "不明",
+    "unspecifiedCode": "未指定",
+    "unspecifiedError": "詳細不明のエラーが発生しました。"
+  }
+}

@@ -1,6 +1,7 @@
 import { apiPost, getToken, setToken, AuthError } from '../api.js';
 import { showActionToast } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
+import { t } from '../i18n.js';
 
 let botStatusEl;
 let addBotBtn;
@@ -32,11 +33,11 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
     const logoutLink = document.getElementById('logout-link');
 
     addBotBtn.addEventListener('click', async () => {
-        showActionToast('Adding bot to channel…', 'info', 0);
+        showActionToast(t('toast.addingBot', {}, 'Adding bot to channel…'), 'info', 0);
         
         if (DEV_MODE) {
             await mockDelay(500);
-            showActionToast('Bot added to channel (dev mode).', 'success');
+            showActionToast(t('toast.botAddedDev', {}, 'Bot added to channel (dev mode).'), 'success');
             updateBotStatusUI(true);
             if (onBotAdded) await onBotAdded();
             return;
@@ -54,16 +55,16 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
         } catch (error) {
             if (error instanceof AuthError) return;
             console.error('Error adding bot:', error);
-            showActionToast('Failed to add bot to channel.', 'danger');
+            showActionToast(t('toast.addBotFailed', {}, 'Failed to add bot to channel.'), 'danger');
         }
     });
 
     removeBotBtn.addEventListener('click', async () => {
-        showActionToast('Removing bot from channel…', 'info', 0);
+        showActionToast(t('toast.removingBot', {}, 'Removing bot from channel…'), 'info', 0);
 
         if (DEV_MODE) {
             await mockDelay(500);
-            showActionToast('Bot removed from channel (dev mode).', 'success');
+            showActionToast(t('toast.botRemovedDev', {}, 'Bot removed from channel (dev mode).'), 'success');
             updateBotStatusUI(false);
             if (onBotRemoved) await onBotRemoved();
             return;
@@ -81,7 +82,7 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
         } catch (error) {
             if (error instanceof AuthError) return;
             console.error('Error removing bot:', error);
-            showActionToast('Failed to remove bot from channel.', 'danger');
+            showActionToast(t('toast.removeBotFailed', {}, 'Failed to remove bot from channel.'), 'danger');
         }
     });
 
@@ -104,7 +105,7 @@ export function updateBotStatusUI(isActive) {
     if (!botStatusEl) return;
     
     if (isActive) {
-        botStatusEl.textContent = 'Active';
+        botStatusEl.textContent = t('status.active', {}, 'Active');
         botStatusEl.classList.remove('text-danger');
         botStatusEl.classList.add('text-success');
         addBotBtn.style.display = 'none';
@@ -112,7 +113,7 @@ export function updateBotStatusUI(isActive) {
         // owned by CSS, not hardcoded here.
         removeBotBtn.style.display = '';
     } else {
-        botStatusEl.textContent = 'Inactive';
+        botStatusEl.textContent = t('status.inactive', {}, 'Inactive');
         botStatusEl.classList.remove('text-success');
         botStatusEl.classList.add('text-danger');
         addBotBtn.style.display = '';

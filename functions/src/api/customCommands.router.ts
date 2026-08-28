@@ -11,6 +11,7 @@ import { CUSTOM_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -66,7 +67,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error fetching custom commands",
+      message: tr(req, "api.customCommands.ErrorFetchingCustomCommands", {}, "Error fetching custom commands"),
     });
   }
 });
@@ -82,7 +83,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!isValidCommandName(name)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid command name. Use 1-25 lowercase letters, numbers, or underscores.",
+        message: tr(req, "api.customCommands.InvalidCommandNameUse", {}, "Invalid command name. Use 1-25 lowercase letters, numbers, or underscores."),
       });
     }
 
@@ -92,14 +93,14 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!response || typeof response !== "string" || response.trim().length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Response text is required.",
+        message: tr(req, "api.customCommands.ResponseTextRequired", {}, "Response text is required."),
       });
     }
 
     if (response.length > MAX_RESPONSE_LENGTH) {
       return res.status(400).json({
         success: false,
-        message: `Response must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
+        message: tr(req, "api.customCommands.ResponseMustCharactersOr", { MAX_RESPONSE_LENGTH: MAX_RESPONSE_LENGTH }, `Response must be ${MAX_RESPONSE_LENGTH} characters or fewer.`),
       });
     }
 
@@ -108,7 +109,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!VALID_PERMISSIONS.includes(perm)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid permission. Must be one of: ${VALID_PERMISSIONS.join(", ")}`,
+        message: tr(req, "api.customCommands.InvalidPermissionMustOne", { p1: VALID_PERMISSIONS.join(", ") }, `Invalid permission. Must be one of: ${VALID_PERMISSIONS.join(", ")}`),
       });
     }
 
@@ -122,7 +123,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (existing.exists) {
       return res.status(409).json({
         success: false,
-        message: `Command !${commandName} already exists. Use edit to update it.`,
+        message: tr(req, "api.customCommands.CommandAlreadyExistsUse", { commandName: commandName }, `Command !${commandName} already exists. Use edit to update it.`),
       });
     }
 
@@ -131,7 +132,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (countSnap.data().count >= MAX_COMMANDS_PER_CHANNEL) {
       return res.status(400).json({
         success: false,
-        message: `Maximum of ${MAX_COMMANDS_PER_CHANNEL} custom commands reached.`,
+        message: tr(req, "api.customCommands.MaximumCustomCommandsReached", { MAX_COMMANDS_PER_CHANNEL: MAX_COMMANDS_PER_CHANNEL }, `Maximum of ${MAX_COMMANDS_PER_CHANNEL} custom commands reached.`),
       });
     }
 
@@ -140,7 +141,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!VALID_TYPES.includes(commandType)) {
       return res.status(400).json({
         success: false,
-        message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+        message: tr(req, "api.customCommands.InvalidTypeMustOne", { p1: VALID_TYPES.join(", ") }, `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`),
       });
     }
 
@@ -179,7 +180,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error creating custom command",
+      message: tr(req, "api.customCommands.ErrorCreatingCustomCommand", {}, "Error creating custom command"),
     });
   }
 });
@@ -192,7 +193,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   if (!isValidCommandName(commandName)) {
     return res.status(400).json({
       success: false,
-      message: "Invalid command name.",
+      message: tr(req, "api.customCommands.InvalidCommandName", {}, "Invalid command name."),
     });
   }
 
@@ -203,7 +204,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
     if (!existing.exists) {
       return res.status(404).json({
         success: false,
-        message: `Command !${commandName} does not exist.`,
+        message: tr(req, "api.customCommands.CommandDoesNotExist", { commandName: commandName }, `Command !${commandName} does not exist.`),
       });
     }
 
@@ -217,13 +218,13 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (typeof response !== "string" || response.trim().length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Response text cannot be empty.",
+          message: tr(req, "api.customCommands.ResponseTextCannotEmpty", {}, "Response text cannot be empty."),
         });
       }
       if (response.length > MAX_RESPONSE_LENGTH) {
         return res.status(400).json({
           success: false,
-          message: `Response must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
+          message: tr(req, "api.customCommands.ResponseMustCharactersOr2", { MAX_RESPONSE_LENGTH: MAX_RESPONSE_LENGTH }, `Response must be ${MAX_RESPONSE_LENGTH} characters or fewer.`),
         });
       }
       updates.response = response.trim();
@@ -233,7 +234,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (!VALID_PERMISSIONS.includes(permission)) {
         return res.status(400).json({
           success: false,
-          message: `Invalid permission. Must be one of: ${VALID_PERMISSIONS.join(", ")}`,
+          message: tr(req, "api.customCommands.InvalidPermissionMustOne2", { p1: VALID_PERMISSIONS.join(", ") }, `Invalid permission. Must be one of: ${VALID_PERMISSIONS.join(", ")}`),
         });
       }
       updates.permission = permission;
@@ -243,7 +244,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (typeof cooldown !== "number") {
         return res.status(400).json({
           success: false,
-          message: "Cooldown must be a number.",
+          message: tr(req, "api.customCommands.CooldownMustNumber", {}, "Cooldown must be a number."),
         });
       }
       updates.cooldownMs = Math.max(0, Math.min(300000, cooldown));
@@ -253,7 +254,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (typeof enabled !== "boolean") {
         return res.status(400).json({
           success: false,
-          message: "Enabled must be a boolean.",
+          message: tr(req, "api.customCommands.EnabledMustBoolean", {}, "Enabled must be a boolean."),
         });
       }
       updates.enabled = enabled;
@@ -263,7 +264,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       if (!VALID_TYPES.includes(type)) {
         return res.status(400).json({
           success: false,
-          message: `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`,
+          message: tr(req, "api.customCommands.InvalidTypeMustOne2", { p1: VALID_TYPES.join(", ") }, `Invalid type. Must be one of: ${VALID_TYPES.join(", ")}`),
         });
       }
       updates.type = type;
@@ -311,7 +312,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error updating custom command",
+      message: tr(req, "api.customCommands.ErrorUpdatingCustomCommand", {}, "Error updating custom command"),
     });
   }
 });
@@ -324,7 +325,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   if (!isValidCommandName(commandName)) {
     return res.status(400).json({
       success: false,
-      message: "Invalid command name.",
+      message: tr(req, "api.customCommands.InvalidCommandName2", {}, "Invalid command name."),
     });
   }
 
@@ -335,7 +336,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
     if (!existing.exists) {
       return res.status(404).json({
         success: false,
-        message: `Command !${commandName} does not exist.`,
+        message: tr(req, "api.customCommands.CommandDoesNotExist2", { commandName: commandName }, `Command !${commandName} does not exist.`),
       });
     }
 
@@ -354,7 +355,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error deleting custom command",
+      message: tr(req, "api.customCommands.ErrorDeletingCustomCommand", {}, "Error deleting custom command"),
     });
   }
 });

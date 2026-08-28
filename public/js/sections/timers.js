@@ -2,6 +2,7 @@ import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockTimers, mockDelay } from '../dev-mocks.js';
 import { toggleItem, deleteItem } from '../crud-helpers.js';
+import { t } from '../i18n.js';
 
 let timerLoadingEl;
 let timerListEl;
@@ -39,11 +40,11 @@ export function initTimers() {
     // Toggle label when timer AI mode changes
     timerTypeToggleEl.addEventListener('change', () => {
         if (timerTypeToggleEl.checked) {
-            timerResponseLabelEl.textContent = 'AI Prompt';
-            timerResponseEl.placeholder = 'Remind chat about Discord for the current game.';
+            timerResponseLabelEl.textContent = t('page.timers.aiPromptLabel', {}, 'AI Prompt');
+            timerResponseEl.placeholder = t('page.timers.aiPromptPlaceholder', {}, 'Remind chat about Discord for the current game.');
         } else {
-            timerResponseLabelEl.textContent = 'Message';
-            timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+            timerResponseLabelEl.textContent = t('page.timers.messageLabel', {}, 'Message');
+            timerResponseEl.placeholder = t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
         }
     });
 
@@ -118,13 +119,13 @@ function renderTimersList(timers) {
 
         const interval = document.createElement('span');
         interval.className = 'cmd-badge';
-        interval.textContent = `every ${timer.intervalMinutes}m`;
+        interval.textContent = t('label.everyMinutes', { minutes: timer.intervalMinutes }, `every ${timer.intervalMinutes}m`);
         meta.appendChild(interval);
 
         if (timer.minChatLines > 0) {
             const lines = document.createElement('span');
             lines.className = 'cmd-cooldown';
-            lines.textContent = `${timer.minChatLines} chat lines`;
+            lines.textContent = t('label.chatLines', { count: timer.minChatLines }, `${timer.minChatLines} chat lines`);
             meta.appendChild(lines);
         }
 
@@ -133,7 +134,7 @@ function renderTimersList(timers) {
             aiBadge.className = 'cmd-badge';
             aiBadge.style.background = 'var(--bs-purple, #7c3aed)';
             aiBadge.style.color = '#fff';
-            aiBadge.textContent = 'AI';
+            aiBadge.textContent = 'AI'; // product term, not translated
             meta.appendChild(aiBadge);
         }
 
@@ -155,8 +156,8 @@ function renderTimersList(timers) {
         checkbox.id = `timer-enabled-${timer.name}`;
         checkbox.checked = timer.enabled !== false;
         checkbox.role = 'switch';
-        checkbox.setAttribute('aria-label', `Enable timer ${timer.name}`);
-        checkbox.title = 'Enable or disable this timed message';
+        checkbox.setAttribute('aria-label', t('label.enableTimer', { name: timer.name }, `Enable timer ${timer.name}`));
+        checkbox.title = t('label.enableTimerTitle', {}, 'Enable or disable this timed message');
         checkbox.style.cssText = 'width: 44px; height: 24px; min-height: 24px; flex-shrink: 0;';
         checkbox.addEventListener('change', async function () {
             await toggleTimer(timer.name, this.checked, this);
@@ -166,16 +167,16 @@ function renderTimersList(timers) {
         const editBtn = document.createElement('button');
         editBtn.type = 'button';
         editBtn.className = 'btn btn-outline-primary btn-sm';
-        editBtn.textContent = 'Edit';
-        editBtn.setAttribute('aria-label', `Edit timer ${timer.name}`);
+        editBtn.textContent = t('common.edit', {}, 'Edit');
+        editBtn.setAttribute('aria-label', t('label.editTimer', { name: timer.name }, `Edit timer ${timer.name}`));
         editBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         editBtn.addEventListener('click', () => openTimerEditForm(timer));
 
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.className = 'btn btn-outline-danger btn-sm';
-        deleteBtn.textContent = 'Del';
-        deleteBtn.setAttribute('aria-label', `Delete timer ${timer.name}`);
+        deleteBtn.textContent = t('common.delete', {}, 'Del');
+        deleteBtn.setAttribute('aria-label', t('label.deleteTimer', { name: timer.name }, `Delete timer ${timer.name}`));
         deleteBtn.style.cssText = 'min-height: 28px; min-width: 44px; padding: 4px 10px; display: inline-flex; align-items: center; justify-content: center;';
         deleteBtn.addEventListener('click', () => deleteTimer(timer.name));
 
@@ -202,8 +203,8 @@ function openTimerAddForm() {
     timerIntervalEl.value = '15';
     timerLinesEl.value = '5';
     timerTypeToggleEl.checked = false;
-    timerResponseLabelEl.textContent = 'Message';
-    timerResponseEl.placeholder = 'Enjoying the stream? Join the Discord!';
+    timerResponseLabelEl.textContent = t('page.timers.messageLabel', {}, 'Message');
+    timerResponseEl.placeholder = t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
     timerFormEl.style.display = 'block';
     timerNameEl.focus();
@@ -217,10 +218,12 @@ function openTimerEditForm(timer) {
     timerIntervalEl.value = String(timer.intervalMinutes || 15);
     timerLinesEl.value = String(timer.minChatLines ?? 5);
     timerTypeToggleEl.checked = timer.type === 'prompt';
-    timerResponseLabelEl.textContent = timer.type === 'prompt' ? 'AI Prompt' : 'Message';
+    timerResponseLabelEl.textContent = timer.type === 'prompt'
+        ? t('page.timers.aiPromptLabel', {}, 'AI Prompt')
+        : t('page.timers.messageLabel', {}, 'Message');
     timerResponseEl.placeholder = timer.type === 'prompt'
-        ? 'Remind chat about Discord for the current game.'
-        : 'Enjoying the stream? Join the Discord!';
+        ? t('page.timers.aiPromptPlaceholder', {}, 'Remind chat about Discord for the current game.')
+        : t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
     timerFormEl.style.display = 'block';
     timerResponseEl.focus();
@@ -252,36 +255,36 @@ async function saveTimer() {
     const minChatLines = parseInt(timerLinesEl.value, 10);
 
     if (!name) {
-        timerFormMsgEl.textContent = 'Timer name is required.';
+        timerFormMsgEl.textContent = t('validation.timerNameRequired', {}, 'Timer name is required.');
         timerFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
     if (!response) {
-        timerFormMsgEl.textContent = 'Message text is required.';
+        timerFormMsgEl.textContent = t('validation.messageRequired', {}, 'Message text is required.');
         timerFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
     if (isNaN(intervalMinutes) || intervalMinutes < 2 || intervalMinutes > 1440) {
-        timerFormMsgEl.textContent = 'Interval must be between 2 and 1440 minutes.';
+        timerFormMsgEl.textContent = t('validation.intervalRange', {}, 'Interval must be between 2 and 1440 minutes.');
         timerFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
     if (isNaN(minChatLines) || minChatLines < 0 || minChatLines > 100) {
-        timerFormMsgEl.textContent = 'Minimum chat lines must be between 0 and 100.';
+        timerFormMsgEl.textContent = t('validation.minLinesRange', {}, 'Minimum chat lines must be between 0 and 100.');
         timerFormMsgEl.style.color = 'var(--danger-primary)';
         return;
     }
 
-    timerFormMsgEl.textContent = 'Saving…';
+    timerFormMsgEl.textContent = t('status.saving', {}, 'Saving…');
     timerFormMsgEl.style.color = 'var(--text-muted)';
     timerSaveBtn.disabled = true;
 
     if (DEV_MODE) {
         await mockDelay(500);
-        timerFormMsgEl.textContent = `Timer "${name}" saved (dev mode).`;
+        timerFormMsgEl.textContent = t('toast.timerSavedDev', { name }, `Timer "${name}" saved (dev mode).`);
         timerFormMsgEl.style.color = '#4ecdc4';
         timerSaveBtn.disabled = false;
         closeTimerForm();
@@ -312,12 +315,12 @@ async function saveTimer() {
             closeTimerForm();
             await loadTimers();
         } else {
-            timerFormMsgEl.textContent = data.message || 'Failed to save timer.';
+            timerFormMsgEl.textContent = data.message || t('toast.timerSaveFailed', {}, 'Failed to save timer.');
             timerFormMsgEl.style.color = 'var(--danger-primary)';
         }
     } catch (error) {
         console.error('Error saving timer:', error);
-        timerFormMsgEl.textContent = 'Failed to save timer.';
+        timerFormMsgEl.textContent = t('toast.timerSaveFailed', {}, 'Failed to save timer.');
         timerFormMsgEl.style.color = 'var(--danger-primary)';
     } finally {
         timerSaveBtn.disabled = false;
