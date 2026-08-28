@@ -2,7 +2,7 @@
  * Server-side message localization.
  *
  * The dashboard renders `data.message` from API responses verbatim, so a response built here in
- * English shows up as an English toast in an otherwise translated UI. Routers call `req.t(...)`
+ * English shows up as an English toast in an otherwise translated UI. Routers call `tr(req, ...)`
  * with a catalog key and the English text; the English text is always the fallback, so an
  * untranslated key or an unknown locale degrades to exactly the previous behaviour.
  *
@@ -22,7 +22,7 @@ function interpolate(template: string, params: Record<string, unknown>): string 
   return template.replace(/\{(\w+)\}/g, (match, name) =>
     Object.prototype.hasOwnProperty.call(params, name) && params[name] != null
       ? String(params[name])
-      : match
+      : match,
   );
 }
 
@@ -37,7 +37,7 @@ export function translate(
   key: string,
   params: Record<string, unknown>,
   fallback: string,
-  locale: string
+  locale: string,
 ): string {
   const catalog = catalogs[locale as SupportedLocale];
   const template = catalog && catalog[key];
@@ -76,7 +76,7 @@ export function tr(
   req: Pick<Request, "get"> & { locale?: SupportedLocale },
   key: string,
   params: Record<string, unknown>,
-  fallback: string
+  fallback: string,
 ): string {
   const locale =
     req?.locale ?? resolveLocale(typeof req?.get === "function" ? req.get("X-Locale") : undefined);

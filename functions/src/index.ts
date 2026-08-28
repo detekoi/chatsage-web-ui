@@ -50,8 +50,14 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Test environment variables endpoint (for debugging)
+// Test environment variables endpoint (for debugging).
+// Emulator only: it reports which secrets are configured plus internal URLs, which is useful
+// locally and is reconnaissance for anyone else.
 app.get("/test/env", (req, res) => {
+  if (process.env.FUNCTIONS_EMULATOR !== "true") {
+    return res.status(404).json({ success: false, message: "Not found" });
+  }
+
   const {
     TWITCH_CLIENT_ID,
     TWITCH_CLIENT_SECRET,

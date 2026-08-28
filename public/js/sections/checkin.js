@@ -143,7 +143,7 @@ async function saveCheckinSettings() {
         } else {
             checkinMsgEl.textContent = data.message || t('toast.saveSettingsFailed', {}, 'Failed to save settings.');
             checkinMsgEl.className = 'text-danger mt-2 mb-0';
-            if (data.needsReauth) {
+            if (data.needsReAuth) {
                 showActionToast(t('toast.checkinReauth', {}, 'Sign in again to manage Channel Point rewards.'), 'danger', 0);
             }
         }

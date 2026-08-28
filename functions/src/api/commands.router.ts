@@ -112,7 +112,11 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: tr(req, "api.commands.CommandSuccessfully", { command: command, p2: enabled ? "enabled" : "disabled" }, `Command ${command} ${enabled ? "enabled" : "disabled"} successfully.`),
+      // Two whole keys rather than splicing "enabled"/"disabled" in as a parameter: the word is
+      // English, so a single template renders as "Comando !help enabled correctamente."
+      message: enabled
+        ? tr(req, "api.commands.CommandEnabledSuccessfully", { command }, `Command ${command} enabled successfully.`)
+        : tr(req, "api.commands.CommandDisabledSuccessfully", { command }, `Command ${command} disabled successfully.`),
     });
   } catch (error) {
     logger.error("Error updating command settings", {

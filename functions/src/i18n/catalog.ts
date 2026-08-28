@@ -13,6 +13,8 @@ export const DEFAULT_LOCALE: SupportedLocale = "en";
 export type Catalog = Record<string, string>;
 
 const en: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Command {command} enabled successfully.",
+  "api.commands.CommandDisabledSuccessfully": "Command {command} disabled successfully.",
   "api.authStatus.TwitchAuthenticationValid": "Twitch authentication is valid",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Twitch authentication successfully refreshed",
   "api.autoChat.FailedLoadAutoChat": "Failed to load auto-chat config",
@@ -39,7 +41,6 @@ const en: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Error fetching command settings",
   "api.commands.InvalidCommandName": "Invalid command name",
   "api.commands.InvalidEnabledValueMust": "Invalid enabled value - must be boolean",
-  "api.commands.CommandSuccessfully": "Command {command} {p2} successfully.",
   "api.commands.ErrorUpdatingCommandSettings": "Error updating command settings",
   "api.customCommands.ErrorFetchingCustomCommands": "Error fetching custom commands",
   "api.customCommands.InvalidCommandNameUse": "Invalid command name. Use 1-25 lowercase letters, numbers, or underscores.",
@@ -92,7 +93,7 @@ const en: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Error updating timer",
   "api.timers.InvalidTimerName2": "Invalid timer name.",
   "api.timers.TimerDoesNotExist2": "Timer \"{timerName}\" does not exist.",
-  "api.timers.ErrorDeletingTimer": "Error deleting timer"
+  "api.timers.ErrorDeletingTimer": "Error deleting timer",
 };
 
 const es: Catalog = {
@@ -122,7 +123,6 @@ const es: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Error al obtener la configuración del comando",
   "api.commands.InvalidCommandName": "Nombre de comando no válido",
   "api.commands.InvalidEnabledValueMust": "Valor de activación no válido: debe ser booleano",
-  "api.commands.CommandSuccessfully": "Comando {command} {p2} correctamente.",
   "api.commands.ErrorUpdatingCommandSettings": "Error al actualizar la configuración del comando",
   "api.customCommands.ErrorFetchingCustomCommands": "Error al obtener los comandos personalizados",
   "api.customCommands.InvalidCommandNameUse": "Nombre de comando no válido. Usa de 1 a 25 letras minúsculas, números o guiones bajos.",
@@ -175,7 +175,9 @@ const es: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Error al actualizar el temporizador",
   "api.timers.InvalidTimerName2": "Nombre de temporizador no válido.",
   "api.timers.TimerDoesNotExist2": "El temporizador \"{timerName}\" no existe.",
-  "api.timers.ErrorDeletingTimer": "Error al eliminar el temporizador"
+  "api.timers.ErrorDeletingTimer": "Error al eliminar el temporizador",
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} activado correctamente.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} desactivado correctamente.",
 };
 
 const fr: Catalog = {
@@ -205,7 +207,6 @@ const fr: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Erreur lors de la récupération des paramètres de commande",
   "api.commands.InvalidCommandName": "Nom de commande invalide",
   "api.commands.InvalidEnabledValueMust": "Valeur activée invalide - doit être un booléen",
-  "api.commands.CommandSuccessfully": "Commande {command} {p2} avec succès.",
   "api.commands.ErrorUpdatingCommandSettings": "Erreur lors de la mise à jour des paramètres de commande",
   "api.customCommands.ErrorFetchingCustomCommands": "Erreur lors de la récupération des commandes personnalisées",
   "api.customCommands.InvalidCommandNameUse": "Nom de commande invalide. Utilisez 1 à 25 lettres minuscules, chiffres ou tirets du bas.",
@@ -258,7 +259,9 @@ const fr: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Erreur lors de la mise à jour du timer",
   "api.timers.InvalidTimerName2": "Nom de timer invalide.",
   "api.timers.TimerDoesNotExist2": "Le timer \"{timerName}\" n'existe pas.",
-  "api.timers.ErrorDeletingTimer": "Erreur lors de la suppression du timer"
+  "api.timers.ErrorDeletingTimer": "Erreur lors de la suppression du timer",
+  "api.commands.CommandEnabledSuccessfully": "Commande {command} activée avec succès.",
+  "api.commands.CommandDisabledSuccessfully": "Commande {command} désactivée avec succès.",
 };
 
 const de: Catalog = {
@@ -288,7 +291,6 @@ const de: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Fehler beim Abrufen der Befehlseinstellungen",
   "api.commands.InvalidCommandName": "Ungültiger Befehlsname",
   "api.commands.InvalidEnabledValueMust": "Ungültiger Aktivierungswert – muss ein Boolean sein",
-  "api.commands.CommandSuccessfully": "Befehl {command} erfolgreich {p2}.",
   "api.commands.ErrorUpdatingCommandSettings": "Fehler beim Aktualisieren der Befehlseinstellungen",
   "api.customCommands.ErrorFetchingCustomCommands": "Fehler beim Abrufen der benutzerdefinierten Befehle",
   "api.customCommands.InvalidCommandNameUse": "Ungültiger Befehlsname. Verwende 1–25 Kleinbuchstaben, Zahlen oder Unterstriche.",
@@ -341,7 +343,9 @@ const de: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Fehler beim Aktualisieren des Timers",
   "api.timers.InvalidTimerName2": "Ungültiger Timer-Name.",
   "api.timers.TimerDoesNotExist2": "Timer \"{timerName}\" existiert nicht.",
-  "api.timers.ErrorDeletingTimer": "Fehler beim Löschen des Timers"
+  "api.timers.ErrorDeletingTimer": "Fehler beim Löschen des Timers",
+  "api.commands.CommandEnabledSuccessfully": "Befehl {command} erfolgreich aktiviert.",
+  "api.commands.CommandDisabledSuccessfully": "Befehl {command} erfolgreich deaktiviert.",
 };
 
 const it: Catalog = {
@@ -371,7 +375,6 @@ const it: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Errore durante il recupero delle impostazioni dei comandi",
   "api.commands.InvalidCommandName": "Nome comando non valido",
   "api.commands.InvalidEnabledValueMust": "Valore 'enabled' non valido: deve essere un booleano",
-  "api.commands.CommandSuccessfully": "Comando {command} {p2} con successo.",
   "api.commands.ErrorUpdatingCommandSettings": "Errore durante l'aggiornamento delle impostazioni del comando",
   "api.customCommands.ErrorFetchingCustomCommands": "Errore durante il recupero dei comandi personalizzati",
   "api.customCommands.InvalidCommandNameUse": "Nome comando non valido. Usa da 1 a 25 caratteri tra lettere minuscole, numeri o underscore.",
@@ -424,7 +427,9 @@ const it: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Errore durante l'aggiornamento del timer",
   "api.timers.InvalidTimerName2": "Nome del timer non valido.",
   "api.timers.TimerDoesNotExist2": "Il timer \"{timerName}\" non esiste.",
-  "api.timers.ErrorDeletingTimer": "Errore durante l'eliminazione del timer"
+  "api.timers.ErrorDeletingTimer": "Errore durante l'eliminazione del timer",
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} abilitato con successo.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} disabilitato con successo.",
 };
 
 const pt: Catalog = {
@@ -454,7 +459,6 @@ const pt: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Erro ao buscar configurações de comandos",
   "api.commands.InvalidCommandName": "Nome de comando inválido",
   "api.commands.InvalidEnabledValueMust": "Valor de ativação inválido - deve ser booleano",
-  "api.commands.CommandSuccessfully": "Comando {command} {p2} com sucesso.",
   "api.commands.ErrorUpdatingCommandSettings": "Erro ao atualizar configurações de comandos",
   "api.customCommands.ErrorFetchingCustomCommands": "Erro ao buscar comandos personalizados",
   "api.customCommands.InvalidCommandNameUse": "Nome de comando inválido. Use de 1 a 25 letras minúsculas, números ou underscores.",
@@ -507,7 +511,9 @@ const pt: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Erro ao atualizar temporizador",
   "api.timers.InvalidTimerName2": "Nome de temporizador inválido.",
   "api.timers.TimerDoesNotExist2": "O temporizador \"{timerName}\" não existe.",
-  "api.timers.ErrorDeletingTimer": "Erro ao excluir temporizador"
+  "api.timers.ErrorDeletingTimer": "Erro ao excluir temporizador",
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} ativado com sucesso.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} desativado com sucesso.",
 };
 
 const ja: Catalog = {
@@ -537,7 +543,6 @@ const ja: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "コマンド設定の取得エラー",
   "api.commands.InvalidCommandName": "無効なコマンド名です",
   "api.commands.InvalidEnabledValueMust": "有効/無効の値が無効です（真偽値である必要があります）",
-  "api.commands.CommandSuccessfully": "コマンド {command} の{p2}が完了しました。",
   "api.commands.ErrorUpdatingCommandSettings": "コマンド設定の更新エラー",
   "api.customCommands.ErrorFetchingCustomCommands": "カスタムコマンドの取得エラー",
   "api.customCommands.InvalidCommandNameUse": "無効なコマンド名です。1〜25文字の小文字英数字またはアンダースコアを使用してください。",
@@ -590,7 +595,9 @@ const ja: Catalog = {
   "api.timers.ErrorUpdatingTimer": "タイマーの更新エラー",
   "api.timers.InvalidTimerName2": "無効なタイマー名です。",
   "api.timers.TimerDoesNotExist2": "タイマー \"{timerName}\" は存在しません。",
-  "api.timers.ErrorDeletingTimer": "タイマーの削除エラー"
+  "api.timers.ErrorDeletingTimer": "タイマーの削除エラー",
+  "api.commands.CommandEnabledSuccessfully": "コマンド {command} を有効にしました。",
+  "api.commands.CommandDisabledSuccessfully": "コマンド {command} を無効にしました。",
 };
 
 const ru: Catalog = {
@@ -620,7 +627,6 @@ const ru: Catalog = {
   "api.commands.ErrorFetchingCommandSettings": "Ошибка при получении настроек команд",
   "api.commands.InvalidCommandName": "Недопустимое имя команды",
   "api.commands.InvalidEnabledValueMust": "Недопустимое значение enabled — должно быть boolean",
-  "api.commands.CommandSuccessfully": "Команда {command} успешно {p2}.",
   "api.commands.ErrorUpdatingCommandSettings": "Ошибка при обновлении настроек команд",
   "api.customCommands.ErrorFetchingCustomCommands": "Ошибка при получении кастомных команд",
   "api.customCommands.InvalidCommandNameUse": "Недопустимое имя команды. Используйте от 1 до 25 строчных букв, цифр или подчеркиваний.",
@@ -673,7 +679,9 @@ const ru: Catalog = {
   "api.timers.ErrorUpdatingTimer": "Ошибка обновления таймера",
   "api.timers.InvalidTimerName2": "Недопустимое имя таймера.",
   "api.timers.TimerDoesNotExist2": "Таймер \"{timerName}\" не существует.",
-  "api.timers.ErrorDeletingTimer": "Ошибка удаления таймера"
+  "api.timers.ErrorDeletingTimer": "Ошибка удаления таймера",
+  "api.commands.CommandEnabledSuccessfully": "Команда {command} успешно включена.",
+  "api.commands.CommandDisabledSuccessfully": "Команда {command} успешно отключена.",
 };
 
 export const catalogs: Record<SupportedLocale, Catalog> = { en, es, fr, de, it, pt, ja, ru };

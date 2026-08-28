@@ -251,7 +251,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({
         success: false,
         message: tr(req, "api.checkin.ReAuthenticateTwitchManage", {}, "Please re-authenticate with Twitch to manage Channel Point Rewards"),
-        needsReauth: true,
+        needsReAuth: true,
       });
     }
 

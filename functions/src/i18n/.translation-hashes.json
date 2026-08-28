@@ -79,7 +79,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "fr": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -161,7 +163,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "de": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -243,7 +247,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "it": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -325,7 +331,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "pt": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -407,7 +415,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "ja": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -489,7 +499,9 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   },
   "ru": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -571,6 +583,8 @@
     "api.timers.ErrorUpdatingTimer": "fd7235a048295c51",
     "api.timers.InvalidTimerName2": "f2e45aad6797de00",
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
-    "api.timers.ErrorDeletingTimer": "736745c9faaced45"
+    "api.timers.ErrorDeletingTimer": "736745c9faaced45",
+    "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
   }
 }
