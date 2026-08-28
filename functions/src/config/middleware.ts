@@ -55,7 +55,9 @@ export function corsAndSecurityMiddleware(
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization",
+    // X-Locale carries the dashboard's active language so responses can be localized.
+    // Without it here, the preflight rejects the header on any cross-origin call.
+    "Content-Type, Authorization, X-Locale",
   );
 
   // Security headers

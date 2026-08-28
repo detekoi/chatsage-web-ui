@@ -9,6 +9,7 @@ import { CHANNELS_COLLECTION, TWITCH_BOT_USERNAME } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
+import { tr } from "@/i18n";
 import {
   getUserIdFromUsername,
   addModerator,
@@ -62,7 +63,7 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error fetching bot status",
+      message: tr(req, "api.bot.ErrorFetchingBotStatus", {}, "Error fetching bot status"),
     });
   }
 });
@@ -89,7 +90,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
       });
       return res.status(403).json({
         success: false,
-        message: "Twitch authentication required. Please re-authenticate with Twitch.",
+        message: tr(req, "api.bot.TwitchAuthenticationRequiredRe", {}, "Twitch authentication required. Please re-authenticate with Twitch."),
       });
     }
 
@@ -102,7 +103,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
       logger.warn("Channel not approved in Firestore", { channelLogin, broadcasterUserId });
       return res.status(403).json({
         success: false,
-        message: "Your channel is not on the allow-list. Contact me for access: https://parfaitfair.com/#contact",
+        message: tr(req, "api.bot.ChannelNotOnAllow", {}, "Your channel is not on the allow-list. Contact me for access: https://parfaitfair.com/#contact"),
       });
     }
 
@@ -183,7 +184,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Bot successfully added to ${channelLogin}.`,
+      message: tr(req, "api.bot.BotSuccessfullyAdded", { channelLogin: channelLogin }, `Bot successfully added to ${channelLogin}.`),
       eventsubStatus: eventsubStatus.success ? "created" : "failed",
       eventsubError: eventsubStatus.success ? undefined : eventsubStatus.error,
       moderatorStatus: modStatus.success ? "added" : "failed",
@@ -196,7 +197,7 @@ router.post("/add", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Failed to add bot. Please try again.",
+      message: tr(req, "api.bot.FailedAddBotTry", {}, "Failed to add bot. Please try again."),
     });
   }
 });
@@ -275,14 +276,14 @@ router.post("/remove", async (req: AuthenticatedRequest, res: Response) => {
 
       res.json({
         success: true,
-        message: `Bot successfully removed from ${channelLogin}.`,
+        message: tr(req, "api.bot.BotSuccessfullyRemovedFrom", { channelLogin: channelLogin }, `Bot successfully removed from ${channelLogin}.`),
         eventsubTeardown,
       });
     } else {
       logger.warn("No document found for channel", { channelLogin });
       res.json({
         success: true,
-        message: `No active bot found for ${channelLogin}.`,
+        message: tr(req, "api.bot.NoActiveBotFound", { channelLogin: channelLogin }, `No active bot found for ${channelLogin}.`),
       });
     }
   } catch (error) {
@@ -292,7 +293,7 @@ router.post("/remove", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Failed to remove bot. Please try again.",
+      message: tr(req, "api.bot.FailedRemoveBotTry", {}, "Failed to remove bot. Please try again."),
     });
   }
 });

@@ -10,6 +10,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateMode } from "@/utils/validation";
 import { ensureAdBreakSubscription } from "@/twitch";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -50,7 +51,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Failed to load auto-chat config",
+      message: tr(req, "api.autoChat.FailedLoadAutoChat", {}, "Failed to load auto-chat config"),
     });
   }
 });
@@ -162,7 +163,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Failed to save auto-chat config",
+      message: tr(req, "api.autoChat.FailedSaveAutoChat", {}, "Failed to save auto-chat config"),
     });
   }
 });

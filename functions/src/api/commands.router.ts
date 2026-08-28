@@ -9,6 +9,7 @@ import { ALL_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateBoolean } from "@/utils/validation";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -43,7 +44,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error fetching command settings",
+      message: tr(req, "api.commands.ErrorFetchingCommandSettings", {}, "Error fetching command settings"),
     });
   }
 });
@@ -62,7 +63,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     if (!command || typeof command !== "string") {
       return res.status(400).json({
         success: false,
-        message: "Invalid command name",
+        message: tr(req, "api.commands.InvalidCommandName", {}, "Invalid command name"),
       });
     }
 
@@ -72,7 +73,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     } catch {
       return res.status(400).json({
         success: false,
-        message: "Invalid enabled value - must be boolean",
+        message: tr(req, "api.commands.InvalidEnabledValueMust", {}, "Invalid enabled value - must be boolean"),
       });
     }
 
@@ -111,7 +112,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Command ${command} ${enabled ? "enabled" : "disabled"} successfully.`,
+      message: tr(req, "api.commands.CommandSuccessfully", { command: command, p2: enabled ? "enabled" : "disabled" }, `Command ${command} ${enabled ? "enabled" : "disabled"} successfully.`),
     });
   } catch (error) {
     logger.error("Error updating command settings", {
@@ -120,7 +121,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     });
     res.status(500).json({
       success: false,
-      message: "Error updating command settings",
+      message: tr(req, "api.commands.ErrorUpdatingCommandSettings", {}, "Error updating command settings"),
     });
   }
 });

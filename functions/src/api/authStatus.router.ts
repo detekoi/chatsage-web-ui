@@ -8,6 +8,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser, clearUserTokens } from "@/tokens";
 import { needsReAuth } from "@/utils/errors";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response): Promise<
       success: true,
       isAuthenticated: true,
       needsReAuth: false,
-      message: "Twitch authentication is valid",
+      message: tr(req, "api.authStatus.TwitchAuthenticationValid", {}, "Twitch authentication is valid"),
     });
   } catch (error) {
     logger.error("Error getting valid token", {
@@ -72,7 +73,7 @@ router.post("/refresh", async (req: AuthenticatedRequest, res: Response): Promis
 
     res.json({
       success: true,
-      message: "Twitch authentication successfully refreshed",
+      message: tr(req, "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed", {}, "Twitch authentication successfully refreshed"),
     });
   } catch (error) {
     logger.error("Error refreshing token", {
