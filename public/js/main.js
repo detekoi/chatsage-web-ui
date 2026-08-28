@@ -126,6 +126,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Setup global UI listeners
     setupNumericInputs();
 
+    // translatePage() only rewrites markup carrying data-i18n. The command, timer and custom
+    // command lists are built in JS, so after a language switch they would keep the old language
+    // until the next reload. Registered here, after the initial initI18n() above has already
+    // dispatched once, so this only fires on an actual switch.
+    document.addEventListener('i18n:changed', () => {
+        if (!loggedInUser) return; // nothing rendered yet
+        reloadAllConfigs().catch(err =>
+            console.error('Failed to re-render sections after a language change:', err));
+    });
+
     // 3. Start dashboard initialization
     initializeDashboard();
 });

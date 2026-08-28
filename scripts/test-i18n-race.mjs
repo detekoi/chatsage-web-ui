@@ -36,7 +36,13 @@ const stubElement = () => ({
 
 const bodyClasses = new Set();
 globalThis.document = {
-    documentElement: { lang: 'en', hasAttribute: () => true },
+    documentElement: {
+        lang: 'en',
+        hasAttribute: () => true,
+        // The page id is read from this attribute now (the URL is unreliable: Firebase serves
+        // 404.html at whatever path was not found), so the stub has to answer it.
+        getAttribute: name => (name === 'data-i18n-page' ? 'dashboard' : null),
+    },
     body: {
         classList: { toggle: (c, on) => (on ? bodyClasses.add(c) : bodyClasses.delete(c)) },
         appendChild() {},

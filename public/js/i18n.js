@@ -39,6 +39,9 @@ let translations = {};
 // subsequent t() call returning another.
 let loadToken = 0;
 
+// Locale code -> merged catalog, for languages already fetched this session.
+const catalogCache = new Map();
+
 // --- sanitizer (defense-in-depth for translation values containing inline HTML) ---
 
 const SAFE_TAGS = new Set(['a', 'br', 'code', 'em', 'i', 'small', 'span', 'strong']);
@@ -78,14 +81,49 @@ function sanitizeNode(node) {
 
 // --- catalog loading ---
 
-/** Which page's catalog to load, from the filename. */
+/**
+ * Which page's catalog to load.
+ *
+ * Read from the document rather than the URL: Firebase Hosting serves 404.html at whatever path
+ * was not found, so the URL of a 404 never contains "404". Matching on the path there fell through
+ * to the index catalog, which shares the `page.lede` key — so a non-English 404 rendered the
+ * sign-in page's text instead of the not-found text.
+ */
 function getCurrentPageId() {
+    // Guarded: this module is also driven from a non-browser harness (scripts/test-i18n-race.mjs).
+    const declared = document.documentElement?.getAttribute?.('data-i18n-page');
+    if (declared) return declared;
+
+    // Fallback for a page that has not been marked up yet.
     const path = window.location.pathname;
     if (path.includes('dashboard')) return 'dashboard';
     if (path.includes('auth-complete')) return 'auth-complete';
     if (path.includes('auth-error')) return 'auth-error';
     if (path.includes('404')) return '404';
     return 'index';
+}
+
+/** Commits a loaded catalog as the active language and syncs the document to it. */
+function applyCatalog(merged, lang) {
+    translations = merged;
+    currentLanguage = lang;
+
+    try {
+        localStorage.setItem('preferredLanguage', lang);
+    } catch { /* private mode or blocked storage: the choice just will not persist */ }
+
+    document.documentElement.lang = lang;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('lang') !== lang) {
+        urlParams.set('lang', lang);
+        window.history.replaceState({}, '',
+            window.location.pathname + '?' + urlParams.toString() + window.location.hash);
+    }
+
+    // Only the CJK locales this app actually ships; zh/ko are not in AVAILABLE_LANGUAGES, and
+    // initI18n() rewrites anything unrecognized to English before it could reach here.
+    document.body.classList.toggle('cjk-language', lang === 'ja');
 }
 
 /** Deep merge, so shared `common` branches are not wholesale-replaced by the page catalog. */
@@ -104,6 +142,13 @@ async function loadTranslations(lang) {
     const token = ++loadToken;
     try {
         const pageId = getCurrentPageId();
+
+        const cached = catalogCache.get(lang);
+        if (cached) {
+            applyCatalog(cached, lang);
+            return true;
+        }
+
         const [commonResponse, pageResponse] = await Promise.all([
             fetch(`./i18n/common-${lang}.json`),
             fetch(`./i18n/${pageId}-${lang}.json`)
@@ -122,23 +167,9 @@ async function loadTranslations(lang) {
         // rather than clobbering the newer language's state.
         if (token !== loadToken) return false;
 
-        translations = mergeTranslations(commonTranslations, pageTranslations);
-        currentLanguage = lang;
-
-        try {
-            localStorage.setItem('preferredLanguage', lang);
-        } catch { /* private mode or blocked storage: the choice just will not persist */ }
-
-        document.documentElement.lang = lang;
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('lang') !== lang) {
-            urlParams.set('lang', lang);
-            window.history.replaceState({}, '',
-                window.location.pathname + '?' + urlParams.toString() + window.location.hash);
-        }
-
-        document.body.classList.toggle('cjk-language', ['ja', 'zh', 'ko'].includes(currentLanguage));
+        const merged = mergeTranslations(commonTranslations, pageTranslations);
+        catalogCache.set(lang, merged);
+        applyCatalog(merged, lang);
         return true;
     } catch (error) {
         console.error('Error loading translations:', error);
@@ -217,15 +248,20 @@ const TRANSLATED_ATTRIBUTES = {
 };
 
 export function translatePage() {
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        // Containers holding their own nested keys are covered by those keys instead.
-        if (element.querySelector('[data-i18n]')) return;
+    // A container whose own key would overwrite nested keys is skipped, and the nested keys own
+    // its content — the same rule as before, but the containers are identified in one ancestor
+    // walk instead of a subtree querySelector per element.
+    const targets = [...document.querySelectorAll('[data-i18n]')];
+    const containers = new Set();
+    for (const element of targets) {
+        for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+            if (parent.hasAttribute('data-i18n')) containers.add(parent);
+        }
+    }
+    for (const element of targets) {
+        if (containers.has(element)) continue;
         applyToElement(element, getTranslation(element.getAttribute('data-i18n')));
-    });
-
-    document.querySelectorAll('[data-i18n] [data-i18n]').forEach(element => {
-        applyToElement(element, getTranslation(element.getAttribute('data-i18n')));
-    });
+    }
 
     Object.entries(TRANSLATED_ATTRIBUTES).forEach(([sourceAttr, targetAttr]) => {
         document.querySelectorAll(`[${sourceAttr}]`).forEach(element => {
