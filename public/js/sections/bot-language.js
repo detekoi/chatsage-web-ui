@@ -76,11 +76,11 @@ function renderOptions() {
 
     addOption(selectEl, 'auto', state.detected
         ? t('page.botLanguage.autoWith', { language: displayName(state.detected) },
-            `Automatic — ${displayName(state.detected)}, from Twitch`)
-        : t('page.botLanguage.auto', {}, 'Automatic — follow my Twitch stream language'));
+            `Automatic (${displayName(state.detected)}, from Twitch)`)
+        : t('page.botLanguage.auto', {}, 'Automatic (use my Twitch stream language)'));
 
-    const written = addGroup(t('page.botLanguage.groupWritten', {}, 'Written translations'));
-    const translated = addGroup(t('page.botLanguage.groupTranslated', {}, 'Translated as the bot sends them'));
+    const written = addGroup(t('page.botLanguage.groupWritten', {}, 'Written in advance'));
+    const translated = addGroup(t('page.botLanguage.groupTranslated', {}, 'Translated when sent'));
 
     for (const name of available) {
         addOption(WRITTEN_TRANSLATIONS.includes(name) ? written : translated, name, displayName(name));
@@ -100,14 +100,14 @@ function renderHelp() {
     if (state.mode === 'auto') {
         helpEl.textContent = state.detected
             ? t('page.botLanguage.autoDetected', { language: displayName(state.detected) },
-                `Your Twitch stream language is ${displayName(state.detected)}, so the bot speaks ${displayName(state.detected)}.`)
+                `Your Twitch stream language is ${displayName(state.detected)}. The bot speaks ${displayName(state.detected)}.`)
             : t('page.botLanguage.autoEnglish', {},
-                'Your Twitch stream language is English or not set, so the bot speaks English.');
+                'Your Twitch stream language is English, or you did not set it. The bot speaks English.');
         return;
     }
     const name = displayName(state.language || 'english');
     helpEl.textContent = t('page.botLanguage.manual', { language: name },
-        `The bot speaks ${name}, whatever your Twitch stream language is.`);
+        `The bot speaks ${name}. Your Twitch stream language has no effect.`);
 }
 
 function applyBotLanguage(data) {

@@ -107,7 +107,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
         success: true,
         mode: "auto",
         language: null,
-        message: tr(req, "api.language.LanguageFollowsTwitchSetting", {}, "The bot now follows your Twitch stream language."),
+        message: tr(req, "api.language.LanguageFollowsTwitchSetting", {}, "The bot now uses your Twitch stream language."),
       });
     }
 
@@ -129,7 +129,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         message: tr(req, "api.language.LanguageNotAvailableHere", { language: name },
-          `"${name}" is not one of the languages available here. A moderator can set any language with !botlang in chat.`),
+          `"${name}" is not in the list of languages here. A moderator can set any language in chat with !botlang.`),
       });
     }
 

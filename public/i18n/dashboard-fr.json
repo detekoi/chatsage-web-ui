@@ -43,6 +43,20 @@
       "questions": "Questions"
     },
     "autoChatTitle": "Paramètres d'Auto-Chat",
+    "botLanguage": {
+      "auto": "Automatique (utiliser la langue de mon stream Twitch)",
+      "autoDetected": "La langue de votre stream Twitch est {language}. Le bot parle {language}.",
+      "autoEnglish": "La langue de votre stream Twitch est l'anglais, ou non définie. Le bot parle anglais.",
+      "autoWith": "Automatique ({language}, depuis Twitch)",
+      "chatNote": "Un modérateur peut aussi définir la langue dans le chat avec <code>!botlang</code>. Le chat accepte plus de langues que cette liste.",
+      "groupInChat": "Défini dans le chat",
+      "groupTranslated": "Traduit à l'envoi",
+      "groupWritten": "Écrit à l'avance",
+      "help": "Le bot écrit les réponses aux commandes, les messages de jeu et les réponses AI dans cette langue. Le bot lit la langue du stream depuis votre chaîne Twitch. La plupart des chaînes peuvent conserver le réglage automatique.",
+      "manual": "Le bot parle {language}. La langue de votre stream Twitch n'a aucun effet.",
+      "selectLabel": "Langue parlée par le bot"
+    },
+    "botLanguageTitle": "Langue du bot",
     "checkin": {
       "aiMode": "Mode AI <small class=\"text-muted\">(génère un message unique à chaque fois)</small>",
       "aiPrompt": "Prompt AI",
@@ -77,6 +91,8 @@
       "adNotificationsAria": "Chargement des paramètres de notifications de pub",
       "autoChat": "Chargement des paramètres d'auto-chat…",
       "autoChatAria": "Chargement des paramètres d'auto-chat",
+      "botLanguage": "Chargement de la langue du bot…",
+      "botLanguageAria": "Chargement des paramètres de langue du bot",
       "checkin": "Chargement des paramètres de check-in…",
       "checkinAria": "Chargement des paramètres de check-in",
       "commands": "Chargement des paramètres de commandes…",
@@ -88,9 +104,7 @@
       "streamEvents": "Chargement des paramètres d'événements de stream…",
       "streamEventsAria": "Chargement des paramètres d'événements de stream",
       "timers": "Chargement des messages programmés…",
-      "timersAria": "Chargement des messages programmés",
-      "botLanguage": "Chargement de la langue du bot…",
-      "botLanguageAria": "Chargement des paramètres de langue du bot"
+      "timersAria": "Chargement des messages programmés"
     },
     "permission": {
       "broadcaster": "Diffuseur",
@@ -140,21 +154,7 @@
       "namePlaceholder": "discord"
     },
     "timersTitle": "Messages programmés",
-    "title": "Tableau de bord de la chaîne",
-    "botLanguage": {
-      "auto": "Automatique — suivre la langue de mon stream Twitch",
-      "autoDetected": "La langue de votre stream Twitch est {language}, le bot parle donc {language}.",
-      "autoEnglish": "La langue de votre stream Twitch est l'anglais ou n'est pas définie, le bot parle donc anglais.",
-      "autoWith": "Automatique — {language}, depuis Twitch",
-      "chatNote": "Un modérateur peut aussi définir la langue dans le chat avec <code>!botlang</code>. Le chat accepte des langues qui ne figurent pas dans cette liste.",
-      "groupInChat": "Défini dans le chat",
-      "groupTranslated": "Traduit à l'envoi par le bot",
-      "groupWritten": "Traductions écrites",
-      "help": "Le bot écrit les réponses aux commandes, les messages de jeu et les réponses AI dans cette langue. La plupart des chaînes peuvent laisser ce paramètre en automatique : le bot lit la langue du stream depuis votre chaîne Twitch.",
-      "manual": "Le bot parle {language}, quelle que soit la langue de votre stream Twitch.",
-      "selectLabel": "Langue parlée par le bot"
-    },
-    "botLanguageTitle": "Langue du bot"
+    "title": "Tableau de bord de la chaîne"
   },
   "status": {
     "active": "Actif",
@@ -172,6 +172,7 @@
     "addingBot": "Ajout du bot à la chaîne…",
     "autoChatSaved": "Paramètres de chat auto enregistrés.",
     "botAddedDev": "Bot ajouté à la chaîne (mode dev).",
+    "botLanguageSaved": "Langue du bot enregistrée.",
     "botPersonaSaved": "Personnalité du bot enregistrée.",
     "botRemovedDev": "Bot retiré de la chaîne (mode dev).",
     "botStatusFailed": "Impossible de récupérer le statut du bot : {message}",
@@ -190,6 +191,7 @@
     "itemEnabledDev": "{item} activé (mode dev).",
     "loadAdNotificationsFailed": "Impossible de charger les paramètres de notifications de pub.",
     "loadAutoChatFailed": "Impossible de charger les paramètres d'auto-chat.",
+    "loadBotLanguageFailed": "Échec du chargement du paramètre de langue du bot.",
     "loadBotStatusFailed": "Impossible de charger le statut du bot. {message}",
     "loadStreamEventsFailed": "Impossible de charger les paramètres d'événements de stream.",
     "missingToken": "Jeton d'authentification manquant. Reconnectez-vous.",
@@ -214,9 +216,7 @@
     "streamEventsSaved": "Paramètres des événements de stream enregistrés.",
     "timerSaveFailed": "Impossible d'enregistrer le timer.",
     "timerSavedDev": "Timer \"{name}\" enregistré (mode dev).",
-    "updateFailed": "Impossible de mettre à jour {item}.",
-    "botLanguageSaved": "Langue du bot enregistrée.",
-    "loadBotLanguageFailed": "Échec du chargement du paramètre de langue du bot."
+    "updateFailed": "Impossible de mettre à jour {item}."
   },
   "validation": {
     "checkinCost": "Le coût doit être compris entre 1 et 999999 points.",

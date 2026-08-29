@@ -43,6 +43,20 @@
       "questions": "質問"
     },
     "autoChatTitle": "自動チャット設定",
+    "botLanguage": {
+      "auto": "自動（Twitchの配信言語を使用）",
+      "autoDetected": "Twitchの配信言語は{language}です。ボットは{language}で応答します。",
+      "autoEnglish": "Twitchの配信言語が英語、または未設定です。ボットは英語で応答します。",
+      "autoWith": "自動（Twitchから取得: {language}）",
+      "chatNote": "モデレーターはチャットで<code>!botlang</code>を使って言語を設定することもできます。チャットからはこの一覧より多くの言語を指定可能です。",
+      "groupInChat": "チャットで設定",
+      "groupTranslated": "送信時に自動翻訳",
+      "groupWritten": "事前に作成済み",
+      "help": "ボットはこの言語でコマンドの応答、ゲームメッセージ、AIの返答を送信します。Twitchチャンネルの配信言語を自動で読み込みます。ほとんどのチャンネルは自動設定のままで問題ありません。",
+      "manual": "ボットは{language}で応答します。Twitchの配信言語設定は無視されます。",
+      "selectLabel": "ボットの使用言語"
+    },
+    "botLanguageTitle": "ボットの言語",
     "checkin": {
       "aiMode": "AIモード <small class=\"text-muted\">(毎回異なるメッセージを生成)</small>",
       "aiPrompt": "AIプロンプト",
@@ -77,6 +91,8 @@
       "adNotificationsAria": "広告通知設定を読み込み中",
       "autoChat": "自動チャット設定を読み込み中…",
       "autoChatAria": "自動チャット設定を読み込み中",
+      "botLanguage": "ボット言語を読み込み中…",
+      "botLanguageAria": "ボット言語設定を読み込み中",
       "checkin": "チェックイン設定を読み込み中…",
       "checkinAria": "チェックイン設定を読み込み中",
       "commands": "コマンド設定を読み込み中…",
@@ -88,9 +104,7 @@
       "streamEvents": "配信イベント設定を読み込み中…",
       "streamEventsAria": "配信イベント設定を読み込み中",
       "timers": "タイマーメッセージを読み込み中…",
-      "timersAria": "タイマーメッセージを読み込み中",
-      "botLanguage": "ボット言語を読み込み中…",
-      "botLanguageAria": "ボット言語設定を読み込み中"
+      "timersAria": "タイマーメッセージを読み込み中"
     },
     "permission": {
       "broadcaster": "配信者",
@@ -140,21 +154,7 @@
       "namePlaceholder": "discord"
     },
     "timersTitle": "タイマーメッセージ",
-    "title": "チャンネルダッシュボード",
-    "botLanguage": {
-      "auto": "自動 — Twitch配信の言語に合わせる",
-      "autoDetected": "Twitch配信の言語が{language}のため、ボットは{language}を使用します。",
-      "autoEnglish": "Twitch配信の言語が英語または未設定のため、ボットは英語を使用します。",
-      "autoWith": "自動 — {language}（Twitchから取得）",
-      "chatNote": "モデレーターはチャット内で<code>!botlang</code>を使って言語を設定することもできます。チャットからはこのリストにない言語も指定可能です。",
-      "groupInChat": "チャットで設定",
-      "groupTranslated": "ボット送信時に自動翻訳",
-      "groupWritten": "翻訳済み言語",
-      "help": "ボットはこの言語でコマンド応答、ミニゲーム、AI返信を送信します。ほとんどのチャンネルでは自動のままで問題ありません（Twitchチャンネルの配信言語が自動適用されます）。",
-      "manual": "Twitch配信の言語設定に関わらず、ボットは{language}を使用します。",
-      "selectLabel": "ボットの使用言語"
-    },
-    "botLanguageTitle": "ボットの言語"
+    "title": "チャンネルダッシュボード"
   },
   "status": {
     "active": "有効",
@@ -172,6 +172,7 @@
     "addingBot": "ボットをチャンネルに追加中…",
     "autoChatSaved": "自動チャット設定を保存しました。",
     "botAddedDev": "ボットがチャンネルに追加されました (開発モード)。",
+    "botLanguageSaved": "ボットの言語を保存しました。",
     "botPersonaSaved": "ボットのペルソナを保存しました。",
     "botRemovedDev": "ボットがチャンネルから削除されました (開発モード)。",
     "botStatusFailed": "Botのステータス取得に失敗しました: {message}",
@@ -190,6 +191,7 @@
     "itemEnabledDev": "{item}を有効化しました（開発モード）。",
     "loadAdNotificationsFailed": "広告通知設定の読み込みに失敗しました。",
     "loadAutoChatFailed": "自動チャット設定の読み込みに失敗しました。",
+    "loadBotLanguageFailed": "ボット言語設定の読み込みに失敗しました。",
     "loadBotStatusFailed": "ボットのステータス読み込みに失敗しました。{message}",
     "loadStreamEventsFailed": "配信イベント設定の読み込みに失敗しました。",
     "missingToken": "認証トークンが見つかりません。再ログインしてください。",
@@ -214,9 +216,7 @@
     "streamEventsSaved": "配信イベント設定を保存しました。",
     "timerSaveFailed": "タイマーの保存に失敗しました。",
     "timerSavedDev": "タイマー「{name}」を保存しました（開発モード）。",
-    "updateFailed": "{item}の更新に失敗しました。",
-    "botLanguageSaved": "ボットの言語を保存しました。",
-    "loadBotLanguageFailed": "ボット言語設定の読み込みに失敗しました。"
+    "updateFailed": "{item}の更新に失敗しました。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",
