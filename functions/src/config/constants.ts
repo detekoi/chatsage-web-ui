@@ -27,6 +27,12 @@ export const CHANNEL_COMMANDS_COLLECTION = "channelCommands";
 export const CUSTOM_COMMANDS_COLLECTION = "customCommands";
 export const CHANNEL_TIMERS_COLLECTION = "channelTimers";
 
+// Per-channel bot response language, written by both this dashboard and the bot's `!botlang`
+// command. Keyed by login name, as the bot keys it. A missing document is not the same as one
+// holding `language: null`: no document hands the channel to Twitch stream-language detection,
+// while `null` is an explicit choice of English that detection must not override.
+export const CHANNEL_LANGUAGES_COLLECTION = "channelLanguages";
+
 // Single-use codes exchanged for a session token after OAuth. Short-lived by
 // design; a Firestore TTL policy on `expiresAt` collects abandoned rows.
 export const EXCHANGE_CODES_COLLECTION = "authExchangeCodes";
@@ -121,6 +127,43 @@ export const ALL_COMMANDS = [
   "command",
   "followage",
 ];
+
+
+// Languages the dashboard offers for bot responses, stored as the lowercase English name the bot
+// keeps in Firestore. Mirrors COMMON_LANGUAGES in the bot's translationUtils.js — the two repos
+// share Firestore rather than code, so this list has to be kept in step with that one by hand.
+//
+// The first eight have written translations committed in the bot, so their fixed messages are
+// instant and worded the same every time. The rest are translated per message as the bot sends
+// them. `!botlang` accepts free text, so a channel can hold a language outside this list; the
+// dashboard shows such a value rather than silently replacing it.
+export const BOT_LANGUAGES = [
+  "english",
+  "spanish",
+  "french",
+  "german",
+  "italian",
+  "portuguese",
+  "japanese",
+  "russian",
+  "chinese",
+  "korean",
+  "dutch",
+  "polish",
+  "turkish",
+  "arabic",
+  "hindi",
+  "vietnamese",
+  "thai",
+  "swedish",
+  "danish",
+  "norwegian",
+  "finnish",
+  "greek",
+  "czech",
+  "hungarian",
+  "romanian",
+] as const;
 
 
 // Auto-chat modes

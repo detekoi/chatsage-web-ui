@@ -1,8 +1,23 @@
 {
   "confirm": {
     "deleteCheckin": "Vuoi eliminare la ricompensa Check-in giornaliero dal tuo canale? Questa azione non può essere annullata.",
-    "resetPersona": "Ripristinare la personalità predefinita del bot? Questa azione eliminerà il tuo testo personalizzato.",
-    "deleteItem": "Eliminare {item}?"
+    "deleteItem": "Eliminare {item}?",
+    "resetPersona": "Ripristinare la personalità predefinita del bot? Questa azione eliminerà il tuo testo personalizzato."
+  },
+  "label": {
+    "charCounter": "{used} caratteri",
+    "charCounterMax": "{used} / {max} caratteri",
+    "chatLines": "{count} righe di chat",
+    "commandNamed": "Comando !{name}",
+    "cooldownSeconds": "Cooldown di {seconds}s",
+    "deleteCommand": "Elimina comando !{name}",
+    "deleteTimer": "Elimina timer {name}",
+    "editCommand": "Modifica comando !{name}",
+    "editTimer": "Modifica timer {name}",
+    "enableCommand": "Abilita comando !{name}",
+    "enableTimer": "Abilita timer {name}",
+    "enableTimerTitle": "Abilita o disabilita questo messaggio programmato",
+    "everyMinutes": "ogni {minutes}m"
   },
   "page": {
     "adNotifications": {
@@ -46,6 +61,7 @@
     "customCommands": {
       "aiMode": "Modalità AI <small class=\"text-muted\">(genera una risposta unica ogni volta)</small>",
       "aiPromptLabel": "Prompt AI",
+      "aiPromptPlaceholder": "Scrivi un saluto per $(user) in una sola frase.",
       "cooldown": "Cooldown (sec)",
       "empty": "Nessun comando personalizzato presente.",
       "emptyHint": "Seleziona il pulsante <strong>+ Aggiungi</strong> o invia <code>!command add</code> o <code>!command addai</code> in chat.",
@@ -53,8 +69,7 @@
       "namePlaceholder": "ciao",
       "permission": "Permesso",
       "responseLabel": "Risposta",
-      "responsePlaceholder": "Ciao $(user), benvenuto su $(channel)!",
-      "aiPromptPlaceholder": "Scrivi un saluto per $(user) in una sola frase."
+      "responsePlaceholder": "Ciao $(user), benvenuto su $(channel)!"
     },
     "customCommandsTitle": "Comandi personalizzati",
     "loading": {
@@ -73,7 +88,9 @@
       "streamEvents": "Caricamento impostazioni eventi stream…",
       "streamEventsAria": "Caricamento impostazioni eventi stream",
       "timers": "Caricamento messaggi programmati…",
-      "timersAria": "Caricamento messaggi programmati"
+      "timersAria": "Caricamento messaggi programmati",
+      "botLanguage": "Caricamento lingua del bot…",
+      "botLanguageAria": "Caricamento delle impostazioni della lingua del bot"
     },
     "permission": {
       "broadcaster": "Broadcaster",
@@ -110,6 +127,7 @@
     "timers": {
       "aiMode": "Modalità AI <small class=\"text-muted\">(genera ogni volta un messaggio unico)</small>",
       "aiPromptLabel": "Prompt AI",
+      "aiPromptPlaceholder": "Ricorda alla chat di Discord per il gioco attuale.",
       "empty": "Nessun messaggio programmato presente.",
       "emptyHint": "Seleziona il pulsante <strong>+ Aggiungi</strong>, o invia <code>!timer add</code> o <code>!timer addai</code> in chat.",
       "help": "Invia messaggi programmati quando la live è attiva e la chat è in movimento.",
@@ -119,32 +137,57 @@
       "minLines": "Righe minime chat",
       "minLinesHelp": "Il timer invia un messaggio solo dopo questo numero di messaggi in chat.",
       "nameLabel": "Nome timer",
-      "namePlaceholder": "discord",
-      "aiPromptPlaceholder": "Ricorda alla chat di Discord per il gioco attuale."
+      "namePlaceholder": "discord"
     },
     "timersTitle": "Messaggi programmati",
-    "title": "Dashboard del canale"
+    "title": "Dashboard del canale",
+    "botLanguage": {
+      "auto": "Automatico — segui la lingua del mio stream Twitch",
+      "autoDetected": "La lingua del tuo stream Twitch è {language}, quindi il bot parla {language}.",
+      "autoEnglish": "La lingua del tuo stream Twitch è impostata su inglese o non definita, quindi il bot parla inglese.",
+      "autoWith": "Automatico — {language}, da Twitch",
+      "chatNote": "Un moderatore può anche impostare la lingua in chat con <code>!botlang</code>. La chat accetta lingue non mostrate in questo elenco.",
+      "groupInChat": "Impostato in chat",
+      "groupTranslated": "Tradotte all'invio dal bot",
+      "groupWritten": "Traduzioni scritte",
+      "help": "Il bot scrive le risposte ai comandi, i messaggi di gioco e le risposte dell'AI in questa lingua. La maggior parte dei canali può lasciare questa opzione su automatico: il bot rileva la lingua dello stream dal tuo canale Twitch.",
+      "manual": "Il bot parla {language}, indipendentemente dalla lingua del tuo stream Twitch.",
+      "selectLabel": "Lingua parlata dal bot"
+    },
+    "botLanguageTitle": "Lingua del bot"
   },
   "status": {
     "active": "Attivo",
     "deleting": "Eliminazione…",
     "inactive": "Inattivo",
     "resetting": "Reimpostazione…",
-    "saving": "Salvataggio…",
     "savedDev": "{message} (modalità dev).",
     "savedDevShort": "Salvato (modalità dev)",
+    "saving": "Salvataggio…",
     "savingSafetyCheck": "Salvataggio impostazioni e controllo di sicurezza in corso…"
   },
   "toast": {
+    "adNotificationsSaved": "Impostazioni notifiche annunci salvate.",
     "addBotFailed": "Impossibile aggiungere il bot al canale.",
     "addingBot": "Aggiunta del bot al canale…",
+    "autoChatSaved": "Impostazioni chat automatica salvate.",
     "botAddedDev": "Bot aggiunto al canale (modalità dev).",
     "botPersonaSaved": "Personalità del bot salvata.",
     "botRemovedDev": "Bot rimosso dal canale (modalità dev).",
+    "botStatusFailed": "Impossibile recuperare lo stato del bot: {message}",
     "checkinDeleted": "Ricompensa di check-in eliminata.",
     "checkinReauth": "Accedi di nuovo per gestire i premi Punti Canale.",
     "checkinSaved": "Impostazioni check-in giornaliero salvate.",
+    "checkinSavedShort": "Impostazioni di check-in salvate!",
     "commandSaveFailed": "Impossibile salvare il comando.",
+    "commandSavedDev": "Comando !{name} salvato (modalità dev).",
+    "deleteFailed": "Impossibile eliminare {item}.",
+    "errorPrefix": "Errore: {message}",
+    "itemDeletedDev": "{item} eliminato (modalità dev).",
+    "itemDisabled": "{item} disattivato.",
+    "itemDisabledDev": "{item} disattivato (modalità dev).",
+    "itemEnabled": "{item} abilitato.",
+    "itemEnabledDev": "{item} attivato (modalità dev).",
     "loadAdNotificationsFailed": "Impossibile caricare le notifiche degli annunci.",
     "loadAutoChatFailed": "Impossibile caricare le impostazioni della chat automatica.",
     "loadBotStatusFailed": "Impossibile caricare lo stato del bot. {message}",
@@ -152,6 +195,8 @@
     "missingToken": "Token di autenticazione mancante. Accedi di nuovo.",
     "missingTokenLogin": "Token di autenticazione mancante. Accedi di nuovo.",
     "networkError": "Errore di rete. Riprova.",
+    "personaFallback": "Mostro la personalità predefinita. Il bot non ha ancora pubblicato le impostazioni della personalità.",
+    "personaLoadFailed": "Impossibile caricare le impostazioni della personalità.",
     "personaReset": "Personalità reimpostata ai valori predefiniti.",
     "personaResetFailed": "Impossibile reimpostare la personalità.",
     "personaResetRetry": "Impossibile reimpostare la personalità. Riprova.",
@@ -161,29 +206,17 @@
     "personaSavedDev": "Personalità salvata (modalità dev).",
     "removeBotFailed": "Impossibile rimuovere il bot dal canale.",
     "removingBot": "Rimozione del bot dal canale…",
+    "rewardDeleteFailed": "Impossibile eliminare la ricompensa.",
+    "rewardDeleted": "Ricompensa eliminata",
+    "rewardDeletedDev": "Ricompensa eliminata (modalità dev)",
     "saveSettingsFailed": "Impossibile salvare le impostazioni.",
     "sessionExpired": "Sessione scaduta o non attiva. Accedi di nuovo.",
+    "streamEventsSaved": "Impostazioni eventi di stream salvate.",
     "timerSaveFailed": "Impossibile salvare il timer.",
-    "botStatusFailed": "Impossibile recuperare lo stato del bot: {message}",
-    "commandSavedDev": "Comando !{name} salvato (modalità dev).",
-    "deleteFailed": "Impossibile eliminare {item}.",
-    "errorPrefix": "Errore: {message}",
-    "itemDeletedDev": "{item} eliminato (modalità dev).",
-    "itemEnabled": "{item} abilitato.",
-    "itemDisabled": "{item} disattivato.",
-    "itemEnabledDev": "{item} attivato (modalità dev).",
-    "itemDisabledDev": "{item} disattivato (modalità dev).",
     "timerSavedDev": "Timer \"{name}\" salvato (modalità dev).",
     "updateFailed": "Impossibile aggiornare {item}.",
-    "streamEventsSaved": "Impostazioni eventi di stream salvate.",
-    "autoChatSaved": "Impostazioni chat automatica salvate.",
-    "adNotificationsSaved": "Impostazioni notifiche annunci salvate.",
-    "checkinSavedShort": "Impostazioni di check-in salvate!",
-    "rewardDeletedDev": "Ricompensa eliminata (modalità dev)",
-    "rewardDeleted": "Ricompensa eliminata",
-    "rewardDeleteFailed": "Impossibile eliminare la ricompensa.",
-    "personaLoadFailed": "Impossibile caricare le impostazioni della personalità.",
-    "personaFallback": "Mostro la personalità predefinita. Il bot non ha ancora pubblicato le impostazioni della personalità."
+    "botLanguageSaved": "Lingua del bot salvata.",
+    "loadBotLanguageFailed": "Impossibile caricare l'impostazione della lingua del bot."
   },
   "validation": {
     "checkinCost": "Il costo deve essere compreso tra 1 e 999999 punti.",
@@ -192,24 +225,9 @@
     "intervalRange": "L'intervallo deve essere compreso tra 2 e 1440 minuti.",
     "messageRequired": "Il testo del messaggio è obbligatorio.",
     "minLinesRange": "Le righe minime di chat devono essere comprese tra 0 e 100.",
-    "responseRequired": "Il testo della risposta è obbligatorio.",
-    "timerNameRequired": "Il nome del timer è obbligatorio.",
     "personaEmpty": "Le istruzioni per la personalità non possono essere vuote. Seleziona \"Ripristina predefiniti\" per cancellarle.",
-    "personaTooLong": "Le istruzioni per la personalità devono contenere al massimo {max} caratteri."
-  },
-  "label": {
-    "charCounter": "{used} caratteri",
-    "charCounterMax": "{used} / {max} caratteri",
-    "chatLines": "{count} righe di chat",
-    "commandNamed": "Comando !{name}",
-    "cooldownSeconds": "Cooldown di {seconds}s",
-    "everyMinutes": "ogni {minutes}m",
-    "enableTimer": "Abilita timer {name}",
-    "enableTimerTitle": "Abilita o disabilita questo messaggio programmato",
-    "enableCommand": "Abilita comando !{name}",
-    "editCommand": "Modifica comando !{name}",
-    "deleteCommand": "Elimina comando !{name}",
-    "editTimer": "Modifica timer {name}",
-    "deleteTimer": "Elimina timer {name}"
+    "personaTooLong": "Le istruzioni per la personalità devono contenere al massimo {max} caratteri.",
+    "responseRequired": "Il testo della risposta è obbligatorio.",
+    "timerNameRequired": "Il nome del timer è obbligatorio."
   }
 }

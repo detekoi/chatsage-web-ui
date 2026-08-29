@@ -20,6 +20,7 @@ import customCommandsRouter from "./customCommands.router";
 import checkinRouter from "./checkin.router";
 import timersRouter from "./timers.router";
 import personaRouter from "./persona.router";
+import languageRouter from "./language.router";
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.use(authenticateApiRequest);
 router.use("/bot", botRouter);
 router.use("/commands", commandsRouter);
 router.use("/auto-chat", autoChatRouter);
+router.use("/language", languageRouter);
 router.use("/auth", authStatusRouter);
 router.use("/custom-commands", aiPromptWriteLimiter, customCommandsRouter);
 router.use("/checkin", checkinWriteLimiter, checkinRouter);

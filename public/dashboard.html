@@ -38,6 +38,7 @@
     <link rel="modulepreload" href="js/sections/timers.js">
     <link rel="modulepreload" href="js/sections/checkin.js">
     <link rel="modulepreload" href="js/sections/persona.js">
+    <link rel="modulepreload" href="js/sections/bot-language.js">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js" defer></script>
@@ -449,6 +450,36 @@
                             </button>
                         </div>
                         <p id="persona-msg" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bot Language Section -->
+        <div id="bot-language-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.botLanguageTitle">Bot Language</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3" style="font-size:0.8125rem;">
+                        <span data-i18n="page.botLanguage.help">The bot writes command replies, game messages, and AI replies in this language. Most channels can leave this setting on automatic: the bot reads the stream language from your Twitch channel.</span>
+                    </p>
+
+                    <div id="bot-language-loading" style="display:none;" class="wc-loading">
+                        <div class="wc-bar" role="progressbar" aria-label="Loading bot language settings" data-i18n-aria-label="page.loading.botLanguageAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.botLanguage">Loading bot language…</p>
+                    </div>
+
+                    <div class="bot-language-form">
+                        <div class="mb-2">
+                            <label for="bot-language-select" class="form-label" data-i18n="page.botLanguage.selectLabel">Language the bot speaks</label>
+                            <select id="bot-language-select" class="form-select"
+                                aria-describedby="bot-language-help bot-language-message"></select>
+                            <small id="bot-language-help" class="d-block text-muted mt-1"></small>
+                        </div>
+                        <p class="text-muted mb-0" style="font-size:0.75rem;" data-i18n="page.botLanguage.chatNote">A moderator can also set the language in chat with <code>!botlang</code>. Chat accepts languages that this list does not show.</p>
+                        <p id="bot-language-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>
             </div>

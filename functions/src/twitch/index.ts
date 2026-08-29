@@ -5,5 +5,6 @@
 
 export * from "./appToken.service";
 export * from "./users.service";
+export * from "./channels.service";
 export * from "./moderators.service";
 export * from "./eventsub.service";

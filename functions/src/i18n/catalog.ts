@@ -71,6 +71,12 @@ const en: Catalog = {
   "api.persona.FailedSavePersonalitySettings": "Failed to save personality settings",
   "api.persona.PersonalityResetDefault": "Personality reset to default.",
   "api.persona.FailedResetPersonality": "Failed to reset personality",
+  "api.language.FailedLoadLanguageSetting": "Failed to load language setting",
+  "api.language.LanguageFollowsTwitchSetting": "The bot now follows your Twitch stream language.",
+  "api.language.ChooseLanguage": "Choose a language.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" is not one of the languages available here. A moderator can set any language with !botlang in chat.",
+  "api.language.LanguageSaved": "Bot language saved.",
+  "api.language.FailedSaveLanguageSetting": "Failed to save language setting",
   "api.timers.ErrorFetchingTimers": "Error fetching timers",
   "api.timers.TimerNameRequiredLetters": "Timer name is required (letters, numbers, or underscores; reserved words not allowed).",
   "api.timers.MessageTextRequired": "Message text is required.",
@@ -98,6 +104,8 @@ const en: Catalog = {
 };
 
 const es: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} activado correctamente.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} desactivado correctamente.",
   "api.authStatus.TwitchAuthenticationValid": "La autenticación de Twitch es válida",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Autenticación de Twitch actualizada con éxito",
   "api.autoChat.FailedLoadAutoChat": "Error al cargar la configuración de auto-chat",
@@ -177,11 +185,17 @@ const es: Catalog = {
   "api.timers.InvalidTimerName2": "Nombre de temporizador no válido.",
   "api.timers.TimerDoesNotExist2": "El temporizador \"{timerName}\" no existe.",
   "api.timers.ErrorDeletingTimer": "Error al eliminar el temporizador",
-  "api.commands.CommandEnabledSuccessfully": "Comando {command} activado correctamente.",
-  "api.commands.CommandDisabledSuccessfully": "Comando {command} desactivado correctamente.",
+  "api.language.FailedLoadLanguageSetting": "Error al cargar la configuración de idioma",
+  "api.language.LanguageFollowsTwitchSetting": "El bot ahora sigue el idioma de tu stream de Twitch.",
+  "api.language.ChooseLanguage": "Elige un idioma.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" no es uno de los idiomas disponibles aquí. Un moderador puede configurar cualquier idioma con !botlang en el chat.",
+  "api.language.LanguageSaved": "Idioma del bot guardado.",
+  "api.language.FailedSaveLanguageSetting": "Error al guardar la configuración de idioma",
 };
 
 const fr: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Commande {command} activée avec succès.",
+  "api.commands.CommandDisabledSuccessfully": "Commande {command} désactivée avec succès.",
   "api.authStatus.TwitchAuthenticationValid": "L'authentification Twitch est valide",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Authentification Twitch actualisée avec succès",
   "api.autoChat.FailedLoadAutoChat": "Échec du chargement de la configuration d'auto-chat",
@@ -261,11 +275,17 @@ const fr: Catalog = {
   "api.timers.InvalidTimerName2": "Nom de timer invalide.",
   "api.timers.TimerDoesNotExist2": "Le timer \"{timerName}\" n'existe pas.",
   "api.timers.ErrorDeletingTimer": "Erreur lors de la suppression du timer",
-  "api.commands.CommandEnabledSuccessfully": "Commande {command} activée avec succès.",
-  "api.commands.CommandDisabledSuccessfully": "Commande {command} désactivée avec succès.",
+  "api.language.FailedLoadLanguageSetting": "Impossible de charger le paramètre de langue",
+  "api.language.LanguageFollowsTwitchSetting": "Le bot suit désormais la langue de ton stream Twitch.",
+  "api.language.ChooseLanguage": "Choisis une langue.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" n'est pas disponible ici. Un modérateur peut définir n'importe quelle langue avec !botlang dans le chat.",
+  "api.language.LanguageSaved": "Langue du bot enregistrée.",
+  "api.language.FailedSaveLanguageSetting": "Impossible d'enregistrer le paramètre de langue",
 };
 
 const de: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Befehl {command} erfolgreich aktiviert.",
+  "api.commands.CommandDisabledSuccessfully": "Befehl {command} erfolgreich deaktiviert.",
   "api.authStatus.TwitchAuthenticationValid": "Twitch-Authentifizierung ist gültig",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Twitch-Authentifizierung erfolgreich aktualisiert",
   "api.autoChat.FailedLoadAutoChat": "Auto-Chat-Konfiguration konnte nicht geladen werden",
@@ -345,11 +365,17 @@ const de: Catalog = {
   "api.timers.InvalidTimerName2": "Ungültiger Timer-Name.",
   "api.timers.TimerDoesNotExist2": "Timer \"{timerName}\" existiert nicht.",
   "api.timers.ErrorDeletingTimer": "Fehler beim Löschen des Timers",
-  "api.commands.CommandEnabledSuccessfully": "Befehl {command} erfolgreich aktiviert.",
-  "api.commands.CommandDisabledSuccessfully": "Befehl {command} erfolgreich deaktiviert.",
+  "api.language.FailedLoadLanguageSetting": "Spracheinstellung konnte nicht geladen werden",
+  "api.language.LanguageFollowsTwitchSetting": "Der Bot folgt jetzt deiner Twitch-Streamsprache.",
+  "api.language.ChooseLanguage": "Wähle eine Sprache.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" ist hier nicht verfügbar. Ein Moderator kann jede Sprache mit !botlang im Chat einstellen.",
+  "api.language.LanguageSaved": "Bot-Sprache gespeichert.",
+  "api.language.FailedSaveLanguageSetting": "Spracheinstellung konnte nicht gespeichert werden",
 };
 
 const it: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} abilitato con successo.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} disabilitato con successo.",
   "api.authStatus.TwitchAuthenticationValid": "L'autenticazione di Twitch è valida",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Autenticazione di Twitch aggiornata con successo",
   "api.autoChat.FailedLoadAutoChat": "Impossibile caricare la configurazione dell'auto-chat",
@@ -429,11 +455,17 @@ const it: Catalog = {
   "api.timers.InvalidTimerName2": "Nome del timer non valido.",
   "api.timers.TimerDoesNotExist2": "Il timer \"{timerName}\" non esiste.",
   "api.timers.ErrorDeletingTimer": "Errore durante l'eliminazione del timer",
-  "api.commands.CommandEnabledSuccessfully": "Comando {command} abilitato con successo.",
-  "api.commands.CommandDisabledSuccessfully": "Comando {command} disabilitato con successo.",
+  "api.language.FailedLoadLanguageSetting": "Impossibile caricare l'impostazione della lingua",
+  "api.language.LanguageFollowsTwitchSetting": "Ora il bot segue la lingua della tua live Twitch.",
+  "api.language.ChooseLanguage": "Scegli una lingua.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" non è tra le lingue disponibili qui. Un moderatore può impostare qualsiasi lingua con !botlang in chat.",
+  "api.language.LanguageSaved": "Lingua del bot salvata.",
+  "api.language.FailedSaveLanguageSetting": "Impossibile salvare l'impostazione della lingua",
 };
 
 const pt: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Comando {command} ativado com sucesso.",
+  "api.commands.CommandDisabledSuccessfully": "Comando {command} desativado com sucesso.",
   "api.authStatus.TwitchAuthenticationValid": "Autenticação da Twitch válida",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Autenticação da Twitch atualizada com sucesso",
   "api.autoChat.FailedLoadAutoChat": "Falha ao carregar a configuração do auto-chat",
@@ -513,11 +545,17 @@ const pt: Catalog = {
   "api.timers.InvalidTimerName2": "Nome de temporizador inválido.",
   "api.timers.TimerDoesNotExist2": "O temporizador \"{timerName}\" não existe.",
   "api.timers.ErrorDeletingTimer": "Erro ao excluir temporizador",
-  "api.commands.CommandEnabledSuccessfully": "Comando {command} ativado com sucesso.",
-  "api.commands.CommandDisabledSuccessfully": "Comando {command} desativado com sucesso.",
+  "api.language.FailedLoadLanguageSetting": "Falha ao carregar a configuração de idioma",
+  "api.language.LanguageFollowsTwitchSetting": "Agora o bot segue o idioma da sua transmissão na Twitch.",
+  "api.language.ChooseLanguage": "Escolha um idioma.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" não é um dos idiomas disponíveis aqui. Um moderador pode definir qualquer idioma com !botlang no chat.",
+  "api.language.LanguageSaved": "Idioma do bot salvo.",
+  "api.language.FailedSaveLanguageSetting": "Falha ao salvar a configuração de idioma",
 };
 
 const ja: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "コマンド {command} を有効にしました。",
+  "api.commands.CommandDisabledSuccessfully": "コマンド {command} を無効にしました。",
   "api.authStatus.TwitchAuthenticationValid": "Twitch認証は有効です",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Twitch認証を正常に更新しました",
   "api.autoChat.FailedLoadAutoChat": "自動チャット設定の読み込みに失敗しました",
@@ -597,11 +635,17 @@ const ja: Catalog = {
   "api.timers.InvalidTimerName2": "無効なタイマー名です。",
   "api.timers.TimerDoesNotExist2": "タイマー \"{timerName}\" は存在しません。",
   "api.timers.ErrorDeletingTimer": "タイマーの削除エラー",
-  "api.commands.CommandEnabledSuccessfully": "コマンド {command} を有効にしました。",
-  "api.commands.CommandDisabledSuccessfully": "コマンド {command} を無効にしました。",
+  "api.language.FailedLoadLanguageSetting": "言語設定の読み込みに失敗しました",
+  "api.language.LanguageFollowsTwitchSetting": "ボットがTwitchの配信言語に連動するようになりました。",
+  "api.language.ChooseLanguage": "言語を選択してください。",
+  "api.language.LanguageNotAvailableHere": "「{language}」はここでは選択できない言語です。モデレーターならチャットで !botlang を使って任意の言語を設定できます。",
+  "api.language.LanguageSaved": "ボットの言語を保存しました。",
+  "api.language.FailedSaveLanguageSetting": "言語設定の保存に失敗しました",
 };
 
 const ru: Catalog = {
+  "api.commands.CommandEnabledSuccessfully": "Команда {command} успешно включена.",
+  "api.commands.CommandDisabledSuccessfully": "Команда {command} успешно отключена.",
   "api.authStatus.TwitchAuthenticationValid": "Авторизация Twitch действительна",
   "api.authStatus.TwitchAuthenticationSuccessfullyRefreshed": "Авторизация Twitch успешно обновлена",
   "api.autoChat.FailedLoadAutoChat": "Не удалось загрузить настройки авточата",
@@ -681,8 +725,12 @@ const ru: Catalog = {
   "api.timers.InvalidTimerName2": "Недопустимое имя таймера.",
   "api.timers.TimerDoesNotExist2": "Таймер \"{timerName}\" не существует.",
   "api.timers.ErrorDeletingTimer": "Ошибка удаления таймера",
-  "api.commands.CommandEnabledSuccessfully": "Команда {command} успешно включена.",
-  "api.commands.CommandDisabledSuccessfully": "Команда {command} успешно отключена.",
+  "api.language.FailedLoadLanguageSetting": "Не удалось загрузить настройку языка",
+  "api.language.LanguageFollowsTwitchSetting": "Теперь бот использует язык вашего стрима на Twitch.",
+  "api.language.ChooseLanguage": "Выберите язык.",
+  "api.language.LanguageNotAvailableHere": "\"{language}\" здесь недоступен. Модератор может установить любой язык с помощью !botlang в чате.",
+  "api.language.LanguageSaved": "Язык бота сохранен.",
+  "api.language.FailedSaveLanguageSetting": "Не удалось сохранить настройку языка",
 };
 
 export const catalogs: Record<SupportedLocale, Catalog> = { en, es, fr, de, it, pt, ja, ru };

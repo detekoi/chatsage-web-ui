@@ -9,6 +9,7 @@ import { initCustomCommands, loadCustomCommands } from './sections/custom-comman
 import { initTimers, loadTimers } from './sections/timers.js';
 import { initCheckin, loadCheckinSettings } from './sections/checkin.js';
 import { initPersona, loadPersona } from './sections/persona.js';
+import { initBotLanguage, loadBotLanguage } from './sections/bot-language.js';
 
 let twitchUsernameEl;
 let channelNameStatusEl;
@@ -21,7 +22,8 @@ async function reloadAllConfigs() {
         loadCustomCommands(),
         loadTimers(),
         loadCheckinSettings(),
-        loadPersona()
+        loadPersona(),
+        loadBotLanguage()
     ]);
 }
 
@@ -122,6 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTimers();
     initCheckin();
     initPersona();
+    initBotLanguage();
 
     // Setup global UI listeners
     setupNumericInputs();

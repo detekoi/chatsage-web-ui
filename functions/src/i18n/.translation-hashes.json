@@ -80,7 +80,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "fr": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -163,7 +169,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "de": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -246,7 +258,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "it": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -329,7 +347,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "pt": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -412,7 +436,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "ja": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -495,7 +525,13 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   },
   "ru": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -578,6 +614,12 @@
     "api.timers.TimerDoesNotExist2": "3afcf36c643ef943",
     "api.timers.ErrorDeletingTimer": "736745c9faaced45",
     "api.commands.CommandEnabledSuccessfully": "b826424f9bacb692",
-    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e"
+    "api.commands.CommandDisabledSuccessfully": "5d30c654c84c022e",
+    "api.language.FailedLoadLanguageSetting": "1b4e7bf0e84fbd7a",
+    "api.language.LanguageFollowsTwitchSetting": "9cc3d0c66b88e1b5",
+    "api.language.ChooseLanguage": "9e35697809859e18",
+    "api.language.LanguageNotAvailableHere": "445efaf84259361f",
+    "api.language.LanguageSaved": "314020b01fed9a14",
+    "api.language.FailedSaveLanguageSetting": "894d0968d112909c"
   }
 }

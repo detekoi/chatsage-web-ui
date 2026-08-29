@@ -38,6 +38,17 @@ export const mockAutoChatConfig = {
     }
 };
 
+export const mockBotLanguage = {
+    mode: 'auto',
+    language: null,
+    detected: 'spanish',
+    available: [
+        'english', 'spanish', 'french', 'german', 'italian', 'portuguese', 'japanese', 'russian',
+        'chinese', 'korean', 'dutch', 'polish', 'turkish', 'arabic', 'hindi', 'vietnamese',
+        'thai', 'swedish', 'danish', 'norwegian', 'finnish', 'greek', 'czech', 'hungarian', 'romanian',
+    ],
+};
+
 export function mockDelay(ms = 500) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

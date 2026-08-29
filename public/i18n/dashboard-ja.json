@@ -1,8 +1,23 @@
 {
   "confirm": {
     "deleteCheckin": "チャンネルからデイリーチェックインのリワードを削除しますか？この操作は取り消せません。",
-    "resetPersona": "ボットをデフォルトの人格にリセットしますか？カスタムテキストは削除されます。",
-    "deleteItem": "{item}を削除しますか？"
+    "deleteItem": "{item}を削除しますか？",
+    "resetPersona": "ボットをデフォルトの人格にリセットしますか？カスタムテキストは削除されます。"
+  },
+  "label": {
+    "charCounter": "{used} 文字",
+    "charCounterMax": "{used} / {max} 文字",
+    "chatLines": "{count} チャット行",
+    "commandNamed": "コマンド !{name}",
+    "cooldownSeconds": "クールダウン {seconds}秒",
+    "deleteCommand": "コマンド !{name} を削除",
+    "deleteTimer": "タイマー {name} を削除",
+    "editCommand": "コマンド !{name} を編集",
+    "editTimer": "タイマー {name} を編集",
+    "enableCommand": "コマンド !{name} を有効化",
+    "enableTimer": "タイマー「{name}」を有効化",
+    "enableTimerTitle": "この定期メッセージを有効/無効にする",
+    "everyMinutes": "{minutes}分ごと"
   },
   "page": {
     "adNotifications": {
@@ -46,6 +61,7 @@
     "customCommands": {
       "aiMode": "AIモード <small class=\"text-muted\">(毎回異なる応答を生成)</small>",
       "aiPromptLabel": "AIプロンプト",
+      "aiPromptPlaceholder": "$(user) への挨拶を1文で書いて。",
       "cooldown": "クールダウン (秒)",
       "empty": "カスタムコマンドがありません。",
       "emptyHint": "<strong>+ Add</strong>ボタンを選択するか、チャットで<code>!command add</code>または<code>!command addai</code>を送信してください。",
@@ -53,8 +69,7 @@
       "namePlaceholder": "hello",
       "permission": "権限",
       "responseLabel": "レスポンス",
-      "responsePlaceholder": "こんにちは $(user) さん、$(channel) へようこそ！",
-      "aiPromptPlaceholder": "$(user) への挨拶を1文で書いて。"
+      "responsePlaceholder": "こんにちは $(user) さん、$(channel) へようこそ！"
     },
     "customCommandsTitle": "カスタムコマンド",
     "loading": {
@@ -73,7 +88,9 @@
       "streamEvents": "配信イベント設定を読み込み中…",
       "streamEventsAria": "配信イベント設定を読み込み中",
       "timers": "タイマーメッセージを読み込み中…",
-      "timersAria": "タイマーメッセージを読み込み中"
+      "timersAria": "タイマーメッセージを読み込み中",
+      "botLanguage": "ボット言語を読み込み中…",
+      "botLanguageAria": "ボット言語設定を読み込み中"
     },
     "permission": {
       "broadcaster": "配信者",
@@ -110,6 +127,7 @@
     "timers": {
       "aiMode": "AIモード <small class=\"text-muted\">(毎回ユニークなメッセージを生成)</small>",
       "aiPromptLabel": "AIプロンプト",
+      "aiPromptPlaceholder": "プレイ中のゲームに合わせてDiscordの案内をして。",
       "empty": "タイマーメッセージがありません。",
       "emptyHint": "<strong>+ 追加</strong>ボタンを選択するか、チャットで<code>!timer add</code>または<code>!timer addai</code>を送信してください。",
       "help": "配信中かつチャットがアクティブな時に定期メッセージを投稿します。",
@@ -119,32 +137,57 @@
       "minLines": "最小チャット行数",
       "minLinesHelp": "チャットがこのメッセージ数に達した後にのみタイマーメッセージを送信します。",
       "nameLabel": "タイマー名",
-      "namePlaceholder": "discord",
-      "aiPromptPlaceholder": "プレイ中のゲームに合わせてDiscordの案内をして。"
+      "namePlaceholder": "discord"
     },
     "timersTitle": "タイマーメッセージ",
-    "title": "チャンネルダッシュボード"
+    "title": "チャンネルダッシュボード",
+    "botLanguage": {
+      "auto": "自動 — Twitch配信の言語に合わせる",
+      "autoDetected": "Twitch配信の言語が{language}のため、ボットは{language}を使用します。",
+      "autoEnglish": "Twitch配信の言語が英語または未設定のため、ボットは英語を使用します。",
+      "autoWith": "自動 — {language}（Twitchから取得）",
+      "chatNote": "モデレーターはチャット内で<code>!botlang</code>を使って言語を設定することもできます。チャットからはこのリストにない言語も指定可能です。",
+      "groupInChat": "チャットで設定",
+      "groupTranslated": "ボット送信時に自動翻訳",
+      "groupWritten": "翻訳済み言語",
+      "help": "ボットはこの言語でコマンド応答、ミニゲーム、AI返信を送信します。ほとんどのチャンネルでは自動のままで問題ありません（Twitchチャンネルの配信言語が自動適用されます）。",
+      "manual": "Twitch配信の言語設定に関わらず、ボットは{language}を使用します。",
+      "selectLabel": "ボットの使用言語"
+    },
+    "botLanguageTitle": "ボットの言語"
   },
   "status": {
     "active": "有効",
     "deleting": "削除中…",
     "inactive": "無効",
     "resetting": "リセット中…",
-    "saving": "保存中…",
     "savedDev": "{message} (開発モード)。",
     "savedDevShort": "保存完了（開発モード）",
+    "saving": "保存中…",
     "savingSafetyCheck": "設定を保存して安全性チェックを実行中…"
   },
   "toast": {
+    "adNotificationsSaved": "広告通知設定を保存しました。",
     "addBotFailed": "ボットをチャンネルに追加できませんでした。",
     "addingBot": "ボットをチャンネルに追加中…",
+    "autoChatSaved": "自動チャット設定を保存しました。",
     "botAddedDev": "ボットがチャンネルに追加されました (開発モード)。",
     "botPersonaSaved": "ボットのペルソナを保存しました。",
     "botRemovedDev": "ボットがチャンネルから削除されました (開発モード)。",
+    "botStatusFailed": "Botのステータス取得に失敗しました: {message}",
     "checkinDeleted": "チェックイン報酬を削除しました。",
     "checkinReauth": "チャンネルポイント報酬を管理するには再ログインしてください。",
     "checkinSaved": "デイリーチェックイン設定を保存しました。",
+    "checkinSavedShort": "チェックイン設定を保存しました！",
     "commandSaveFailed": "コマンドの保存に失敗しました。",
+    "commandSavedDev": "コマンド !{name} を保存しました（開発モード）。",
+    "deleteFailed": "{item} の削除に失敗しました。",
+    "errorPrefix": "エラー: {message}",
+    "itemDeletedDev": "{item} を削除しました（開発モード）。",
+    "itemDisabled": "{item}を無効化しました。",
+    "itemDisabledDev": "{item}を無効化しました（開発モード）。",
+    "itemEnabled": "{item} を有効化しました。",
+    "itemEnabledDev": "{item}を有効化しました（開発モード）。",
     "loadAdNotificationsFailed": "広告通知設定の読み込みに失敗しました。",
     "loadAutoChatFailed": "自動チャット設定の読み込みに失敗しました。",
     "loadBotStatusFailed": "ボットのステータス読み込みに失敗しました。{message}",
@@ -152,6 +195,8 @@
     "missingToken": "認証トークンが見つかりません。再ログインしてください。",
     "missingTokenLogin": "認証トークンが見つかりません。もう一度ログインしてください。",
     "networkError": "ネットワークエラー。もう一度お試しください。",
+    "personaFallback": "デフォルトのペルソナを表示しています。Botのペルソナ設定はまだ公開されていません。",
+    "personaLoadFailed": "ペルソナ設定の読み込みに失敗しました。",
     "personaReset": "ペルソナをデフォルトにリセットしました。",
     "personaResetFailed": "ペルソナのリセットに失敗しました。",
     "personaResetRetry": "ペルソナのリセットに失敗しました。もう一度お試しください。",
@@ -161,29 +206,17 @@
     "personaSavedDev": "ペルソナを保存しました（開発モード）。",
     "removeBotFailed": "チャンネルからBotの削除に失敗しました。",
     "removingBot": "チャンネルからBotを削除中…",
+    "rewardDeleteFailed": "リワードの削除に失敗しました。",
+    "rewardDeleted": "リワードを削除しました",
+    "rewardDeletedDev": "リワードを削除しました（開発モード）",
     "saveSettingsFailed": "設定の保存に失敗しました。",
     "sessionExpired": "セッションが切れたか無効です。再度サインインしてください。",
+    "streamEventsSaved": "配信イベント設定を保存しました。",
     "timerSaveFailed": "タイマーの保存に失敗しました。",
-    "botStatusFailed": "Botのステータス取得に失敗しました: {message}",
-    "commandSavedDev": "コマンド !{name} を保存しました（開発モード）。",
-    "deleteFailed": "{item} の削除に失敗しました。",
-    "errorPrefix": "エラー: {message}",
-    "itemDeletedDev": "{item} を削除しました（開発モード）。",
-    "itemEnabled": "{item} を有効化しました。",
-    "itemDisabled": "{item}を無効化しました。",
-    "itemEnabledDev": "{item}を有効化しました（開発モード）。",
-    "itemDisabledDev": "{item}を無効化しました（開発モード）。",
     "timerSavedDev": "タイマー「{name}」を保存しました（開発モード）。",
     "updateFailed": "{item}の更新に失敗しました。",
-    "streamEventsSaved": "配信イベント設定を保存しました。",
-    "autoChatSaved": "自動チャット設定を保存しました。",
-    "adNotificationsSaved": "広告通知設定を保存しました。",
-    "checkinSavedShort": "チェックイン設定を保存しました！",
-    "rewardDeletedDev": "リワードを削除しました（開発モード）",
-    "rewardDeleted": "リワードを削除しました",
-    "rewardDeleteFailed": "リワードの削除に失敗しました。",
-    "personaLoadFailed": "ペルソナ設定の読み込みに失敗しました。",
-    "personaFallback": "デフォルトのペルソナを表示しています。Botのペルソナ設定はまだ公開されていません。"
+    "botLanguageSaved": "ボットの言語を保存しました。",
+    "loadBotLanguageFailed": "ボット言語設定の読み込みに失敗しました。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",
@@ -192,24 +225,9 @@
     "intervalRange": "間隔は2〜1440分の間で指定してください。",
     "messageRequired": "メッセージ内容は必須です。",
     "minLinesRange": "最小チャット行数は0〜100行の間で指定してください。",
-    "responseRequired": "応答テキストは必須です。",
-    "timerNameRequired": "タイマー名は必須です。",
     "personaEmpty": "ペルソナの指示は空にできません。指示をクリアするには「デフォルトに戻す」を選択してください。",
-    "personaTooLong": "ペルソナの指示は{max}文字以下にしてください。"
-  },
-  "label": {
-    "charCounter": "{used} 文字",
-    "charCounterMax": "{used} / {max} 文字",
-    "chatLines": "{count} チャット行",
-    "commandNamed": "コマンド !{name}",
-    "cooldownSeconds": "クールダウン {seconds}秒",
-    "everyMinutes": "{minutes}分ごと",
-    "enableTimer": "タイマー「{name}」を有効化",
-    "enableTimerTitle": "この定期メッセージを有効/無効にする",
-    "enableCommand": "コマンド !{name} を有効化",
-    "editCommand": "コマンド !{name} を編集",
-    "deleteCommand": "コマンド !{name} を削除",
-    "editTimer": "タイマー {name} を編集",
-    "deleteTimer": "タイマー {name} を削除"
+    "personaTooLong": "ペルソナの指示は{max}文字以下にしてください。",
+    "responseRequired": "応答テキストは必須です。",
+    "timerNameRequired": "タイマー名は必須です。"
   }
 }
