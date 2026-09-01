@@ -48,6 +48,7 @@ globalThis.document = {
         appendChild() {},
     },
     addEventListener() {}, querySelector: () => null, querySelectorAll: () => [],
+    getElementById: () => null,
     createElement: stubElement, dispatchEvent() {}, title: '',
 };
 

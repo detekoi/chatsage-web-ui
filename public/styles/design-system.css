@@ -2166,10 +2166,9 @@ dialog.kofi-sheet::backdrop {
 
 
 /* =====================================================
-   LANGUAGE SELECTOR  (public/js/i18n.js)
-   Mirrors the control in wildcat-docs, restyled onto this
-   repo's tokens. Theming here keys off [data-theme] to
-   match the rest of this file, not prefers-color-scheme.
+   I18N HELPERS  (public/js/i18n.js)
+   The language picker itself is .wc-langselect, in the
+   app bar section above alongside the other chips.
    ===================================================== */
 
 /* Used by i18n.js for the live region that announces a language change and for the

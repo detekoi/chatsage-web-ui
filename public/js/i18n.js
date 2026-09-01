@@ -323,6 +323,9 @@ function createLanguageSelector() {
         const loaded = await loadTranslations(code);
         // Superseded by a newer selection: that change owns the render, so do nothing here.
         if (!loaded && currentLanguage !== code) return;
+        // The browser already moved the select to the requested language; if the
+        // load failed outright, put it back on the language the page is still in.
+        if (!loaded) { updateLanguageSelector(currentLanguage); return; }
 
         // currentLanguage is what actually got applied — loadTranslations() falls back to
         // English when a catalog cannot be fetched, so report that rather than what was asked.
