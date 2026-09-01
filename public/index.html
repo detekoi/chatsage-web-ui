@@ -89,7 +89,10 @@
     <div class="wc-stage-dim"></div>
 
     <main id="main-content" class="wc-stage">
-        <div style="width:100%; max-width:620px; display:flex; justify-content:flex-end;">
+        <div style="width:100%; max-width:620px; display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+            <select class="wc-langselect" id="page-language-select" aria-label="Language" data-i18n-aria-label="common.languageSelector">
+                <option value="en" lang="en">English</option>
+            </select>
             <div class="wc-themeswitch" role="group" aria-label="Color theme" data-i18n-aria-label="common.colorTheme">
                 <button type="button" id="themeLightBtn" aria-pressed="false" data-i18n="common.themeLight">Light</button>
                 <button type="button" id="themeDarkBtn" aria-pressed="false" data-i18n="common.themeDark">Dark</button>

@@ -21,10 +21,6 @@ const AVAILABLE_LANGUAGES = {
     'ru': 'Русский'
 };
 
-const LANGUAGE_ICONS = {
-    'en': 'en', 'es': 'es', 'fr': 'fr', 'de': 'de',
-    'it': 'it', 'pt': 'pt', 'ja': '日本', 'ru': 'ру'
-};
 
 const DEFAULT_LANGUAGE = 'en';
 
@@ -293,99 +289,55 @@ export function translatePage() {
 }
 
 // --- language selector ---
+//
+// The native <select> in the app bar (dashboard.html) or beside the theme
+// switch (index.html), matching the WildcatTTS dashboard so the sites agree.
+// Pages without the element (auth, 404) have no switcher, as there.
 
 function createLanguageSelector() {
-    if (document.querySelector('.language-selector')) return;
+    const select = document.getElementById('page-language-select');
+    if (!select || select.dataset.i18nBound) return;
+    select.dataset.i18nBound = 'true';
 
-    const selector = document.createElement('div');
-    selector.className = 'language-selector';
-    // Appended to <body>, outside every other landmark — label it so it stays discoverable.
-    selector.setAttribute('role', 'region');
-
-    const currentBtn = document.createElement('button');
-    currentBtn.className = 'current-lang';
-    currentBtn.type = 'button';
-    currentBtn.setAttribute('aria-expanded', 'false');
-    currentBtn.setAttribute('aria-haspopup', 'true');
-    currentBtn.setAttribute('aria-controls', 'language-grid');
-    currentBtn.textContent = LANGUAGE_ICONS[currentLanguage] || currentLanguage;
-    selector.appendChild(currentBtn);
-
-    const grid = document.createElement('div');
-    grid.className = 'language-grid';
-    grid.id = 'language-grid';
+    select.replaceChildren();
+    for (const code of Object.keys(AVAILABLE_LANGUAGES)) {
+        const option = document.createElement('option');
+        option.value = code;
+        option.textContent = AVAILABLE_LANGUAGES[code];
+        // Each label is written in the language it names; without this a screen
+        // reader pronounces all of them with the page voice.
+        option.lang = code;
+        select.appendChild(option);
+    }
+    select.value = currentLanguage;
 
     // The whole page rewrites on selection with no other signal, so announce the change.
     const status = document.createElement('div');
     status.className = 'visually-hidden';
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
+    select.insertAdjacentElement('afterend', status);
 
-    function setOpen(open) {
-        selector.classList.toggle('open', open);
-        currentBtn.setAttribute('aria-expanded', String(open));
-    }
+    select.addEventListener('change', async () => {
+        const code = select.value;
+        const loaded = await loadTranslations(code);
+        // Superseded by a newer selection: that change owns the render, so do nothing here.
+        if (!loaded && currentLanguage !== code) return;
 
-    for (const code of Object.keys(AVAILABLE_LANGUAGES)) {
-        const btn = document.createElement('button');
-        btn.className = 'grid-item';
-        btn.type = 'button';
-        btn.dataset.lang = code;
-        // The visible label is an abbreviation, sometimes in another script ("ру", "日本"):
-        // `lang` gets it pronounced correctly, aria-label announces the full name.
-        btn.lang = code;
-        btn.setAttribute('aria-label', AVAILABLE_LANGUAGES[code]);
-        btn.textContent = LANGUAGE_ICONS[code] || code;
-        btn.addEventListener('click', async () => {
-            setOpen(false);
-            const loaded = await loadTranslations(code);
-            // Superseded by a newer selection: that click owns the render, so do nothing here.
-            if (!loaded && currentLanguage !== code) return;
-
-            // currentLanguage is what actually got applied — loadTranslations() falls back to
-            // English when a catalog cannot be fetched, so report that rather than what was asked.
-            const applied = currentLanguage;
-            translatePage();
-            updateLanguageSelector(applied);
-            currentBtn.focus(); // collapsing the grid would otherwise drop focus to <body>
-            status.textContent = AVAILABLE_LANGUAGES[applied] || applied;
-        });
-        grid.appendChild(btn);
-    }
-
-    selector.appendChild(grid);
-    selector.appendChild(status);
-
-    currentBtn.addEventListener('click', () => setOpen(!selector.classList.contains('open')));
-    document.addEventListener('click', e => { if (!selector.contains(e.target)) setOpen(false); });
-    selector.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && selector.classList.contains('open')) {
-            e.stopPropagation();
-            setOpen(false);
-            currentBtn.focus();
-        }
+        // currentLanguage is what actually got applied — loadTranslations() falls back to
+        // English when a catalog cannot be fetched, so report that rather than what was asked.
+        const applied = currentLanguage;
+        translatePage();
+        updateLanguageSelector(applied);
+        status.textContent = AVAILABLE_LANGUAGES[applied] || applied;
     });
-
-    document.body.appendChild(selector);
 }
 
 function updateLanguageSelector(lang) {
-    const selector = document.querySelector('.language-selector');
-    if (!selector) return;
-
-    const label = t('common.languageSelector', {}, 'Language');
-    selector.setAttribute('aria-label', label);
-
-    const currentBtn = selector.querySelector('.current-lang');
-    if (currentBtn) {
-        currentBtn.textContent = LANGUAGE_ICONS[lang] || lang;
-        currentBtn.setAttribute('aria-label', `${label}: ${AVAILABLE_LANGUAGES[lang] || lang}`);
-    }
-
-    selector.querySelectorAll('.grid-item').forEach(btn => {
-        if (btn.dataset.lang === lang) btn.setAttribute('aria-current', 'true');
-        else btn.removeAttribute('aria-current');
-    });
+    const select = document.getElementById('page-language-select');
+    if (!select) return;
+    select.value = lang;
+    select.setAttribute('aria-label', t('common.languageSelector', {}, 'Language'));
 }
 
 // --- init ---
