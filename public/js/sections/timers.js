@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from '../api.js';
+import { apiGet, apiPost, apiPut, readJson } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockTimers, mockDelay } from '../dev-mocks.js';
 import { toggleItem, deleteItem } from '../crud-helpers.js';
@@ -90,7 +90,7 @@ export async function loadTimers() {
 
     try {
         const res = await apiGet('/api/timers');
-        const data = await res.json();
+        const data = await readJson(res);
         timerLoadingEl.style.display = 'none';
 
         if (data.success && data.timers) {
@@ -334,7 +334,7 @@ async function saveTimer() {
             res = await apiPost('/api/timers', body);
         }
 
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             closeTimerForm();

@@ -1,4 +1,4 @@
-import { apiGet, apiPost, AuthError } from '../api.js';
+import { apiGet, apiPost, AuthError, readJson } from '../api.js';
 import { debounce, showActionToast } from '../ui.js';
 import { DEV_MODE, mockAutoChatConfig, mockDelay } from '../dev-mocks.js';
 import { t } from '../i18n.js';
@@ -75,7 +75,7 @@ async function fetchAutoChatConfig() {
 
     try {
         const res = await apiGet('/api/auto-chat');
-        const data = await res.json();
+        const data = await readJson(res);
         if (data.success && data.config) {
             return data.config;
         }
@@ -141,7 +141,7 @@ async function saveSectionSettings(endpoint, payload, statusEl, successMsg) {
 
     try {
         const res = await apiPost(endpoint, payload);
-        const data = await res.json();
+        const data = await readJson(res);
         
         if (currentRequestId === saveRequestIds.get(contextId)) {
             if (data.success) {

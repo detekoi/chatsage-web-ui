@@ -113,7 +113,10 @@ export const authLimiter = rateLimit({
 export const apiLimiter = rateLimit({
   windowMs: RATE_LIMIT.API.windowMs,
   max: RATE_LIMIT.API.max,
-  message: "Too many requests, please try again later.",
+  // Objects, not strings, on every limiter that fronts a fetch() caller:
+  // express-rate-limit sends a string as text/html, and the dashboard parses
+  // every API response as JSON.
+  message: { success: false, message: "Too many requests. Wait one minute, then try again." },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -135,7 +138,7 @@ function createPromptWriteLimiter(willScreen: (req: Request) => boolean) {
   return rateLimit({
     windowMs: RATE_LIMIT.PROMPT_WRITE.windowMs,
     max: RATE_LIMIT.PROMPT_WRITE.max,
-    message: "Too many personality or prompt saves. Please wait a moment and try again.",
+    message: { success: false, message: "Too many personality or prompt saves. Wait one minute, then try again." },
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req: Request) => !willScreen(req),
@@ -173,7 +176,7 @@ export const aiPromptWriteLimiter = createPromptWriteLimiter((req) => {
 export const previewLimiter = rateLimit({
   windowMs: RATE_LIMIT.PREVIEW.windowMs,
   max: RATE_LIMIT.PREVIEW.max,
-  message: "Too many previews. Please wait a moment and try again.",
+  message: { success: false, message: "Too many previews. Wait one minute, then try again." },
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req: Request) =>

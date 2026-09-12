@@ -12,11 +12,17 @@ jest.mock("@/config/logger", () => ({
   },
 }));
 
+import express from "express";
+import request from "supertest";
 import {
   corsAndSecurityMiddleware,
   requestTimeoutMiddleware,
   requireFirestore,
+  previewLimiter,
+  apiLimiter,
+  personaWriteLimiter,
 } from "@/config/middleware";
+import { RATE_LIMIT } from "@/config/constants";
 
 describe("corsAndSecurityMiddleware", () => {
   let mockReq: any;
@@ -198,5 +204,37 @@ describe("requireFirestore", () => {
       }),
     );
     expect(mockNext).not.toHaveBeenCalled();
+  });
+});
+
+describe("rate limiters that front fetch() callers", () => {
+  // The dashboard parses every API response as JSON, so a limiter must not
+  // answer 429 with a text/html string.
+  async function exhaust(limiter: any, max: number) {
+    const app = express();
+    app.use((req: any, _res: any, next: any) => {
+      req.user = { userId: "user-1" };
+      next();
+    });
+    app.use(limiter);
+    app.post("/", (_req, res) => res.json({ success: true }));
+
+    for (let i = 0; i < max; i++) {
+      const ok = await request(app).post("/");
+      expect(ok.status).toBe(200);
+    }
+    return request(app).post("/");
+  }
+
+  it.each([
+    ["previewLimiter", previewLimiter, RATE_LIMIT.PREVIEW.max],
+    ["apiLimiter", apiLimiter, RATE_LIMIT.API.max],
+    ["personaWriteLimiter", personaWriteLimiter, RATE_LIMIT.PROMPT_WRITE.max],
+  ])("%s answers 429 with the JSON error shape once the budget is spent", async (_name, limiter, max) => {
+    const limited = await exhaust(limiter, max);
+    expect(limited.status).toBe(429);
+    expect(limited.type).toBe("application/json");
+    expect(limited.body.success).toBe(false);
+    expect(typeof limited.body.message).toBe("string");
   });
 });

@@ -1,4 +1,4 @@
-import { apiGet, apiPost, AuthError } from '../api.js';
+import { apiGet, apiPost, AuthError, readJson } from '../api.js';
 import { debounce } from '../ui.js';
 import { DEV_MODE, mockBotLanguage, mockDelay } from '../dev-mocks.js';
 import { t, getLanguage } from '../i18n.js';
@@ -142,7 +142,7 @@ export async function loadBotLanguage() {
 
     try {
         const res = await apiGet('/api/language');
-        const data = await res.json();
+        const data = await readJson(res);
         applyBotLanguage(data.success ? data : null);
     } catch (e) {
         if (e instanceof AuthError) return;
@@ -174,7 +174,7 @@ async function saveBotLanguage() {
 
     try {
         const res = await apiPost('/api/language', payload);
-        const data = await res.json();
+        const data = await readJson(res);
         if (requestId !== saveRequestId) return;
 
         if (data.success) {

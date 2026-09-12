@@ -84,3 +84,19 @@ export async function apiPut(path, body) {
 export async function apiDelete(path) {
     return apiFetch('DELETE', path);
 }
+
+/**
+ * Reads an API response body as JSON, but survives a non-JSON body. A proxy
+ * error page or a plain-text 408/429 would otherwise throw a SyntaxError and
+ * hide the message the server sent.
+ * @param {Response} res
+ * @returns {Promise<object>} Parsed body, or `{ success: false, message }` built from the raw text.
+ */
+export async function readJson(res) {
+    const text = await res.text();
+    try {
+        return JSON.parse(text);
+    } catch {
+        return { success: false, message: text.trim() || undefined };
+    }
+}

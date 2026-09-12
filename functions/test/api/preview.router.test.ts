@@ -23,7 +23,8 @@ jest.mock("axios", () => {
 });
 
 import axios from "axios";
-import previewRouter from "@/api/preview.router";
+import previewRouter, { BOT_TIMEOUT_MS } from "@/api/preview.router";
+import { REQUEST_TIMEOUT_MS } from "@/config/constants";
 import { getInternalBotTokenValue } from "@/utils/secrets";
 
 const mockPost = axios.post as jest.MockedFunction<typeof axios.post>;
@@ -57,6 +58,34 @@ beforeEach(() => {
 });
 
 describe("POST /api/preview", () => {
+  it("waits on the bot for less time than the global request timeout", () => {
+    // Otherwise requestTimeoutMiddleware answers 408 first and the handler
+    // later writes to a finished response.
+    expect(BOT_TIMEOUT_MS).toBeLessThan(REQUEST_TIMEOUT_MS);
+    expect((mockPost.mock.calls[0]?.[2] as any)?.timeout ?? BOT_TIMEOUT_MS).toBe(BOT_TIMEOUT_MS);
+  });
+
+  it("does not write a second response when the request already timed out", async () => {
+    // Simulate the timeout middleware having answered 408 while the bot call was in flight.
+    let capturedRes: any;
+    const app = express();
+    app.use(express.json());
+    app.use((req: any, res: any, next: any) => {
+      req.user = { login: "testuser", userId: "12345" };
+      capturedRes = res;
+      next();
+    });
+    app.use("/", previewRouter);
+
+    mockPost.mockImplementation(async () => {
+      capturedRes.status(408).json({ success: false, message: "Request timeout" });
+      return { status: 200, data: { success: true, preview: okPreview } };
+    });
+
+    const res = await request(app).post("/").send({ kind: "command", prompt: "x" });
+    expect(res.status).toBe(408);
+  });
+
   it("proxies to the bot with the JWT channel and returns the preview", async () => {
     const res = await request(createApp())
       .post("/")

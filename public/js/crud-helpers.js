@@ -1,4 +1,4 @@
-import { apiPost, apiPut, apiDelete, AuthError } from './api.js';
+import { apiPost, apiPut, apiDelete, AuthError, readJson } from './api.js';
 import { showActionToast } from './ui.js';
 import { DEV_MODE, mockDelay } from './dev-mocks.js';
 import { t } from './i18n.js';
@@ -25,7 +25,7 @@ export async function toggleItem(method, apiPath, payload, itemName, enabled, ch
 
     try {
         const res = method === 'POST' ? await apiPost(apiPath, payload) : await apiPut(apiPath, payload);
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             // Two whole sentences rather than a concatenated adjective: word order and
@@ -67,7 +67,7 @@ export async function deleteItem(apiPath, itemName, onReload) {
 
     try {
         const res = await apiDelete(apiPath);
-        const data = await res.json();
+        const data = await readJson(res);
         
         if (data.success) {
             await onReload();

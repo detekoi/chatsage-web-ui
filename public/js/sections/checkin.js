@@ -1,4 +1,4 @@
-import { apiGet, apiPut, apiDelete, getToken } from '../api.js';
+import { apiGet, apiPut, apiDelete, getToken, readJson } from '../api.js';
 import { showActionToast, setSuccessMessage, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
 import { setupPreview } from '../preview.js';
@@ -100,7 +100,7 @@ export async function loadCheckinSettings() {
 
     try {
         const res = await apiGet('/api/checkin');
-        const data = await res.json();
+        const data = await readJson(res);
         checkinLoadingEl.style.display = 'none';
 
         if (data.success && data.config) {
@@ -151,7 +151,7 @@ async function saveCheckinSettings() {
 
     try {
         const res = await apiPut('/api/checkin', body);
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             setSuccessMessage(checkinMsgEl, data.message || t('toast.checkinSavedShort', {}, 'Check-in settings saved!'));
@@ -192,7 +192,7 @@ async function deleteCheckinReward() {
 
     try {
         const res = await apiDelete('/api/checkin');
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             setSuccessMessage(checkinMsgEl, data.message || t('toast.rewardDeleted', {}, 'Reward deleted'));

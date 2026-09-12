@@ -1,4 +1,4 @@
-import { apiGet } from '../api.js';
+import { apiGet, readJson } from '../api.js';
 import { DEV_MODE, mockCommands, mockDelay } from '../dev-mocks.js';
 import { toggleItem } from '../crud-helpers.js';
 import { t } from '../i18n.js';
@@ -23,7 +23,7 @@ export async function loadCommandSettings() {
 
     try {
         const res = await apiGet('/api/commands');
-        const data = await res.json();
+        const data = await readJson(res);
         commandsLoadingEl.style.display = 'none';
 
         if (data.success && data.commands) {

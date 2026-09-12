@@ -9,7 +9,7 @@
  * existing styling.
  */
 
-import { apiPost, AuthError } from './api.js';
+import { apiPost, AuthError, readJson } from './api.js';
 import { DEV_MODE, mockDelay, mockPreview } from './dev-mocks.js';
 import { t } from './i18n.js';
 
@@ -72,7 +72,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
                 const body = { kind, prompt, name: getName() || undefined };
                 if (argsInput && argsInput.value.trim()) body.args = argsInput.value.trim();
                 const res = await apiPost('/api/preview', body);
-                data = await res.json();
+                data = await readJson(res);
             }
 
             if (data.success && data.preview) {

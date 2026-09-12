@@ -14,7 +14,7 @@
 
 import { Router, Response } from "express";
 import axios from "axios";
-import { BOT_PUBLIC_URL } from "@/config/constants";
+import { BOT_PUBLIC_URL, REQUEST_TIMEOUT_MS } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getInternalBotTokenValue } from "@/utils/secrets";
@@ -30,8 +30,13 @@ export type PreviewKind = (typeof PREVIEW_KINDS)[number];
 const MAX_PROMPT_LENGTH = 500;
 const MAX_ARGS_LENGTH = 200;
 
-/** A production inference with search grounding can take a while on a cold bot. */
-const BOT_TIMEOUT_MS = 45_000;
+/**
+ * A production inference with search grounding can take a while on a cold bot,
+ * but the global requestTimeoutMiddleware answers 408 at REQUEST_TIMEOUT_MS, so
+ * waiting longer than that only produces a second write to a closed response.
+ * Stay comfortably under it.
+ */
+export const BOT_TIMEOUT_MS = Math.min(25_000, REQUEST_TIMEOUT_MS - 5_000);
 
 export interface PreviewResult {
   kind: PreviewKind;
@@ -109,6 +114,9 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       },
     );
 
+    // The request timeout middleware may already have answered 408.
+    if (res.headersSent) return;
+
     if (botRes.status !== 200 || !botRes.data?.success || !botRes.data.preview) {
       log.error("Bot rejected preview request", {
         status: botRes.status,
@@ -139,6 +147,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     const e = error as Error & { code?: string };
     const unreachable = axios.isAxiosError(e) && !e.response;
     log.error("Error generating preview", { error: e.message, code: e.code, kind });
+    if (res.headersSent) return;
     return res.status(unreachable ? 503 : 500).json({
       success: false,
       message: unreachable

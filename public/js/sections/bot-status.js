@@ -1,4 +1,4 @@
-import { apiPost, getToken, setToken, AuthError } from '../api.js';
+import { apiPost, getToken, setToken, AuthError, readJson } from '../api.js';
 import { showActionToast } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
 import { t } from '../i18n.js';
@@ -45,7 +45,7 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
 
         try {
             const res = await apiPost('/api/bot/add');
-            const data = await res.json();
+            const data = await readJson(res);
             showActionToast(data.message, data.success ? 'success' : 'danger');
             
             if (data.success) {
@@ -72,7 +72,7 @@ export function initBotStatus({ onBotAdded, onBotRemoved, onLogout }) {
 
         try {
             const res = await apiPost('/api/bot/remove');
-            const data = await res.json();
+            const data = await readJson(res);
             showActionToast(data.message, data.success ? 'success' : 'danger');
             
             if (data.success) {

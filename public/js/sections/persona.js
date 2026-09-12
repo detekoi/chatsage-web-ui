@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiDelete, getToken, AuthError } from '../api.js';
+import { apiGet, apiPost, apiDelete, getToken, AuthError, readJson } from '../api.js';
 import { showActionToast, setSuccessMessage, setupCharCounter } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
 import { t } from '../i18n.js';
@@ -91,7 +91,7 @@ export async function loadPersona() {
 
     try {
         const res = await apiGet('/api/persona');
-        const data = await res.json();
+        const data = await readJson(res);
         applyPersona(data.success ? data : null);
     } catch (e) {
         if (e instanceof AuthError) return;
@@ -126,7 +126,7 @@ async function savePersona() {
 
     try {
         const res = await apiPost('/api/persona', { instructions });
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             setSuccessMessage(msgEl, data.message || t('toast.personaSaved', {}, 'Personality saved.'));
@@ -165,7 +165,7 @@ async function resetPersona() {
 
     try {
         const res = await apiDelete('/api/persona');
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             showActionToast(t('toast.personaReset', {}, 'Personality reset to default.'), 'success');

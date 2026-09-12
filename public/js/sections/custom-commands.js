@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from '../api.js';
+import { apiGet, apiPost, apiPut, readJson } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockCustomCommands, mockDelay } from '../dev-mocks.js';
 import { deleteItem } from '../crud-helpers.js';
@@ -91,7 +91,7 @@ export async function loadCustomCommands() {
 
     try {
         const res = await apiGet('/api/custom-commands');
-        const data = await res.json();
+        const data = await readJson(res);
         customCmdLoadingEl.style.display = 'none';
 
         if (data.success && data.commands) {
@@ -295,7 +295,7 @@ async function saveCustomCommand() {
             res = await apiPost('/api/custom-commands', body);
         }
 
-        const data = await res.json();
+        const data = await readJson(res);
 
         if (data.success) {
             closeForm();
