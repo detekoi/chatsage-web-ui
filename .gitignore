@@ -93,3 +93,6 @@ Icon
 *.DS_Store
 
 **/.claude/settings.local.json
+
+# Computed-style baselines (scripts/css-snapshot.mjs)
+.css-baseline/

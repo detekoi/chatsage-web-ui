@@ -1,0 +1,14 @@
+{
+  "publicDir": "public",
+  "baselineDir": ".css-baseline",
+  "widths": [1100, 400],
+  "themes": ["light", "dark"],
+  "themeAttribute": "data-theme",
+  "pages": [
+    { "name": "index", "path": "/index.html", "settleMs": 1500 },
+    { "name": "dashboard", "path": "/dashboard.html?dev=true", "settleMs": 2500, "click": ["#custom-cmd-add-btn", "#timer-add-btn"] },
+    { "name": "404", "path": "/404.html", "settleMs": 1000 },
+    { "name": "auth-complete", "path": "/auth-complete.html", "settleMs": 1000 },
+    { "name": "auth-error", "path": "/auth-error.html", "settleMs": 1000 }
+  ]
+}

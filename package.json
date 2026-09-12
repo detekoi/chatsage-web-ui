@@ -1,0 +1,13 @@
+{
+  "name": "chatsage-web-ui",
+  "private": true,
+  "type": "module",
+  "description": "Dev tooling for the static site in public/. The deployable code has no build step; see functions/ for the backend.",
+  "scripts": {
+    "css:baseline": "node scripts/css-snapshot.mjs --save",
+    "css:check": "node scripts/css-snapshot.mjs --check"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

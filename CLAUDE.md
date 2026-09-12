@@ -45,13 +45,22 @@ Rules:
 
 ### Verifying CSS changes
 
-There is no visual test suite. The reliable check is a computed-style diff in
-the browser: snapshot `getComputedStyle` for every element on `index.html` and
-`dashboard.html?dev=true` (light and dark, 1100px and 400px) before the change,
-repeat after, and expect zero differences unless a change is intended. Serve
-`public/` with any static server (`python3 -m http.server --directory public`).
-Browsers cache the module scripts and stylesheets aggressively; fetch each
-changed file with `cache: 'reload'` before re-navigating.
+There is no visual test suite; the check is a computed-style diff run by
+`scripts/css-snapshot.mjs` (Playwright, root `package.json`, `npm install` once
+and `npx playwright install chromium-headless-shell` on a fresh machine).
+
+```bash
+npm run css:baseline   # on a clean checkout, before the change
+npm run css:check      # after the change; exit 1 on any difference
+```
+
+It serves `public/`, loads every page in `scripts/css-snapshot.config.json` at
+1100px and 400px in both themes (the dashboard through `?dev=true` with the
+add-forms opened), disables transitions, and records `getComputedStyle` for
+every element. Expect zero differences unless the change is meant to be
+visible; when markup changes on purpose, re-save the baseline. The baseline
+lives in `.css-baseline/` and is not committed. The same script exists in
+chatvibes-web-ui; keep the two copies identical, only the config differs.
 
 ## Conventions
 
