@@ -322,7 +322,7 @@
   margin: 0;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  border-radius: 4px;
+  /* radius comes from the design system's .alert rule */
   animation: toast-fade-in 0.3s ease;
 }
 
@@ -402,4 +402,91 @@
 
 .inline-icon--success {
   color: currentColor;
+}
+
+/* =====================================================
+   DESIGN-SYSTEM EXTENSIONS (SAGE-ONLY MARKUP)
+   This file loads after design-system.css. Rules for
+   markup that only ChatSage has (command rows, persona
+   form) live here so design-system.css stays identical
+   to the copy in chatvibes-web-ui.
+   ===================================================== */
+/* Sage renders command and timer rows as .list-group-item > .cmd-row. Let the
+   row fill the item so its actions land in the same control column. */
+:root :is(.settings-section, .wc-card) .list-group-item > .cmd-row {
+    flex: 1;
+    min-width: 0;
+}
+
+.cmd-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Row action buttons take their size from .btn-sm (32px min-height). */
+
+/* Persona form layout */
+.persona-form {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.persona-form > .mb-2 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px !important; /* overrides the .mb-2 utility on purpose */
+}
+
+.persona-form .form-label,
+:root :is(.settings-section, .wc-card) .persona-form .form-label {
+    display: block;
+    width: 100%;
+    font-family: var(--wc-font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--wc-text-1);
+    margin-bottom: 8px;
+}
+
+.persona-form .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    min-height: 32px;
+    min-width: 60px;
+    padding: 6px 14px;
+    margin-top: 8px;
+}
+
+@media (max-width: 767.98px) {
+    .cmd-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .cmd-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    .cmd-actions .btn {
+        min-height: 32px;
+        min-width: 52px;
+        padding: 6px 12px;
+    }
+    .cmd-actions .form-switch .form-check-input {
+        min-height: 24px;
+        width: 44px;
+    }
 }
