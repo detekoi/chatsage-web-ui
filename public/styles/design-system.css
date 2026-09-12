@@ -1273,7 +1273,7 @@ a[target="_blank"].no-arrow::after {
 :root .wc-card > .card-body { padding: 0; }
 :root .wc-card > .card-body > *:first-child { border-top: 0; }
 
-/* Card titles. Same face as a bare heading in a card header (rule below),
+/* Card titles. Same face as a bare heading in a card header (rule above),
    but the class also works outside one, e.g. in an aside. */
 .wc-card-title {
     font-family: var(--wc-font-name);
@@ -1477,13 +1477,13 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .input-group > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating) {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
 }
 
 :root .input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
 }
 
 /* Unit suffix beside a number field. */
