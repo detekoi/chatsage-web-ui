@@ -1490,8 +1490,30 @@ textarea.form-control {
 }
 
 :root .input-group > :is(.form-control, .form-select):not(textarea) {
+    flex: 1 1 auto;
+    width: 1%;
     min-width: 0;
     height: var(--wc-control-h);
+}
+
+/* Prefix/suffix addon (e.g. the "!" before a command name) sits inline with the field. */
+:root .input-group > .input-group-text {
+    display: inline-flex;
+    align-items: center;
+    height: var(--wc-control-h);
+    padding: 0 11px;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: var(--wc-radius-field);
+    background-color: var(--wc-field);
+    color: var(--wc-text-3);
+    font-family: var(--wc-font-mono);
+    font-size: 12.5px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+:root .input-group > .input-group-text + .form-control {
+    border-left: 0;
 }
 
 :root .input-group > .btn {
