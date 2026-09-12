@@ -27,12 +27,14 @@ these files, loaded in this order:
 
 Rules:
 
-- **`design-system.css` must stay identical to the copy in
-  `../chatvibes-web-ui/public/css/design-system.css`.** Do not add rules there
-  for markup only this app has; put them in `chatsage-specific.css`, which loads
-  after it. Fixes to the design system are made in both repos. One known
-  difference remains: the `.form-check.form-switch` row selector (see the
-  comment in the file).
+- **`design-system.css` is meant to converge with the copy in
+  `../chatvibes-web-ui/public/css/design-system.css`** and eventually be one
+  shared file. Do not add rules there for markup only this app has; put them in
+  `chatsage-specific.css`, which loads after it. Fixes to the design system are
+  made in both repos. Known differences today: this copy carries section 14
+  (the utility shim) and the fixes that went with dropping Bootstrap, the
+  chatvibes copy carries the RTL logical-property work, and the
+  `.form-check.form-switch` row selector differs (see the comment in the file).
 - `!important` is reserved for the utility shim, the `[hidden]` rule, and the
   square-corner overrides in `custom.css` (documented inline). Do not add more.
 - Visible states are driven by classes and the `hidden` attribute, never by

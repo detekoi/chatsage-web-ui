@@ -1,7 +1,7 @@
 /* =====================================================
    CHATSAGE SPECIFIC STYLES
-   Dashboard and form styles unique to ChatSage
-   Post-Industrial Modernism Design
+   App layer for dashboard.html only. Loads after
+   design-system.css (see CLAUDE.md for the layer order).
    ===================================================== */
 
 /* =====================================================
@@ -22,20 +22,6 @@
 }
 
 /* Secret dark mode toggle via title */
-.dashboard-title {
-  cursor: pointer;
-  user-select: none;
-  transition: opacity 0.15s ease;
-}
-
-.dashboard-title:hover {
-  opacity: 0.7;
-}
-
-.dashboard-title:active {
-  opacity: 0.5;
-}
-
 .container h1 {
   font-size: 2.5rem;
   margin-bottom: 24px;
@@ -80,11 +66,6 @@
   transform: none;
   box-shadow: none;
 }
-
-.login-container {
-  margin-top: 10vh;
-}
-
 /* =====================================================
    BUTTON STYLES (Non-3D buttons for regular use)
    ===================================================== */
@@ -126,104 +107,9 @@
   color: #555555;
   opacity: 0.5;
 }
-
-.twitch-login {
-  background-color: #9146FF;
-  color: white;
-  border-color: #9146FF;
-}
-
-.twitch-login:hover,
-.twitch-login:focus {
-  background-color: #772CE8;
-  color: white;
-  border-color: #772CE8;
-}
-
-.twitch-login:active {
-  background-color: #5c16c5;
-  color: white;
-}
-
-/* =====================================================
-   INVITE NOTICE
-   ===================================================== */
-/* Light Mode */
-.invite-notice {
-  background: #fff3cd;
-  border: 1px solid #ffc107;
-  padding: 15px;
-  border-radius: 0;
-  margin: 20px 0;
-  font-size: 0.95em;
-  text-align: left;
-  color: #856404;
-}
-
-.invite-notice strong {
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.invite-notice a {
-  color: #0a0a0a;
-  text-decoration: underline;
-  border: none;
-  box-shadow: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  display: inline;
-  font-weight: 600;
-}
-
-.invite-notice a:hover {
-  color: #333333;
-  transform: none;
-  box-shadow: none;
-}
-
-.invite-notice a:active {
-  color: #666666;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Dark Mode */
-[data-theme="dark"] .invite-notice {
-  background: #2a2a1a;
-  border-color: #544c3a;
-  color: #e0e0e0;
-}
-
-[data-theme="dark"] .invite-notice a {
-  color: #ffffff;
-}
-
-[data-theme="dark"] .invite-notice a:hover {
-  color: #cccccc;
-}
-
-[data-theme="dark"] .invite-notice a:active {
-  color: #999999;
-}
-
 /* =====================================================
    DASHBOARD STYLES
    ===================================================== */
-.status-active {
-  color: #4ecdc4;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.status-inactive {
-  color: #ff6b6b;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
 /* The section frame now comes from .wc-card in design-system.css; this
    wrapper is just a visibility container. */
 
@@ -238,79 +124,13 @@
 
 /* Commands are stacked setting rows, not a multi-column grid — one control
    column down the card, per the design system. */
-
-.command-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-unit);
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-color);
-  border-radius: 0;
-  transition: background-color 0.2s ease;
-}
-
-.command-item:hover {
-  background-color: var(--bg-secondary);
-  border-bottom-color: var(--text-primary);
-}
-
-.command-item input[type="checkbox"] {
-  margin-right: var(--spacing-unit);
-  transform: scale(1.2);
-}
-
-.command-item input[type="checkbox"]:disabled {
-  opacity: 0.5;
-}
-
-.command-item label {
-  font-weight: 600;
-  user-select: none;
-  cursor: pointer;
-  flex: 1;
-}
-
-.command-item label[title] {
-  color: #888;
-  cursor: help;
-}
-
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
    the centred italic spinner caption that lived here was removed with it. */
-
-#text-response-container {
-  margin-top: var(--spacing-medium);
-  padding: var(--spacing-medium);
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  max-width: 800px;
-  border-radius: 0;
-}
-
-/* =====================================================
-   ERROR MESSAGES
-   ===================================================== */
-/* Light Mode */
-.error-message,
-#loginError {
-  color: #d32f2f;
-  font-weight: 800;
-  margin-top: var(--spacing-medium);
-  text-transform: uppercase;
-}
-
-/* Dark Mode */
-[data-theme="dark"] .error-message,
-[data-theme="dark"] #loginError {
-  color: #ff6b6b;
-}
-
 /* =====================================================
    ACTION TOAST NOTIFICATION
    ===================================================== */
-/* .alert.action-toast outranks the plain .alert rule in design-system.css,
-   which loads later and sets its own margin. */
+/* .alert.action-toast outranks the plain .alert rule in design-system.css
+   (this file loads after it) and resets the margin that rule sets. */
 .alert.action-toast {
   position: fixed;
   top: 20px;
@@ -366,10 +186,6 @@
   .container h1 {
     font-size: 2rem;
   }
-
-  .command-item {
-    padding: var(--spacing-small);
-  }
 }
 
 @media (max-width: 575px) {
@@ -413,19 +229,10 @@
    ===================================================== */
 /* Sage renders command and timer rows as .list-group-item > .cmd-row. Let the
    row fill the item so its actions land in the same control column. */
-:root :is(.settings-section, .wc-card) .list-group-item > .cmd-row {
+:root .wc-card .list-group-item > .cmd-row {
     flex: 1;
     min-width: 0;
 }
-
-.cmd-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-/* Row action buttons take their size from .btn-sm (32px min-height). */
 
 /* Persona form layout */
 .persona-form {
@@ -434,16 +241,16 @@
     box-sizing: border-box;
 }
 
-.persona-form > .mb-2 {
+.persona-form > .persona-field {
     display: flex;
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 12px !important; /* overrides the .mb-2 utility on purpose */
+    margin-bottom: 12px;
 }
 
 .persona-form .form-label,
-:root :is(.settings-section, .wc-card) .persona-form .form-label {
+:root .wc-card .persona-form .form-label {
     display: block;
     width: 100%;
     font-family: var(--wc-font-body);
@@ -484,9 +291,5 @@
         min-height: 32px;
         min-width: 52px;
         padding: 6px 12px;
-    }
-    .cmd-actions .form-switch .form-check-input {
-        min-height: 24px;
-        width: 44px;
     }
 }
