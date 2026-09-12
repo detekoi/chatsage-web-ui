@@ -15,6 +15,7 @@ WildcatSage Bot Management is a web application for Twitch streamers. Approved s
 - **Auto-Chat Settings:** Configure automatic chat messages with mode levels (off, low, medium, high) and categories (facts, questions).
 - **Ad Break Notifications:** Enable automated chat alerts when ad breaks run on your channel.
 - **Custom Commands:** Create and edit custom commands with static responses or AI Mode, custom permissions, cooldowns, and template variables.
+- **AI Preview:** Show a sample AI reply for a custom command, a timed message, or the daily check-in before you save it. The bot generates the sample with the channel personality and the current stream context. The bot does not post the sample to chat.
 - **Timed Messages:** Schedule recurring chat messages with minimum line counts, custom intervals, and static text or AI Mode.
 - **Bot Personality:** Customize tone, humor, and style instructions for AI responses, with automatic Twitch rule checks and default reset.
 - **Daily Check-In:** Configure a Twitch Channel Points reward for viewer daily check-ins with streak tracking and custom responses.
@@ -90,6 +91,7 @@ firebase deploy
    - Configure auto-chat frequency modes and topic categories.
    - Turn on chat notifications for Twitch ad breaks.
    - Add, edit, or delete custom chat commands with static text or AI Mode.
+   - Select **Preview** on an AI command, an AI timed message, or the AI check-in. The bot shows a sample reply before you save.
    - Add, edit, or delete timed chat messages with custom intervals and chat line thresholds.
    - Customize the bot's personality instructions or reset them to default settings.
    - Configure Channel Point daily check-in rewards and streak tracking.
