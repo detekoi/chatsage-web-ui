@@ -32,8 +32,12 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
     const promptEl = panel.querySelector('.ai-preview__prompt');
     const detailsEl = panel.querySelector('details');
     const controls = [button, argsInput].filter(Boolean);
+    // Identifies the latest run, so a reply from an earlier request cannot
+    // land after the panel was reset or a newer request started.
+    let currentRun = 0;
 
     function reset() {
+        currentRun += 1; // a form open/close mid-request must not reopen the panel
         panel.hidden = true;
         loadingEl.hidden = true;
         resultEl.hidden = true;
@@ -63,7 +67,10 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
     function sync() {
         const aiOn = toggle.checked;
         controls.forEach(el => { el.hidden = !aiOn; });
-        if (!aiOn) reset();
+        if (!aiOn) {
+            currentRun += 1; // invalidate any request still in flight
+            reset();
+        }
     }
 
     function render(preview) {
@@ -86,6 +93,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
         // message stays clear until there is an outcome to report.
         setMessage('', 'muted');
         showLoading();
+        const runId = ++currentRun;
 
         try {
             let data;
@@ -98,6 +106,10 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
                 const res = await apiPost('/api/preview', body);
                 data = await readJson(res);
             }
+
+            // AI mode was switched off, the form closed, or a newer preview
+            // started while this one was in flight: the panel was reset, keep it so.
+            if (runId !== currentRun || !toggle.checked) return;
 
             hideLoading();
             if (data.success && data.preview) {
@@ -112,6 +124,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
                 setMessage(data.message || t('toast.previewFailed', {}, 'The preview failed. Try again.'), 'danger');
             }
         } catch (e) {
+            if (runId !== currentRun || !toggle.checked) return;
             hideLoading();
             if (e instanceof AuthError) return;
             console.error('Error generating preview:', e);

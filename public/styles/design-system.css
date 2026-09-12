@@ -2190,3 +2190,13 @@ dialog.kofi-sheet::backdrop {
 body.cjk-language {
     line-height: 1.75;
 }
+
+/* The `hidden` attribute. Bootstrap's CSS is not loaded, so only the browser
+   default hides these elements, and any author display rule beats it (.wc-loading
+   is flex, .btn-sm is inline-flex !important at 0,3,0 specificity). This rule
+   matches that specificity and comes last, so `hidden` wins everywhere. */
+[hidden],
+:root [hidden],
+:root :is(.settings-section, .wc-card) [hidden] {
+    display: none !important;
+}
