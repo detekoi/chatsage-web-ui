@@ -2,18 +2,22 @@
    WILDCAT DESIGN SYSTEM
    Implements the "Wildcat Bot UIs" handoff spec.
 
-   Shared with chatvibes-web-ui: keep this file free of
-   rules that only one app's markup uses. Stylesheet order
-   is reset.css, custom.css (theme), this file, then the
-   app layer (chatsage-specific.css). Section 1 redefines
-   the shared tokens (and remaps the legacy names onto them)
-   so the theme rules in custom.css inherit the new palette.
-   Sections 2+ add the components the spec introduces.
-
-   Bootstrap is not loaded anywhere. The .btn / .card /
-   .form-* / .row / .mb-* class names in the markup are
-   defined here (section 14 carries the utility shim) and
-   in custom.css, nowhere else.
+   Shared between chatsage-web-ui and chatvibes-web-ui:
+   the two copies are kept identical (diff them), so keep
+   this file free of rules that only one app's markup uses;
+   those go in the app layer (chatsage-specific.css /
+   chatvibes-specific.css), which loads after this file.
+   Load order in both apps: reset.css, custom.css (theme),
+   this file, app layer. WildcatTTS additionally loads a
+   trimmed Bootstrap CSS before everything; ChatSage does
+   not, and instead uses section 14, the utility shim,
+   which is the one section the TTS copy omits. The few
+   !important flags outside the shim exist because
+   Bootstrap's .text-* utilities are !important in TTS.
+   Section 1 redefines the shared tokens (and remaps the
+   legacy names onto them) so the theme rules in custom.css
+   inherit the new palette. Sections 2+ add the components
+   the spec introduces.
 
    Two values differ from the spec sheet, both to clear the
    project's WCAG AA bar; hue and role are unchanged:
@@ -184,7 +188,7 @@ a[target="_blank"]::after {
     display: inline-block;
     width: 0.75em;
     height: 0.75em;
-    margin-left: 0.25em;
+    margin-inline-start: 0.25em;
     background-color: currentColor;
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='7' y1='17' x2='17' y2='7' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/line%3E%3Cpolyline points='7 7 17 7 17 17' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/polyline%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cline x1='7' y1='17' x2='17' y2='7' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/line%3E%3Cpolyline points='7 7 17 7 17 17' fill='none' stroke='black' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3C/polyline%3E%3C/svg%3E");
@@ -253,7 +257,7 @@ a[target="_blank"].no-arrow::after {
 .wc-lockup b {
     font-weight: 600;
     color: var(--wc-text-1);
-    margin-left: 0.16em;
+    margin-inline-start: 0.16em;
 }
 
 .wc-readout {
@@ -379,7 +383,7 @@ a[target="_blank"].no-arrow::after {
 }
 
 .wc-title .wc-title-brand { color: var(--wc-text-3); }
-.wc-title .wc-title-suffix { margin-left: 0.14em; }
+.wc-title .wc-title-suffix { margin-inline-start: 0.14em; }
 .wc-title .wc-title-line { display: block; }
 
 .wc-title--sm { font-size: 24px; }
@@ -613,6 +617,7 @@ a[target="_blank"].no-arrow::after {
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    white-space: nowrap;
     cursor: pointer;
     transition: border-color 0.15s ease, color 0.15s ease;
 }
@@ -635,6 +640,51 @@ a[target="_blank"].no-arrow::after {
     background: var(--wc-danger-bg);
     border-color: var(--wc-danger);
     color: var(--wc-danger);
+}
+
+/* Language picker. Shares the chip geometry but not its uppercasing: the
+   options are endonyms, and upper-casing them is wrong in scripts that have no
+   case and actively misleading in Turkish, where i/I do not pair. */
+.wc-langselect {
+    height: 32px;
+    max-width: 9.5rem;
+    padding: 0 26px 0 10px;
+    padding-inline: 10px 26px;
+    border-radius: var(--wc-radius-card);
+    background-color: transparent;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23495057' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    background-size: 13px 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid var(--wc-border-strong);
+    color: var(--wc-text-1);
+    font-family: var(--wc-font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+[data-theme="dark"] .wc-langselect {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+[dir="rtl"] .wc-langselect {
+    background-position: left 9px center;
+}
+
+.wc-langselect:hover {
+    border-color: var(--wc-accent);
+    color: var(--wc-accent);
+}
+
+/* The popup list is painted by the OS, which does not inherit the page colors;
+   without this the options are black-on-black in dark mode on Windows. */
+.wc-langselect option {
+    background: var(--wc-surface-1);
+    color: var(--wc-text-1);
 }
 
 .wc-iconbtn i, .wc-iconbtn svg { width: 14px; height: 14px; }
@@ -662,29 +712,6 @@ a[target="_blank"].no-arrow::after {
     font-family: var(--wc-font-name);
     letter-spacing: 0.05em;
     line-height: 1;
-}
-
-/* (0,2,0) so it beats the :root control base rule above; keep it no higher,
-   so later two-class rules (including the app layer's) can still override it. */
-:root .btn-sm,
-.btn-sm {
-    min-height: 32px;
-    min-width: 44px;
-    padding: 6px 12px;
-    font-size: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
-}
-
-summary,
-details > summary {
-    min-height: 32px;
-    line-height: 32px;
-    display: list-item;
-    padding: 4px 0;
-    cursor: pointer;
 }
 
 /* Segmented light/dark indicator on the login card. */
@@ -849,6 +876,7 @@ details > summary {
     .wc-bar span { animation-duration: 3s; }
     .wc-bar[data-progress] span { transition: none; }
     .wc-btn, .wc-iconbtn, .wc-chipbtn { transition: none; }
+    .wc-stage-video { display: none; }
 }
 
 /* 404 numeral */
@@ -904,49 +932,11 @@ details > summary {
     gap: 10px;
     flex: none;
 }
-.wc-appbar-actions > * { flex: none; }
 
-/* Language picker, ported from the WildcatTTS dashboard. Shares the chip
-   geometry but not its uppercasing: the options are endonyms, and upper-casing
-   them is wrong in scripts that have no case and actively misleading in
-   Turkish, where i/I do not pair. */
-.wc-langselect {
-    height: 32px;
-    max-width: 9.5rem;
-    padding: 0 26px 0 10px;
-    padding-inline: 10px 26px;
-    border-radius: var(--wc-radius-card);
-    background-color: transparent;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23495057' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 9px center;
-    background-size: 13px 10px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border: 1px solid var(--wc-border-strong);
-    color: var(--wc-text-1);
-    font-family: var(--wc-font-mono);
-    font-size: 11px;
-    cursor: pointer;
-    transition: border-color 0.15s ease, color 0.15s ease;
-}
-[data-theme="dark"] .wc-langselect {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23adb5bd' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-}
-[dir="rtl"] .wc-langselect {
-    background-position: left 9px center;
-}
-.wc-langselect:hover {
-    border-color: var(--wc-accent);
-    color: var(--wc-accent);
-}
-/* The popup list is painted by the OS, which does not inherit the page colors;
-   without this the options are black-on-black in dark mode on Windows. */
-.wc-langselect option {
-    background: var(--wc-surface-1);
-    color: var(--wc-text-1);
-}
+/* The controls keep their intrinsic width. Left to shrink they do not clip,
+   they squeeze past the brand and paint on top of it, because a flex item is
+   allowed to become narrower than the text inside it. */
+.wc-appbar-actions > * { flex: none; }
 
 .wc-page-head {
     padding: 26px 24px 0;
@@ -993,13 +983,13 @@ details > summary {
     flex: 1;
     min-width: 150px;
     padding: 11px 16px;
-    border-right: 1px solid var(--wc-border);
+    border-inline-end: 1px solid var(--wc-border);
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.wc-stat:last-child { border-right: 0; }
+.wc-stat:last-child { border-inline-end: 0; }
 
 .wc-stat dt {
     font-family: var(--wc-font-mono);
@@ -1021,10 +1011,12 @@ details > summary {
 .wc-stat dd.is-danger { color: var(--wc-danger); }
 .wc-stat dd.is-muted { color: var(--wc-text-2); }
 
-/* sections/bot-status.js toggles .text-success / .text-danger on #bot-status,
-   so the status colours are keyed off those rather than a wc- class. */
-.wc-stat dd .text-success { color: var(--wc-ok); }
-.wc-stat dd .text-danger { color: var(--wc-danger); }
+/* The bot status readout is keyed off the .text-* utility classes the app's
+   script toggles (bot-status.js in Sage, bot-management.ts in TTS). The flags
+   beat Bootstrap's own .text-* utilities in TTS. */
+.wc-stat dd .text-success { color: var(--wc-ok) !important; }
+.wc-stat dd .text-secondary { color: var(--wc-text-2) !important; }
+.wc-stat dd .text-danger { color: var(--wc-danger) !important; }
 .wc-stat dd .fw-semibold { font-weight: 400; }
 
 .wc-shell {
@@ -1166,6 +1158,28 @@ details > summary {
     justify-content: flex-end;
 }
 
+/* Ignore/banned-word/pronunciation rows pair a user-supplied label with a
+   Remove button. A username is one unbreakable word, so the label's automatic
+   minimum size can exceed the space left over and shove the button past the
+   row's padding — the buttons then stop lining up. overflow-wrap: anywhere
+   lets the label break, which lowers its min-content size; it inherits, so it
+   also reaches the bare text node banned-words.ts sets on the row itself. */
+:root .list-group-item.justify-content-between {
+    overflow-wrap: anywhere;
+}
+
+/* The action side holds our own strings, not user data, so it neither breaks
+   mid-word nor absorbs the shrink. The :has() arm covers voice-calibration.ts,
+   which groups its Edit and Reset buttons in a wrapper div. */
+:root .list-group-item.justify-content-between > :is(.btn, button),
+:root .list-group-item.justify-content-between > :has(> :is(.btn, button)) {
+    flex: none;
+}
+
+:root .list-group-item.justify-content-between :is(.btn, button) {
+    overflow-wrap: normal;
+}
+
 :root :is(.settings-section, .wc-card) .list-group-item strong,
 .wc-row-label {
     font-family: var(--wc-font-body);
@@ -1181,17 +1195,17 @@ details > summary {
 .wc-row-desc {
     font-size: 12px;
     line-height: 1.5;
-    color: var(--wc-text-3);
+    color: var(--wc-text-3) !important;
     margin: 0;
     text-wrap: pretty;
 }
 
 /* Section cards also host free-form blocks — ignore lists, the channel-point
    reward form. Pad and rule them so they sit inside the card like rows do.
-   .list-group and .stream-events-form are row stacks, not blocks: their rows
+   .list-group and .wc-switch-rows are row stacks, not blocks: their rows
    carry their own padding, so padding here would inset them a second time. */
 :root .settings-section > *:not(.settings-section-title):not(.settings-section-description):not(.list-group):not(:empty),
-:root .wc-card > .card-body > *:not(.list-group):not(.stream-events-form):not(:empty) {
+:root .wc-card > .card-body > *:not(.list-group):not(.wc-switch-rows):not(:empty) {
     margin: 0;
     padding: 14px 16px;
     border-top: 1px solid var(--wc-hairline);
@@ -1258,6 +1272,17 @@ details > summary {
 :root .wc-card > .card-body { padding: 0; }
 :root .wc-card > .card-body > *:first-child { border-top: 0; }
 
+/* Card titles */
+.wc-card-title {
+    font-family: var(--wc-font-name);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--wc-text-1);
+    margin: 0;
+}
+
 /* Lead paragraph at the top of a card body reads as the section description. */
 :root .wc-card > .card-body > p {
     font-size: 12.5px;
@@ -1266,13 +1291,12 @@ details > summary {
     text-wrap: pretty;
 }
 
-/* Sage states a setting as .form-check.form-switch with an inline label and
-   description. Lay it out as a row: label + description left, toggle right.
-   The chatvibes copy writes the wrapper as `> *`; here it stays explicit
-   because Sage's .checkin-form also wraps a switch and must not get row
-   padding on top of its own. Reconcile with a shared opt-in class. */
+/* A .wc-switch-rows wrapper (or the card body itself) holds settings stated as
+   .form-check.form-switch with an inline label and description. Lay each out
+   as a row: label + description left, toggle right. Opt-in via the class so a
+   wrapper with its own padding is not double-inset. */
 :root .wc-card > .card-body > .form-check.form-switch,
-:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch {
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "label toggle" "desc toggle";
@@ -1284,7 +1308,7 @@ details > summary {
 }
 
 :root .wc-card > .card-body > .form-check.form-switch .form-check-label,
-:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch .form-check-label {
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-label {
     grid-area: label;
     font-size: 13.5px;
     font-weight: 600;
@@ -1293,17 +1317,17 @@ details > summary {
 }
 
 :root .wc-card > .card-body > .form-check.form-switch .form-check-input,
-:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch .form-check-input {
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-input {
     grid-area: toggle;
     align-self: center;
 }
 
 :root .wc-card > .card-body > .form-check.form-switch small,
-:root .wc-card > .card-body > .stream-events-form > .form-check.form-switch small {
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch small {
     grid-area: desc;
     font-size: 12px;
     line-height: 1.5;
-    color: var(--wc-text-3);
+    color: var(--wc-text-3) !important;
     text-wrap: pretty;
 }
 
@@ -1321,7 +1345,7 @@ details > summary {
    9. CONTROLS
    ===================================================== */
 
-/* Toggle — 40x22 rectangle, 2px radius, 16x16 knob. */
+/* Toggle — 44x24 rectangle, 2px radius, 18x18 knob. */
 :root .form-switch .form-check-input,
 :root .form-check-input[type="checkbox"][role="switch"],
 .form-switch .form-check-input {
@@ -1362,12 +1386,7 @@ details > summary {
 /* Selects, text and number fields — 34px tall at 3px radius. */
 :root :is(.settings-section, .wc-card) .form-select,
 :root :is(.settings-section, .wc-card) .form-control:not(textarea),
-.wc-field,
-.form-control:not(textarea),
-.form-select {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
+.wc-field {
     height: var(--wc-control-h);
     min-width: 0;
     max-width: 100%;
@@ -1379,6 +1398,10 @@ details > summary {
     font-family: var(--wc-font-body);
     font-size: 12.5px;
     line-height: var(--wc-control-h);
+}
+
+:root :is(.settings-section, .wc-card) .form-select {
+    padding-inline-end: 28px;
 }
 
 :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto :is(.form-select, .form-control:not(textarea):not([type="number"]):not([inputmode="numeric"]), .wc-field:not(.wc-field--number)) {
@@ -1398,21 +1421,14 @@ details > summary {
 }
 
 :root :is(.settings-section, .wc-card) textarea.form-control,
-:root .wc-shell-aside textarea.form-control,
-textarea.form-control {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 200px;
+:root .wc-shell-aside textarea.form-control {
     border: 1px solid var(--wc-border-strong);
     border-radius: var(--wc-radius-field);
     background-color: var(--wc-field);
     color: var(--wc-text-1);
-    font-family: var(--wc-font-body);
-    font-size: 13px;
+    font-size: 12.5px;
     line-height: 1.5;
-    padding: 10px 12px;
-    resize: vertical;
+    padding: 9px 11px;
 }
 
 /* Input groups — ensure inputs and buttons align seamlessly at --wc-control-h */
@@ -1424,8 +1440,6 @@ textarea.form-control {
 }
 
 :root .input-group > :is(.form-control, .form-select):not(textarea) {
-    flex: 1 1 auto;
-    width: 1%;
     min-width: 0;
     height: var(--wc-control-h);
 }
@@ -1535,7 +1549,7 @@ textarea.form-control {
 /* Readout beside a slider. */
 .wc-slider-value {
     width: 44px;
-    text-align: right;
+    text-align: end;
     font-family: var(--wc-font-mono);
     font-size: 12.5px;
     color: var(--wc-text-1);
@@ -1726,14 +1740,14 @@ textarea.form-control {
         flex: 0 1 auto;
         min-width: 5.5rem;
     }
-    .wc-page-head { padding-left: 16px; padding-right: 16px; }
+    .wc-page-head { padding-inline: 16px; }
     .wc-stats {
         flex-direction: column;
-        margin-left: 16px;
-        margin-right: 16px;
+        margin-inline-start: 16px;
+        margin-inline-end: 16px;
     }
     .wc-stat {
-        border-right: 0;
+        border-inline-end: 0;
         border-bottom: 1px solid var(--wc-border);
     }
     .wc-stat:last-child {
@@ -1754,7 +1768,7 @@ textarea.form-control {
         width: 100%;
     }
     :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto > :is(.btn, button, .form-switch) {
-        margin-left: auto;
+        margin-inline-start: auto;
     }
 
     /* Stacking earns its keep for wide controls, but a lone toggle is 40px —
@@ -1783,7 +1797,7 @@ textarea.form-control {
 .wc-skip-link {
     position: absolute;
     top: -100px;
-    left: 16px;
+    inset-inline-start: 16px;
     z-index: 10000;
     padding: 10px 18px;
     background: var(--wc-surface-1);
@@ -1859,6 +1873,29 @@ textarea.form-control {
 .py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
 
 /* Native Forms & Controls */
+/* (0,2,0) so it beats the :root control base rule above; keep it no higher,
+   so later two-class rules (including the app layer's) can still override it. */
+:root .btn-sm,
+.btn-sm {
+    min-height: 32px;
+    min-width: 44px;
+    padding: 6px 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+summary,
+details > summary {
+    min-height: 32px;
+    line-height: 32px;
+    display: list-item;
+    padding: 4px 0;
+    cursor: pointer;
+}
+
 .form-label {
     display: inline-block;
     margin-bottom: 5px;
@@ -1898,6 +1935,45 @@ textarea.form-control {
     gap: 12px;
 }
 
+/* Bootstrap's base layout for fields; the shared rules above only re-theme. */
+.form-control:not(textarea),
+.form-select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    height: var(--wc-control-h);
+    min-width: 0;
+    max-width: 100%;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: var(--wc-radius-field);
+    background-color: var(--wc-field);
+    color: var(--wc-text-1);
+    font-family: var(--wc-font-body);
+    font-size: 13px;
+    padding: 0 11px;
+    line-height: var(--wc-control-h);
+}
+
+textarea.form-control {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--wc-border-strong);
+    border-radius: var(--wc-radius-field);
+    background-color: var(--wc-field);
+    color: var(--wc-text-1);
+    font-family: var(--wc-font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+.input-group > :is(.form-control, .form-select):not(textarea) {
+    flex: 1 1 auto;
+    width: 1%;
+}
+
 /* Standalone Alert Styles */
 .alert {
     position: relative;
@@ -1935,24 +2011,13 @@ textarea.form-control {
     color: var(--wc-text-1);
 }
 
-/* Card titles */
-.wc-card-title {
-    font-family: var(--wc-font-name);
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--wc-text-1);
-    margin: 0;
-}
-
 /* =====================================================
    FLOATING SUPPORT WIDGET & KO-FI MODAL
    ===================================================== */
 .floating-support {
     position: fixed;
     bottom: clamp(1rem, 2.5vw, 1.5rem);
-    left: clamp(1rem, 2.5vw, 1.5rem);
+    inset-inline-start: clamp(1rem, 2.5vw, 1.5rem);
     z-index: 90;
 }
 

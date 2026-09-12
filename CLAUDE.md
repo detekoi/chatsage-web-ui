@@ -27,16 +27,16 @@ these files, loaded in this order:
 
 Rules:
 
-- **`design-system.css` is meant to converge with the copy in
-  `../chatvibes-web-ui/public/css/design-system.css`** and eventually be one
-  shared file. Do not add rules there for markup only this app has; put them in
-  `chatsage-specific.css`, which loads after it. Fixes to the design system are
-  made in both repos. Known differences today: this copy carries section 14
-  (the utility shim) and the fixes that went with dropping Bootstrap, the
-  chatvibes copy carries the RTL logical-property work, and the
-  `.form-check.form-switch` row selector differs (see the comment in the file).
-- `!important` is reserved for the utility shim, the `[hidden]` rule, and the
-  square-corner overrides in `custom.css` (documented inline). Do not add more.
+- **`design-system.css` is identical to the copy in
+  `../chatvibes-web-ui/public/css/design-system.css` except for section 14,
+  the utility shim, which only this copy has (WildcatTTS still loads Bootstrap
+  for those classes). `diff` the two files after any change; a change to the
+  design system is made in both repos in the same session. Do not add rules
+  there for markup only this app has; put them in `chatsage-specific.css`.
+- `!important` is reserved for the utility shim, the `[hidden]` rule, the
+  square-corner overrides in `custom.css`, and the `.text-*` colour rules the
+  shared file carries for WildcatTTS's sake (all documented inline). Do not add
+  more.
 - Visible states are driven by classes and the `hidden` attribute, never by
   inline `style` attributes written from JS.
 - Sharp corners are intentional: `custom.css` overrides the design system's
