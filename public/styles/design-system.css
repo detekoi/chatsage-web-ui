@@ -974,14 +974,7 @@ details > summary {
     text-wrap: pretty;
 }
 
-/* main.ts flips #dashboard-content to display:flex, so the direction is set
-   here rather than fought with there. */
-#dashboard-content {
-    flex-direction: column;
-}
-
-.wc-main > .alert,
-.wc-main > #loading-overlay {
+.wc-main > .alert {
     margin: 20px 24px 0;
 }
 
