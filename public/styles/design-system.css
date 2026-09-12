@@ -13,7 +13,8 @@
    not, and instead uses section 14, the utility shim,
    which is the one section the TTS copy omits. The few
    !important flags outside the shim exist because
-   Bootstrap's .text-* utilities are !important in TTS.
+   Bootstrap's .text-* utilities (including .text-muted on
+   row descriptions) are !important in TTS.
    Section 1 redefines the shared tokens (and remaps the
    legacy names onto them) so the theme rules in custom.css
    inherit the new palette. Sections 2+ add the components
@@ -831,11 +832,11 @@ a[target="_blank"].no-arrow::after {
 }
 
 /* Card-level loaders — zero layout shift top indicator */
-:root .wc-card > .card-body {
+:root :is(.settings-section, .wc-card > .card-body) {
     position: relative;
 }
 
-:root .wc-card > .card-body > .wc-loading {
+:root :is(.settings-section, .wc-card > .card-body) > .wc-loading {
     position: absolute;
     top: 0;
     left: 0;
@@ -848,13 +849,13 @@ a[target="_blank"].no-arrow::after {
     pointer-events: none;
 }
 
-:root .wc-card > .card-body > .wc-loading .wc-bar {
+:root :is(.settings-section, .wc-card > .card-body) > .wc-loading .wc-bar {
     height: 2px;
     background: transparent;
     border-radius: 0;
 }
 
-:root .wc-card > .card-body > .wc-loading .wc-loading-label {
+:root :is(.settings-section, .wc-card > .card-body) > .wc-loading .wc-loading-label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -1195,7 +1196,7 @@ a[target="_blank"].no-arrow::after {
 .wc-row-desc {
     font-size: 12px;
     line-height: 1.5;
-    color: var(--wc-text-3) !important;
+    color: var(--wc-text-3) !important; /* beats Bootstrap's .text-muted in TTS */
     margin: 0;
     text-wrap: pretty;
 }
@@ -1204,7 +1205,7 @@ a[target="_blank"].no-arrow::after {
    reward form. Pad and rule them so they sit inside the card like rows do.
    .list-group and .wc-switch-rows are row stacks, not blocks: their rows
    carry their own padding, so padding here would inset them a second time. */
-:root .settings-section > *:not(.settings-section-title):not(.settings-section-description):not(.list-group):not(:empty),
+:root .settings-section > *:not(.settings-section-title):not(.settings-section-description):not(.list-group):not(.wc-switch-rows):not(:empty),
 :root .wc-card > .card-body > *:not(.list-group):not(.wc-switch-rows):not(:empty) {
     margin: 0;
     padding: 14px 16px;
@@ -1259,7 +1260,7 @@ a[target="_blank"].no-arrow::after {
     border-bottom: 1px solid var(--wc-border);
 }
 
-:root .wc-card > .card-header :is(h2, h3, h5, .wc-card-title) {
+:root .wc-card > .card-header :is(h2, h3, h5) {
     font-family: var(--wc-font-name);
     font-weight: 600;
     font-size: 12px;
@@ -1272,7 +1273,8 @@ a[target="_blank"].no-arrow::after {
 :root .wc-card > .card-body { padding: 0; }
 :root .wc-card > .card-body > *:first-child { border-top: 0; }
 
-/* Card titles */
+/* Card titles. Same face as a bare heading in a card header (rule below),
+   but the class also works outside one, e.g. in an aside. */
 .wc-card-title {
     font-family: var(--wc-font-name);
     font-weight: 600;
@@ -1295,8 +1297,8 @@ a[target="_blank"].no-arrow::after {
    .form-check.form-switch with an inline label and description. Lay each out
    as a row: label + description left, toggle right. Opt-in via the class so a
    wrapper with its own padding is not double-inset. */
-:root .wc-card > .card-body > .form-check.form-switch,
-:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch {
+:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch,
+:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "label toggle" "desc toggle";
@@ -1307,8 +1309,8 @@ a[target="_blank"].no-arrow::after {
     border-top: 1px solid var(--wc-hairline);
 }
 
-:root .wc-card > .card-body > .form-check.form-switch .form-check-label,
-:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-label {
+:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch .form-check-label,
+:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch .form-check-label {
     grid-area: label;
     font-size: 13.5px;
     font-weight: 600;
@@ -1316,18 +1318,18 @@ a[target="_blank"].no-arrow::after {
     color: var(--wc-text-1);
 }
 
-:root .wc-card > .card-body > .form-check.form-switch .form-check-input,
-:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-input {
+:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch .form-check-input,
+:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch .form-check-input {
     grid-area: toggle;
     align-self: center;
 }
 
-:root .wc-card > .card-body > .form-check.form-switch small,
-:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch small {
+:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch small,
+:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch small {
     grid-area: desc;
     font-size: 12px;
     line-height: 1.5;
-    color: var(--wc-text-3) !important;
+    color: var(--wc-text-3) !important; /* the <small> often carries .text-muted */
     text-wrap: pretty;
 }
 
@@ -1347,8 +1349,7 @@ a[target="_blank"].no-arrow::after {
 
 /* Toggle — 44x24 rectangle, 2px radius, 18x18 knob. */
 :root .form-switch .form-check-input,
-:root .form-check-input[type="checkbox"][role="switch"],
-.form-switch .form-check-input {
+:root .form-check-input[type="checkbox"][role="switch"] {
     appearance: none;
     -webkit-appearance: none;
     width: 44px;
@@ -1369,8 +1370,7 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .form-switch .form-check-input:checked,
-:root .form-check-input[type="checkbox"][role="switch"]:checked,
-.form-switch .form-check-input:checked {
+:root .form-check-input[type="checkbox"][role="switch"]:checked {
     background-color: var(--wc-accent);
     border-color: var(--wc-accent);
     background-image: linear-gradient(var(--wc-knob-on), var(--wc-knob-on));
@@ -1461,7 +1461,7 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .input-group > .input-group-text + .form-control {
-    border-left: 0;
+    border-inline-start: 0;
 }
 
 :root .input-group > .btn {
@@ -1830,8 +1830,7 @@ a[target="_blank"].no-arrow::after {
 .row {
     display: flex;
     flex-wrap: wrap;
-    margin-right: -8px;
-    margin-left: -8px;
+    margin-inline: -8px;
 }
 
 .row > * {
@@ -1839,8 +1838,7 @@ a[target="_blank"].no-arrow::after {
     flex-shrink: 0;
     width: 100%;
     max-width: 100%;
-    padding-right: 8px;
-    padding-left: 8px;
+    padding-inline: 8px;
 }
 
 .col { flex: 1 0 0%; }
@@ -1869,7 +1867,7 @@ a[target="_blank"].no-arrow::after {
 .mt-1 { margin-top: 4px !important; }
 .mt-2 { margin-top: 8px !important; }
 .mt-3 { margin-top: 16px !important; }
-.ms-2 { margin-left: 8px !important; }
+.ms-2 { margin-inline-start: 8px !important; }
 .py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
 
 /* Native Forms & Controls */
