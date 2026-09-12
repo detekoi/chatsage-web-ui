@@ -121,6 +121,14 @@
             "rulesSummary": "Rules that always apply"
         },
         "personaTitle": "Bot Personality",
+        "preview": {
+            "button": "Preview",
+            "label": "Sample message from the bot",
+            "note": "Each preview is a new response. The real message will be different. The bot does not post previews to chat.",
+            "sampleArgsLabel": "Sample arguments for $(args) in the preview",
+            "sampleArgsPlaceholder": "Sample $(args) for the preview (optional)",
+            "showPrompt": "Show the prompt that the bot used"
+        },
         "signOut": "Sign out",
         "statBot": "Bot",
         "statChannel": "Channel",
@@ -160,6 +168,8 @@
         "active": "Active",
         "deleting": "Deleting…",
         "inactive": "Inactive",
+        "previewReady": "The preview is ready.",
+        "previewing": "The AI writes a sample reply. This can take up to 30 seconds.",
         "resetting": "Resetting…",
         "savedDev": "{message} (dev mode).",
         "savedDevShort": "Saved (dev mode)",
@@ -206,6 +216,7 @@
         "personaSaveRetry": "Failed to save personality. Try again.",
         "personaSaved": "Personality saved.",
         "personaSavedDev": "Personality saved (dev mode).",
+        "previewFailed": "The preview failed. Try again.",
         "removeBotFailed": "Failed to remove bot from channel.",
         "removingBot": "Removing bot from channel…",
         "rewardDeleteFailed": "Failed to delete reward.",
@@ -227,6 +238,7 @@
         "minLinesRange": "Minimum chat lines must be between 0 and 100.",
         "personaEmpty": "Personality instructions cannot be empty. Select \"Reset to default\" to clear instructions.",
         "personaTooLong": "Personality instructions must be {max} characters or fewer.",
+        "previewPromptRequired": "Enter an AI prompt, then select Preview.",
         "responseRequired": "Response text is required.",
         "timerNameRequired": "Timer name is required."
     }

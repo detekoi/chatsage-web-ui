@@ -52,3 +52,23 @@ export const mockBotLanguage = {
 export function mockDelay(ms = 500) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * Dev-mode stand-in for POST /api/preview. Echoes the prompt back with the
+ * sample variables filled in, so the panel can be exercised without the bot.
+ */
+export function mockPreview(kind, prompt, args = '') {
+    const resolvedPrompt = prompt
+        .replace(/\$\(user\)/gi, mockUser.displayName)
+        .replace(/\$\(channel\)/gi, mockUser.login)
+        .replace(/\$\(args\)/gi, args || 'example')
+        .replace(/\$\((count|checkin_count)\)/gi, '1')
+        .replace(/\$\(game\)/gi, 'Just Chatting')
+        .replace(/\$\(uptime\)/gi, '1h 23m');
+    const samples = {
+        command: `@${mockUser.displayName} here's a sample AI reply for your command (dev mode).`,
+        timer: 'Sample timed message from the AI (dev mode). Chat, what are you playing this weekend?',
+        checkin: `Welcome back @${mockUser.displayName}, check-in #1 logged! (dev mode)`,
+    };
+    return { success: true, preview: { kind, resolvedPrompt, response: samples[kind] || samples.command, language: null } };
+}

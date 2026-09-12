@@ -121,6 +121,14 @@
       "rulesSummary": "Regeln, die immer gelten"
     },
     "personaTitle": "Bot-Persönlichkeit",
+    "preview": {
+      "button": "Vorschau",
+      "label": "Beispielnachricht vom Bot",
+      "note": "Jede Vorschau ist eine neue Antwort. Die echte Nachricht wird anders sein. Der Bot postet Vorschauen nicht im Chat.",
+      "sampleArgsLabel": "Beispielargumente für $(args) in der Vorschau",
+      "sampleArgsPlaceholder": "Beispiel-$(args) für die Vorschau (optional)",
+      "showPrompt": "Prompt anzeigen, den der Bot verwendet hat"
+    },
     "signOut": "Abmelden",
     "statBot": "Bot",
     "statChannel": "Kanal",
@@ -160,6 +168,8 @@
     "active": "Aktiv",
     "deleting": "Wird gelöscht…",
     "inactive": "Inaktiv",
+    "previewReady": "Die Vorschau ist bereit.",
+    "previewing": "Die AI schreibt eine Beispielantwort. Das kann bis zu 30 Sekunden dauern.",
     "resetting": "Wird zurückgesetzt…",
     "savedDev": "{message} (Dev-Modus).",
     "savedDevShort": "Gespeichert (Dev-Modus)",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "Persönlichkeit konnte nicht gespeichert werden. Versuche es erneut.",
     "personaSaved": "Persönlichkeit gespeichert.",
     "personaSavedDev": "Persönlichkeit gespeichert (Dev-Modus).",
+    "previewFailed": "Die Vorschau ist fehlgeschlagen. Versuche es erneut.",
     "removeBotFailed": "Bot konnte nicht aus dem Kanal entfernt werden.",
     "removingBot": "Bot wird aus dem Kanal entfernt…",
     "rewardDeleteFailed": "Belohnung konnte nicht gelöscht werden.",
@@ -227,6 +238,7 @@
     "minLinesRange": "Mindestanzahl an Chatzeilen muss zwischen 0 und 100 liegen.",
     "personaEmpty": "Persönlichkeitsanweisungen dürfen nicht leer sein. Wähle \"Auf Standard zurücksetzen\", um Anweisungen zurückzusetzen.",
     "personaTooLong": "Persönlichkeitsanweisungen dürfen maximal {max} Zeichen lang sein.",
+    "previewPromptRequired": "Gib einen AI-Prompt ein und wähle dann Vorschau.",
     "responseRequired": "Antworttext ist erforderlich.",
     "timerNameRequired": "Timer-Name ist erforderlich."
   }

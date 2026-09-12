@@ -105,6 +105,12 @@ export const RATE_LIMIT = {
     windowMs: 5 * 60 * 1000, // 5 minutes
     max: 20,
   },
+  // Dashboard "Preview" runs a full production-grade inference on the bot
+  // (main-tier model plus search grounding), so it gets its own, tighter budget.
+  PREVIEW: {
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 12,
+  },
 };
 
 // Available bot commands

@@ -616,7 +616,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:fr": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -815,7 +825,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:de": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1014,7 +1034,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:it": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1213,7 +1243,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:pt": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1412,7 +1452,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:ja": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1611,7 +1661,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "dashboard:ru": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1810,7 +1870,17 @@
     "page.loading.botLanguage": "7afa1af4f2ad5995",
     "page.loading.botLanguageAria": "743bbe0336822c28",
     "toast.botLanguageSaved": "314020b01fed9a14",
-    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e"
+    "toast.loadBotLanguageFailed": "2f87ff17ff626c6e",
+    "page.preview.button": "324b134f57c70c72",
+    "page.preview.label": "d69821730010595b",
+    "page.preview.note": "e1557e5abf813408",
+    "page.preview.sampleArgsLabel": "6e709e481082769b",
+    "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
+    "page.preview.showPrompt": "5933c5d9784d63ad",
+    "status.previewReady": "0a56d0e14f2f445a",
+    "status.previewing": "5beab7b9dd058d39",
+    "toast.previewFailed": "411b1a0f9320512c",
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
   },
   "index:es": {
     "page.accessLabel": "ec5ba0abb717da87",

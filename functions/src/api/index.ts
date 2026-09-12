@@ -10,6 +10,7 @@ import {
   personaWriteLimiter,
   aiPromptWriteLimiter,
   checkinWriteLimiter,
+  previewLimiter,
   requireFirestore,
 } from "@/config/middleware";
 import botRouter from "./bot.router";
@@ -21,6 +22,7 @@ import checkinRouter from "./checkin.router";
 import timersRouter from "./timers.router";
 import personaRouter from "./persona.router";
 import languageRouter from "./language.router";
+import previewRouter from "./preview.router";
 
 const router = Router();
 
@@ -41,5 +43,7 @@ router.use("/timers", aiPromptWriteLimiter, timersRouter);
 // Routers whose writes run an LLM safety check get a tighter, per-user limit on
 // top of apiLimiter. It must sit after authenticateApiRequest so req.user exists.
 router.use("/persona", personaWriteLimiter, personaRouter);
+// Preview proxies to the bot for a live inference; every call is an LLM spend.
+router.use("/preview", previewLimiter, previewRouter);
 
 export default router;

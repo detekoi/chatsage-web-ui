@@ -2,6 +2,7 @@ import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockCustomCommands, mockDelay } from '../dev-mocks.js';
 import { deleteItem } from '../crud-helpers.js';
+import { setupPreview } from '../preview.js';
 import { t } from '../i18n.js';
 
 let customCmdLoadingEl;
@@ -20,6 +21,14 @@ let customCmdTypeToggleEl;
 let customCmdResponseLabelEl;
 
 let customCmdEditingName = null;
+let customCmdPreview = null;
+
+function setCustomCmdMessage(text, type = 'muted') {
+    customCmdFormMsgEl.textContent = text;
+    customCmdFormMsgEl.style.color = type === 'danger' ? 'var(--danger-primary)'
+        : type === 'success' ? '#4ecdc4'
+        : 'var(--text-muted)';
+}
 
 export function initCustomCommands() {
     customCmdLoadingEl = document.getElementById('custom-cmd-loading');
@@ -50,6 +59,18 @@ export function initCustomCommands() {
 
     // Wire up variable chip insertion
     setupChipInsertion('.variable-chips', customCmdResponseEl);
+
+    // "Preview" runs a sample inference for AI commands; hidden in text mode.
+    customCmdPreview = setupPreview({
+        kind: 'command',
+        button: document.getElementById('custom-cmd-preview-btn'),
+        panel: document.getElementById('custom-cmd-preview'),
+        promptInput: customCmdResponseEl,
+        toggle: customCmdTypeToggleEl,
+        argsInput: document.getElementById('custom-cmd-preview-args'),
+        getName: () => customCmdNameEl.value.trim().toLowerCase(),
+        setMessage: setCustomCmdMessage,
+    });
 
     // Wire up form buttons
     customCmdAddBtn.addEventListener('click', openAddForm);
@@ -185,6 +206,8 @@ function openAddForm() {
     customCmdResponseLabelEl.textContent = t('page.customCommands.responseLabel', {}, 'Response');
     customCmdResponseEl.placeholder = t('page.customCommands.responsePlaceholder', {}, 'Hello $(user), welcome to $(channel)!');
     customCmdFormMsgEl.textContent = '';
+    customCmdPreview.reset();
+    customCmdPreview.sync();
     customCmdFormEl.style.display = 'block';
     customCmdNameEl.focus();
 }
@@ -204,6 +227,8 @@ function openEditForm(cmd) {
         ? t('page.customCommands.aiPromptPlaceholder', {}, 'Write a greeting for $(user) in one sentence.')
         : t('page.customCommands.responsePlaceholder', {}, 'Hello $(user), welcome to $(channel)!');
     customCmdFormMsgEl.textContent = '';
+    customCmdPreview.reset();
+    customCmdPreview.sync();
     customCmdFormEl.style.display = 'block';
     customCmdResponseEl.focus();
 }
@@ -212,6 +237,7 @@ function closeForm() {
     customCmdFormEl.style.display = 'none';
     customCmdEditingName = null;
     customCmdFormMsgEl.textContent = '';
+    customCmdPreview.reset();
 }
 
 async function saveCustomCommand() {

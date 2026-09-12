@@ -121,6 +121,14 @@
       "rulesSummary": "Regras que sempre se aplicam"
     },
     "personaTitle": "Personalidade do Bot",
+    "preview": {
+      "button": "Prévia",
+      "label": "Mensagem de exemplo do bot",
+      "note": "Cada prévia é uma nova resposta. A mensagem real será diferente. O bot não envia prévias no chat.",
+      "sampleArgsLabel": "Argumentos de exemplo para $(args) na prévia",
+      "sampleArgsPlaceholder": "Exemplo de $(args) para a prévia (opcional)",
+      "showPrompt": "Mostrar o prompt que o bot usou"
+    },
     "signOut": "Sair",
     "statBot": "Bot",
     "statChannel": "Canal",
@@ -160,6 +168,8 @@
     "active": "Ativo",
     "deleting": "Excluindo…",
     "inactive": "Inativo",
+    "previewReady": "A prévia está pronta.",
+    "previewing": "A AI está gerando uma resposta de exemplo. Isso pode levar até 30 segundos.",
     "resetting": "Redefinindo…",
     "savedDev": "{message} (modo dev).",
     "savedDevShort": "Salvo (modo dev)",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "Falha ao salvar a personalidade. Tente novamente.",
     "personaSaved": "Personalidade salva.",
     "personaSavedDev": "Personalidade salva (modo dev).",
+    "previewFailed": "A prévia falhou. Tente novamente.",
     "removeBotFailed": "Falha ao remover o bot do canal.",
     "removingBot": "Removendo bot do canal…",
     "rewardDeleteFailed": "Falha ao excluir recompensa.",
@@ -227,6 +238,7 @@
     "minLinesRange": "O mínimo de linhas de chat deve ser entre 0 e 100.",
     "personaEmpty": "As instruções de personalidade não podem ficar vazias. Selecione \"Redefinir para o padrão\" para limpar as instruções.",
     "personaTooLong": "As instruções de personalidade devem ter {max} caracteres ou menos.",
+    "previewPromptRequired": "Digite um prompt de AI e selecione Prévia.",
     "responseRequired": "O texto da resposta é obrigatório.",
     "timerNameRequired": "O nome do timer é obrigatório."
   }

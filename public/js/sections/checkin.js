@@ -1,6 +1,7 @@
 import { apiGet, apiPut, apiDelete, getToken } from '../api.js';
 import { showActionToast, setSuccessMessage, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockDelay } from '../dev-mocks.js';
+import { setupPreview } from '../preview.js';
 import { t } from '../i18n.js';
 
 let checkinLoadingEl;
@@ -16,6 +17,12 @@ let checkinDeleteBtn;
 let checkinMsgEl;
 let checkinConfigFieldsEl;
 let checkinResponseGroupEl;
+let checkinPreview = null;
+
+function setCheckinMessage(text, type = 'muted') {
+    checkinMsgEl.textContent = text;
+    checkinMsgEl.className = `text-${type} mt-2 mb-0`;
+}
 
 export function initCheckin() {
     checkinLoadingEl = document.getElementById('checkin-loading');
@@ -42,6 +49,16 @@ export function initCheckin() {
     setupChipInsertion('.checkin-chips', checkinResponseEl);
     setupChipInsertion('.checkin-ai-chips', checkinAiPromptEl);
 
+    // "Preview" runs a sample check-in inference; hidden while AI mode is off.
+    checkinPreview = setupPreview({
+        kind: 'checkin',
+        button: document.getElementById('checkin-preview-btn'),
+        panel: document.getElementById('checkin-preview'),
+        promptInput: checkinAiPromptEl,
+        toggle: checkinAiToggleEl,
+        setMessage: setCheckinMessage,
+    });
+
     checkinSaveBtn.addEventListener('click', saveCheckinSettings);
     checkinDeleteBtn.addEventListener('click', deleteCheckinReward);
 }
@@ -50,6 +67,8 @@ function updateCheckinAiVisibility() {
     const aiOn = checkinAiToggleEl.checked;
     checkinResponseGroupEl.style.display = aiOn ? 'none' : 'block';
     checkinAiPromptGroupEl.style.display = aiOn ? 'block' : 'none';
+    // The toggle is also set programmatically on load, which fires no change event.
+    checkinPreview?.sync();
 }
 
 function updateCheckinConfigVisibility() {

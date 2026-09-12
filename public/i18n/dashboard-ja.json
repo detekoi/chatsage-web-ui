@@ -121,6 +121,14 @@
       "rulesSummary": "常時適用されるルール"
     },
     "personaTitle": "ボットのパーソナリティ",
+    "preview": {
+      "button": "プレビュー",
+      "label": "ボットからのサンプルメッセージ",
+      "note": "プレビューごとに新しい応答が生成されます。実際のメッセージとは異なります。ボットがプレビューをチャットに投稿することはありません。",
+      "sampleArgsLabel": "プレビュー用 $(args) のサンプル引数",
+      "sampleArgsPlaceholder": "プレビュー用のサンプル $(args)（任意）",
+      "showPrompt": "ボットが使用したプロンプトを表示"
+    },
     "signOut": "サインアウト",
     "statBot": "ボット",
     "statChannel": "チャンネル",
@@ -160,6 +168,8 @@
     "active": "有効",
     "deleting": "削除中…",
     "inactive": "無効",
+    "previewReady": "プレビューの準備ができました。",
+    "previewing": "AIがサンプル返答を生成中です。最大30秒かかる場合があります。",
     "resetting": "リセット中…",
     "savedDev": "{message} (開発モード)。",
     "savedDevShort": "保存完了（開発モード）",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "ペルソナの保存に失敗しました。もう一度お試しください。",
     "personaSaved": "ペルソナを保存しました。",
     "personaSavedDev": "ペルソナを保存しました（開発モード）。",
+    "previewFailed": "プレビューに失敗しました。もう一度お試しください。",
     "removeBotFailed": "チャンネルからBotの削除に失敗しました。",
     "removingBot": "チャンネルからBotを削除中…",
     "rewardDeleteFailed": "リワードの削除に失敗しました。",
@@ -227,6 +238,7 @@
     "minLinesRange": "最小チャット行数は0〜100行の間で指定してください。",
     "personaEmpty": "ペルソナの指示は空にできません。指示をクリアするには「デフォルトに戻す」を選択してください。",
     "personaTooLong": "ペルソナの指示は{max}文字以下にしてください。",
+    "previewPromptRequired": "AIプロンプトを入力してから「プレビュー」を選択してください。",
     "responseRequired": "応答テキストは必須です。",
     "timerNameRequired": "タイマー名は必須です。"
   }

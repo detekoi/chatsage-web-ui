@@ -121,6 +121,14 @@
       "rulesSummary": "Reglas que siempre se aplican"
     },
     "personaTitle": "Personalidad del bot",
+    "preview": {
+      "button": "Vista previa",
+      "label": "Mensaje de muestra del bot",
+      "note": "Cada vista previa es una nueva respuesta. El mensaje real será diferente. El bot no publica vistas previas en el chat.",
+      "sampleArgsLabel": "Argumentos de muestra para $(args) en la vista previa",
+      "sampleArgsPlaceholder": "$(args) de ejemplo para la vista previa (opcional)",
+      "showPrompt": "Mostrar el prompt que usó el bot"
+    },
     "signOut": "Cerrar sesión",
     "statBot": "Bot",
     "statChannel": "Canal",
@@ -160,6 +168,8 @@
     "active": "Activo",
     "deleting": "Eliminando…",
     "inactive": "Inactivo",
+    "previewReady": "La vista previa está lista.",
+    "previewing": "La AI está escribiendo una respuesta de muestra. Esto puede tardar hasta 30 segundos.",
     "resetting": "Restableciendo…",
     "savedDev": "{message} (modo dev).",
     "savedDevShort": "Guardado (modo dev)",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "Error al guardar la personalidad. Inténtalo de nuevo.",
     "personaSaved": "Personalidad guardada.",
     "personaSavedDev": "Personalidad guardada (modo dev).",
+    "previewFailed": "Falló la vista previa. Inténtalo de nuevo.",
     "removeBotFailed": "Error al eliminar el bot del canal.",
     "removingBot": "Eliminando el bot del canal…",
     "rewardDeleteFailed": "Error al eliminar la recompensa.",
@@ -227,6 +238,7 @@
     "minLinesRange": "El mínimo de líneas de chat debe estar entre 0 y 100.",
     "personaEmpty": "Las instrucciones de personalidad no pueden estar vacías. Selecciona \"Restablecer por defecto\" para borrar las instrucciones.",
     "personaTooLong": "Las instrucciones de personalidad deben tener {max} caracteres o menos.",
+    "previewPromptRequired": "Escribe un prompt de AI y luego selecciona Vista previa.",
     "responseRequired": "El texto de la respuesta es obligatorio.",
     "timerNameRequired": "El nombre del temporizador es obligatorio."
   }

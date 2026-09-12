@@ -121,6 +121,14 @@
       "rulesSummary": "Regole sempre valide"
     },
     "personaTitle": "Personalità del bot",
+    "preview": {
+      "button": "Anteprima",
+      "label": "Messaggio di esempio del bot",
+      "note": "Ogni anteprima è una nuova risposta. Il messaggio reale sarà diverso. Il bot non invia le anteprime in chat.",
+      "sampleArgsLabel": "Argomenti di esempio per $(args) nell'anteprima",
+      "sampleArgsPlaceholder": "Esempio di $(args) per l'anteprima (opzionale)",
+      "showPrompt": "Mostra il prompt usato dal bot"
+    },
     "signOut": "Disconnettiti",
     "statBot": "Bot",
     "statChannel": "Canale",
@@ -160,6 +168,8 @@
     "active": "Attivo",
     "deleting": "Eliminazione…",
     "inactive": "Inattivo",
+    "previewReady": "L'anteprima è pronta.",
+    "previewing": "L'AI sta scrivendo una risposta di prova. Può richiedere fino a 30 secondi.",
     "resetting": "Reimpostazione…",
     "savedDev": "{message} (modalità dev).",
     "savedDevShort": "Salvato (modalità dev)",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "Impossibile salvare la personalità. Riprova.",
     "personaSaved": "Personalità salvata.",
     "personaSavedDev": "Personalità salvata (modalità dev).",
+    "previewFailed": "Anteprima non riuscita. Riprova.",
     "removeBotFailed": "Impossibile rimuovere il bot dal canale.",
     "removingBot": "Rimozione del bot dal canale…",
     "rewardDeleteFailed": "Impossibile eliminare la ricompensa.",
@@ -227,6 +238,7 @@
     "minLinesRange": "Le righe minime di chat devono essere comprese tra 0 e 100.",
     "personaEmpty": "Le istruzioni per la personalità non possono essere vuote. Seleziona \"Ripristina predefiniti\" per cancellarle.",
     "personaTooLong": "Le istruzioni per la personalità devono contenere al massimo {max} caratteri.",
+    "previewPromptRequired": "Inserisci un prompt per l'AI, poi seleziona Anteprima.",
     "responseRequired": "Il testo della risposta è obbligatorio.",
     "timerNameRequired": "Il nome del timer è obbligatorio."
   }

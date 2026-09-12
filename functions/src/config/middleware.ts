@@ -166,6 +166,21 @@ export const aiPromptWriteLimiter = createPromptWriteLimiter((req) => {
   return body.type === "prompt" || body.response !== undefined;
 });
 
+/**
+ * Every preview request costs one LLM inference on the bot. Keyed per user for
+ * the same reason as the prompt-write limiters.
+ */
+export const previewLimiter = rateLimit({
+  windowMs: RATE_LIMIT.PREVIEW.windowMs,
+  max: RATE_LIMIT.PREVIEW.max,
+  message: "Too many previews. Please wait a moment and try again.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req: Request) =>
+    (req as Request & { user?: { userId?: string } }).user?.userId ||
+    ipKeyGenerator(req.ip || ""),
+});
+
 /** Check-in only screens when AI mode is on and a prompt was supplied. */
 export const checkinWriteLimiter = createPromptWriteLimiter((req) => {
   const body = (req.body || {}) as { useAi?: unknown; aiPrompt?: unknown };

@@ -2,6 +2,7 @@ import { apiGet, apiPost, apiPut } from '../api.js';
 import { showActionToast, setupChipInsertion } from '../ui.js';
 import { DEV_MODE, mockTimers, mockDelay } from '../dev-mocks.js';
 import { toggleItem, deleteItem } from '../crud-helpers.js';
+import { setupPreview } from '../preview.js';
 import { t } from '../i18n.js';
 
 let timerLoadingEl;
@@ -20,6 +21,14 @@ let timerTypeToggleEl;
 let timerResponseLabelEl;
 
 let timerEditingName = null;
+let timerPreview = null;
+
+function setTimerMessage(text, type = 'muted') {
+    timerFormMsgEl.textContent = text;
+    timerFormMsgEl.style.color = type === 'danger' ? 'var(--danger-primary)'
+        : type === 'success' ? '#4ecdc4'
+        : 'var(--text-muted)';
+}
 
 export function initTimers() {
     timerLoadingEl = document.getElementById('timer-loading');
@@ -50,6 +59,17 @@ export function initTimers() {
 
     // Wire up variable chip insertion
     setupChipInsertion('.timer-chips', timerResponseEl);
+
+    // "Preview" runs a sample inference for AI timers; hidden in text mode.
+    timerPreview = setupPreview({
+        kind: 'timer',
+        button: document.getElementById('timer-preview-btn'),
+        panel: document.getElementById('timer-preview'),
+        promptInput: timerResponseEl,
+        toggle: timerTypeToggleEl,
+        getName: () => sanitizeTimerName(timerNameEl.value),
+        setMessage: setTimerMessage,
+    });
 
     // Wire up timer form buttons
     timerAddBtn.addEventListener('click', openTimerAddForm);
@@ -206,6 +226,8 @@ function openTimerAddForm() {
     timerResponseLabelEl.textContent = t('page.timers.messageLabel', {}, 'Message');
     timerResponseEl.placeholder = t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
+    timerPreview.reset();
+    timerPreview.sync();
     timerFormEl.style.display = 'block';
     timerNameEl.focus();
 }
@@ -225,6 +247,8 @@ function openTimerEditForm(timer) {
         ? t('page.timers.aiPromptPlaceholder', {}, 'Remind chat about Discord for the current game.')
         : t('page.timers.messagePlaceholder', {}, 'Enjoying the stream? Join the Discord!');
     timerFormMsgEl.textContent = '';
+    timerPreview.reset();
+    timerPreview.sync();
     timerFormEl.style.display = 'block';
     timerResponseEl.focus();
 }
@@ -233,6 +257,7 @@ function closeTimerForm() {
     timerFormEl.style.display = 'none';
     timerEditingName = null;
     timerFormMsgEl.textContent = '';
+    timerPreview.reset();
 }
 
 // Sanitize a user-typed timer name into a valid slug

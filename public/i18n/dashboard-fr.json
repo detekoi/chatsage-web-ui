@@ -121,6 +121,14 @@
       "rulesSummary": "Règles toujours appliquées"
     },
     "personaTitle": "Personnalité du bot",
+    "preview": {
+      "button": "Aperçu",
+      "label": "Exemple de message du bot",
+      "note": "Chaque aperçu génère une nouvelle réponse. Le vrai message sera différent. Le bot ne publie pas les aperçus dans le chat.",
+      "sampleArgsLabel": "Exemples d'arguments pour $(args) dans l'aperçu",
+      "sampleArgsPlaceholder": "Exemples de $(args) pour l'aperçu (facultatif)",
+      "showPrompt": "Afficher le prompt utilisé par le bot"
+    },
     "signOut": "Se déconnecter",
     "statBot": "Bot",
     "statChannel": "Chaîne",
@@ -160,6 +168,8 @@
     "active": "Actif",
     "deleting": "Suppression…",
     "inactive": "Inactif",
+    "previewReady": "L'aperçu est prêt.",
+    "previewing": "L'AI rédige un exemple de réponse. Cela peut prendre jusqu'à 30 secondes.",
     "resetting": "Réinitialisation…",
     "savedDev": "{message} (mode dev).",
     "savedDevShort": "Enregistré (mode dev)",
@@ -206,6 +216,7 @@
     "personaSaveRetry": "Impossible d'enregistrer la personnalité. Réessaie.",
     "personaSaved": "Personnalité enregistrée.",
     "personaSavedDev": "Personnalité enregistrée (mode dev).",
+    "previewFailed": "L'aperçu a échoué. Réessaie.",
     "removeBotFailed": "Impossible de retirer le bot de la chaîne.",
     "removingBot": "Retrait du bot de la chaîne…",
     "rewardDeleteFailed": "Impossible de supprimer la récompense.",
@@ -227,6 +238,7 @@
     "minLinesRange": "Le nombre minimum de lignes de chat doit être compris entre 0 et 100.",
     "personaEmpty": "Les instructions de personnalité ne peuvent pas être vides. Choisissez \"Réinitialiser par défaut\" pour effacer les instructions.",
     "personaTooLong": "Les instructions de personnalité doivent comporter {max} caractères ou moins.",
+    "previewPromptRequired": "Saisis un prompt AI, puis sélectionne Aperçu.",
     "responseRequired": "Le texte de réponse est requis.",
     "timerNameRequired": "Le nom du timer est requis."
   }
