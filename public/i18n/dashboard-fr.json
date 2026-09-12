@@ -124,6 +124,7 @@
     "preview": {
       "button": "Aperçu",
       "label": "Exemple de message du bot",
+      "loadingAria": "Rédaction d'un exemple de réponse",
       "note": "Chaque aperçu génère une nouvelle réponse. Le vrai message sera différent. Le bot ne publie pas les aperçus dans le chat.",
       "sampleArgsLabel": "Exemples d'arguments pour $(args) dans l'aperçu",
       "sampleArgsPlaceholder": "Exemples de $(args) pour l'aperçu (facultatif)",
@@ -169,7 +170,7 @@
     "deleting": "Suppression…",
     "inactive": "Inactif",
     "previewReady": "L'aperçu est prêt.",
-    "previewing": "L'AI rédige un exemple de réponse. Cela peut prendre jusqu'à 30 secondes.",
+    "previewing": "Rédaction d'un exemple de réponse… Cela peut prendre jusqu'à 30 secondes.",
     "resetting": "Réinitialisation…",
     "savedDev": "{message} (mode dev).",
     "savedDevShort": "Enregistré (mode dev)",

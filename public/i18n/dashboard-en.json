@@ -124,6 +124,7 @@
         "preview": {
             "button": "Preview",
             "label": "Sample message from the bot",
+            "loadingAria": "Writing a sample reply",
             "note": "Each preview is a new response. The real message will be different. The bot does not post previews to chat.",
             "sampleArgsLabel": "Sample arguments for $(args) in the preview",
             "sampleArgsPlaceholder": "Sample $(args) for the preview (optional)",
@@ -169,7 +170,7 @@
         "deleting": "Deleting…",
         "inactive": "Inactive",
         "previewReady": "The preview is ready.",
-        "previewing": "The AI writes a sample reply. This can take up to 30 seconds.",
+        "previewing": "Writing a sample reply… This can take up to 30 seconds.",
         "resetting": "Resetting…",
         "savedDev": "{message} (dev mode).",
         "savedDevShort": "Saved (dev mode)",

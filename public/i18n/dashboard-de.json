@@ -124,6 +124,7 @@
     "preview": {
       "button": "Vorschau",
       "label": "Beispielnachricht vom Bot",
+      "loadingAria": "Schreibt eine Beispielantwort",
       "note": "Jede Vorschau ist eine neue Antwort. Die echte Nachricht wird anders sein. Der Bot postet Vorschauen nicht im Chat.",
       "sampleArgsLabel": "Beispielargumente für $(args) in der Vorschau",
       "sampleArgsPlaceholder": "Beispiel-$(args) für die Vorschau (optional)",
@@ -169,7 +170,7 @@
     "deleting": "Wird gelöscht…",
     "inactive": "Inaktiv",
     "previewReady": "Die Vorschau ist bereit.",
-    "previewing": "Die AI schreibt eine Beispielantwort. Das kann bis zu 30 Sekunden dauern.",
+    "previewing": "Schreibt eine Beispielantwort… Das kann bis zu 30 Sekunden dauern.",
     "resetting": "Wird zurückgesetzt…",
     "savedDev": "{message} (Dev-Modus).",
     "savedDevShort": "Gespeichert (Dev-Modus)",

@@ -124,6 +124,7 @@
     "preview": {
       "button": "Anteprima",
       "label": "Messaggio di esempio del bot",
+      "loadingAria": "Scrittura di una risposta di prova",
       "note": "Ogni anteprima è una nuova risposta. Il messaggio reale sarà diverso. Il bot non invia le anteprime in chat.",
       "sampleArgsLabel": "Argomenti di esempio per $(args) nell'anteprima",
       "sampleArgsPlaceholder": "Esempio di $(args) per l'anteprima (opzionale)",
@@ -169,7 +170,7 @@
     "deleting": "Eliminazione…",
     "inactive": "Inattivo",
     "previewReady": "L'anteprima è pronta.",
-    "previewing": "L'AI sta scrivendo una risposta di prova. Può richiedere fino a 30 secondi.",
+    "previewing": "Scrittura di una risposta di prova… Potrebbero volerci fino a 30 secondi.",
     "resetting": "Reimpostazione…",
     "savedDev": "{message} (modalità dev).",
     "savedDevShort": "Salvato (modalità dev)",

@@ -26,6 +26,8 @@ import { t } from './i18n.js';
  * @returns {{ reset: () => void, sync: () => void }}
  */
 export function setupPreview({ kind, button, panel, promptInput, toggle, argsInput = null, getName = () => '', setMessage }) {
+    const loadingEl = panel.querySelector('.ai-preview__loading');
+    const resultEl = panel.querySelector('.ai-preview__result');
     const textEl = panel.querySelector('.ai-preview__text');
     const promptEl = panel.querySelector('.ai-preview__prompt');
     const detailsEl = panel.querySelector('details');
@@ -33,10 +35,28 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
 
     function reset() {
         panel.hidden = true;
+        loadingEl.hidden = true;
+        resultEl.hidden = true;
+        panel.removeAttribute('aria-busy');
         textEl.textContent = '';
         promptEl.textContent = '';
         if (detailsEl) detailsEl.open = false;
         if (argsInput) argsInput.value = '';
+    }
+
+    /** The shared progress bar, in place of the previous result while a new one generates. */
+    function showLoading() {
+        resultEl.hidden = true;
+        loadingEl.hidden = false;
+        panel.hidden = false;
+        panel.setAttribute('aria-busy', 'true');
+    }
+
+    function hideLoading() {
+        loadingEl.hidden = true;
+        panel.removeAttribute('aria-busy');
+        // Nothing to show: collapse the panel rather than leave an empty box.
+        if (resultEl.hidden) panel.hidden = true;
     }
 
     /** Show the preview controls only while AI mode is on. */
@@ -49,6 +69,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
     function render(preview) {
         textEl.textContent = preview.response || '';
         promptEl.textContent = preview.resolvedPrompt || '';
+        resultEl.hidden = false;
         panel.hidden = false;
     }
 
@@ -61,7 +82,10 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
         }
 
         button.disabled = true;
-        setMessage(t('status.previewing', {}, 'The AI writes a sample reply. This can take up to 30 seconds.'), 'muted');
+        // The progress bar in the panel carries the status text; the form
+        // message stays clear until there is an outcome to report.
+        setMessage('', 'muted');
+        showLoading();
 
         try {
             let data;
@@ -75,6 +99,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
                 data = await readJson(res);
             }
 
+            hideLoading();
             if (data.success && data.preview) {
                 render(data.preview);
                 setMessage(t('status.previewReady', {}, 'The preview is ready.'), 'success');
@@ -87,6 +112,7 @@ export function setupPreview({ kind, button, panel, promptInput, toggle, argsInp
                 setMessage(data.message || t('toast.previewFailed', {}, 'The preview failed. Try again.'), 'danger');
             }
         } catch (e) {
+            hideLoading();
             if (e instanceof AuthError) return;
             console.error('Error generating preview:', e);
             setMessage(t('toast.previewFailed', {}, 'The preview failed. Try again.'), 'danger');

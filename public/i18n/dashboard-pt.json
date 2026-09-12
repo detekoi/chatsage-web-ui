@@ -124,6 +124,7 @@
     "preview": {
       "button": "Prévia",
       "label": "Mensagem de exemplo do bot",
+      "loadingAria": "Escrevendo uma resposta de exemplo",
       "note": "Cada prévia é uma nova resposta. A mensagem real será diferente. O bot não envia prévias no chat.",
       "sampleArgsLabel": "Argumentos de exemplo para $(args) na prévia",
       "sampleArgsPlaceholder": "Exemplo de $(args) para a prévia (opcional)",
@@ -169,7 +170,7 @@
     "deleting": "Excluindo…",
     "inactive": "Inativo",
     "previewReady": "A prévia está pronta.",
-    "previewing": "A AI está gerando uma resposta de exemplo. Isso pode levar até 30 segundos.",
+    "previewing": "Escrevendo uma resposta de exemplo… Isso pode levar até 30 segundos.",
     "resetting": "Redefinindo…",
     "savedDev": "{message} (modo dev).",
     "savedDevShort": "Salvo (modo dev)",

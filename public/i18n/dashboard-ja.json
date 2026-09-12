@@ -124,6 +124,7 @@
     "preview": {
       "button": "プレビュー",
       "label": "ボットからのサンプルメッセージ",
+      "loadingAria": "サンプル返信を作成中",
       "note": "プレビューごとに新しい応答が生成されます。実際のメッセージとは異なります。ボットがプレビューをチャットに投稿することはありません。",
       "sampleArgsLabel": "プレビュー用 $(args) のサンプル引数",
       "sampleArgsPlaceholder": "プレビュー用のサンプル $(args)（任意）",
@@ -169,7 +170,7 @@
     "deleting": "削除中…",
     "inactive": "無効",
     "previewReady": "プレビューの準備ができました。",
-    "previewing": "AIがサンプル返答を生成中です。最大30秒かかる場合があります。",
+    "previewing": "サンプル返信を作成中… 最大30秒かかる場合があります。",
     "resetting": "リセット中…",
     "savedDev": "{message} (開発モード)。",
     "savedDevShort": "保存完了（開発モード）",

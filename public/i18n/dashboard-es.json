@@ -124,6 +124,7 @@
     "preview": {
       "button": "Vista previa",
       "label": "Mensaje de muestra del bot",
+      "loadingAria": "Escribiendo una respuesta de ejemplo",
       "note": "Cada vista previa es una nueva respuesta. El mensaje real será diferente. El bot no publica vistas previas en el chat.",
       "sampleArgsLabel": "Argumentos de muestra para $(args) en la vista previa",
       "sampleArgsPlaceholder": "$(args) de ejemplo para la vista previa (opcional)",
@@ -169,7 +170,7 @@
     "deleting": "Eliminando…",
     "inactive": "Inactivo",
     "previewReady": "La vista previa está lista.",
-    "previewing": "La AI está escribiendo una respuesta de muestra. Esto puede tardar hasta 30 segundos.",
+    "previewing": "Escribiendo una respuesta de ejemplo… Esto puede tardar hasta 30 segundos.",
     "resetting": "Restableciendo…",
     "savedDev": "{message} (modo dev).",
     "savedDevShort": "Guardado (modo dev)",

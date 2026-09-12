@@ -771,6 +771,12 @@ a:not(.btn):not(.button-3d):not([class*="wc-"]):focus {
     color: var(--text-muted);
 }
 
+/* The shared bar sits inside the panel, so trim the section-level padding. */
+.ai-preview__loading {
+    padding: 4px 0 2px;
+    gap: 8px;
+}
+
 .ai-preview__args {
     flex: 1 1 14rem;
     max-width: 24rem;

@@ -624,9 +624,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:fr": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -833,9 +834,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:de": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1042,9 +1044,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:it": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1251,9 +1254,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:pt": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1460,9 +1464,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:ja": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1669,9 +1674,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "dashboard:ru": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1878,9 +1884,10 @@
     "page.preview.sampleArgsPlaceholder": "6b17c9971b83775f",
     "page.preview.showPrompt": "5933c5d9784d63ad",
     "status.previewReady": "0a56d0e14f2f445a",
-    "status.previewing": "5beab7b9dd058d39",
+    "status.previewing": "3707304729bcd6e0",
     "toast.previewFailed": "411b1a0f9320512c",
-    "validation.previewPromptRequired": "5cf2a9bfe45cfc42"
+    "validation.previewPromptRequired": "5cf2a9bfe45cfc42",
+    "page.preview.loadingAria": "bb1d692d7eba3327"
   },
   "index:es": {
     "page.accessLabel": "ec5ba0abb717da87",
