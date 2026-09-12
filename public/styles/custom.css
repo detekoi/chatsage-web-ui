@@ -1,11 +1,8 @@
-/* ChatSage custom Bootstrap overrides and theming */
-/* Post-Industrial Modernism Design System */
-
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+/* ChatSage theme layer: Post-Industrial Modernism.
+   Loads after reset.css and before design-system.css. Component class names
+   (.btn, .card, .form-control, .alert, .list-group) follow the Bootstrap naming
+   the markup was written against, but Bootstrap itself is not loaded; these
+   rules and design-system.css are the only definitions. */
 
 /* CSS Custom Properties for Theme Support */
 :root {
@@ -83,8 +80,6 @@ body {
     color: var(--text-primary);
     background-color: var(--bg-primary);
     line-height: 1.6;
-    /* Post-Industrial: Sharp corners everywhere */
-    border-radius: 0;
 }
 
 /* Typography - Post-Industrial */
@@ -99,7 +94,7 @@ h6 {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    color: var(--text-primary) !important;
+    color: var(--text-primary);
 }
 
 p,
@@ -109,26 +104,22 @@ label,
 .card-body,
 .card-body p,
 .card-body strong {
-    color: var(--text-primary) !important;
+    color: var(--text-primary);
 }
 
 .text-muted {
-    color: var(--text-muted) !important;
+    color: var(--text-muted);
 }
 
-/* Card rounding - Post-Industrial: No rounded corners */
+/* Cards - Post-Industrial: No rounded corners.
+   The !important radius overrides are deliberate: design-system.css loads
+   later and applies --wc-radius-card (2px) to cards and 3px to controls.
+   This theme keeps every corner square, so those few overrides must win. */
 .card {
     border-radius: 0 !important;
     border: 1px solid var(--border-color);
-    box-shadow: none !important;
+    box-shadow: none;
     background-color: var(--bg-secondary);
-}
-
-/* Remove Bootstrap shadows */
-.shadow,
-.shadow-sm,
-.shadow-lg {
-    box-shadow: none !important;
 }
 
 .card-header {
@@ -140,7 +131,7 @@ label,
     letter-spacing: 0.02em;
 }
 
-/* Form controls - Post-Industrial: Sharp corners */
+/* Form controls - Post-Industrial: Sharp corners (see note on .card) */
 .form-control,
 .form-select,
 .btn {
@@ -150,22 +141,22 @@ label,
 .form-control,
 .form-select {
     border: 1px solid var(--border-color);
-    color: var(--text-primary) !important;
-    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary);
+    background-color: var(--bg-secondary);
 }
 
 .form-control:focus,
 .form-select:focus {
     border-color: var(--text-primary);
     box-shadow: none;
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .form-control:disabled,
 .form-control[readonly] {
-    background-color: var(--bg-tertiary) !important;
-    color: var(--text-muted) !important;
+    background-color: var(--bg-tertiary);
+    color: var(--text-muted);
     opacity: 0.7;
 }
 
@@ -174,7 +165,6 @@ label,
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
-    border-radius: 0 !important;
 }
 
 .btn-primary {
@@ -248,8 +238,8 @@ details summary {
     -webkit-appearance: none;
     background-color: transparent;
     border: 2px solid var(--border-color);
-    width: 1.2em;
-    height: 1.2em;
+    width: 16px;
+    height: 16px;
     border-radius: 0;
     cursor: pointer;
 }
@@ -271,16 +261,6 @@ details summary {
 }
 
 
-/* Static background canvas */
-#staticCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-}
-
 /* Video background */
 #staticVideo {
     position: fixed;
@@ -292,167 +272,12 @@ details summary {
     object-fit: cover;
 }
 
-/* Light mode overlay for video background */
-.video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(255, 255, 255, 0.66);
-    z-index: -1;
-    pointer-events: none;
-}
-
-/* Hide overlay in dark mode */
-[data-theme="dark"] .video-overlay {
-    display: none;
-}
-
-/* 3D Skeuomorphic Button Styles (Login Pages Only) - Post-Industrial */
-/* Light Mode */
-.button-3d {
-    background-color: #0a0a0a;
-    color: #ffffff;
-    border: 2px solid #0a0a0a;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    padding: 12px 24px;
-    display: inline-block;
-    font-weight: 800;
-    cursor: pointer;
-    font-size: 1rem;
-    border-radius: 0 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.button-3d:hover,
-.button-3d:focus {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.2);
-    text-decoration: none;
-    background-color: #0a0a0a;
-    color: #ffffff;
-}
-
-.button-3d:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-    background-color: #333333;
-}
-
-.button-3d.btn-primary {
-    background-color: #0a0a0a;
-    color: #ffffff;
-    border: 2px solid #0a0a0a;
-    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
-}
-
-.button-3d.btn-primary:hover,
-.button-3d.btn-primary:focus {
-    background-color: #0a0a0a;
-    color: #ffffff;
-    box-shadow: 6px 6px 1px rgba(0, 0, 0, 0.2);
-}
-
-.button-3d.btn-primary:active {
-    background-color: #333333;
-    color: #ffffff;
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-}
-
-/* Dark Mode */
-[data-theme="dark"] .button-3d {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #ffffff;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
-}
-
-[data-theme="dark"] .button-3d:hover,
-[data-theme="dark"] .button-3d:focus {
-    box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
-    background-color: #ffffff;
-    color: #000000;
-}
-
-[data-theme="dark"] .button-3d:active {
-    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
-    background-color: #cccccc;
-}
-
-[data-theme="dark"] .button-3d.btn-primary {
-    background-color: #ffffff;
-    color: #000000;
-    border: 2px solid #ffffff;
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3);
-}
-
-[data-theme="dark"] .button-3d.btn-primary:hover,
-[data-theme="dark"] .button-3d.btn-primary:focus {
-    background-color: #ffffff;
-    color: #000000;
-    box-shadow: 6px 6px 1px rgba(255, 255, 255, 0.2);
-}
-
-[data-theme="dark"] .button-3d.btn-primary:active {
-    background-color: #cccccc;
-    color: #000000;
-    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-/* Enhanced nav tabs */
-.nav-tabs {
-    border-bottom: 1px solid var(--border-color);
-}
-
-.nav-tabs .nav-link {
-    color: var(--text-secondary);
-    border: 1px solid transparent;
-    border-bottom-color: transparent;
-}
-
-.nav-tabs .nav-link:hover,
-.nav-tabs .nav-link:focus {
-    color: var(--text-primary);
-    border-color: var(--border-color) var(--border-color) var(--border-hover);
-}
-
-.nav-tabs .nav-link.active {
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
-    border-color: var(--border-color) var(--border-color) var(--bg-secondary);
-}
-
-/* Enhanced list-group styling for settings - Post-Industrial */
+/* List groups for settings - Post-Industrial */
 .list-group {
     display: flex;
     flex-direction: column;
     padding-left: 0;
     margin-bottom: 0;
-    border-radius: 0;
-}
-
-.list-group-item-action {
-    width: 100%;
-    color: var(--text-primary);
-    text-align: inherit;
-}
-
-.list-group-item-action:hover,
-.list-group-item-action:focus {
-    z-index: 1;
-    color: var(--text-primary);
-    text-decoration: none;
-    background-color: var(--bg-secondary);
-    border-bottom-color: var(--text-primary);
-}
-
-.list-group-item-action:active {
-    color: var(--text-primary);
-    background-color: var(--bg-tertiary);
 }
 
 .list-group-item {
@@ -462,16 +287,6 @@ details summary {
     background-color: transparent;
     border: none;
     border-bottom: 1px solid var(--border-color);
-}
-
-.list-group-item:first-child {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-}
-
-.list-group-item:last-child {
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
 }
 
 .list-group-item.disabled,
@@ -497,36 +312,8 @@ details summary {
     border-top-width: 0;
 }
 
-
-/* Text color improvements */
-.text-muted {
-    color: var(--text-muted) !important;
-}
-
-strong,
-.fw-semibold,
-.fw-bold {
+strong {
     color: var(--text-primary);
-}
-
-.page-title {
-    color: var(--text-primary);
-}
-
-/* Danger Zone card styling */
-.card.danger-zone {
-    border: 2px solid var(--danger-primary) !important;
-    background-color: var(--danger-bg) !important;
-}
-
-.card.danger-zone .card-header,
-.card.danger-zone h5 {
-    color: var(--danger-secondary);
-    font-weight: 700;
-}
-
-.card.danger-zone p {
-    color: var(--danger-text);
 }
 
 /* Alert styles - Post-Industrial */
@@ -560,27 +347,6 @@ strong,
     color: #856404;
 }
 
-.alert-link {
-    text-decoration: underline;
-    font-weight: 800;
-}
-
-.alert-warning .alert-link {
-    color: #533f03;
-}
-
-.alert-info .alert-link {
-    color: #062c33;
-}
-
-.alert-success .alert-link {
-    color: #0b2e13;
-}
-
-.alert-danger .alert-link {
-    color: #491217;
-}
-
 /* Dark Mode */
 [data-theme="dark"] .alert-info {
     background-color: #0a3a46;
@@ -606,50 +372,18 @@ strong,
     color: #ffe0a3;
 }
 
-[data-theme="dark"] .alert-warning .alert-link {
-    color: #ffc107;
-}
-
-[data-theme="dark"] .alert-info .alert-link {
-    color: #66b3ff;
-}
-
-[data-theme="dark"] .alert-success .alert-link {
-    color: #4caf50;
-}
-
-[data-theme="dark"] .alert-danger .alert-link {
-    color: #ff6b6b;
-}
-
 /* Links - Post-Industrial: Simple underlined links */
 /* [class*="wc-"] opts design-system components out: they carry their own
    link treatment in design-system.css. */
-a:not(.btn):not(.button-3d):not([class*="wc-"]) {
+a:not(.btn):not([class*="wc-"]) {
     color: var(--text-primary);
     text-decoration: underline;
     transition: color 0.2s ease;
 }
 
-a:not(.btn):not(.button-3d):not([class*="wc-"]):hover,
-a:not(.btn):not(.button-3d):not([class*="wc-"]):focus {
+a:not(.btn):not([class*="wc-"]):hover,
+a:not(.btn):not([class*="wc-"]):focus {
     color: var(--color-accent-grey);
-}
-
-.link-primary {
-    color: var(--text-primary);
-}
-
-.link-primary:hover {
-    color: var(--color-accent-grey);
-}
-
-/* Responsive adjustments */
-@media (max-width: 767.98px) {
-    .button-3d {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
 }
 
 /* ─── Custom Commands Section ─────────────────────────────────────────────── */
@@ -848,14 +582,4 @@ a:not(.btn):not(.button-3d):not([class*="wc-"]):focus {
     min-height: 28px;
     display: flex;
     align-items: center;
-}
-
-.cmd-actions .btn {
-    padding: 4px 10px;
-    font-size: 0.75rem;
-    min-height: 28px;
-    min-width: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
 }

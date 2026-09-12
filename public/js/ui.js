@@ -28,7 +28,7 @@ export function setSuccessMessage(el, text) {
 /**
  * Show the action message as a fixed toast notification that auto-dismisses.
  * @param {string} text - Message text
- * @param {'success'|'danger'|'info'|'warning'} type - Bootstrap alert type
+ * @param {'success'|'danger'|'info'|'warning'} type - alert variant, maps to .alert-<type>
  * @param {number} duration - Auto-dismiss delay in ms (0 = no auto-dismiss)
  */
 export function showActionToast(text, type = 'info', duration = 4000) {
