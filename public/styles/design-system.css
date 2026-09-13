@@ -72,6 +72,9 @@
     --wc-ok: oklch(0.520 0.110 155);
     --wc-danger: oklch(0.520 0.150 25);
     --wc-warning: oklch(0.520 0.130 65);
+    /* Text on a status-coloured surface (.text-bg-*). White clears AA on every
+       light-theme status colour (5.2:1+); black does on the dark-theme ones (6.4:1+). */
+    --wc-on-status: #fff;
     --wc-danger-border: oklch(0.830 0.060 25);
     --wc-danger-bg: oklch(0.960 0.020 25);
     --wc-danger-soft: color-mix(in oklab, oklch(0.830 0.060 25) 55%, transparent);
@@ -136,6 +139,7 @@
     --wc-ok: oklch(0.720 0.090 155);
     --wc-danger: oklch(0.660 0.115 25);
     --wc-warning: oklch(0.800 0.150 80);
+    --wc-on-status: #000;
     --wc-danger-border: oklch(0.400 0.070 25);
     --wc-danger-bg: oklch(0.260 0.040 25);
     --wc-danger-soft: color-mix(in oklab, oklch(0.400 0.070 25) 55%, transparent);
@@ -2045,11 +2049,13 @@ textarea.form-control {
     vertical-align: baseline;
     border-radius: var(--wc-radius-card);
 }
-.text-bg-danger { color: #fff !important; background-color: var(--wc-danger) !important; }
-.text-bg-success { color: #fff !important; background-color: var(--wc-ok) !important; }
-.text-bg-secondary { color: #fff !important; background-color: var(--wc-text-2) !important; }
-.text-bg-warning { color: #000 !important; background-color: var(--wc-warning) !important; }
-.text-bg-info { color: #fff !important; background-color: var(--wc-accent) !important; }
+.text-bg-danger { color: var(--wc-on-status) !important; background-color: var(--wc-danger) !important; }
+.text-bg-success { color: var(--wc-on-status) !important; background-color: var(--wc-ok) !important; }
+.text-bg-secondary { color: var(--wc-on-status) !important; background-color: var(--wc-text-2) !important; }
+.text-bg-warning { color: var(--wc-on-status) !important; background-color: var(--wc-warning) !important; }
+.text-bg-info { color: var(--wc-on-status) !important; background-color: var(--wc-accent) !important; }
+/* A link inside a .text-bg-* surface takes that surface's text colour. */
+.link-light { color: inherit !important; text-decoration-color: currentColor !important; }
 
 /* Standalone Alert Styles */
 .alert {
@@ -2083,8 +2089,8 @@ textarea.form-control {
 }
 
 .alert-warning {
-    border-color: color-mix(in oklab, #d97706 40%, transparent);
-    background: color-mix(in oklab, #d97706 12%, var(--wc-surface-1));
+    border-color: color-mix(in oklab, var(--wc-warning) 40%, transparent);
+    background: color-mix(in oklab, var(--wc-warning) 12%, var(--wc-surface-1));
     color: var(--wc-text-1);
 }
 
