@@ -11,12 +11,6 @@
    styles of the harness pages (scripts/css-snapshot.mjs); anything the design
    system overrides is not repeated. */
 
-:root {
-    /* Consumed by chatsage-specific.css. */
-    --spacing-unit: 8px;
-    --font-size-medium: 2rem;
-}
-
 /* Body copy, labels and card content all read in the primary text colour. */
 p,
 label,
@@ -166,7 +160,6 @@ label,
    link treatment in design-system.css. */
 a:not(.btn):not([class*="wc-"]) {
     color: var(--text-primary);
-    text-decoration: underline;
     transition: color 0.2s ease;
 }
 
@@ -239,13 +232,11 @@ a:not(.btn):not([class*="wc-"]):focus {
     text-transform: uppercase;
     letter-spacing: 0.04em;
     font-weight: 600;
-    color: var(--text-muted);
     margin: 0 0 0.375rem;
 }
 
 .ai-preview__bubble {
     margin: 0;
-    color: var(--text-primary);
     line-height: 1.45;
     overflow-wrap: anywhere;
 }
@@ -257,7 +248,6 @@ a:not(.btn):not([class*="wc-"]):focus {
 .ai-preview__details summary {
     font-size: 0.75rem;
     color: var(--text-muted);
-    cursor: pointer;
 }
 
 .ai-preview__prompt {
@@ -283,7 +273,6 @@ a:not(.btn):not([class*="wc-"]):focus {
 
 .ai-preview__args {
     flex: 1 1 14rem;
-    max-width: 24rem;
 }
 
 /* Command list item layout */

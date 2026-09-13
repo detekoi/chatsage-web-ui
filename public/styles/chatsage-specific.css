@@ -110,17 +110,8 @@
 /* =====================================================
    DASHBOARD STYLES
    ===================================================== */
-/* The section frame now comes from .wc-card in design-system.css; this
-   wrapper is just a visibility container. */
-
-#commands-section h3 {
-  margin-top: 0;
-  margin-bottom: var(--spacing-unit);
-  font-size: var(--font-size-medium);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
+/* The section frame now comes from .wc-card in design-system.css; the
+   #commands-section wrapper is just a visibility container. */
 
 /* Commands are stacked setting rows, not a multi-column grid — one control
    column down the card, per the design system. */
