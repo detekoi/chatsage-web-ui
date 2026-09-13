@@ -226,7 +226,10 @@ export function setupInlineForm(formEl) {
     // rows it sits between.
     function park() {
         const lastTrigger = trigger;
-        const hadFocus = formEl.contains(document.activeElement);
+        // Focus is worth returning when it is inside the form, or already
+        // lost to the body (a disabled Save button drops it there).
+        const active = document.activeElement;
+        const hadFocus = !active || active === document.body || formEl.contains(active);
         settle();
         formEl.hidden = true;
         place(null, null);
@@ -269,12 +272,23 @@ export function setupInlineForm(formEl) {
         }
         const { folded, unfolded } = keyframes();
         formEl.classList.add('is-animating');
-        anim = formEl.animate([unfolded, folded], { duration: duration * 0.75, easing: 'cubic-bezier(0.4, 0, 1, 1)' });
+        // fill: forwards holds the folded frame until park() hides the form;
+        // otherwise the natural height shows for a frame before onfinish runs.
+        anim = formEl.animate([unfolded, folded], { duration: duration * 0.75, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' });
         anim.onfinish = () => {
             anim = null;
             park();
         };
     }
 
-    return { open, close, park };
+    /**
+     * After a list re-render replaced the row that was being edited, put
+     * focus on the given element (its new Edit button) if nothing else took it.
+     */
+    function refocus(el) {
+        const active = document.activeElement;
+        if (el && (!active || active === document.body)) el.focus();
+    }
+
+    return { open, close, park, refocus };
 }

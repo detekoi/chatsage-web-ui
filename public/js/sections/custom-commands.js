@@ -179,6 +179,7 @@ function renderCustomCommandsList(commands) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
         editBtn.setAttribute('aria-label', t('label.editCommand', { name: cmd.name }, `Edit command !${cmd.name}`));
+        editBtn.dataset.editName = cmd.name;
         editBtn.setAttribute('aria-controls', 'custom-cmd-form');
         editBtn.setAttribute('aria-expanded', 'false');
         editBtn.addEventListener('click', () => openEditForm(cmd, item, editBtn));
@@ -278,8 +279,7 @@ async function saveCustomCommand() {
         customCmdFormMsgEl.textContent = t('toast.commandSavedDev', { name: commandName }, `Command !${commandName} saved (dev mode).`);
         customCmdFormMsgEl.style.color = '#4ecdc4';
         customCmdSaveBtn.disabled = false;
-        closeForm();
-        loadCustomCommands();
+        await finishSave(commandName);
         return;
     }
 
@@ -303,8 +303,7 @@ async function saveCustomCommand() {
         const data = await readJson(res);
 
         if (data.success) {
-            closeForm();
-            await loadCustomCommands();
+            await finishSave(commandName);
         } else {
             customCmdFormMsgEl.textContent = data.message || t('toast.commandSaveFailed', {}, 'Failed to save command.');
             customCmdFormMsgEl.style.color = 'var(--danger-primary)';
@@ -316,6 +315,15 @@ async function saveCustomCommand() {
     } finally {
         customCmdSaveBtn.disabled = false;
     }
+}
+
+// Close the form, reload the list, and land focus on the saved command's
+// Edit button (the re-render replaced the one that opened the form).
+async function finishSave(name) {
+    const wasEditing = !!customCmdEditingName;
+    closeForm();
+    await loadCustomCommands();
+    if (wasEditing) customCmdForm.refocus(customCmdListEl.querySelector(`[data-edit-name="${CSS.escape(name)}"]`));
 }
 
 async function deleteCustomCommand(name) {

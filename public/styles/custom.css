@@ -70,8 +70,10 @@ label,
     border: 1px solid var(--border-color);
 }
 
+/* Fill on hover and on keyboard focus only: focus returned by script (the
+   Edit button after its form closes) must not leave a button stuck filled. */
 .btn-outline-primary:hover,
-.btn-outline-primary:focus {
+.btn-outline-primary:focus-visible {
     background-color: var(--text-primary);
     color: var(--bg-primary);
     border-color: var(--text-primary);
@@ -84,7 +86,7 @@ label,
 }
 
 .btn-outline-danger:hover,
-.btn-outline-danger:focus {
+.btn-outline-danger:focus-visible {
     background-color: var(--danger-primary);
     color: var(--bg-primary);
     border-color: var(--danger-primary);

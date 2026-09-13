@@ -192,6 +192,7 @@ function renderTimersList(timers) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
         editBtn.setAttribute('aria-label', t('label.editTimer', { name: timer.name }, `Edit timer ${timer.name}`));
+        editBtn.dataset.editName = timer.name;
         editBtn.setAttribute('aria-controls', 'timer-form');
         editBtn.setAttribute('aria-expanded', 'false');
         editBtn.addEventListener('click', () => openTimerEditForm(timer, item, editBtn));
@@ -315,8 +316,7 @@ async function saveTimer() {
         timerFormMsgEl.textContent = t('toast.timerSavedDev', { name }, `Timer "${name}" saved (dev mode).`);
         timerFormMsgEl.style.color = '#4ecdc4';
         timerSaveBtn.disabled = false;
-        closeTimerForm();
-        loadTimers();
+        await finishTimerSave(name);
         return;
     }
 
@@ -340,8 +340,7 @@ async function saveTimer() {
         const data = await readJson(res);
 
         if (data.success) {
-            closeTimerForm();
-            await loadTimers();
+            await finishTimerSave(name);
         } else {
             timerFormMsgEl.textContent = data.message || t('toast.timerSaveFailed', {}, 'Failed to save timer.');
             timerFormMsgEl.style.color = 'var(--danger-primary)';
@@ -353,6 +352,15 @@ async function saveTimer() {
     } finally {
         timerSaveBtn.disabled = false;
     }
+}
+
+// Close the form, reload the list, and land focus on the saved timer's
+// Edit button (the re-render replaced the one that opened the form).
+async function finishTimerSave(name) {
+    const wasEditing = !!timerEditingName;
+    closeTimerForm();
+    await loadTimers();
+    if (wasEditing) timerForm.refocus(timerListEl.querySelector(`[data-edit-name="${CSS.escape(name)}"]`));
 }
 
 async function deleteTimer(name) {
