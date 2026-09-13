@@ -1,5 +1,5 @@
 import { apiGet, apiPost, apiPut, readJson } from '../api.js';
-import { showActionToast, setupChipInsertion } from '../ui.js';
+import { showActionToast, setupChipInsertion, setupInlineForm } from '../ui.js';
 import { DEV_MODE, mockTimers, mockDelay } from '../dev-mocks.js';
 import { toggleItem, deleteItem } from '../crud-helpers.js';
 import { setupPreview } from '../preview.js';
@@ -22,6 +22,7 @@ let timerResponseLabelEl;
 
 let timerEditingName = null;
 let timerPreview = null;
+let timerForm = null;
 
 function setTimerMessage(text, type = 'muted') {
     timerFormMsgEl.textContent = text;
@@ -71,6 +72,9 @@ export function initTimers() {
         setMessage: setTimerMessage,
     });
 
+    // The add/edit form unfolds in place: at the top for Add, under the row for Edit.
+    timerForm = setupInlineForm(timerFormEl);
+
     // Wire up timer form buttons
     timerAddBtn.addEventListener('click', openTimerAddForm);
     timerSaveBtn.addEventListener('click', saveTimer);
@@ -106,6 +110,7 @@ export async function loadTimers() {
 }
 
 function renderTimersList(timers) {
+    timerForm.park(); // the form may sit between the rows about to be replaced
     timerListEl.innerHTML = '';
 
     if (!timers || timers.length === 0) {
@@ -187,7 +192,9 @@ function renderTimersList(timers) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
         editBtn.setAttribute('aria-label', t('label.editTimer', { name: timer.name }, `Edit timer ${timer.name}`));
-        editBtn.addEventListener('click', () => openTimerEditForm(timer));
+        editBtn.setAttribute('aria-controls', 'timer-form');
+        editBtn.setAttribute('aria-expanded', 'false');
+        editBtn.addEventListener('click', () => openTimerEditForm(timer, item, editBtn));
 
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
@@ -224,11 +231,11 @@ function openTimerAddForm() {
     timerFormMsgEl.textContent = '';
     timerPreview.reset();
     timerPreview.sync();
-    timerFormEl.style.display = 'block';
-    timerNameEl.focus();
+    timerForm.open({ trigger: timerAddBtn });
+    timerNameEl.focus({ preventScroll: true });
 }
 
-function openTimerEditForm(timer) {
+function openTimerEditForm(timer, row, trigger) {
     timerEditingName = timer.name;
     timerNameEl.value = timer.name;
     timerNameEl.disabled = true;
@@ -245,12 +252,12 @@ function openTimerEditForm(timer) {
     timerFormMsgEl.textContent = '';
     timerPreview.reset();
     timerPreview.sync();
-    timerFormEl.style.display = 'block';
-    timerResponseEl.focus();
+    timerForm.open({ row, trigger });
+    timerResponseEl.focus({ preventScroll: true });
 }
 
 function closeTimerForm() {
-    timerFormEl.style.display = 'none';
+    timerForm.close();
     timerEditingName = null;
     timerFormMsgEl.textContent = '';
     timerPreview.reset();

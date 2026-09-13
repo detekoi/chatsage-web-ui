@@ -1,5 +1,5 @@
 import { apiGet, apiPost, apiPut, readJson } from '../api.js';
-import { showActionToast, setupChipInsertion } from '../ui.js';
+import { showActionToast, setupChipInsertion, setupInlineForm } from '../ui.js';
 import { DEV_MODE, mockCustomCommands, mockDelay } from '../dev-mocks.js';
 import { deleteItem } from '../crud-helpers.js';
 import { setupPreview } from '../preview.js';
@@ -22,6 +22,7 @@ let customCmdResponseLabelEl;
 
 let customCmdEditingName = null;
 let customCmdPreview = null;
+let customCmdForm = null;
 
 function setCustomCmdMessage(text, type = 'muted') {
     customCmdFormMsgEl.textContent = text;
@@ -72,6 +73,9 @@ export function initCustomCommands() {
         setMessage: setCustomCmdMessage,
     });
 
+    // The add/edit form unfolds in place: at the top for Add, under the row for Edit.
+    customCmdForm = setupInlineForm(customCmdFormEl);
+
     // Wire up form buttons
     customCmdAddBtn.addEventListener('click', openAddForm);
     customCmdSaveBtn.addEventListener('click', saveCustomCommand);
@@ -107,6 +111,7 @@ export async function loadCustomCommands() {
 }
 
 function renderCustomCommandsList(commands) {
+    customCmdForm.park(); // the form may sit between the rows about to be replaced
     customCmdListEl.innerHTML = '';
 
     if (!commands || commands.length === 0) {
@@ -174,7 +179,9 @@ function renderCustomCommandsList(commands) {
         editBtn.className = 'btn btn-outline-primary btn-sm';
         editBtn.textContent = t('common.edit', {}, 'Edit');
         editBtn.setAttribute('aria-label', t('label.editCommand', { name: cmd.name }, `Edit command !${cmd.name}`));
-        editBtn.addEventListener('click', () => openEditForm(cmd));
+        editBtn.setAttribute('aria-controls', 'custom-cmd-form');
+        editBtn.setAttribute('aria-expanded', 'false');
+        editBtn.addEventListener('click', () => openEditForm(cmd, item, editBtn));
 
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
@@ -206,11 +213,11 @@ function openAddForm() {
     customCmdFormMsgEl.textContent = '';
     customCmdPreview.reset();
     customCmdPreview.sync();
-    customCmdFormEl.style.display = 'block';
-    customCmdNameEl.focus();
+    customCmdForm.open({ trigger: customCmdAddBtn });
+    customCmdNameEl.focus({ preventScroll: true });
 }
 
-function openEditForm(cmd) {
+function openEditForm(cmd, row, trigger) {
     customCmdEditingName = cmd.name;
     customCmdNameEl.value = cmd.name;
     customCmdNameEl.disabled = true;
@@ -227,12 +234,12 @@ function openEditForm(cmd) {
     customCmdFormMsgEl.textContent = '';
     customCmdPreview.reset();
     customCmdPreview.sync();
-    customCmdFormEl.style.display = 'block';
-    customCmdResponseEl.focus();
+    customCmdForm.open({ row, trigger });
+    customCmdResponseEl.focus({ preventScroll: true });
 }
 
 function closeForm() {
-    customCmdFormEl.style.display = 'none';
+    customCmdForm.close();
     customCmdEditingName = null;
     customCmdFormMsgEl.textContent = '';
     customCmdPreview.reset();

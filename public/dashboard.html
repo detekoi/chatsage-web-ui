@@ -258,11 +258,11 @@
             <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h2 class="wc-card-title mb-0" data-i18n="page.customCommandsTitle">Custom Commands</h2>
-                    <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
+                    <button id="custom-cmd-add-btn" class="btn btn-outline-primary btn-sm" type="button" aria-controls="custom-cmd-form" aria-expanded="false"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
                 </div>
                 <div class="card-body">
                     <!-- Inline Add/Edit Form (hidden by default) -->
-                    <div id="custom-cmd-form" class="cmd-form" style="display:none;">
+                    <div id="custom-cmd-form" class="cmd-form" hidden>
                         <div class="mb-2">
                             <label for="custom-cmd-name" class="form-label" data-i18n="page.customCommands.nameLabel">Command Name</label>
                             <div class="input-group">
@@ -362,7 +362,7 @@
             <div class="card wc-card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h2 class="wc-card-title mb-0" data-i18n="page.timersTitle">Timed Messages</h2>
-                    <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
+                    <button id="timer-add-btn" class="btn btn-outline-primary btn-sm" type="button" aria-controls="timer-form" aria-expanded="false"><i data-lucide="plus" class="inline-icon" aria-hidden="true"></i> <span data-i18n="common.add">Add</span></button>
                 </div>
                 <div class="card-body">
                     <p class="text-muted mb-3" style="font-size:0.8125rem;">
@@ -370,7 +370,7 @@
                     </p>
 
                     <!-- Inline Add/Edit Form (hidden by default) -->
-                    <div id="timer-form" class="cmd-form" style="display:none;">
+                    <div id="timer-form" class="cmd-form" hidden>
                         <div class="mb-2">
                             <label for="timer-name" class="form-label" data-i18n="page.timers.nameLabel">Timer Name</label>
                             <input type="text" class="form-control" id="timer-name" placeholder="discord" data-i18n-placeholder="page.timers.namePlaceholder"

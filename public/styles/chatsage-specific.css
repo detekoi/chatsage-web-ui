@@ -299,3 +299,53 @@
         padding: 6px 12px;
     }
 }
+
+/* The add/edit form unfolds in place (js/ui.js setupInlineForm). It sits in
+   the card body for Add and moves under the row being edited; the row and
+   the form share a tint and an accent rail down the left edge so they read
+   as one block, set apart from the rows above and below. The rail is an
+   inset shadow so nothing shifts. During the fold/unfold animation the form
+   clips its own content. */
+:root .wc-card .list-group-item.is-editing,
+:root .wc-card .list-group > .cmd-form {
+    background: var(--wc-surface-2);
+    box-shadow: inset 3px 0 0 var(--wc-accent);
+}
+
+:root .wc-card .list-group-item.is-editing {
+    border-top-color: var(--wc-accent-dim);
+}
+
+:root .wc-card .list-group-item.is-editing .cmd-name {
+    color: var(--wc-accent);
+}
+
+:root .wc-card .list-group > .cmd-form {
+    padding: 14px 16px;
+    border-top: 1px dashed var(--wc-accent-dim);
+    border-bottom: 0;
+}
+
+:root .wc-card .list-group > .cmd-form + .list-group-item {
+    border-top-color: var(--wc-accent-dim);
+}
+
+.cmd-form.is-animating {
+    overflow: hidden;
+}
+
+/* Motion switch for that fold. The keyframes are empty and the animation is
+   paused, so it draws nothing: setupInlineForm reads the name and duration
+   off the computed style and animates only while they are set. Reduced-motion
+   users, and the CSS snapshot's animation: none override, get an instant fold. */
+.cmd-form {
+    animation: cmd-form-motion 260ms paused;
+}
+
+@keyframes cmd-form-motion {}
+
+@media (prefers-reduced-motion: reduce) {
+    .cmd-form {
+        animation: none;
+    }
+}
