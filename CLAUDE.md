@@ -27,11 +27,12 @@ these files, loaded in this order:
 
 Rules:
 
-- **`design-system.css` is identical to the copy in
-  `../chatvibes-web-ui/public/css/design-system.css`**, section 14 included.
-  `diff` the two files after any change; a change to the design system is made
-  in both repos in the same session. Do not add rules there for markup only
-  this app has; put them in `chatsage-specific.css`.
+- **`design-system.css` is a synced copy; its source is the sibling repo
+  `../wildcat-design-system`.** Do not edit the copy here. Edit the source,
+  then run `npm run sync:design-system` in this repo and in
+  `../chatvibes-web-ui` (it also syncs `scripts/css-snapshot.mjs`), and verify
+  each with `npm run css:check`. `npm run check` fails while a copy has
+  drifted. Rules for markup only this app has go in `chatsage-specific.css`.
 - `!important` is reserved for the utility shim, the `[hidden]` rule, the
   square-corner overrides in `custom.css`, and the colour rules in the shared
   file that must beat one of the shim's own `.text-*` or `.fw-*` utilities
@@ -58,8 +59,8 @@ It serves `public/`, loads every page in `scripts/css-snapshot.config.json` at
 add-forms opened), disables transitions, and records `getComputedStyle` for
 every element. Expect zero differences unless the change is meant to be
 visible; when markup changes on purpose, re-save the baseline. The baseline
-lives in `.css-baseline/` and is not committed. The same script exists in
-chatvibes-web-ui; keep the two copies identical, only the config differs.
+lives in `.css-baseline/` and is not committed. The script is synced from
+`../wildcat-design-system` like the stylesheet; only the config is local.
 
 ## Conventions
 

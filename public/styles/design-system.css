@@ -2,9 +2,11 @@
    WILDCAT DESIGN SYSTEM
    Implements the "Wildcat Bot UIs" handoff spec.
 
-   Shared between chatsage-web-ui and chatvibes-web-ui:
-   the two copies are kept identical (diff them), so keep
-   this file free of rules that only one app's markup uses;
+   Source of truth: the wildcat-design-system repo. Each
+   app's copy is written by `npm run sync:design-system`
+   and `npm run check` fails if it drifts, so do not edit
+   the copy in an app. Keep this file free of rules that
+   only one app's markup uses;
    those go in the app layer (chatsage-specific.css /
    chatvibes-specific.css), which loads after this file.
    Load order in both apps: reset.css, custom.css (theme),
