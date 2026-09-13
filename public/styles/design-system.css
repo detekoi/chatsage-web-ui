@@ -228,7 +228,7 @@ a[target="_blank"]:has(i[data-lucide])::after,
 a[target="_blank"].wc-btn::after,
 a[target="_blank"].wc-chipbtn::after,
 a[target="_blank"].no-arrow::after {
-    display: none !important;
+    display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1242,14 +1242,6 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root :is(.settings-section, .wc-card) .card .card-body { padding: 12px; }
-
-/* A card that IS the section's content would just double the frame. */
-:root .settings-section > .card {
-    border: 0;
-    background: transparent;
-}
-
-:root .settings-section > .card > .card-body { padding: 0; }
 
 /* ---- .wc-card: the .card > .card-header + .card-body section shape ---- */
 .wc-card {

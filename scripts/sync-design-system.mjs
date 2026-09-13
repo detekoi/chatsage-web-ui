@@ -9,7 +9,7 @@
  * The source is the sibling checkout ../wildcat-design-system, or the directory
  * in WILDCAT_DESIGN_SYSTEM_DIR. This file is identical in both apps.
  */
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,10 +21,12 @@ const files = {
   "css-snapshot.mjs": "scripts/css-snapshot.mjs",
 };
 const check = process.argv.includes("--check");
+const ci = process.env.CI && !["false", "0", ""].includes(process.env.CI.toLowerCase());
 
-if (!existsSync(join(source, "design-system.css"))) {
-  if (check && process.env.CI) { console.log("sync-design-system: no source checkout in CI, skipping"); process.exit(0); }
-  console.error(`sync-design-system: no checkout at ${source} (clone wildcat-design-system next to this repo, or set WILDCAT_DESIGN_SYSTEM_DIR)`);
+const missing = Object.keys(files).filter((name) => !existsSync(join(source, name)));
+if (missing.length) {
+  if (check && ci && !existsSync(source)) { console.log("sync-design-system: no source checkout in CI, skipping"); process.exit(0); }
+  console.error(`sync-design-system: missing in ${source}: ${missing.join(", ")} (clone wildcat-design-system next to this repo, or set WILDCAT_DESIGN_SYSTEM_DIR)`);
   process.exit(2);
 }
 let drift = 0;
@@ -34,6 +36,7 @@ for (const [name, target] of Object.entries(files)) {
   const cur = existsSync(dst) ? readFileSync(dst, "utf8") : null;
   if (cur === src) { console.log(`ok       ${target}`); continue; }
   if (check) { drift++; console.log(`DRIFT    ${target} differs from wildcat-design-system/${name}; run npm run sync:design-system`); continue; }
+  mkdirSync(dirname(dst), { recursive: true });
   writeFileSync(dst, src); console.log(`synced   ${target} <- wildcat-design-system/${name}`);
 }
 if (drift) process.exit(1);

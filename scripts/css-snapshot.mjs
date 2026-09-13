@@ -19,7 +19,7 @@
  * This file is identical in chatsage-web-ui and chatvibes-web-ui; the per-repo
  * differences live in the config file next to it.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { join, extname, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
