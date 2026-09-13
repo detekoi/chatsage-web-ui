@@ -28,11 +28,10 @@ these files, loaded in this order:
 Rules:
 
 - **`design-system.css` is identical to the copy in
-  `../chatvibes-web-ui/public/css/design-system.css` except for section 14,
-  the utility shim, which only this copy has (WildcatTTS still loads Bootstrap
-  for those classes). `diff` the two files after any change; a change to the
-  design system is made in both repos in the same session. Do not add rules
-  there for markup only this app has; put them in `chatsage-specific.css`.
+  `../chatvibes-web-ui/public/css/design-system.css`**, section 14 included.
+  `diff` the two files after any change; a change to the design system is made
+  in both repos in the same session. Do not add rules there for markup only
+  this app has; put them in `chatsage-specific.css`.
 - `!important` is reserved for the utility shim, the `[hidden]` rule, the
   square-corner overrides in `custom.css`, and the colour rules in the shared
   file that must beat a Bootstrap `.text-*` utility in WildcatTTS (the bot
