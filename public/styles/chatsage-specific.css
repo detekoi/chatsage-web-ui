@@ -125,7 +125,13 @@
 /* Commands are stacked setting rows, not a multi-column grid — one control
    column down the card, per the design system. */
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
-   the centred italic spinner caption that lived here was removed with it. */
+   the centred italic spinner caption that lived here was removed with it.
+   The AI preview bar sits inside its panel, so trim .wc-loading's
+   section-level padding; this has to load after the design system to win. */
+.ai-preview__loading {
+    padding: 4px 0 2px;
+    gap: 8px;
+}
 /* =====================================================
    ACTION TOAST NOTIFICATION
    ===================================================== */

@@ -2,101 +2,22 @@
    Loads after reset.css and before design-system.css. Component class names
    (.btn, .card, .form-control, .alert, .list-group) follow the Bootstrap naming
    the markup was written against, but Bootstrap itself is not loaded; these
-   rules and design-system.css are the only definitions. */
+   rules and design-system.css are the only definitions.
 
-/* CSS Custom Properties for Theme Support */
+   design-system.css redefines the legacy --bg-*, --text-*, --border-*,
+   --accent-*, --danger-* and --font-* tokens on :root in terms of its own
+   --wc-* tokens, and it loads later, so values given to them here would never
+   be in effect. Every declaration kept below was checked against the computed
+   styles of the harness pages (scripts/css-snapshot.mjs); anything the design
+   system overrides is not repeated. */
+
 :root {
-    /* Typography */
-    --font-primary: 'Atkinson Hyperlegible Next', sans-serif;
-    --font-code: 'Atkinson Hyperlegible Mono', monospace;
-
-    /* Colors - Post-Industrial Light Mode (Default) */
-    --bg-primary: #f5f5f5;
-    --bg-secondary: #ffffff;
-    --bg-tertiary: #e8e8e8;
-    --text-primary: #0a0a0a;
-    --text-secondary: #0a0a0a;
-    --text-muted: #666666;
-    --border-color: #d0d0d0;
-    --border-hover: #999999;
-    --accent-primary: #0a0a0a;
-    --accent-primary-hover: #333333;
-    --accent-focus: rgba(10, 10, 10, 0.25);
-    --shadow-color: rgba(0, 0, 0, 0.2);
-    --danger-primary: #d32f2f;
-    --danger-secondary: #b71c1c;
-    --danger-bg: #ffebee;
-    --danger-text: #c62828;
-    --help-icon-bg: #e8e8e8;
-    --help-icon-text: #0a0a0a;
-    --modal-backdrop: rgba(0, 0, 0, 0.5);
-    --modal-text: #0a0a0a;
-    --color-grid-line: #e0e0e0;
-    --color-accent-grey: #666666;
-
-    /* Spacing */
+    /* Consumed by chatsage-specific.css. */
     --spacing-unit: 8px;
-    --spacing-small: var(--spacing-unit);
-    --spacing-medium: calc(var(--spacing-unit) * 3);
-    --spacing-large: calc(var(--spacing-unit) * 8);
-
-    /* Typography Scale - Massive for Post-Industrial */
-    --font-size-huge: 8rem;
-    --font-size-large: 4rem;
     --font-size-medium: 2rem;
-    --font-size-regular: 1rem;
-    --font-size-small: 0.875rem;
 }
 
-[data-theme="dark"] {
-    /* Colors - Post-Industrial Dark Mode */
-    --bg-primary: #050505;
-    --bg-secondary: #0a0a0a;
-    --bg-tertiary: #0a0a0a;
-    --text-primary: #ffffff;
-    --text-secondary: #ffffff;
-    --text-muted: #999999;
-    --border-color: #333333;
-    --border-hover: #555555;
-    --accent-primary: #ffffff;
-    --accent-primary-hover: #cccccc;
-    --accent-focus: rgba(255, 255, 255, 0.25);
-    --shadow-color: rgba(255, 255, 255, 0.2);
-    --danger-primary: #ff6b6b;
-    --danger-secondary: #ff5252;
-    --danger-bg: #2d1b1b;
-    --danger-text: #ff8a80;
-    --help-icon-bg: #333333;
-    --help-icon-text: #ffffff;
-    --modal-backdrop: rgba(0, 0, 0, 0.7);
-    --modal-text: #ffffff;
-    --color-grid-line: #333333;
-}
-
-/* Fonts */
-body {
-    font-family: var(--font-primary);
-    font-optical-sizing: auto;
-    color: var(--text-primary);
-    background-color: var(--bg-primary);
-    line-height: 1.6;
-}
-
-/* Typography - Post-Industrial */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    margin-top: 0;
-    line-height: 1.2;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    color: var(--text-primary);
-}
-
+/* Body copy, labels and card content all read in the primary text colour. */
 p,
 label,
 .form-label,
@@ -107,25 +28,15 @@ label,
     color: var(--text-primary);
 }
 
-.text-muted {
-    color: var(--text-muted);
-}
-
 /* Cards - Post-Industrial: No rounded corners.
    The !important radius overrides are deliberate: design-system.css loads
    later and applies --wc-radius-card (2px) to cards and 3px to controls.
    This theme keeps every corner square, so those few overrides must win. */
 .card {
     border-radius: 0 !important;
-    border: 1px solid var(--border-color);
-    box-shadow: none;
-    background-color: var(--bg-secondary);
 }
 
 .card-header {
-    background-color: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -136,13 +47,6 @@ label,
 .form-select,
 .btn {
     border-radius: 0 !important;
-}
-
-.form-control,
-.form-select {
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
 }
 
 .form-control:focus,
@@ -167,47 +71,9 @@ label,
     font-weight: 600;
 }
 
-.btn-primary {
-    background-color: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-}
-
-.btn-primary:hover,
-.btn-primary:focus {
-    background-color: var(--text-primary);
-    color: var(--bg-primary);
-    border-color: var(--text-primary);
-}
-
-.btn-primary:active {
-    background-color: var(--color-accent-grey);
-    color: var(--text-primary);
-}
-
-.btn-sm {
-    font-size: 0.875rem;
-    padding: 6px 12px;
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-details summary {
-    min-height: 28px;
-    line-height: 28px;
-    display: list-item;
-    padding: 4px 0;
-    cursor: pointer;
-}
-
 .btn-outline-primary {
     background-color: transparent;
-    color: var(--text-primary);
     border: 1px solid var(--border-color);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .btn-outline-primary:hover,
@@ -221,8 +87,6 @@ details summary {
     background-color: transparent;
     color: var(--danger-primary);
     border: 1px solid var(--danger-primary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .btn-outline-danger:hover,
@@ -235,13 +99,9 @@ details summary {
 /* Custom checkbox styling (non-switch) for post-industrial look */
 .form-check:not(.form-switch) .form-check-input {
     appearance: none;
-    -webkit-appearance: none;
-    background-color: transparent;
     border: 2px solid var(--border-color);
     width: 1em;
     height: 1em;
-    border-radius: 0;
-    cursor: pointer;
 }
 
 .form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
@@ -260,94 +120,23 @@ details summary {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23000' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
 }
 
-
-/* Video background */
+/* Video background: .wc-stage-video in the design system sets the geometry. */
 #staticVideo {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
     z-index: -1;
-    object-fit: cover;
 }
 
 /* List groups for settings - Post-Industrial */
 .list-group {
     display: flex;
     flex-direction: column;
-    padding-left: 0;
-    margin-bottom: 0;
 }
 
 .list-group-item {
     position: relative;
-    display: block;
-    padding: 0.75rem 1.25rem;
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border-color);
 }
 
-.list-group-item.disabled,
-.list-group-item:disabled {
-    color: var(--text-muted);
-    pointer-events: none;
-    background-color: transparent;
-}
-
-.list-group-item.active {
-    z-index: 2;
-    color: var(--text-primary);
-    background-color: var(--bg-secondary);
-    border-bottom-color: var(--text-primary);
-}
-
-.list-group-item+.list-group-item {
-    border-top-width: 0;
-}
-
-.list-group-item+.list-group-item.active {
-    margin-top: -1px;
-    border-top-width: 0;
-}
-
-strong {
-    color: var(--text-primary);
-}
-
-/* Alert styles - Post-Industrial */
-/* Light Mode */
-.alert {
-    border-radius: 0;
-    border: 1px solid var(--border-color);
-}
-
-.alert-info {
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-    color: #0c5460;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
-
-.alert-warning {
-    background-color: #fff3cd;
-    border-color: #ffc107;
-    color: #856404;
-}
-
-/* Dark Mode */
+/* Alert styles - Post-Industrial. The light palette is the design system's;
+   these dark overrides outrank it by specificity and are what dark mode shows. */
 [data-theme="dark"] .alert-info {
     background-color: #0a3a46;
     border-color: #0a3a46;
@@ -390,16 +179,12 @@ a:not(.btn):not([class*="wc-"]):focus {
 
 /* Inline add/edit form */
 .cmd-form {
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
 .cmd-form .form-label {
     font-size: 0.8125rem;
-    text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-weight: 600;
     margin-bottom: 0.25rem;
 }
 
@@ -407,15 +192,6 @@ a:not(.btn):not([class*="wc-"]):focus {
     display: block;
     margin-top: 0.25rem;
     font-size: 0.75rem;
-}
-
-.cmd-form code {
-    font-family: var(--font-code);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    background: var(--bg-tertiary);
-    padding: 0.125rem 0.375rem;
-    border: 1px solid var(--border-color);
 }
 
 /* Clickable variable chips */
@@ -505,12 +281,6 @@ a:not(.btn):not([class*="wc-"]):focus {
     color: var(--text-muted);
 }
 
-/* The shared bar sits inside the panel, so trim the section-level padding. */
-.ai-preview__loading {
-    padding: 4px 0 2px;
-    gap: 8px;
-}
-
 .ai-preview__args {
     flex: 1 1 14rem;
     max-width: 24rem;
@@ -538,8 +308,6 @@ a:not(.btn):not([class*="wc-"]):focus {
 .cmd-response {
     font-family: var(--font-code);
     font-size: 0.8125rem;
-    color: var(--text-muted);
-    white-space: normal;
     word-break: break-word;
     margin: 0;
     max-width: 100%;
@@ -560,7 +328,6 @@ a:not(.btn):not([class*="wc-"]):focus {
     padding: 0.125rem 0.375rem;
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    background: transparent;
     line-height: 1.4;
 }
 
@@ -580,6 +347,4 @@ a:not(.btn):not([class*="wc-"]):focus {
 .cmd-actions .form-check {
     margin-bottom: 0;
     min-height: 28px;
-    display: flex;
-    align-items: center;
 }

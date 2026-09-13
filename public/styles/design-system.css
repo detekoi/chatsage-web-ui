@@ -702,18 +702,18 @@ a[target="_blank"].no-arrow::after {
 
 /* Outline buttons inside section cards: the outline is the affordance, so it
    uses the 3:1 control-outline token rather than the decorative hairline. */
-:root :is(.settings-section, .wc-card) :is(.btn-outline-primary, .btn-outline-secondary) {
+:root .wc-card :is(.btn-outline-primary, .btn-outline-secondary) {
     border-color: var(--wc-border-strong);
     color: var(--wc-text-1);
 }
 
-:root :is(.settings-section, .wc-card) :is(.btn-outline-primary, .btn-outline-secondary):hover {
+:root .wc-card :is(.btn-outline-primary, .btn-outline-secondary):hover {
     border-color: var(--wc-accent);
     color: var(--wc-accent);
     background-color: transparent;
 }
 
-:root :is(.settings-section, .wc-card) .btn:not(.btn-sm):not(.wc-btn):not(.wc-chipbtn):not(.wc-iconbtn) {
+:root .wc-card .btn:not(.btn-sm):not(.wc-btn):not(.wc-chipbtn):not(.wc-iconbtn) {
     height: var(--wc-control-h);
     display: inline-flex;
     align-items: center;
@@ -841,11 +841,11 @@ a[target="_blank"].no-arrow::after {
 }
 
 /* Card-level loaders — zero layout shift top indicator */
-:root :is(.settings-section, .wc-card > .card-body) {
+:root .wc-card > .card-body {
     position: relative;
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .wc-loading {
+:root .wc-card > .card-body > .wc-loading {
     position: absolute;
     top: 0;
     left: 0;
@@ -858,13 +858,13 @@ a[target="_blank"].no-arrow::after {
     pointer-events: none;
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .wc-loading .wc-bar {
+:root .wc-card > .card-body > .wc-loading .wc-bar {
     height: 2px;
     background: transparent;
     border-radius: 0;
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .wc-loading .wc-loading-label {
+:root .wc-card > .card-body > .wc-loading .wc-loading-label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -1063,45 +1063,25 @@ a[target="_blank"].no-arrow::after {
 
 /* =====================================================
    8. SECTION CARDS AND SETTING ROWS
-   These map onto the existing
-   .settings-section > .list-group > .list-group-item markup.
+   A section is .card.wc-card > .card-header (title) + .card-body; the body
+   holds an optional .wc-card-desc lead paragraph, then row stacks
+   (.list-group > .list-group-item, .wc-switch-rows) or free-form blocks.
    ===================================================== */
-:root .settings-section,
 .wc-card {
+    /* The frame owns its box; a theme's Bootstrap-era .card padding, flex
+       layout and overflow-wrap must not leak in. */
+    display: block;
+    margin: 0;
+    padding: 0;
+    overflow-wrap: normal;
     border: 1px solid var(--wc-border);
     border-radius: var(--wc-radius-card);
     background: var(--wc-surface-1);
+    box-shadow: none;
     overflow: hidden;
 }
 
-:root .settings-section-title,
-.wc-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin: 0;
-    padding: 10px 16px;
-    background: var(--wc-surface-2);
-    border-bottom: 1px solid var(--wc-border);
-    font-family: var(--wc-font-name);
-    font-weight: 600;
-    font-size: 12px;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--wc-text-1);
-}
-
-.wc-card-meta {
-    font-family: var(--wc-font-mono);
-    font-size: 10px;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--wc-text-3);
-}
-
-:root .settings-section-description,
+/* Lead paragraph at the top of a card body: the section description. */
 .wc-card-desc {
     margin: 0;
     padding: 12px 16px 0;
@@ -1112,8 +1092,8 @@ a[target="_blank"].no-arrow::after {
 }
 
 /* The list-group inside a section card is the row stack. */
-:root :is(.settings-section, .wc-card) .list-group,
-:root :is(.settings-section, .wc-card) .list-group.shadow {
+:root .wc-card .list-group,
+:root .wc-card .list-group.shadow {
     margin: 0;
     border: 0;
     border-radius: 0;
@@ -1121,7 +1101,7 @@ a[target="_blank"].no-arrow::after {
     background: transparent;
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item,
+:root .wc-card .list-group-item,
 .wc-row {
     display: flex;
     align-items: center;
@@ -1134,14 +1114,14 @@ a[target="_blank"].no-arrow::after {
     color: var(--wc-text-1);
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item.text-center {
+:root .wc-card .list-group-item.text-center {
     justify-content: center;
     text-align: center;
 }
 
 /* Label + description left, control right at a fixed width, so the
    controls line up in a column down the card. */
-:root :is(.settings-section, .wc-card) .list-group-item > .row {
+:root .wc-card .list-group-item > .row {
     flex: 1;
     min-width: 0;
     display: flex;
@@ -1151,7 +1131,7 @@ a[target="_blank"].no-arrow::after {
     --bs-gutter-x: 0;
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item > .row > .col {
+:root .wc-card .list-group-item > .row > .col {
     flex: 1;
     min-width: 0;
     padding: 0;
@@ -1160,7 +1140,7 @@ a[target="_blank"].no-arrow::after {
     gap: 3px;
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto {
+:root .wc-card .list-group-item > .row > .col-auto {
     flex: none;
     padding: 0;
     display: flex;
@@ -1190,7 +1170,7 @@ a[target="_blank"].no-arrow::after {
     overflow-wrap: normal;
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item strong,
+:root .wc-card .list-group-item strong,
 .wc-row-label {
     font-family: var(--wc-font-body);
     font-size: 13.5px;
@@ -1201,7 +1181,7 @@ a[target="_blank"].no-arrow::after {
     color: var(--wc-text-1);
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item .text-muted,
+:root .wc-card .list-group-item .text-muted,
 .wc-row-desc {
     font-size: 12px;
     line-height: 1.5;
@@ -1214,14 +1194,13 @@ a[target="_blank"].no-arrow::after {
    reward form. Pad and rule them so they sit inside the card like rows do.
    .list-group and .wc-switch-rows are row stacks, not blocks: their rows
    carry their own padding, so padding here would inset them a second time. */
-:root .settings-section > *:not(.settings-section-title):not(.settings-section-description):not(.list-group):not(.wc-switch-rows):not(:empty),
-:root .wc-card > .card-body > *:not(.list-group):not(.wc-switch-rows):not(:empty) {
+:root .wc-card > .card-body > *:not(.wc-card-desc):not(.list-group):not(.wc-switch-rows):not(:empty) {
     margin: 0;
     padding: 14px 16px;
     border-top: 1px solid var(--wc-hairline);
 }
 
-:root :is(.settings-section, .wc-card) h6 {
+:root .wc-card h6 {
     font-family: var(--wc-font-name);
     font-weight: 600;
     font-size: 12px;
@@ -1231,25 +1210,19 @@ a[target="_blank"].no-arrow::after {
     margin: 0 0 6px;
 }
 
-:root :is(.settings-section, .wc-card) h6 strong { font-weight: 600; }
+:root .wc-card h6 strong { font-weight: 600; }
 
 /* No card-in-card: nested cards become plain ruled panels. */
-:root :is(.settings-section, .wc-card) .card {
+:root .wc-card .card {
     border: 1px solid var(--wc-hairline);
     border-radius: var(--wc-radius-card);
     box-shadow: none;
     background: var(--wc-field);
 }
 
-:root :is(.settings-section, .wc-card) .card .card-body { padding: 12px; }
+:root .wc-card .card .card-body { padding: 12px; }
 
-/* ---- .wc-card: the .card > .card-header + .card-body section shape ---- */
-.wc-card {
-    box-shadow: none;
-    overflow: hidden;
-    margin: 0;
-}
-
+/* ---- header and body ---- */
 :root .wc-card > .card-header {
     display: flex;
     align-items: center;
@@ -1286,6 +1259,17 @@ a[target="_blank"].no-arrow::after {
     margin: 0;
 }
 
+/* Mono meta on the right of a card header, e.g. a row count. */
+.wc-card-meta {
+    font-family: var(--wc-font-mono);
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wc-text-3);
+}
+
 /* Lead paragraph at the top of a card body reads as the section description. */
 :root .wc-card > .card-body > p {
     font-size: 12.5px;
@@ -1298,8 +1282,8 @@ a[target="_blank"].no-arrow::after {
    .form-check.form-switch with an inline label and description. Lay each out
    as a row: label + description left, toggle right. Opt-in via the class so a
    wrapper with its own padding is not double-inset. */
-:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch,
-:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch {
+:root .wc-card > .card-body > .form-check.form-switch,
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "label toggle" "desc toggle";
@@ -1310,8 +1294,8 @@ a[target="_blank"].no-arrow::after {
     border-top: 1px solid var(--wc-hairline);
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch .form-check-label,
-:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch .form-check-label {
+:root .wc-card > .card-body > .form-check.form-switch .form-check-label,
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-label {
     grid-area: label;
     font-size: 13.5px;
     font-weight: 600;
@@ -1319,14 +1303,14 @@ a[target="_blank"].no-arrow::after {
     color: var(--wc-text-1);
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch .form-check-input,
-:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch .form-check-input {
+:root .wc-card > .card-body > .form-check.form-switch .form-check-input,
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch .form-check-input {
     grid-area: toggle;
     align-self: center;
 }
 
-:root :is(.settings-section, .wc-card > .card-body) > .form-check.form-switch small,
-:root :is(.settings-section, .wc-card > .card-body) > .wc-switch-rows > .form-check.form-switch small {
+:root .wc-card > .card-body > .form-check.form-switch small,
+:root .wc-card > .card-body > .wc-switch-rows > .form-check.form-switch small {
     grid-area: desc;
     font-size: 12px;
     line-height: 1.5;
@@ -1385,8 +1369,8 @@ a[target="_blank"].no-arrow::after {
 }
 
 /* Selects, text and number fields — 34px tall at 3px radius. */
-:root :is(.settings-section, .wc-card) .form-select,
-:root :is(.settings-section, .wc-card) .form-control:not(textarea),
+:root .wc-card .form-select,
+:root .wc-card .form-control:not(textarea),
 .wc-field {
     height: var(--wc-control-h);
     min-width: 0;
@@ -1401,27 +1385,27 @@ a[target="_blank"].no-arrow::after {
     line-height: var(--wc-control-h);
 }
 
-:root :is(.settings-section, .wc-card) .form-select {
+:root .wc-card .form-select {
     padding-inline-end: 28px;
 }
 
-:root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto :is(.form-select, .form-control:not(textarea):not([type="number"]):not([inputmode="numeric"]), .wc-field:not(.wc-field--number)) {
+:root .wc-card .list-group-item > .row > .col-auto :is(.form-select, .form-control:not(textarea):not([type="number"]):not([inputmode="numeric"]), .wc-field:not(.wc-field--number)) {
     min-width: 172px;
 }
 
-:root :is(.settings-section, .wc-card) :is(input[type="number"], input[inputmode="numeric"]),
+:root .wc-card :is(input[type="number"], input[inputmode="numeric"]),
 .wc-field--number {
     min-width: 0;
     font-family: var(--wc-font-mono);
 }
 
-:root :is(.settings-section, .wc-card) .form-select:focus,
-:root :is(.settings-section, .wc-card) .form-control:focus {
+:root .wc-card .form-select:focus,
+:root .wc-card .form-control:focus {
     border-color: var(--wc-accent);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--wc-accent) 25%, transparent);
 }
 
-:root :is(.settings-section, .wc-card) textarea.form-control,
+:root .wc-card textarea.form-control,
 :root .wc-shell-aside textarea.form-control {
     border: 1px solid var(--wc-border-strong);
     border-radius: var(--wc-radius-field);
@@ -1566,7 +1550,7 @@ a[target="_blank"].no-arrow::after {
 }
 
 .wc-tag,
-:root :is(.settings-section, .wc-card) .badge {
+:root .wc-card .badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1757,29 +1741,29 @@ a[target="_blank"].no-arrow::after {
     .wc-shell { padding: 18px 16px 36px; }
 
     /* Stack the setting row so controls keep their width, and right-align action buttons. */
-    :root :is(.settings-section, .wc-card) .list-group-item > .row {
+    :root .wc-card .list-group-item > .row {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
-    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto {
+    :root .wc-card .list-group-item > .row > .col-auto {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
     }
-    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto > :is(.btn, button, .form-switch) {
+    :root .wc-card .list-group-item > .row > .col-auto > :is(.btn, button, .form-switch) {
         margin-inline-start: auto;
     }
 
     /* Stacking earns its keep for wide controls, but a lone toggle is 40px —
        keep those rows inline so the switches hold one column down every card.
        A cell pairing the switch with a button is wide again, so it still stacks. */
-    :root :is(.settings-section, .wc-card) .list-group-item > .row:has(> .col-auto > .form-check.form-switch:only-child) {
+    :root .wc-card .list-group-item > .row:has(> .col-auto > .form-check.form-switch:only-child) {
         flex-direction: row;
         align-items: center;
     }
-    :root :is(.settings-section, .wc-card) .list-group-item > .row > .col-auto:has(> .form-check.form-switch:only-child) {
+    :root .wc-card .list-group-item > .row > .col-auto:has(> .form-check.form-switch:only-child) {
         width: auto;
         justify-content: flex-end;
     }
@@ -2278,6 +2262,6 @@ body.cjk-language {
    rules and comes last, so `hidden` wins everywhere. */
 [hidden],
 :root [hidden],
-:root :is(.settings-section, .wc-card) [hidden] {
+:root .wc-card [hidden] {
     display: none !important;
 }
