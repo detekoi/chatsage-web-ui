@@ -89,6 +89,8 @@ Return verdict "block" if the candidate text does any of the following:
 
 Return verdict "allow" for ordinary personality, tone, theme, humor, lore, and topic preferences — including edgy, sarcastic, crude, or profane voices. A streamer choosing a rude or chaotic personality is normal and allowed. Block on the categories above, not on tone.
 
+Also return "allow" when the streamer promotes their own channel and community: asking viewers to follow, subscribe, gift subs, cheer, or donate, and linking to their own pages on twitch.tv (including twitch.tv/subs/<channel>), their schedule, Discord, socials, or merch. Links to twitch.tv are Twitch's own platform, not external or third-party links. Telling mobile viewers that a sub costs less on the Twitch website than through the Apple or Google app store is accurate and Twitch itself tells viewers this; it is not a payment bypass.
+
 Respond with JSON only:
 - verdict: "allow" or "block"
 - reasons: short, specific, streamer-facing explanations. Empty array when allowing.
