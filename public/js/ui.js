@@ -256,8 +256,7 @@ export function setupInlineForm(formEl) {
         formEl.classList.add('is-animating');
         anim = formEl.animate([folded, unfolded], { duration, easing: 'cubic-bezier(0.2, 0, 0, 1)' });
         anim.onfinish = () => {
-            anim = null;
-            formEl.classList.remove('is-animating');
+            settle();
             reveal(true);
         };
     }
@@ -274,11 +273,10 @@ export function setupInlineForm(formEl) {
         formEl.classList.add('is-animating');
         // fill: forwards holds the folded frame until park() hides the form;
         // otherwise the natural height shows for a frame before onfinish runs.
+        // park() cancels the finished animation (settle) in the same task it
+        // sets hidden, so the held frame never leaks into the next open.
         anim = formEl.animate([unfolded, folded], { duration: duration * 0.75, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' });
-        anim.onfinish = () => {
-            anim = null;
-            park();
-        };
+        anim.onfinish = park;
     }
 
     /**
