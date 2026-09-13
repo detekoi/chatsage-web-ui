@@ -10,6 +10,8 @@
 //   2. Applying translations fires an `i18n:changed` event, so sections that render their own DOM
 //      can redraw. Markup-only pages can ignore it.
 
+const RTL_LANGUAGES = new Set(['ar', 'he', 'fa']);
+
 const AVAILABLE_LANGUAGES = {
     'en': 'English',
     'es': 'Español',
@@ -109,6 +111,9 @@ function applyCatalog(merged, lang) {
     } catch { /* private mode or blocked storage: the choice just will not persist */ }
 
     document.documentElement.lang = lang;
+    // The stylesheets use logical properties, so a right-to-left locale only needs
+    // `dir` set here. None is offered yet; this keeps the wiring in step with WildcatTTS.
+    document.documentElement.dir = RTL_LANGUAGES.has(lang) ? 'rtl' : 'ltr';
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('lang') !== lang) {
