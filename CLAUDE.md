@@ -34,9 +34,9 @@ Rules:
   this app has; put them in `chatsage-specific.css`.
 - `!important` is reserved for the utility shim, the `[hidden]` rule, the
   square-corner overrides in `custom.css`, and the colour rules in the shared
-  file that must beat a Bootstrap `.text-*` utility in WildcatTTS (the bot
-  status readout and the row-description rules, all documented inline). Do not
-  add more.
+  file that must beat one of the shim's own `.text-*` or `.fw-*` utilities
+  (the bot status readout and the row-description rules, all documented
+  inline). Do not add more.
 - Visible states are driven by classes and the `hidden` attribute, never by
   inline `style` attributes written from JS.
 - Sharp corners are intentional: `custom.css` overrides the design system's

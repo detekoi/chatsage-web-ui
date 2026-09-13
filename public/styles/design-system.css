@@ -71,6 +71,7 @@
     /* Status — light */
     --wc-ok: oklch(0.520 0.110 155);
     --wc-danger: oklch(0.520 0.150 25);
+    --wc-warning: oklch(0.520 0.130 65);
     --wc-danger-border: oklch(0.830 0.060 25);
     --wc-danger-bg: oklch(0.960 0.020 25);
     --wc-danger-soft: color-mix(in oklab, oklch(0.830 0.060 25) 55%, transparent);
@@ -134,6 +135,7 @@
     /* Status — dark */
     --wc-ok: oklch(0.720 0.090 155);
     --wc-danger: oklch(0.660 0.115 25);
+    --wc-warning: oklch(0.800 0.150 80);
     --wc-danger-border: oklch(0.400 0.070 25);
     --wc-danger-bg: oklch(0.260 0.040 25);
     --wc-danger-soft: color-mix(in oklab, oklch(0.400 0.070 25) 55%, transparent);
@@ -1019,7 +1021,7 @@ a[target="_blank"].no-arrow::after {
 .wc-stat dd .text-success { color: var(--wc-ok) !important; }
 .wc-stat dd .text-secondary { color: var(--wc-text-2) !important; }
 .wc-stat dd .text-danger { color: var(--wc-danger) !important; }
-.wc-stat dd .fw-semibold { font-weight: 400; }
+.wc-stat dd .fw-semibold { font-weight: 400 !important; }
 
 .wc-shell {
     display: grid;
@@ -1837,12 +1839,14 @@ a[target="_blank"].no-arrow::after {
 .flex-shrink-0 { flex-shrink: 0 !important; }
 .align-items-end { align-items: flex-end !important; }
 .w-100 { width: 100% !important; }
+.border-0 { border: 0 !important; }
+.m-auto { margin: auto !important; }
 .fw-bold { font-weight: 700 !important; }
 .fw-semibold { font-weight: 600 !important; }
 .fst-italic { font-style: italic !important; }
 .text-uppercase { text-transform: uppercase !important; }
 .text-decoration-none { text-decoration: none !important; }
-.text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.text-truncate { overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 .border-danger { border-color: var(--wc-danger) !important; }
 /* Colour utilities. Bootstrap's are !important, and so are these, so a
    component rule with more specificity cannot swallow an explicit .text-*. */
@@ -1850,16 +1854,20 @@ a[target="_blank"].no-arrow::after {
 .text-secondary { color: var(--wc-text-2) !important; }
 .text-success { color: var(--wc-ok) !important; }
 .text-danger { color: var(--wc-danger) !important; }
-.text-warning { color: #d97706 !important; }
-.small { font-size: .875em; }
+.text-warning { color: var(--wc-warning) !important; }
+.small { font-size: .875em !important; }
 
-/* Gutters. Bootstrap's default is 24px; --wc-gutter-x on :root (WildcatTTS
-   sets it) or on a row (.g-*) changes it; without it rows use 16px. */
+/* Gutters. Every .row re-initialises its own gutter from --wc-row-gutter-x/y
+   (WildcatTTS sets 24px on :root, Bootstrap's default; otherwise 16px), so a
+   nested row never inherits a parent's .g-*. The .g-* classes then override
+   the row's own value. */
 .row {
+    --wc-gutter-x: var(--wc-row-gutter-x, 16px);
+    --wc-gutter-y: var(--wc-row-gutter-y, 0px);
     display: flex;
     flex-wrap: wrap;
-    margin-top: calc(var(--wc-gutter-y, 0px) * -1);
-    margin-inline: calc(var(--wc-gutter-x, 16px) * -0.5);
+    margin-top: calc(var(--wc-gutter-y) * -1);
+    margin-inline: calc(var(--wc-gutter-x) * -0.5);
 }
 
 .row > * {
@@ -1867,8 +1875,8 @@ a[target="_blank"].no-arrow::after {
     flex-shrink: 0;
     width: 100%;
     max-width: 100%;
-    margin-top: var(--wc-gutter-y, 0px);
-    padding-inline: calc(var(--wc-gutter-x, 16px) * 0.5);
+    margin-top: var(--wc-gutter-y);
+    padding-inline: calc(var(--wc-gutter-x) * 0.5);
 }
 .g-2 { --wc-gutter-x: 8px; --wc-gutter-y: 8px; }
 .g-3 { --wc-gutter-x: 16px; --wc-gutter-y: 16px; }
@@ -1910,7 +1918,9 @@ a[target="_blank"].no-arrow::after {
 .mt-3 { margin-top: 16px !important; }
 .ms-2 { margin-inline-start: 8px !important; }
 .me-2 { margin-inline-end: 8px !important; }
+.me-3 { margin-inline-end: 16px !important; }
 .p-0 { padding: 0 !important; }
+.py-1 { padding-top: 4px !important; padding-bottom: 4px !important; }
 .p-3 { padding: 16px !important; }
 .py-3 { padding-top: 16px !important; padding-bottom: 16px !important; }
 
@@ -2036,6 +2046,10 @@ textarea.form-control {
     border-radius: var(--wc-radius-card);
 }
 .text-bg-danger { color: #fff !important; background-color: var(--wc-danger) !important; }
+.text-bg-success { color: #fff !important; background-color: var(--wc-ok) !important; }
+.text-bg-secondary { color: #fff !important; background-color: var(--wc-text-2) !important; }
+.text-bg-warning { color: #000 !important; background-color: var(--wc-warning) !important; }
+.text-bg-info { color: #fff !important; background-color: var(--wc-accent) !important; }
 
 /* Standalone Alert Styles */
 .alert {
