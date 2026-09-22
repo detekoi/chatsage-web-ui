@@ -117,7 +117,10 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
  * Saves a custom persona, after safety screening. Rejected text is not persisted.
  */
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
-  const { userId, login } = req.user;
+  const { login } = req.user;
+  // Resolved before any Firestore read or LLM call: a session with no usable
+  // broadcaster ID cannot be saved, so it must not cost a screening call.
+  const channelKey = channelDocKey(req.user);
 
   try {
     const instructions = req.body?.instructions;
@@ -147,9 +150,9 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       return res.status(rejection.status).json(rejection.body);
     }
 
-    await getDb().collection(PERSONA_COLLECTION).doc(channelDocKey(req.user)).set(
+    await getDb().collection(PERSONA_COLLECTION).doc(channelKey).set(
       {
-        twitchUserId: userId,
+        twitchUserId: channelKey,
         // Denormalized for debugging only. Never used as a key — it can go stale
         // when a broadcaster renames on Twitch.
         channelName: login,

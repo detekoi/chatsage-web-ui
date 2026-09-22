@@ -7,7 +7,7 @@ import { Router, Request, Response } from "express";
 import { getDb } from "@/config/database";
 import { CHANNELS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
-import { ensureAdBreakSubscription } from "@/twitch";
+import { AdBreakPrerequisiteError, ensureAdBreakSubscription } from "@/twitch";
 
 const router = Router();
 
@@ -56,9 +56,21 @@ router.post("/adbreak/ensure", async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: `EventSub ad-break subscription updated for ${channelLogin}`,
+      message: `EventSub ad-break subscription updated for ${channelLogin || broadcasterId}`,
     });
   } catch (error) {
+    // A non-2xx is what tells the bot the subscription is not in place, so it
+    // keeps retrying instead of treating the channel as confirmed for hours.
+    if (error instanceof AdBreakPrerequisiteError) {
+      logger.warn("Ad break subscription prerequisite not met", {
+        broadcasterId: error.broadcasterId,
+        error: error.message,
+      });
+      return res.status(409).json({
+        success: false,
+        message: error.message,
+      });
+    }
     logger.error("Error managing ad break subscription", {
       error: (error as Error).message,
     });

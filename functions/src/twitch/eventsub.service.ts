@@ -280,12 +280,27 @@ export async function deleteAllSubscriptionsForUser(
 }
 
 /**
+ * A prerequisite for the ad-break subscription is not met on the broadcaster's
+ * side: no managed channel, or a token that is invalid or lacks the ads scope.
+ * Distinguished from transport errors so callers can answer with a client
+ * status rather than a 500, but still an error: a silent return would let the
+ * bot record the subscription as confirmed and stop retrying.
+ */
+export class AdBreakPrerequisiteError extends Error {
+  constructor(message: string, public readonly broadcasterId: string) {
+    super(message);
+    this.name = "AdBreakPrerequisiteError";
+  }
+}
+
+/**
  * Ensures an ad break EventSub subscription exists or is removed
- * @param channelLogin - Channel login name
  * @param broadcasterId - The broadcaster's Twitch user ID. Logins are mutable and
  *   managedChannels does not refresh `channelName` on login, so a lookup by login
  *   silently misses a renamed channel; the document key is the ID.
  * @param adsEnabled - Whether ads notifications should be enabled
+ * @throws {AdBreakPrerequisiteError} When the channel is not managed or, when
+ *   enabling, the broadcaster's token is invalid or lacks channel:read:ads.
  */
 export async function ensureAdBreakSubscription(
   broadcasterId: string,
@@ -304,44 +319,47 @@ export async function ensureAdBreakSubscription(
     const db = getDb();
 
     if (!/^\d+$/.test(userId)) {
-      logger.warn("No broadcaster ID given for ad break subscription", { broadcasterId });
-      return;
+      throw new AdBreakPrerequisiteError("No broadcaster ID given for ad break subscription", userId);
     }
 
     const userDoc = await db.collection(CHANNELS_COLLECTION).doc(userId).get();
     if (!userDoc.exists) {
-      logger.warn("No managed channel for broadcaster ID", { broadcasterId: userId });
-      return;
+      throw new AdBreakPrerequisiteError("No managed channel for broadcaster ID", userId);
     }
     channelLogin = userDoc.data()?.channelName || userId;
 
-    // Verify user has granted channel:read:ads scope
-    try {
-      const userToken = await getValidTwitchTokenForUser(userId);
-      const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
-        headers: { Authorization: `OAuth ${userToken}` },
-      });
-
-      const scopes = validateResponse.data.scopes || [];
-      logger.debug("User token validation", {
-        channelLogin,
-        userId: validateResponse.data.user_id,
-        hasAdsScope: scopes.includes("channel:read:ads"),
-      });
+    // Creating the subscription needs proof that the broadcaster granted
+    // channel:read:ads. Removing it does not: deletion uses the app token, and
+    // gating it on the user token would strand the subscription once that
+    // token expires or is revoked.
+    if (adsEnabled) {
+      let scopes: string[];
+      try {
+        const userToken = await getValidTwitchTokenForUser(userId);
+        const validateResponse = await axios.get("https://id.twitch.tv/oauth2/validate", {
+          headers: { Authorization: `OAuth ${userToken}` },
+        });
+        scopes = validateResponse.data.scopes || [];
+        logger.debug("User token validation", {
+          channelLogin,
+          userId: validateResponse.data.user_id,
+          hasAdsScope: scopes.includes("channel:read:ads"),
+        });
+      } catch (validateErr: unknown) {
+        const err = validateErr as Error;
+        logger.error("User token validation failed", {
+          channelLogin,
+          error: err.message,
+        });
+        throw new AdBreakPrerequisiteError(`Broadcaster token validation failed: ${err.message}`, userId);
+      }
 
       if (!scopes.includes("channel:read:ads")) {
         logger.error("User hasn't granted channel:read:ads scope", {
           channelLogin,
         });
-        return;
+        throw new AdBreakPrerequisiteError("Broadcaster has not granted channel:read:ads", userId);
       }
-    } catch (validateErr: unknown) {
-      const err = validateErr as Error;
-      logger.error("User token validation failed", {
-        channelLogin,
-        error: err.message,
-      });
-      return;
     }
 
     // Use APP access token for EventSub webhook subscription (required by Twitch)
