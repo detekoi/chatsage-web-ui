@@ -66,3 +66,10 @@ lives in `.css-baseline/` and is not committed. The script is synced from
 
 - Commit messages describe the code change only.
 - `main` is the primary branch.
+- Channel-scoped Firestore documents (timers, custom commands, command
+  settings, auto-chat, language, check-in, personas) are keyed by the
+  broadcaster's Twitch user ID via `channelDocKey(req.user)` in
+  `functions/src/utils/channelKey.ts`, never by login. The login is stored on
+  the parent document as `channelName` for readability only. The bot reads the
+  same keys (`twitch-knowledge-bot/src/lib/channelKey.js`); change both
+  together.

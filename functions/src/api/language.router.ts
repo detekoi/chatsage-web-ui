@@ -18,6 +18,7 @@ import { CHANNEL_LANGUAGES_COLLECTION, BOT_LANGUAGES } from "@/config/constants"
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getChannelStreamLanguage } from "@/twitch";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
@@ -50,9 +51,8 @@ async function detectStreamLanguage(broadcasterId: string): Promise<string | nul
  */
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const { userId, login } = req.user;
-  // The bot keys these documents by lowercase login. Twitch logins already are, but the key is
-  // shared across two repos, so pin it here rather than rely on that.
-  const channelKey = login.toLowerCase();
+  // Keyed by broadcaster ID, not login (see utils/channelKey); the bot reads the same key.
+  const channelKey = channelDocKey(req.user);
 
   try {
     const [snap, detected] = await Promise.all([
@@ -94,7 +94,8 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
  */
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const { login } = req.user;
-  const channelKey = login.toLowerCase();
+  const channelKey = channelDocKey(req.user);
+  const channelName = login.toLowerCase();
 
   try {
     const body = req.body || {};
@@ -135,7 +136,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     await docRef.set(
       {
-        channelName: channelKey,
+        channelName,
         language,
         updatedAt: new Date(),
       },

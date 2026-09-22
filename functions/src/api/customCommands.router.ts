@@ -2,7 +2,8 @@
  * Custom Commands router
  * CRUD endpoints for managing user-defined custom commands.
  * Mirrors the Firestore structure used by the bot:
- *   customCommands/{channelName}/commands/{commandName}
+ *   customCommands/{broadcasterId}/commands/{commandName}
+ * Keyed by broadcaster ID, not login (see utils/channelKey).
  */
 
 import { Router, Response } from "express";
@@ -11,6 +12,7 @@ import { CUSTOM_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
@@ -38,21 +40,22 @@ function isValidCommandName(name: unknown): name is string {
 }
 
 /**
- * Helper: get the commands subcollection reference for a channel.
+ * Helper: get the commands subcollection reference for a channel (by broadcaster ID).
  */
-function getCommandsRef(channelName: string) {
+function getCommandsRef(channelKey: string) {
   return getDb()
     .collection(CUSTOM_COMMANDS_COLLECTION)
-    .doc(channelName)
+    .doc(channelKey)
     .collection("commands");
 }
 
 // ─── GET /api/custom-commands ────────────────────────────────────────────────
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
 
   try {
-    const snapshot = await getCommandsRef(channelLogin).orderBy("createdAt", "desc").get();
+    const snapshot = await getCommandsRef(channelKey).orderBy("createdAt", "desc").get();
 
     const commands = snapshot.docs.map((doc) => ({
       name: doc.id,
@@ -75,6 +78,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── POST /api/custom-commands ───────────────────────────────────────────────
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
 
   try {
     const { name, response, permission, cooldown, type } = req.body;
@@ -117,7 +121,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     const cooldownMs = typeof cooldown === "number" ? Math.max(0, Math.min(300000, cooldown)) : 5000;
 
     // Check if command already exists
-    const docRef = getCommandsRef(channelLogin).doc(commandName);
+    const docRef = getCommandsRef(channelKey).doc(commandName);
     const existing = await docRef.get();
 
     if (existing.exists) {
@@ -128,7 +132,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Check limit
-    const countSnap = await getCommandsRef(channelLogin).count().get();
+    const countSnap = await getCommandsRef(channelKey).count().get();
     if (countSnap.data().count >= MAX_COMMANDS_PER_CHANNEL) {
       return res.status(400).json({
         success: false,
@@ -167,6 +171,12 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       createdBy: channelLogin,
     });
 
+    // Ensure the parent channel doc exists so the bot's loaders can list it
+    await getDb()
+      .collection(CUSTOM_COMMANDS_COLLECTION)
+      .doc(channelKey)
+      .set({ channelName: channelLogin, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+
     logger.info("Custom command created", { channelLogin, commandName });
 
     res.json({
@@ -188,6 +198,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── PUT /api/custom-commands/:name ──────────────────────────────────────────
 router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const commandName = req.params.name?.trim().toLowerCase();
 
   if (!isValidCommandName(commandName)) {
@@ -198,7 +209,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    const docRef = getCommandsRef(channelLogin).doc(commandName);
+    const docRef = getCommandsRef(channelKey).doc(commandName);
     const existing = await docRef.get();
 
     if (!existing.exists) {
@@ -320,6 +331,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 // ─── DELETE /api/custom-commands/:name ───────────────────────────────────────
 router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const commandName = req.params.name?.trim().toLowerCase();
 
   if (!isValidCommandName(commandName)) {
@@ -330,7 +342,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    const docRef = getCommandsRef(channelLogin).doc(commandName);
+    const docRef = getCommandsRef(channelKey).doc(commandName);
     const existing = await docRef.get();
 
     if (!existing.exists) {

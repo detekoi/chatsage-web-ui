@@ -2,7 +2,9 @@
  * Timers router
  * CRUD endpoints for managing timed messages (periodic chat messages).
  * Mirrors the Firestore structure used by the bot:
- *   channelTimers/{channelName}/timers/{timerName}
+ *   channelTimers/{broadcasterId}/timers/{timerName}
+ * Keyed by broadcaster ID, not login (see utils/channelKey). The parent doc
+ * carries `channelName` for readability only.
  * The document contract is duplicated in the bot repo:
  *   twitch-knowledge-bot/src/components/timers/timersStorage.js
  * Keep field names, defaults, and validation limits in sync between the two.
@@ -15,6 +17,7 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
 import { sanitizeTimerName } from "@/utils/validation";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
@@ -88,21 +91,22 @@ function parseIntInRange(value: unknown, min: number, max: number): number | nul
 }
 
 /**
- * Helper: get the timers subcollection reference for a channel.
+ * Helper: get the timers subcollection reference for a channel (by broadcaster ID).
  */
-function getTimersRef(channelName: string) {
+function getTimersRef(channelKey: string) {
   return getDb()
     .collection(CHANNEL_TIMERS_COLLECTION)
-    .doc(channelName)
+    .doc(channelKey)
     .collection("timers");
 }
 
 // ─── GET /api/timers ─────────────────────────────────────────────────────────
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
 
   try {
-    const snapshot = await getTimersRef(channelLogin).orderBy("createdAt", "desc").get();
+    const snapshot = await getTimersRef(channelKey).orderBy("createdAt", "desc").get();
 
     const timers = snapshot.docs.map((doc) => ({
       name: doc.id,
@@ -125,6 +129,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── POST /api/timers ────────────────────────────────────────────────────────
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
 
   try {
     const { name: rawName, response, type, intervalMinutes, minChatLines } = req.body;
@@ -193,8 +198,8 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const docRef = getTimersRef(channelLogin).doc(timerName);
-    const colRef = getTimersRef(channelLogin);
+    const docRef = getTimersRef(channelKey).doc(timerName);
+    const colRef = getTimersRef(channelKey);
 
     // "prompt" timers send their text to the LLM, so the broadcaster is authoring
     // a prompt and it has to be screened. Plain "text" timers post verbatim.
@@ -233,7 +238,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
       // Ensure the parent channel doc exists so the bot's loaders can list it
       t.set(
-        getDb().collection(CHANNEL_TIMERS_COLLECTION).doc(channelLogin),
+        getDb().collection(CHANNEL_TIMERS_COLLECTION).doc(channelKey),
         { channelName: channelLogin, updatedAt: FieldValue.serverTimestamp() },
         { merge: true },
       );
@@ -269,6 +274,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 // ─── PUT /api/timers/:name ───────────────────────────────────────────────────
 router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const timerName = req.params.name?.trim().toLowerCase();
 
   if (!isValidTimerName(timerName)) {
@@ -279,7 +285,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    const docRef = getTimersRef(channelLogin).doc(timerName);
+    const docRef = getTimersRef(channelKey).doc(timerName);
     const existing = await docRef.get();
 
     if (!existing.exists) {
@@ -411,6 +417,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 // ─── DELETE /api/timers/:name ────────────────────────────────────────────────
 router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const timerName = req.params.name?.trim().toLowerCase();
 
   if (!isValidTimerName(timerName)) {
@@ -421,7 +428,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
-    const docRef = getTimersRef(channelLogin).doc(timerName);
+    const docRef = getTimersRef(channelKey).doc(timerName);
     const existing = await docRef.get();
 
     if (!existing.exists) {

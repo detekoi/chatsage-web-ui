@@ -125,6 +125,9 @@ describe("Language Router", () => {
         expect.objectContaining({ channelName: "testuser", language: "spanish" }),
         { merge: true },
       );
+      // Keyed by broadcaster ID, never by login
+      expect(mockDoc).toHaveBeenCalledWith("123");
+      expect(mockDoc).not.toHaveBeenCalledWith("testuser");
     });
 
     it("stores English as null so the bot reads it as an explicit choice", async () => {

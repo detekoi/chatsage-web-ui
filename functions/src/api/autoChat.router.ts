@@ -1,6 +1,8 @@
 /**
  * Auto-chat router
- * Endpoints for managing auto-chat configuration
+ * Endpoints for managing auto-chat configuration.
+ * Documents: autoChatConfigs/{broadcasterId}, keyed by broadcaster ID, not
+ * login (see utils/channelKey). `channelName` is stored for readability only.
  */
 
 import { Router, Response } from "express";
@@ -9,6 +11,7 @@ import { AUTO_CHAT_COLLECTION, AUTO_CHAT_MODES, DEFAULT_AUTO_CHAT_CONFIG } from 
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateMode } from "@/utils/validation";
+import { channelDocKey } from "@/utils/channelKey";
 import { ensureAdBreakSubscription } from "@/twitch";
 import { tr } from "@/i18n";
 
@@ -20,10 +23,11 @@ const router = Router();
  */
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const db = getDb();
 
   try {
-    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelKey);
     const snap = await docRef.get();
 
     const defaultCfg = DEFAULT_AUTO_CHAT_CONFIG;
@@ -62,6 +66,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
  */
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const db = getDb();
 
   try {
@@ -69,7 +74,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     const inputCategories = body.categories && typeof body.categories === "object" ? body.categories : {};
 
     // Fetch existing config first to merge with
-    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(AUTO_CHAT_COLLECTION).doc(channelKey);
     const existingSnap = await docRef.get();
     const existingData = existingSnap.exists ? existingSnap.data() : {};
     const existingCategories = existingData?.categories || {};

@@ -29,7 +29,7 @@ jest.mock("@/config/logger", () => ({
 }));
 
 // Build a deeply nested Firestore mock for subcollections:
-// getDb().collection("customCommands").doc(channelName).collection("commands")
+// getDb().collection("customCommands").doc(broadcasterId).collection("commands")
 const mockDelete = jest.fn().mockResolvedValue(undefined);
 const mockSet = jest.fn().mockResolvedValue(undefined);
 const mockUpdate = jest.fn().mockResolvedValue(undefined);
@@ -54,8 +54,10 @@ const mockCommandsCollection = jest.fn().mockReturnValue({
   count: mockCount,
 });
 
+const mockParentSet = jest.fn().mockResolvedValue(undefined);
 const mockChannelDoc = jest.fn().mockReturnValue({
   collection: mockCommandsCollection,
+  set: mockParentSet,
 });
 
 const mockTopCollection = jest.fn().mockReturnValue({
@@ -274,6 +276,24 @@ describe("Custom Commands Router", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+    });
+
+    it("keys the channel by broadcaster ID and records the login on the parent doc", async () => {
+      mockDocGet.mockResolvedValue({ exists: false });
+      mockChannelDoc.mockClear();
+
+      const res = await request(createApp())
+        .post("/")
+        .set("Authorization", `Bearer ${makeToken({ login: "testuser", userId: "123", displayName: "TestUser" })}`)
+        .send({ name: "keyed", response: "Hello" });
+
+      expect(res.status).toBe(200);
+      expect(mockChannelDoc).toHaveBeenCalledWith("123");
+      expect(mockChannelDoc).not.toHaveBeenCalledWith("testuser");
+      expect(mockParentSet).toHaveBeenCalledWith(
+        expect.objectContaining({ channelName: "testuser" }),
+        { merge: true },
+      );
     });
 
     it("returns 400 when command name is missing", async () => {

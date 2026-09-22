@@ -4,7 +4,8 @@
  * Creates/updates/deletes the Twitch reward via Helix API automatically.
  *
  * Firestore structure:
- *   customCommands/{channelName}/checkinConfig/settings
+ *   customCommands/{broadcasterId}/checkinConfig/settings
+ * Keyed by broadcaster ID, not login (see utils/channelKey).
  */
 
 import { Router, Response } from "express";
@@ -15,16 +16,17 @@ import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { getValidTwitchTokenForUser } from "@/tokens";
 import { screenPromptField } from "@/utils/promptSafety";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getCheckinConfigRef(channelName: string) {
+function getCheckinConfigRef(channelKey: string) {
   return getDb()
     .collection(CUSTOM_COMMANDS_COLLECTION)
-    .doc(channelName)
+    .doc(channelKey)
     .collection("checkinConfig")
     .doc("settings");
 }
@@ -44,8 +46,9 @@ function createHelixClient(accessToken: string): AxiosInstance {
 // ─── GET /api/checkin ────────────────────────────────────────────────────────
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   try {
-    const docSnap = await getCheckinConfigRef(channelLogin).get();
+    const docSnap = await getCheckinConfigRef(channelKey).get();
 
     if (!docSnap.exists) {
       return res.json({
@@ -81,6 +84,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 router.put("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
   const broadcasterId = req.user.userId;
+  const channelKey = channelDocKey(req.user);
   const log = logger.child({ endpoint: "PUT /api/checkin", channelLogin });
 
   try {
@@ -116,7 +120,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Load existing config
-    const existingSnap = await getCheckinConfigRef(channelLogin).get();
+    const existingSnap = await getCheckinConfigRef(channelKey).get();
     const existingConfig = existingSnap.exists ? existingSnap.data() || {} : {};
     let rewardId: string | null = existingConfig.rewardId || null;
 
@@ -235,7 +239,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    await getCheckinConfigRef(channelLogin).set(configData, { merge: true });
+    await getCheckinConfigRef(channelKey).set(configData, { merge: true });
     log.info("Check-in config saved", { enabled, rewardId });
 
     return res.json({
@@ -264,10 +268,11 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
 router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
   const broadcasterId = req.user.userId;
+  const channelKey = channelDocKey(req.user);
   const log = logger.child({ endpoint: "DELETE /api/checkin", channelLogin });
 
   try {
-    const docSnap = await getCheckinConfigRef(channelLogin).get();
+    const docSnap = await getCheckinConfigRef(channelKey).get();
     const existingConfig = docSnap.exists ? docSnap.data() || {} : {};
     const rewardId = existingConfig.rewardId;
 
@@ -295,7 +300,7 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Disable locally
-    await getCheckinConfigRef(channelLogin).set({
+    await getCheckinConfigRef(channelKey).set({
       ...existingConfig,
       enabled: false,
       rewardId: twitchDeleted ? null : rewardId,

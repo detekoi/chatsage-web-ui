@@ -126,6 +126,9 @@ describe("AutoChat Router", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
+      // Keyed by broadcaster ID, never by login
+      expect(mockDoc).toHaveBeenCalledWith("123");
+      expect(mockDoc).not.toHaveBeenCalledWith("testuser");
     });
 
     it("returns 400 for invalid mode", async () => {

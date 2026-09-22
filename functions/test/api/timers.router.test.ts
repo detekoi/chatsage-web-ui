@@ -269,6 +269,9 @@ describe("Timers Router", () => {
         expect.objectContaining({ channelName: "testuser" }),
         { merge: true },
       );
+      // Keyed by broadcaster ID, never by login
+      expect(mockChannelDoc).toHaveBeenCalledWith("123");
+      expect(mockChannelDoc).not.toHaveBeenCalledWith("testuser");
     });
 
     it("creates an AI (prompt) timer with custom interval and lines", async () => {

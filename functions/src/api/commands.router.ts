@@ -1,6 +1,8 @@
 /**
  * Commands router
- * Endpoints for managing bot commands
+ * Endpoints for managing bot commands.
+ * Documents: channelCommands/{broadcasterId}, keyed by broadcaster ID, not
+ * login (see utils/channelKey). `channelName` is stored for readability only.
  */
 
 import { Router, Response } from "express";
@@ -9,6 +11,7 @@ import { ALL_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateBoolean } from "@/utils/validation";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
@@ -19,10 +22,11 @@ const router = Router();
  */
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const db = getDb();
 
   try {
-    const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelKey);
     const snap = await docRef.get();
     const data = snap.exists ? snap.data() : {};
     const disabledCommands = data?.disabledCommands || [];
@@ -55,6 +59,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
  */
 router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
   const db = getDb();
 
   try {
@@ -77,7 +82,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelLogin);
+    const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelKey);
 
     // Use array operations to match bot's expected structure
     if (enabled) {
