@@ -50,14 +50,14 @@ async function detectStreamLanguage(broadcasterId: string): Promise<string | nul
  * Returns the channel's stored choice and what automatic detection currently resolves to.
  */
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
-  const { userId, login } = req.user;
+  const { login } = req.user;
   // Keyed by broadcaster ID, not login (see utils/channelKey); the bot reads the same key.
   const channelKey = channelDocKey(req.user);
 
   try {
     const [snap, detected] = await Promise.all([
       getDb().collection(CHANNEL_LANGUAGES_COLLECTION).doc(channelKey).get(),
-      detectStreamLanguage(userId),
+      detectStreamLanguage(channelKey),
     ]);
 
     const data = snap.exists ? snap.data() : null;

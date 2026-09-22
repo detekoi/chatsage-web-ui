@@ -28,7 +28,7 @@ export const CUSTOM_COMMANDS_COLLECTION = "customCommands";
 export const CHANNEL_TIMERS_COLLECTION = "channelTimers";
 
 // Per-channel bot response language, written by both this dashboard and the bot's `!botlang`
-// command. Keyed by login name, as the bot keys it. A missing document is not the same as one
+// command. Keyed by broadcaster ID (utils/channelKey), as the bot keys it. A missing document is not the same as one
 // holding `language: null`: no document hands the channel to Twitch stream-language detection,
 // while `null` is an explicit choice of English that detection must not override.
 export const CHANNEL_LANGUAGES_COLLECTION = "channelLanguages";

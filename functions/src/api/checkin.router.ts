@@ -23,10 +23,10 @@ const router = Router();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getCheckinConfigRef(channelKey: string) {
+function getCheckinConfigRef(broadcasterId: string) {
   return getDb()
     .collection(CUSTOM_COMMANDS_COLLECTION)
-    .doc(channelKey)
+    .doc(broadcasterId)
     .collection("checkinConfig")
     .doc("settings");
 }
@@ -46,9 +46,9 @@ function createHelixClient(accessToken: string): AxiosInstance {
 // ─── GET /api/checkin ────────────────────────────────────────────────────────
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const channelKey = channelDocKey(req.user);
+  const broadcasterId = channelDocKey(req.user);
   try {
-    const docSnap = await getCheckinConfigRef(channelKey).get();
+    const docSnap = await getCheckinConfigRef(broadcasterId).get();
 
     if (!docSnap.exists) {
       return res.json({
@@ -83,8 +83,7 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
 // Creates or updates the Channel Point Reward on Twitch + saves config
 router.put("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const broadcasterId = req.user.userId;
-  const channelKey = channelDocKey(req.user);
+  const broadcasterId = channelDocKey(req.user);
   const log = logger.child({ endpoint: "PUT /api/checkin", channelLogin });
 
   try {
@@ -120,7 +119,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Load existing config
-    const existingSnap = await getCheckinConfigRef(channelKey).get();
+    const existingSnap = await getCheckinConfigRef(broadcasterId).get();
     const existingConfig = existingSnap.exists ? existingSnap.data() || {} : {};
     let rewardId: string | null = existingConfig.rewardId || null;
 
@@ -239,7 +238,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    await getCheckinConfigRef(channelKey).set(configData, { merge: true });
+    await getCheckinConfigRef(broadcasterId).set(configData, { merge: true });
     log.info("Check-in config saved", { enabled, rewardId });
 
     return res.json({
@@ -267,12 +266,11 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
 // Deletes the Channel Point Reward on Twitch + disables in Firestore
 router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
   const channelLogin = req.user.login;
-  const broadcasterId = req.user.userId;
-  const channelKey = channelDocKey(req.user);
+  const broadcasterId = channelDocKey(req.user);
   const log = logger.child({ endpoint: "DELETE /api/checkin", channelLogin });
 
   try {
-    const docSnap = await getCheckinConfigRef(channelKey).get();
+    const docSnap = await getCheckinConfigRef(broadcasterId).get();
     const existingConfig = docSnap.exists ? docSnap.data() || {} : {};
     const rewardId = existingConfig.rewardId;
 
@@ -300,7 +298,7 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
     }
 
     // Disable locally
-    await getCheckinConfigRef(channelKey).set({
+    await getCheckinConfigRef(broadcasterId).set({
       ...existingConfig,
       enabled: false,
       rewardId: twitchDeleted ? null : rewardId,

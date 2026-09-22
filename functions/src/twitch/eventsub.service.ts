@@ -282,10 +282,13 @@ export async function deleteAllSubscriptionsForUser(
 /**
  * Ensures an ad break EventSub subscription exists or is removed
  * @param channelLogin - Channel login name
+ * @param broadcasterId - The broadcaster's Twitch user ID. Logins are mutable and
+ *   managedChannels does not refresh `channelName` on login, so a lookup by login
+ *   silently misses a renamed channel; the document key is the ID.
  * @param adsEnabled - Whether ads notifications should be enabled
  */
 export async function ensureAdBreakSubscription(
-  channelLogin: string,
+  broadcasterId: string,
   adsEnabled: boolean,
 ): Promise<void> {
   if (!BOT_PUBLIC_URL) {
@@ -293,19 +296,24 @@ export async function ensureAdBreakSubscription(
     return;
   }
 
+  const userId = String(broadcasterId || "").trim();
+  // Login, for log lines only.
+  let channelLogin = userId;
+
   try {
     const db = getDb();
 
-    // Get user ID from Firestore — need to query by channelName since we only have login
-    const channelsSnapshot = await db.collection(CHANNELS_COLLECTION)
-      .where("channelName", "==", channelLogin).limit(1).get();
-    const userDoc = channelsSnapshot.empty ? null : channelsSnapshot.docs[0];
-    const userId = userDoc?.data()?.twitchUserId || userDoc?.id;
-
-    if (!userId) {
-      logger.warn("No user ID found for channel", { channelLogin });
+    if (!/^\d+$/.test(userId)) {
+      logger.warn("No broadcaster ID given for ad break subscription", { broadcasterId });
       return;
     }
+
+    const userDoc = await db.collection(CHANNELS_COLLECTION).doc(userId).get();
+    if (!userDoc.exists) {
+      logger.warn("No managed channel for broadcaster ID", { broadcasterId: userId });
+      return;
+    }
+    channelLogin = userDoc.data()?.channelName || userId;
 
     // Verify user has granted channel:read:ads scope
     try {

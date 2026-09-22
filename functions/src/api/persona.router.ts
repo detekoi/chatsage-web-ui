@@ -16,6 +16,7 @@ import {
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { screenPromptField } from "@/utils/promptSafety";
+import { channelDocKey } from "@/utils/channelKey";
 import { tr } from "@/i18n";
 
 const router = Router();
@@ -79,12 +80,12 @@ async function getBotDefaults(): Promise<BotDefaults> {
  * boilerplate when none is set.
  */
 router.get("/", async (req: AuthenticatedRequest, res: Response) => {
-  const { userId, login } = req.user;
+  const { login } = req.user;
 
   try {
     const [defaults, snap] = await Promise.all([
       getBotDefaults(),
-      getDb().collection(PERSONA_COLLECTION).doc(userId).get(),
+      getDb().collection(PERSONA_COLLECTION).doc(channelDocKey(req.user)).get(),
     ]);
 
     const data = snap.exists ? snap.data() : null;
@@ -146,7 +147,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       return res.status(rejection.status).json(rejection.body);
     }
 
-    await getDb().collection(PERSONA_COLLECTION).doc(userId).set(
+    await getDb().collection(PERSONA_COLLECTION).doc(channelDocKey(req.user)).set(
       {
         twitchUserId: userId,
         // Denormalized for debugging only. Never used as a key — it can go stale
@@ -176,10 +177,10 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
  * Clears the custom persona, reverting the channel to the bot's default.
  */
 router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
-  const { userId, login } = req.user;
+  const { login } = req.user;
 
   try {
-    await getDb().collection(PERSONA_COLLECTION).doc(userId).delete();
+    await getDb().collection(PERSONA_COLLECTION).doc(channelDocKey(req.user)).delete();
     logger.info("Persona reset to default", { channelLogin: login });
     res.json({ success: true, message: tr(req, "api.persona.PersonalityResetDefault", {}, "Personality reset to default.") });
   } catch (error) {

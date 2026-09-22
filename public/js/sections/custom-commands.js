@@ -327,5 +327,5 @@ async function finishSave(name) {
 }
 
 async function deleteCustomCommand(name) {
-    await deleteItem(`/api/commands/custom/${encodeURIComponent(name)}`, `Command !${name}`, loadCustomCommands);
+    await deleteItem(`/api/custom-commands/${encodeURIComponent(name)}`, `Command !${name}`, loadCustomCommands);
 }

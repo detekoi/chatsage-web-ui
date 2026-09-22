@@ -144,7 +144,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     // Handle EventSub subscription for ads if ads setting was changed
     if (typeof inputCategories.ads === "boolean") {
       try {
-        await ensureAdBreakSubscription(channelLogin, inputCategories.ads);
+        await ensureAdBreakSubscription(channelKey, inputCategories.ads);
       } catch (subErr) {
         logger.warn("EventSub subscription warning", {
           channelLogin,
