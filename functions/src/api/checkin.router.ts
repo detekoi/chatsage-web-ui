@@ -112,7 +112,7 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     // it is screened before anything is persisted. Only when AI mode is on —
     // responseTemplate is posted verbatim and is a different risk class.
     if (useAi && aiPrompt && typeof aiPrompt === "string" && aiPrompt.trim()) {
-      const rejection = await screenPromptField(aiPrompt.trim(), "checkin");
+      const rejection = await screenPromptField(req, aiPrompt.trim(), "checkin");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);
       }
@@ -244,7 +244,9 @@ router.put("/", async (req: AuthenticatedRequest, res: Response) => {
     return res.json({
       success: true,
       config: configData,
-      message: enabled ? "Daily Check-In enabled!" : "Check-in settings saved",
+      message: enabled
+        ? tr(req, "api.checkin.DailyCheckEnabled", {}, "Daily Check-In enabled!")
+        : tr(req, "api.checkin.SettingsSaved", {}, "Check-in settings saved"),
     });
   } catch (error) {
     const e = error as Error;
@@ -308,7 +310,9 @@ router.delete("/", async (req: AuthenticatedRequest, res: Response) => {
     return res.json({
       success: true,
       twitchDeleted,
-      message: twitchDeleted ? "Check-in reward disabled & deleted" : "Check-in disabled locally",
+      message: twitchDeleted
+        ? tr(req, "api.checkin.RewardDisabledDeleted", {}, "Check-in reward disabled & deleted")
+        : tr(req, "api.checkin.DisabledLocally", {}, "Check-in disabled locally"),
     });
   } catch (error) {
     const e = error as Error;

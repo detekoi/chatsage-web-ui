@@ -16,6 +16,7 @@ import {
   CHANNELS_COLLECTION,
 } from "@/config/constants";
 import { logger } from "@/config/logger";
+import { tr } from "@/i18n";
 import { redirectToFrontendWithError } from "@/utils/errors";
 import { createSessionToken } from "./jwt.middleware";
 import { storeTwitchRefreshToken } from "@/tokens/firestoreRefreshToken.service";
@@ -284,7 +285,7 @@ router.post("/exchange", async (req: Request, res: Response) => {
   if (typeof code !== "string" || !/^[0-9a-f]{64}$/.test(code)) {
     return res.status(400).json({
       success: false,
-      message: "Missing or malformed exchange code",
+      message: tr(req, "api.auth.MalformedExchangeCode", {}, "Missing or malformed exchange code"),
     });
   }
 
@@ -295,7 +296,7 @@ router.post("/exchange", async (req: Request, res: Response) => {
       logger.warn("Exchange code refused", { reason: result.reason });
       return res.status(400).json({
         success: false,
-        message: "This sign-in link has already been used or has expired. Please sign in again.",
+        message: tr(req, "api.auth.SignInLinkExpired", {}, "This sign-in link has already been used or has expired. Please sign in again."),
       });
     }
 
@@ -307,7 +308,7 @@ router.post("/exchange", async (req: Request, res: Response) => {
     });
     return res.status(500).json({
       success: false,
-      message: "Could not complete sign-in. Please try again.",
+      message: tr(req, "api.auth.SignInFailed", {}, "Could not complete sign-in. Please try again."),
     });
   }
 });

@@ -206,7 +206,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     // Screened before the transaction opens: this is a slow network call and
     // must not be held inside one.
     if (timerType === "prompt") {
-      const rejection = await screenPromptField(response.trim(), "timer");
+      const rejection = await screenPromptField(req, response.trim(), "timer");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);
       }
@@ -257,7 +257,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Timer "${timerName}" created.`,
+      message: tr(req, "api.timers.TimerCreated", { timerName }, `Timer "${timerName}" created.`),
     });
   } catch (error) {
     logger.error("Error creating timer", {
@@ -388,7 +388,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       typeof effectiveResponse === "string" &&
       effectiveResponse.trim()
     ) {
-      const rejection = await screenPromptField(effectiveResponse, "timer");
+      const rejection = await screenPromptField(req, effectiveResponse, "timer");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);
       }
@@ -400,7 +400,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Timer "${timerName}" updated.`,
+      message: tr(req, "api.timers.TimerUpdated", { timerName }, `Timer "${timerName}" updated.`),
     });
   } catch (error) {
     logger.error("Error updating timer", {
@@ -444,7 +444,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Timer "${timerName}" deleted.`,
+      message: tr(req, "api.timers.TimerDeleted", { timerName }, `Timer "${timerName}" deleted.`),
     });
   } catch (error) {
     logger.error("Error deleting timer", {

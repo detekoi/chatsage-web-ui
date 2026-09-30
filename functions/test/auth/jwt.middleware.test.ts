@@ -47,6 +47,15 @@ describe("authenticateApiRequest", () => {
     expect(mockNext).not.toHaveBeenCalled();
   });
 
+  it("words the 401 in the caller's language from X-Locale", () => {
+    mockReq.get = (name: string) => (name === "X-Locale" ? "fr" : undefined);
+    authenticateApiRequest(mockReq, mockRes, mockNext);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Non autorisé : jeton manquant",
+    });
+  });
+
   it("returns 401 for malformed Authorization header", () => {
     mockReq.headers.authorization = "Token abc123";
     authenticateApiRequest(mockReq, mockRes, mockNext);

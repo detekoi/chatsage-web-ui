@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@/config/constants";
 import { sanitizeUsername } from "@/utils/validation";
 import { logger } from "@/config/logger";
+import { tr } from "@/i18n";
 
 /**
  * Extended request type with authenticated user
@@ -50,7 +51,7 @@ export function authenticateApiRequest(
     });
     res.status(401).json({
       success: false,
-      message: "Unauthorized: Missing token",
+      message: tr(req, "api.auth.MissingToken", {}, "Unauthorized: Missing token"),
     });
     return;
   }
@@ -85,7 +86,7 @@ export function authenticateApiRequest(
 
     res.status(401).json({
       success: false,
-      message: "Unauthorized: Invalid token",
+      message: tr(req, "api.auth.InvalidToken", {}, "Unauthorized: Invalid token"),
     });
     return;
   }

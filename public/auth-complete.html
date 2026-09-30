@@ -132,7 +132,7 @@
     </main>
 
     <script type="module">
-        import { t, initI18n } from '/js/i18n.js';
+        import { t, initI18n, getLanguage } from '/js/i18n.js';
 
         document.addEventListener('DOMContentLoaded', async () => {
             // Catalog first: this script writes final status text, so translating afterwards
@@ -205,14 +205,15 @@
                 // same-origin and needs no CORS.
                 const response = await fetch('/auth/exchange', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    // X-Locale lets the server word its error in the language on screen,
+                    // as apiFetch does for the dashboard.
+                    headers: { 'Content-Type': 'application/json', 'X-Locale': getLanguage() },
                     body: JSON.stringify({ code })
                 });
 
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || !data.success || !data.session_token) {
-                    // data.message is server-authored and still English (see the plan's
-                    // out-of-scope note on the API message catalog).
+                    // data.message is localized by the server from the X-Locale header above.
                     throw new Error(data.message || t('page.signInFailed', {}, 'Sign-in failed.'));
                 }
                 return data.session_token;

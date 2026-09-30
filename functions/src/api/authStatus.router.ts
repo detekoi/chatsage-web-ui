@@ -43,8 +43,8 @@ router.get("/status", async (req: AuthenticatedRequest, res: Response): Promise<
       isAuthenticated: true,
       needsReAuth: requiresReAuth,
       message: requiresReAuth
-        ? "Twitch authentication required. Please re-authenticate with Twitch."
-        : "Error validating Twitch authentication.",
+        ? tr(req, "api.bot.TwitchAuthenticationRequiredRe", {}, "Twitch authentication required. Please re-authenticate with Twitch.")
+        : tr(req, "api.authStatus.ErrorValidatingTwitchAuthentication", {}, "Error validating Twitch authentication."),
     });
   }
 });
@@ -87,8 +87,8 @@ router.post("/refresh", async (req: AuthenticatedRequest, res: Response): Promis
       success: false,
       needsReAuth: requiresReAuth,
       message: requiresReAuth
-        ? "Twitch re-authentication required. Please log in with Twitch again."
-        : "Error refreshing Twitch authentication.",
+        ? tr(req, "api.authStatus.TwitchReauthenticationRequiredLogIn", {}, "Twitch re-authentication required. Please log in with Twitch again.")
+        : tr(req, "api.authStatus.ErrorRefreshingTwitchAuthentication", {}, "Error refreshing Twitch authentication."),
     });
   }
 });

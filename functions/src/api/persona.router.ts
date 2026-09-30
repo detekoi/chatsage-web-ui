@@ -144,7 +144,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const rejection = await screenPromptField(trimmed, "persona");
+    const rejection = await screenPromptField(req, trimmed, "persona");
     if (rejection) {
       logger.info("Persona save rejected", { channelLogin: login, status: rejection.status });
       return res.status(rejection.status).json(rejection.body);

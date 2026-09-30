@@ -150,7 +150,7 @@ describe("Custom Commands Router", () => {
         .set("Authorization", `Bearer ${token()}`)
         .send({ name: "lore", response: "Tell a short story", type: "prompt" });
 
-      expect(mockScreen).toHaveBeenCalledWith("Tell a short story", "custom-command");
+      expect(mockScreen).toHaveBeenCalledWith(expect.anything(), "Tell a short story", "custom-command");
     });
 
     it("does not screen a plain text command", async () => {
@@ -222,7 +222,7 @@ describe("Custom Commands Router", () => {
         .set("Authorization", `Bearer ${token()}`)
         .send({ type: "prompt" });
 
-      expect(mockScreen).toHaveBeenCalledWith("previously unscreened text", "custom-command");
+      expect(mockScreen).toHaveBeenCalledWith(expect.anything(), "previously unscreened text", "custom-command");
     });
 
     it("screens the new text when a PUT edits an already-prompt command", async () => {
@@ -236,7 +236,7 @@ describe("Custom Commands Router", () => {
         .set("Authorization", `Bearer ${token()}`)
         .send({ response: "new prompt text" });
 
-      expect(mockScreen).toHaveBeenCalledWith("new prompt text", "custom-command");
+      expect(mockScreen).toHaveBeenCalledWith(expect.anything(), "new prompt text", "custom-command");
     });
 
     it("does not screen a PUT that leaves the command text-typed", async () => {

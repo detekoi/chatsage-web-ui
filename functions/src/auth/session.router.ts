@@ -6,6 +6,7 @@
 import { Router, Request, Response } from "express";
 import { FRONTEND_URL_CONFIG } from "@/config/constants";
 import { logger } from "@/config/logger";
+import { tr } from "@/i18n";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.post("/api/logout", (req: Request, res: Response) => {
   res.clearCookie("session_token", { path: "/" });
   res.json({
     success: true,
-    message: "Logged out successfully",
+    message: tr(req, "api.auth.LoggedOut", {}, "Logged out successfully"),
   });
 });
 

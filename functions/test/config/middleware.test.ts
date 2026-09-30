@@ -18,11 +18,14 @@ import {
   corsAndSecurityMiddleware,
   requestTimeoutMiddleware,
   requireFirestore,
+  resolveTrustProxy,
+  setupMiddleware,
   previewLimiter,
   apiLimiter,
   personaWriteLimiter,
 } from "@/config/middleware";
 import { RATE_LIMIT } from "@/config/constants";
+import { logger } from "@/config/logger";
 
 describe("corsAndSecurityMiddleware", () => {
   let mockReq: any;
@@ -210,7 +213,7 @@ describe("requireFirestore", () => {
 describe("rate limiters that front fetch() callers", () => {
   // The dashboard parses every API response as JSON, so a limiter must not
   // answer 429 with a text/html string.
-  async function exhaust(limiter: any, max: number) {
+  async function exhaust(limiter: any, max: number, locale?: string) {
     const app = express();
     app.use((req: any, _res: any, next: any) => {
       req.user = { userId: "user-1" };
@@ -223,7 +226,8 @@ describe("rate limiters that front fetch() callers", () => {
       const ok = await request(app).post("/");
       expect(ok.status).toBe(200);
     }
-    return request(app).post("/");
+    const blocked = request(app).post("/");
+    return locale ? blocked.set("X-Locale", locale) : blocked;
   }
 
   it.each([
@@ -236,5 +240,97 @@ describe("rate limiters that front fetch() callers", () => {
     expect(limited.type).toBe("application/json");
     expect(limited.body.success).toBe(false);
     expect(typeof limited.body.message).toBe("string");
+  });
+
+  // The limiters are module singletons whose budgets the tests above already spent, so these two
+  // load a fresh copy of the module to get untouched counters.
+  function freshLimiters() {
+    let fresh: any;
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      fresh = require("@/config/middleware");
+    });
+    return fresh;
+  }
+
+  it("words the 429 in the caller's language from X-Locale", async () => {
+    const limited = await exhaust(freshLimiters().previewLimiter, RATE_LIMIT.PREVIEW.max, "es");
+    expect(limited.status).toBe(429);
+    expect(limited.body).toEqual({
+      success: false,
+      message: "Demasiadas vistas previas. Espera un minuto e inténtalo de nuevo.",
+    });
+  });
+
+  it("keeps the English message without a locale", async () => {
+    const limited = await exhaust(freshLimiters().apiLimiter, RATE_LIMIT.API.max);
+    expect(limited.body.message).toBe("Too many requests. Wait one minute, then try again.");
+  });
+
+  describe("authLimiter", () => {
+    // Fronts both browser navigations (plain text) and POST /auth/exchange, which auth-complete.html
+    // calls with fetch() and parses as JSON.
+    async function exhaustAuth(send: (app: express.Application) => any, max: number) {
+      const app = express();
+      app.use(express.json());
+      app.use(freshLimiters().authLimiter);
+      app.all("/", (_req, res) => res.json({ success: true }));
+      for (let i = 0; i < max; i++) await send(app);
+      return send(app);
+    }
+
+    it("answers a JSON-bodied request with the JSON error shape, localized", async () => {
+      const limited = await exhaustAuth(
+        (app) => request(app).post("/").set("X-Locale", "es").send({ code: "abc" }),
+        RATE_LIMIT.AUTH.max,
+      );
+      expect(limited.status).toBe(429);
+      expect(limited.type).toBe("application/json");
+      expect(limited.body).toEqual({
+        success: false,
+        message: "Demasiados intentos de autenticación, inténtalo de nuevo más tarde.",
+      });
+    });
+
+    it("still answers a browser navigation with plain text", async () => {
+      const limited = await exhaustAuth((app) => request(app).get("/"), RATE_LIMIT.AUTH.max);
+      expect(limited.status).toBe(429);
+      expect(limited.type).toBe("text/html");
+      expect(limited.text).toBe("Too many authentication attempts, please try again later.");
+    });
+  });
+});
+
+describe("resolveTrustProxy", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([["1", 1], ["2", 2], [" 3 ", 3]])("counts %j proxy hops from the right", (raw, hops) => {
+    expect(resolveTrustProxy(raw)).toBe(hops);
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
+  it.each([[""], ["0"], ["-1"], ["1.5"], ["true"], ["abc"]])(
+    "keeps trusting every hop, with a warning, for %j",
+    (raw) => {
+      expect(resolveTrustProxy(raw)).toBe(true);
+      expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("TRUST_PROXY_HOPS"), { value: raw });
+    },
+  );
+
+  it("is applied to the app by setupMiddleware", () => {
+    const app = { set: jest.fn(), use: jest.fn() } as unknown as express.Application;
+    setupMiddleware(app);
+    expect(app.set).toHaveBeenCalledWith("trust proxy", true); // TRUST_PROXY_HOPS is unset under test
+  });
+
+  it("keys IP-based limiters on the address the nearest trusted proxy saw, not a forged one", async () => {
+    const app = express();
+    app.set("trust proxy", 1);
+    app.get("/", (req, res) => res.json({ ip: req.ip }));
+
+    const res = await request(app).get("/").set("X-Forwarded-For", "203.0.113.9, 198.51.100.7");
+
+    // With one trusted hop the rightmost entry — the one our proxy appended — is the client.
+    expect(res.body.ip).toBe("198.51.100.7");
   });
 });
