@@ -210,7 +210,7 @@ describe("requireFirestore", () => {
 describe("rate limiters that front fetch() callers", () => {
   // The dashboard parses every API response as JSON, so a limiter must not
   // answer 429 with a text/html string.
-  async function exhaust(limiter: any, max: number) {
+  async function exhaust(limiter: any, max: number, locale?: string) {
     const app = express();
     app.use((req: any, _res: any, next: any) => {
       req.user = { userId: "user-1" };
@@ -223,7 +223,8 @@ describe("rate limiters that front fetch() callers", () => {
       const ok = await request(app).post("/");
       expect(ok.status).toBe(200);
     }
-    return request(app).post("/");
+    const blocked = request(app).post("/");
+    return locale ? blocked.set("X-Locale", locale) : blocked;
   }
 
   it.each([
@@ -236,5 +237,30 @@ describe("rate limiters that front fetch() callers", () => {
     expect(limited.type).toBe("application/json");
     expect(limited.body.success).toBe(false);
     expect(typeof limited.body.message).toBe("string");
+  });
+
+  // The limiters are module singletons whose budgets the tests above already spent, so these two
+  // load a fresh copy of the module to get untouched counters.
+  function freshLimiters() {
+    let fresh: any;
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      fresh = require("@/config/middleware");
+    });
+    return fresh;
+  }
+
+  it("words the 429 in the caller's language from X-Locale", async () => {
+    const limited = await exhaust(freshLimiters().previewLimiter, RATE_LIMIT.PREVIEW.max, "es");
+    expect(limited.status).toBe(429);
+    expect(limited.body).toEqual({
+      success: false,
+      message: "Demasiadas vistas previas. Espera un minuto e inténtalo de nuevo.",
+    });
+  });
+
+  it("keeps the English message without a locale", async () => {
+    const limited = await exhaust(freshLimiters().apiLimiter, RATE_LIMIT.API.max);
+    expect(limited.body.message).toBe("Too many requests. Wait one minute, then try again.");
   });
 });

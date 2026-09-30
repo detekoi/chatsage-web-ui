@@ -153,7 +153,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     // authoring a prompt and it has to be screened. Plain "text" responses are
     // posted verbatim and are a different risk class, left unscreened for now.
     if (commandType === "prompt") {
-      const rejection = await screenPromptField(response.trim(), "custom-command");
+      const rejection = await screenPromptField(req, response.trim(), "custom-command");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);
       }
@@ -181,7 +181,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Command !${commandName} created.`,
+      message: tr(req, "api.customCommands.CommandCreated", { commandName }, `Command !${commandName} created.`),
     });
   } catch (error) {
     logger.error("Error creating custom command", {
@@ -302,7 +302,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
       typeof effectiveResponse === "string" &&
       effectiveResponse.trim()
     ) {
-      const rejection = await screenPromptField(effectiveResponse, "custom-command");
+      const rejection = await screenPromptField(req, effectiveResponse, "custom-command");
       if (rejection) {
         return res.status(rejection.status).json(rejection.body);
       }
@@ -314,7 +314,7 @@ router.put("/:name", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Command !${commandName} updated.`,
+      message: tr(req, "api.customCommands.CommandUpdated", { commandName }, `Command !${commandName} updated.`),
     });
   } catch (error) {
     logger.error("Error updating custom command", {
@@ -358,7 +358,7 @@ router.delete("/:name", async (req: AuthenticatedRequest, res: Response) => {
 
     res.json({
       success: true,
-      message: `Command !${commandName} deleted.`,
+      message: tr(req, "api.customCommands.CommandDeleted", { commandName }, `Command !${commandName} deleted.`),
     });
   } catch (error) {
     logger.error("Error deleting custom command", {

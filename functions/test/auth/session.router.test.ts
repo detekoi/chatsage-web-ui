@@ -46,5 +46,17 @@ describe("Session Router", () => {
       expect(res.body.success).toBe(true);
       expect(res.headers["set-cookie"]).toBeDefined();
     });
+
+    it("confirms the logout in the language on screen", async () => {
+      const res = await request(createApp()).post("/api/logout").set("X-Locale", "ja");
+
+      expect(res.body.message).toBe("ログアウトしました");
+    });
+
+    it("confirms the logout in English without a locale", async () => {
+      const res = await request(createApp()).post("/api/logout");
+
+      expect(res.body.message).toBe("Logged out successfully");
+    });
   });
 });

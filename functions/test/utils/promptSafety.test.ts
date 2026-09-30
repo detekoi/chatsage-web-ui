@@ -3,6 +3,7 @@
  * Safety screening of broadcaster-authored prompt text.
  */
 
+import type { Request } from "express";
 import axios from "axios";
 
 jest.mock("@/config/logger", () => ({
@@ -213,9 +214,12 @@ describe("fails closed", () => {
 });
 
 describe("screenPromptField", () => {
+  const req = (locale?: string) =>
+    ({ get: (name: string) => (name === "X-Locale" ? locale : undefined) }) as unknown as Request;
+
   it("returns null when the text is allowed", async () => {
     mockedAxios.post.mockResolvedValue(allowResponse());
-    await expect(screenPromptField("a friendly persona", "persona")).resolves.toBeNull();
+    await expect(screenPromptField(req(), "a friendly persona", "persona")).resolves.toBeNull();
   });
 
   it("returns a 400 with the reasons when blocked", async () => {
@@ -223,7 +227,7 @@ describe("screenPromptField", () => {
       geminiResponse({ verdict: "block", reasons: ["Promotes a scam."], categories: ["spam"] }),
     );
 
-    const rejection = await screenPromptField("buy my crypto", "custom-command");
+    const rejection = await screenPromptField(req(), "buy my crypto", "custom-command");
 
     expect(rejection).toEqual({
       status: 400,
@@ -234,9 +238,27 @@ describe("screenPromptField", () => {
   it("returns a 503 when screening is unavailable, so nothing is persisted", async () => {
     mockedAxios.post.mockRejectedValue(new Error("network down"));
 
-    const rejection = await screenPromptField("a persona", "timer");
+    const rejection = await screenPromptField(req(), "a persona", "timer");
 
     expect(rejection?.status).toBe(503);
     expect(rejection?.body.success).toBe(false);
+  });
+
+  it("words the rejection in the caller's language, leaving the model's reasons as given", async () => {
+    mockedAxios.post.mockResolvedValue(
+      geminiResponse({ verdict: "block", reasons: ["Promotes a scam."], categories: ["spam"] }),
+    );
+
+    const rejection = await screenPromptField(req("es"), "buy my crypto", "custom-command");
+
+    expect(rejection?.body.message).toBe("Prompt rechazado: Promotes a scam.");
+  });
+
+  it("localizes the unavailable message too", async () => {
+    mockedAxios.post.mockRejectedValue(new Error("network down"));
+
+    const rejection = await screenPromptField(req("de"), "a persona", "timer");
+
+    expect(rejection?.body.message).toBe("Sicherheitsprüfung nicht verfügbar. Bitte versuche es erneut.");
   });
 });

@@ -22,6 +22,8 @@ import axios from "axios";
 import { getSecret } from "@/utils/secrets";
 import { GEMINI_API_KEY_SECRET, GEMINI_SAFETY_MODEL } from "@/config/constants";
 import { logger } from "@/config/logger";
+import { tr } from "@/i18n";
+import type { Request } from "express";
 
 const GEMINI_TIMEOUT_MS = 8000;
 
@@ -263,9 +265,11 @@ function parseVerdict(data: unknown, kind: PromptKind): SafetyResult {
  * Screens a field and throws a ready-to-send rejection when it fails.
  * Convenience wrapper so routers do not each re-implement the branch.
  *
+ * @param req The request being answered; its locale selects the language of the rejection message.
  * @returns null when the text is allowed, or a { status, body } to send when not.
  */
 export async function screenPromptField(
+  req: Pick<Request, "get">,
   text: string,
   kind: PromptKind,
 ): Promise<{ status: number; body: { success: false; message: string } } | null> {
@@ -274,7 +278,11 @@ export async function screenPromptField(
     if (result.verdict === "block") {
       return {
         status: 400,
-        body: { success: false, message: `Prompt rejected: ${result.reasons.join(" ")}` },
+        body: {
+          success: false,
+          // The reasons come from the safety model in English; only the framing is catalogued.
+          message: tr(req, "api.promptSafety.Rejected", { reasons: result.reasons.join(" ") }, `Prompt rejected: ${result.reasons.join(" ")}`),
+        },
       };
     }
     return null;
@@ -282,7 +290,7 @@ export async function screenPromptField(
     if (error instanceof SafetyCheckUnavailableError) {
       return {
         status: 503,
-        body: { success: false, message: "Safety check unavailable — please try again." },
+        body: { success: false, message: tr(req, "api.promptSafety.Unavailable", {}, "Safety check unavailable — please try again.") },
       };
     }
     throw error;

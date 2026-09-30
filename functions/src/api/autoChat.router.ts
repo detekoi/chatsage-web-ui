@@ -119,9 +119,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       try {
         mode = validateMode(body.mode.toLowerCase(), AUTO_CHAT_MODES);
       } catch (error) {
+        logger.warn("Rejected auto-chat mode", { error: (error as Error).message });
         return res.status(400).json({
           success: false,
-          message: (error as Error).message,
+          message: tr(req, "api.autoChat.InvalidMode", {
+            mode: body.mode.toLowerCase().trim(),
+            modes: AUTO_CHAT_MODES.join(", "),
+          }, `Invalid mode: ${body.mode.toLowerCase().trim()}. Must be one of: ${AUTO_CHAT_MODES.join(", ")}`),
         });
       }
     }

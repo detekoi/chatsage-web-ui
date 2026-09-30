@@ -12,6 +12,7 @@ import {
   REQUEST_TIMEOUT_MS,
 } from "./constants";
 import { requestIdMiddleware } from "./logger";
+import { tr } from "@/i18n";
 
 /*
  * There is deliberately no CSRF middleware here.
@@ -97,12 +98,31 @@ export function corsAndSecurityMiddleware(
 }
 
 /**
+ * Builds the limiter's rejection handler. The message is resolved per request, because a limiter is
+ * created once at load and cannot know the caller's language until a request is refused.
+ *
+ * @param key Catalog key of the message.
+ * @param fallback English text.
+ * @param asJson Objects, not strings, on every limiter that fronts a fetch() caller:
+ *   express-rate-limit sends a string as text/html, and the dashboard parses every API response
+ *   as JSON. Only the browser-navigated auth endpoints send plain text.
+ */
+function limitHandler(key: string, fallback: string, asJson = true) {
+  return (req: Request, res: Response, _next: NextFunction, options: { statusCode: number }) => {
+    const message = tr(req, key, {}, fallback);
+    res.status(options.statusCode);
+    if (asJson) res.json({ success: false, message });
+    else res.send(message);
+  };
+}
+
+/**
  * Rate limiter for authentication endpoints
  */
 export const authLimiter = rateLimit({
   windowMs: RATE_LIMIT.AUTH.windowMs,
   max: RATE_LIMIT.AUTH.max,
-  message: "Too many authentication attempts, please try again later.",
+  handler: limitHandler("api.middleware.TooManyAuthAttempts", "Too many authentication attempts, please try again later.", false),
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -113,10 +133,7 @@ export const authLimiter = rateLimit({
 export const apiLimiter = rateLimit({
   windowMs: RATE_LIMIT.API.windowMs,
   max: RATE_LIMIT.API.max,
-  // Objects, not strings, on every limiter that fronts a fetch() caller:
-  // express-rate-limit sends a string as text/html, and the dashboard parses
-  // every API response as JSON.
-  message: { success: false, message: "Too many requests. Wait one minute, then try again." },
+  handler: limitHandler("api.middleware.TooManyRequests", "Too many requests. Wait one minute, then try again."),
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -138,7 +155,7 @@ function createPromptWriteLimiter(willScreen: (req: Request) => boolean) {
   return rateLimit({
     windowMs: RATE_LIMIT.PROMPT_WRITE.windowMs,
     max: RATE_LIMIT.PROMPT_WRITE.max,
-    message: { success: false, message: "Too many personality or prompt saves. Wait one minute, then try again." },
+    handler: limitHandler("api.middleware.TooManyPromptSaves", "Too many personality or prompt saves. Wait one minute, then try again."),
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req: Request) => !willScreen(req),
@@ -176,7 +193,7 @@ export const aiPromptWriteLimiter = createPromptWriteLimiter((req) => {
 export const previewLimiter = rateLimit({
   windowMs: RATE_LIMIT.PREVIEW.windowMs,
   max: RATE_LIMIT.PREVIEW.max,
-  message: { success: false, message: "Too many previews. Wait one minute, then try again." },
+  handler: limitHandler("api.middleware.TooManyPreviews", "Too many previews. Wait one minute, then try again."),
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req: Request) =>
@@ -202,7 +219,7 @@ export function requestTimeoutMiddleware(
     if (!res.headersSent) {
       res.status(408).json({
         success: false,
-        message: "Request timeout",
+        message: tr(req, "api.middleware.RequestTimeout", {}, "Request timeout"),
       });
     }
   }, REQUEST_TIMEOUT_MS);
@@ -251,7 +268,7 @@ export async function requireFirestore(
   } catch {
     res.status(500).json({
       success: false,
-      message: "Database not available",
+      message: tr(req, "api.middleware.DatabaseUnavailable", {}, "Database not available"),
     });
   }
 }

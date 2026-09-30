@@ -161,7 +161,7 @@ describe("Timers Router", () => {
         .set("Authorization", `Bearer ${token()}`)
         .send({ name: "hype", response: "Hype up chat", type: "prompt" });
 
-      expect(mockScreen).toHaveBeenCalledWith("Hype up chat", "timer");
+      expect(mockScreen).toHaveBeenCalledWith(expect.anything(), "Hype up chat", "timer");
     });
 
     it("does not screen a plain text timer", async () => {
@@ -220,7 +220,7 @@ describe("Timers Router", () => {
         .set("Authorization", `Bearer ${token()}`)
         .send({ type: "prompt" });
 
-      expect(mockScreen).toHaveBeenCalledWith("previously unscreened text", "timer");
+      expect(mockScreen).toHaveBeenCalledWith(expect.anything(), "previously unscreened text", "timer");
     });
 
     it("fails closed with 503 when screening is unavailable", async () => {

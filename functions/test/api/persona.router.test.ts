@@ -150,6 +150,7 @@ describe("POST /", () => {
 
     expect(res.status).toBe(200);
     expect(mockScreen).toHaveBeenCalledWith(
+      expect.anything(),
       "You are Bread Wizard, a calm baking companion.",
       "persona",
     );

@@ -4,6 +4,8 @@
  * and fallback rules that keep that from happening — and that keep an unknown locale harmless.
  */
 
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { Request, Response, NextFunction } from "express";
 import {
   translate,
@@ -132,5 +134,26 @@ describe("catalog integrity", () => {
 
     const drift = englishKeys.filter((k) => tokens(catalogs[locale][k]) !== tokens(catalogs.en[k]));
     expect(drift).toEqual([]);
+  });
+
+  // A key used in source but missing from en silently degrades to the inline English in every
+  // locale; a key in en that no source uses is dead weight that still gets translated each run.
+  describe("source references", () => {
+    const walk = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) return walk(path);
+        return path.endsWith(".ts") && !path.endsWith(join("i18n", "catalog.ts")) ? [path] : [];
+      });
+    const source = walk(join(process.cwd(), "src")).map((f) => readFileSync(f, "utf8")).join("\n");
+    const used = new Set([...source.matchAll(/"(api\.[A-Za-z0-9_.]+)"/g)].map((m) => m[1]));
+
+    it("has a catalog entry for every key the source looks up", () => {
+      expect([...used].filter((k) => !(k in catalogs.en)).sort()).toEqual([]);
+    });
+
+    it("has no catalog entry that the source never looks up", () => {
+      expect(englishKeys.filter((k) => !used.has(k))).toEqual([]);
+    });
   });
 });
