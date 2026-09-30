@@ -10,8 +10,9 @@ import {
   RATE_LIMIT,
   IS_PRODUCTION,
   REQUEST_TIMEOUT_MS,
+  TRUST_PROXY_HOPS,
 } from "./constants";
-import { requestIdMiddleware } from "./logger";
+import { logger, requestIdMiddleware } from "./logger";
 import { tr } from "@/i18n";
 
 /*
@@ -105,13 +106,15 @@ export function corsAndSecurityMiddleware(
  * @param fallback English text.
  * @param asJson Objects, not strings, on every limiter that fronts a fetch() caller:
  *   express-rate-limit sends a string as text/html, and the dashboard parses every API response
- *   as JSON. Only the browser-navigated auth endpoints send plain text.
+ *   as JSON. When false, the limiter still answers JSON to a request that declares a JSON body
+ *   (POST /auth/exchange is called with fetch() from auth-complete.html) and sends plain text only
+ *   to the browser-navigated auth endpoints, which have no body.
  */
 function limitHandler(key: string, fallback: string, asJson = true) {
   return (req: Request, res: Response, _next: NextFunction, options: { statusCode: number }) => {
     const message = tr(req, key, {}, fallback);
     res.status(options.statusCode);
-    if (asJson) res.json({ success: false, message });
+    if (asJson || req.is("json")) res.json({ success: false, message });
     else res.send(message);
   };
 }
@@ -231,11 +234,42 @@ export function requestTimeoutMiddleware(
 }
 
 /**
+ * Resolves Express's `trust proxy` setting from the configured number of proxy hops.
+ *
+ * `trust proxy: true` makes `req.ip` the LEFTMOST `X-Forwarded-For` entry, and a client can put
+ * anything there: every IP-keyed rate limiter (auth, API, unauthenticated writes) is then bypassed by
+ * sending a different forged address per request. A hop count makes Express count from the RIGHT,
+ * skipping only the proxies we run behind, so `req.ip` is the address the nearest trusted proxy saw.
+ *
+ * The count is deployment-specific (Firebase Hosting rewrite vs. the function URL differ), and a
+ * wrong number fails in one of two directions: too high reintroduces the spoofing, too low makes
+ * `req.ip` a proxy address, so every user shares one limiter bucket. So it is configured rather than
+ * guessed, and an unset or invalid value keeps the old permissive behaviour, loudly.
+ *
+ * To find the right value, log `req.ip` and the raw `X-Forwarded-For` for a request you make from a
+ * known address, and pick the count at which `req.ip` equals that address.
+ *
+ * @param raw Value of the TRUST_PROXY_HOPS environment variable.
+ * @returns A positive hop count, or `true` (trust every hop) when unset or invalid.
+ */
+export function resolveTrustProxy(raw: string): number | true {
+  const hops = Number(raw);
+  if (raw.trim() !== "" && Number.isInteger(hops) && hops > 0) return hops;
+  logger.warn(
+    "TRUST_PROXY_HOPS is unset or invalid; trusting every proxy hop, so a client can forge " +
+      "X-Forwarded-For to evade IP-based rate limits. Set it to the number of proxies in front of " +
+      "this function.",
+    { value: raw },
+  );
+  return true;
+}
+
+/**
  * Setup all common middleware for Express app
  */
 export function setupMiddleware(app: express.Application) {
-  // Trust proxy headers from Cloud Run/Firebase Hosting
-  app.set("trust proxy", true);
+  // Trust the proxies in front of Cloud Run/Firebase Hosting, and only those.
+  app.set("trust proxy", resolveTrustProxy(TRUST_PROXY_HOPS));
 
   // CORS and security headers (must be first so error responses include CORS headers)
   app.use(corsAndSecurityMiddleware);
