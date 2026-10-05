@@ -28,7 +28,7 @@
     "crypto": "^1.0.1",
     "express": "^5.1.0",
     "express-rate-limit": "^8.5.1",
-    "firebase-admin": "^12.6.0",
+    "firebase-admin": "^13.10.0",
     "firebase-functions": "^7.3.2",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
