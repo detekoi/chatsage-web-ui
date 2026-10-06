@@ -28,7 +28,8 @@ jest.setTimeout(10000);
  * 127.0.0.1:<port>. On macOS another process can hold 127.0.0.1 on that same port, and its more
  * specific bind takes the connection, so a test gets a 401, 403 or 200 from an unrelated local
  * server. Binding to 127.0.0.1 makes the OS pick a port that is free there. Passing a host makes
- * listen() asynchronous, so the URL is filled in once the server is listening.
+ * listen() asynchronous, so the real port is filled in once the server is listening. Until then the
+ * URL carries port 0, because request.agent() parses it as soon as the request is created.
  */
 const LOOPBACK = "127.0.0.1";
 type PendingTest = {
@@ -46,7 +47,7 @@ testProto.serverAddress = function(this: PendingTest, app: Server, path: string)
   if (app.address()) return serverAddress.call(this, app, path);
   this._server = app.listen(0, LOOPBACK);
   this._loopbackPath = path;
-  return path;
+  return `http://${LOOPBACK}:0${path}`;
 };
 testProto.end = function(this: PendingTest, fn) {
   const server = this._server;
