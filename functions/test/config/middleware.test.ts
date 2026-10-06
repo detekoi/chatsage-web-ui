@@ -332,7 +332,8 @@ describe("trustCloudRunProxies", () => {
   });
 
   it("falls back to the socket peer without X-Forwarded-For", async () => {
-    expect(await ipFor()).toMatch(/127\.0\.0\.1$/);
+    // A plain IPv4 address, not ::ffff:127.0.0.1, because test/setup.ts binds supertest to 127.0.0.1.
+    expect(await ipFor()).toBe("127.0.0.1");
   });
 
   it.each([
