@@ -42,8 +42,6 @@ export const EXCHANGE_CODE_TTL_MS = 60 * 1000;
 export const WEBUI_INTERNAL_TOKEN = process.env.WEBUI_INTERNAL_TOKEN || "";
 export const ALLOWED_CHANNELS_SECRET_NAME = process.env.ALLOWED_CHANNELS_SECRET_NAME || "";
 export const BOT_PUBLIC_URL = process.env.BOT_PUBLIC_URL || "";
-// Number of reverse-proxy hops in front of this function. See resolveTrustProxy in middleware.ts.
-export const TRUST_PROXY_HOPS = process.env.TRUST_PROXY_HOPS || "";
 export const TWITCH_EVENTSUB_SECRET = process.env.TWITCH_EVENTSUB_SECRET || "";
 
 // Custom bot personas, keyed by immutable Twitch broadcaster ID rather than

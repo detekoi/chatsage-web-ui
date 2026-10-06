@@ -62,7 +62,6 @@ Make sure that you install these tools before you start:
 
 - **For local development (Firebase Emulator):** Create a `.env.<YOUR_PROJECT_ID>` file (for example, `.env.streamsage-bot`) in the `functions` directory. Add your variables to this file (for example, `TWITCH_CLIENT_ID=your_local_test_id`). The Firebase Emulator loads these variables when it runs locally.
 - **For deployed functions (production):** Set environment variables in the Google Cloud Console for your Cloud Function. Go to your function in Google Cloud Console, edit the function, and add variables under "Runtime environment variables". Cloud Functions does not deploy `.env` files to the production environment.
-- **`TRUST_PROXY_HOPS` (set this in production):** the number of reverse proxies in front of the function. Without it the function trusts every `X-Forwarded-For` hop, so a client can forge its IP and evade the IP-based rate limits (auth, API, unauthenticated writes). To find the value, log `req.ip` and the raw `X-Forwarded-For` for a request from a known address and choose the count at which `req.ip` matches it. The count can differ between the Firebase Hosting rewrite and the function URL. Too low makes every user share one rate-limit bucket, so check it after setting it.
 
 ### 4. Install Dependencies
 

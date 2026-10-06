@@ -3,6 +3,7 @@
  * CORS, security headers, and rate limiting
  */
 
+import { BlockList, isIPv4 } from "node:net";
 import express, { Request, Response, NextFunction } from "express";
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import {
@@ -10,9 +11,8 @@ import {
   RATE_LIMIT,
   IS_PRODUCTION,
   REQUEST_TIMEOUT_MS,
-  TRUST_PROXY_HOPS,
 } from "./constants";
-import { logger, requestIdMiddleware } from "./logger";
+import { requestIdMiddleware } from "./logger";
 import { tr } from "@/i18n";
 
 /*
@@ -234,34 +234,46 @@ export function requestTimeoutMiddleware(
 }
 
 /**
- * Resolves Express's `trust proxy` setting from the configured number of proxy hops.
- *
- * `trust proxy: true` makes `req.ip` the LEFTMOST `X-Forwarded-For` entry, and a client can put
- * anything there: every IP-keyed rate limiter (auth, API, unauthenticated writes) is then bypassed by
- * sending a different forged address per request. A hop count makes Express count from the RIGHT,
- * skipping only the proxies we run behind, so `req.ip` is the address the nearest trusted proxy saw.
- *
- * The count is deployment-specific (Firebase Hosting rewrite vs. the function URL differ), and a
- * wrong number fails in one of two directions: too high reintroduces the spoofing, too low makes
- * `req.ip` a proxy address, so every user shares one limiter bucket. So it is configured rather than
- * guessed, and an unset or invalid value keeps the old permissive behaviour, loudly.
- *
- * To find the right value, log `req.ip` and the raw `X-Forwarded-For` for a request you make from a
- * known address, and pick the count at which `req.ip` equals that address.
- *
- * @param raw Value of the TRUST_PROXY_HOPS environment variable.
- * @returns A positive hop count, or `true` (trust every hop) when unset or invalid.
+ * The Google front-end ranges Firebase Hosting reaches this function from. Every Hosting request
+ * in 30 days of logs came from one of these; all are Google-owned and none is in the Google Cloud
+ * customer ranges (gstatic.com/ipranges/cloud.json), so no client can send from them.
  */
-export function resolveTrustProxy(raw: string): number | true {
-  const hops = Number(raw);
-  if (raw.trim() !== "" && Number.isInteger(hops) && hops > 0) return hops;
-  logger.warn(
-    "TRUST_PROXY_HOPS is unset or invalid; trusting every proxy hop, so a client can forge " +
-      "X-Forwarded-For to evade IP-based rate limits. Set it to the number of proxies in front of " +
-      "this function.",
-    { value: raw },
-  );
-  return true;
+const FIREBASE_HOSTING_EGRESS = new BlockList();
+for (const [network, prefix] of [
+  ["64.233.160.0", 19],
+  ["66.102.0.0", 20],
+  ["66.249.64.0", 19],
+  ["74.125.0.0", 16],
+  ["142.250.0.0", 15],
+  ["192.178.0.0", 15],
+] as const) {
+  FIREBASE_HOSTING_EGRESS.addSubnet(network, prefix, "ipv4");
+}
+
+/**
+ * Express `trust proxy` function: decides which proxies may vouch for the client address.
+ *
+ * Measured on 2026-10-05, the function sees one of two `X-Forwarded-For` chains:
+ *   - function URL (run.app, cloudfunctions.net): `<anything the client sent>, <client>`
+ *   - Firebase Hosting rewrite: `<client>, <Hosting egress>`. Hosting replaces the header, so the
+ *     client cannot add entries.
+ * The socket peer is Cloud Run's own front end in both cases. No fixed hop count fits both: 1
+ * makes every Hosting request look like it came from Hosting, and 2 lets a client forge its
+ * address on the function URL and evade every IP-keyed limiter.
+ *
+ * So the socket peer is always trusted, the next hop only when it is Hosting's egress, and
+ * nothing further. If Hosting ever egresses from a range not listed above, `req.ip` becomes the
+ * Hosting address: limits get coarser, but the address still cannot be forged.
+ *
+ * @param addr An address from the chain, nearest first.
+ * @param hop Its position: 0 is the socket peer, 1 the rightmost `X-Forwarded-For` entry.
+ * @returns Whether `addr` is a proxy whose report of the previous hop can be believed.
+ */
+export function trustCloudRunProxies(addr: string, hop: number): boolean {
+  if (hop === 0) return true;
+  if (hop !== 1) return false;
+  const v4 = addr.startsWith("::ffff:") ? addr.slice("::ffff:".length) : addr;
+  return isIPv4(v4) && FIREBASE_HOSTING_EGRESS.check(v4, "ipv4");
 }
 
 /**
@@ -269,7 +281,7 @@ export function resolveTrustProxy(raw: string): number | true {
  */
 export function setupMiddleware(app: express.Application) {
   // Trust the proxies in front of Cloud Run/Firebase Hosting, and only those.
-  app.set("trust proxy", resolveTrustProxy(TRUST_PROXY_HOPS));
+  app.set("trust proxy", trustCloudRunProxies);
 
   // CORS and security headers (must be first so error responses include CORS headers)
   app.use(corsAndSecurityMiddleware);

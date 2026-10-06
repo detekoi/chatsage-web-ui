@@ -18,14 +18,13 @@ import {
   corsAndSecurityMiddleware,
   requestTimeoutMiddleware,
   requireFirestore,
-  resolveTrustProxy,
+  trustCloudRunProxies,
   setupMiddleware,
   previewLimiter,
   apiLimiter,
   personaWriteLimiter,
 } from "@/config/middleware";
 import { RATE_LIMIT } from "@/config/constants";
-import { logger } from "@/config/logger";
 
 describe("corsAndSecurityMiddleware", () => {
   let mockReq: any;
@@ -301,36 +300,56 @@ describe("rate limiters that front fetch() callers", () => {
   });
 });
 
-describe("resolveTrustProxy", () => {
-  beforeEach(() => jest.clearAllMocks());
+describe("trustCloudRunProxies", () => {
+  // Under supertest the socket peer is loopback, standing in for Cloud Run's front end.
+  const ipApp = () => {
+    const app = express();
+    app.set("trust proxy", trustCloudRunProxies);
+    app.get("/", (req, res) => res.json({ ip: req.ip }));
+    return app;
+  };
+  const ipFor = async (xff?: string) => {
+    const req = request(ipApp()).get("/");
+    return (await (xff === undefined ? req : req.set("X-Forwarded-For", xff))).body.ip;
+  };
 
-  it.each([["1", 1], ["2", 2], [" 3 ", 3]])("counts %j proxy hops from the right", (raw, hops) => {
-    expect(resolveTrustProxy(raw)).toBe(hops);
-    expect(logger.warn).not.toHaveBeenCalled();
+  it("takes the client from a Firebase Hosting chain", async () => {
+    expect(await ipFor("198.51.100.7, 66.249.84.137")).toBe("198.51.100.7");
+    expect(await ipFor("198.51.100.7, 74.125.209.166")).toBe("198.51.100.7");
   });
 
-  it.each([[""], ["0"], ["-1"], ["1.5"], ["true"], ["abc"]])(
-    "keeps trusting every hop, with a warning, for %j",
-    (raw) => {
-      expect(resolveTrustProxy(raw)).toBe(true);
-      expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining("TRUST_PROXY_HOPS"), { value: raw });
-    },
-  );
+  it("takes the address Cloud Run saw on the function URL", async () => {
+    expect(await ipFor("198.51.100.7")).toBe("198.51.100.7");
+  });
+
+  it("ignores entries a client forges on the function URL, even ones that look like Hosting", async () => {
+    expect(await ipFor("203.0.113.9, 198.51.100.7")).toBe("198.51.100.7");
+    expect(await ipFor("203.0.113.9, 66.249.84.1, 198.51.100.7")).toBe("198.51.100.7");
+  });
+
+  it("never looks past the Hosting hop", async () => {
+    expect(await ipFor("203.0.113.9, 66.249.84.1, 74.125.209.166")).toBe("66.249.84.1");
+  });
+
+  it("falls back to the socket peer without X-Forwarded-For", async () => {
+    expect(await ipFor()).toMatch(/127\.0\.0\.1$/);
+  });
+
+  it.each([
+    ["Hosting egress", "66.249.84.137", 1, true],
+    ["IPv4-mapped Hosting egress", "::ffff:66.249.84.137", 1, true],
+    ["Google Cloud customer address", "35.192.0.1", 1, false],
+    ["ordinary client", "198.51.100.7", 1, false],
+    ["IPv6 address", "2001:4860::1", 1, false],
+    ["malformed entry", "not-an-ip", 1, false],
+    ["Hosting egress beyond the first hop", "66.249.84.137", 2, false],
+  ])("trusts a %s: %s at hop %d -> %s", (_label, addr, hop, trusted) => {
+    expect(trustCloudRunProxies(addr, hop)).toBe(trusted);
+  });
 
   it("is applied to the app by setupMiddleware", () => {
     const app = { set: jest.fn(), use: jest.fn() } as unknown as express.Application;
     setupMiddleware(app);
-    expect(app.set).toHaveBeenCalledWith("trust proxy", true); // TRUST_PROXY_HOPS is unset under test
-  });
-
-  it("keys IP-based limiters on the address the nearest trusted proxy saw, not a forged one", async () => {
-    const app = express();
-    app.set("trust proxy", 1);
-    app.get("/", (req, res) => res.json({ ip: req.ip }));
-
-    const res = await request(app).get("/").set("X-Forwarded-For", "203.0.113.9, 198.51.100.7");
-
-    // With one trusted hop the rightmost entry — the one our proxy appended — is the client.
-    expect(res.body.ip).toBe("198.51.100.7");
+    expect(app.set).toHaveBeenCalledWith("trust proxy", trustCloudRunProxies);
   });
 });
