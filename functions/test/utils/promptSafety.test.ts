@@ -151,14 +151,15 @@ describe("classifier verdicts", () => {
 
     const body = mockedAxios.post.mock.calls[0][1] as {
       contents: Array<{ parts: Array<{ text: string }> }>;
-      generationConfig: { temperature: number };
+      generationConfig: Record<string, unknown>;
     };
     const sent = body.contents[0].parts[0].text;
 
     expect(sent).toContain("<<<CANDIDATE_TEXT_BEGIN>>>");
     expect(sent).toContain("A pirate captain persona.");
     expect(sent).toContain("<<<CANDIDATE_TEXT_END>>>");
-    expect(body.generationConfig.temperature).toBe(0);
+    // Gemini rejects custom sampling parameters on newer models.
+    expect(body.generationConfig).not.toHaveProperty("temperature");
   });
 });
 

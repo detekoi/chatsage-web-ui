@@ -184,7 +184,6 @@ Classify the candidate text above.`;
         systemInstruction: { parts: [{ text: CLASSIFIER_INSTRUCTION }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0,
           responseMimeType: "application/json",
           responseSchema: RESPONSE_SCHEMA,
         },
