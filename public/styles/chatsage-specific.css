@@ -314,6 +314,9 @@
 
 :root .wc-card .list-group-item.is-editing {
     border-top-color: var(--wc-accent-dim);
+    /* Rows run edge to edge in an unframed section; inset the tinted one so
+       its text clears the rail and lines up with the form below. */
+    padding-inline: 16px;
 }
 
 :root .wc-card .list-group-item.is-editing .cmd-name {
