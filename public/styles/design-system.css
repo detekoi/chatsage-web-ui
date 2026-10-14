@@ -1064,8 +1064,8 @@ a[target="_blank"].no-arrow::after {
    focal box of a .wc-frame or dialog.
    ===================================================== */
 .wc-card {
-    /* The frame owns its box; a theme's Bootstrap-era .card padding, flex
-       layout and overflow-wrap must not leak in. */
+    /* The section owns its box; a theme's Bootstrap-era .card border,
+       padding, flex layout and overflow-wrap must not leak in. */
     display: block;
     margin: 0;
     padding: 0;
@@ -1238,14 +1238,21 @@ a[target="_blank"].no-arrow::after {
 }
 
 :root .wc-card > .card-body { padding: 0; }
-:root .wc-card > .card-body > *:first-child { border-top: 0; }
-/* No double rule directly under the title. */
-:root .wc-card > .card-body > .list-group:first-child > .list-group-item:first-child,
-:root .wc-card > .card-body > .wc-switch-rows:first-child > .form-check:first-child { border-top: 0; }
+/* No double rule directly under the title: the first block that renders
+   drops its top rule, as does the first row of a leading row stack. "First"
+   skips the loading bar (absolutely positioned when shown), hidden blocks
+   and empty ones, which often precede the content in the markup. The second
+   selector repeats the free-form block rule's :not() chain so it outranks
+   that rule. */
+:root .wc-card > .card-body > :nth-child(1 of :not(.wc-loading, [hidden], .d-none, :empty)),
+:root .wc-card > .card-body > :not(.wc-card-desc):not(.list-group):not(.wc-switch-rows):not(:empty):nth-child(1 of :not(.wc-loading, [hidden], .d-none, :empty)),
+:root .wc-card > .card-body > :is(.list-group, .wc-switch-rows):nth-child(1 of :not(.wc-loading, [hidden], .d-none, :empty)) > :nth-child(1 of :not([hidden], .d-none)) {
+    border-top: 0;
+}
 
-/* Card titles. Same face as a bare heading in a card header (rule above,
-   which sets 13px there), but the class also works outside one, e.g. in an
-   aside. */
+/* Card titles: the section-title face at 12px wherever the class is used
+   on its own. In a section header the heading rule above sets 13px; in an
+   aside header the title takes the header's mono label (section 11). */
 .wc-card-title {
     font-family: var(--wc-font-name);
     font-weight: 600;
@@ -1632,6 +1639,17 @@ a[target="_blank"].no-arrow::after {
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--wc-text-2);
+}
+
+/* A .wc-card-title in an aside header reads as the same mono label. */
+.wc-aside-card > header .wc-card-title,
+:root .wc-aside-card .card-header .wc-card-title {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+    color: inherit;
 }
 
 .wc-aside-body,
