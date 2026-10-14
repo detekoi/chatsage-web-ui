@@ -1,11 +1,11 @@
 import { showActionToast } from './ui.js';
 import { t, getLanguage } from './i18n.js';
 
-// app.wildcat.chat and api.wildcat.chat are two Hosting targets in front of the
-// same webUi function, so this is a host change, not a backend change. Pointing
-// at app keeps the whole OAuth round trip — start, callback, and landing — on
-// one origin, which is what lets the host-only state cookie survive it.
-export const API_BASE_URL = 'https://app.wildcat.chat';
+// bot.wildcat.chat is the canonical origin: CALLBACK_URL and FRONTEND_URL name
+// it, and app.wildcat.chat redirects to it. Keeping the whole OAuth round trip
+// (start, callback, and landing) on one origin is what lets the host-only
+// state cookie survive it, and puts the session in that origin's localStorage.
+export const API_BASE_URL = 'https://bot.wildcat.chat';
 
 let appSessionToken = null;
 

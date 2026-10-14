@@ -172,7 +172,9 @@
     <script>
         document.getElementById('twitchLoginBtn').addEventListener('click', (event) => {
             event.currentTarget.classList.add('is-busy');
-            const apiBaseUrl = 'https://app.wildcat.chat';
+            // The host CALLBACK_URL names: the OAuth state cookie is host-only,
+            // so the flow has to start where Twitch will send it back.
+            const apiBaseUrl = 'https://bot.wildcat.chat';
             window.location.href = `${apiBaseUrl}/auth/twitch`;
         });
     </script>

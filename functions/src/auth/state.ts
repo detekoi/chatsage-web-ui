@@ -12,7 +12,7 @@
  * HttpOnly + Secure + SameSite=Lax, host-only scope, the ten-minute lifetime,
  * single use, and the timing-safe comparison below.
  *
- * The cookie name is forced on us: `api.wildcat.chat` and `app.wildcat.chat`
+ * The cookie name is forced on us: `api.wildcat.chat` and `bot.wildcat.chat`
  * are Firebase Hosting sites that rewrite to this Function, and Hosting strips
  * every cookie except `__session` before forwarding. That rules out the
  * `__Host-` prefix, so a sibling subdomain planting a cookie (cookie tossing)

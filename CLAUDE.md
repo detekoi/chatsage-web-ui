@@ -66,6 +66,11 @@ lives in `.css-baseline/` and is not committed. The script is synced from
 
 - Commit messages describe the code change only.
 - `main` is the primary branch.
+- `https://bot.wildcat.chat` is the one origin for sign-in and the session. The
+  `CALLBACK_URL` and `FRONTEND_URL` secrets name it, `index.html` starts
+  sign-in on it and `js/api.js` calls it, and `app.wildcat.chat` redirects to
+  it. The OAuth state cookie is host-only and the session lives in
+  `localStorage`, so all four have to agree; change them together.
 - Channel-scoped Firestore documents (timers, custom commands, command
   settings, auto-chat, language, check-in, personas) are keyed by the
   broadcaster's Twitch user ID via `channelDocKey(req.user)` in
