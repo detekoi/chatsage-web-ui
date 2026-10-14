@@ -102,7 +102,7 @@
 
         <div class="wc-frame">
             <div class="wc-frame-head">
-                <span class="wc-lockup">Wildcat<b>Sage</b></span>
+                <span class="wc-lockup"><a class="wc-lockup-link" href="https://wildcat.chat">Wildcat</a><b>Sage</b></span>
                 <span class="wc-readout" data-i18n="page.inviteOnly">Invite-only</span>
             </div>
 
@@ -172,7 +172,9 @@
     <script>
         document.getElementById('twitchLoginBtn').addEventListener('click', (event) => {
             event.currentTarget.classList.add('is-busy');
-            const apiBaseUrl = 'https://app.wildcat.chat';
+            // The host CALLBACK_URL names: the OAuth state cookie is host-only,
+            // so the flow has to start where Twitch will send it back.
+            const apiBaseUrl = 'https://bot.wildcat.chat';
             window.location.href = `${apiBaseUrl}/auth/twitch`;
         });
     </script>
