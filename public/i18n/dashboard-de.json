@@ -101,7 +101,8 @@
         "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
         "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Arten. Das geht auch unter Auto-Chat-Einstellungen auf dieser Seite.",
         "disable": "Deaktiviert einen Befehl über den Chat.",
-        "enable": "Aktiviert einen Befehl über den Chat wieder."
+        "enable": "Aktiviert einen Befehl über den Chat wieder.",
+        "so": "Gibt einem anderen Streamer ein Shoutout: Der Bot postet das gespielte Spiel und einen Link zum Kanal und sendet ein Twitch-Shoutout. Wenn du einen eigenen !so-Befehl erstellt hast, führt der Bot stattdessen deinen aus."
       }
     },
     "commandsTitle": "Befehlseinstellungen",

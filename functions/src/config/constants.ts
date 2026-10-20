@@ -132,6 +132,7 @@ export const ALL_COMMANDS = [
   "quote",
   "command",
   "followage",
+  "so",
   "timer",
   "remember",
   "forget",

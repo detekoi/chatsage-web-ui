@@ -656,7 +656,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:fr": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -895,7 +896,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:de": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1134,7 +1136,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:it": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1373,7 +1376,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:pt": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1612,7 +1616,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:ja": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1851,7 +1856,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "dashboard:ru": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -2090,7 +2096,8 @@
     "page.commands.desc.botlang": "973d8de1b806616e",
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
-    "page.commands.desc.enable": "26020be0d91e53b7"
+    "page.commands.desc.enable": "26020be0d91e53b7",
+    "page.commands.desc.so": "9e11eb9fd610976a"
   },
   "index:es": {
     "page.accessLabel": "ec5ba0abb717da87",

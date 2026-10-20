@@ -101,7 +101,8 @@
         "botlang": "Imposta dalla chat la lingua delle risposte del bot. Puoi farlo anche in Lingua del bot in questa pagina.",
         "auto": "Imposta ogni quanto il bot pubblica messaggi automatici e di quali tipi. Puoi farlo anche in Impostazioni Auto-Chat in questa pagina.",
         "disable": "Disattiva un comando dalla chat.",
-        "enable": "Riattiva un comando dalla chat."
+        "enable": "Riattiva un comando dalla chat.",
+        "so": "Fa uno shoutout a un altro streamer: il bot pubblica il gioco a cui gioca e il link al suo canale, e invia un Twitch Shoutout. Se hai creato un comando !so personalizzato, il bot eseguirà invece il tuo."
       }
     },
     "commandsTitle": "Impostazioni comandi",
