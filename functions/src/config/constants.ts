@@ -132,7 +132,18 @@ export const ALL_COMMANDS = [
   "quote",
   "command",
   "followage",
+  "timer",
+  "remember",
+  "forget",
+  "forgetme",
+  "memory",
 ];
+
+// Commands a channel cannot turn off: !enable and !disable so moderators can always re-enable a
+// command from chat, and !forgetme so a viewer can always opt out of channel memory. Mirrors
+// PROTECTED_COMMANDS in the bot's src/components/context/commandStateManager.js, which also
+// ignores a stored disable for these; change both together.
+export const ALWAYS_ON_COMMANDS: readonly string[] = ["enable", "disable", "forgetme"];
 
 
 // Languages the dashboard offers for bot responses, stored as the lowercase English name the bot

@@ -55,7 +55,7 @@ npm run css:check      # after the change; exit 1 on any difference
 ```
 
 It serves `public/`, loads every page in `scripts/css-snapshot.config.json` at
-1100px and 400px in both themes (the dashboard through `?dev=true` with the
+1440px (above the `--wc-page-w` cap), 1100px and 400px in both themes (the dashboard through `?dev=true` with the
 add-forms opened), disables transitions, and records `getComputedStyle` for
 every element. Expect zero differences unless the change is meant to be
 visible; when markup changes on purpose, re-save the baseline. The baseline

@@ -113,8 +113,51 @@
 /* The section frame now comes from .wc-card in design-system.css; the
    #commands-section wrapper is just a visibility container. */
 
-/* Commands are stacked setting rows, not a multi-column grid — one control
-   column down the card, per the design system. */
+/* Commands are stacked setting rows, not a multi-column grid: one control
+   column down the card, per the design system. The rows come in groups
+   (built-in-commands.js). A group head is a .list-group-item so the card's
+   first-row rule drops its top hairline. It drops the rule between groups
+   too, and the extra space above it does that job. */
+:root .wc-card .list-group-item.cmd-group-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 26px 0 10px;
+    border-top: 0;
+}
+
+:root .wc-card .list-group-item.cmd-group-head:first-child {
+    padding-top: 14px;
+}
+
+/* :root .wc-card so the design system's :root h3 face and the theme's
+   .card-body p colour do not win. */
+:root .wc-card .cmd-group-title {
+    font-family: var(--wc-font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wc-text-2);
+    margin: 0;
+}
+
+:root .wc-card .cmd-group-note {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--wc-text-3);
+    margin: 0;
+}
+
+/* An always-on command (!enable, !disable, !forgetme; alwaysOn from the
+   API) shows a switch that is on and does not take input. Scoped to those
+   rows: toggleItem() also disables a switch while its save is in flight,
+   and that must not dim it. */
+:root .wc-card .form-switch .form-check-input.cmd-always-on:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
    the centred italic spinner caption that lived here was removed with it.
    The AI preview bar sits inside its panel, so trim .wc-loading's

@@ -7,7 +7,7 @@
 
 import { Router, Response } from "express";
 import { getDb, FieldValue } from "@/config/database";
-import { ALL_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
+import { ALL_COMMANDS, ALWAYS_ON_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateBoolean } from "@/utils/validation";
@@ -29,13 +29,35 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelKey);
     const snap = await docRef.get();
     const data = snap.exists ? snap.data() : {};
-    const disabledCommands = data?.disabledCommands || [];
+    const disabledCommands: string[] = data?.disabledCommands || [];
 
-    const commandSettings = ALL_COMMANDS.map((cmd) => ({
-      primaryName: cmd,
-      name: cmd,
-      enabled: !disabledCommands.includes(cmd),
-    }));
+    // A channel that turned an always-on command off before the dashboard refused it still has it
+    // in disabledCommands. The bot ignores that entry, but a bot without that rule (not yet
+    // deployed, or rolled back) still obeys it, and the locked switch leaves the streamer no way to
+    // clear it. So clear it here. A failed write only leaves the entry for the next load.
+    const stale = ALWAYS_ON_COMMANDS.filter((cmd) => disabledCommands.includes(cmd));
+    if (stale.length) {
+      try {
+        await docRef.set({ disabledCommands: FieldValue.arrayRemove(...stale) }, { merge: true });
+        logger.info("Cleared always-on commands from disabledCommands", { channelLogin, stale });
+      } catch (error) {
+        logger.warn("Could not clear always-on commands from disabledCommands", {
+          channelLogin,
+          stale,
+          error: (error as Error).message,
+        });
+      }
+    }
+
+    const commandSettings = ALL_COMMANDS.map((cmd) => {
+      const alwaysOn = ALWAYS_ON_COMMANDS.includes(cmd);
+      return {
+        primaryName: cmd,
+        name: cmd,
+        enabled: alwaysOn || !disabledCommands.includes(cmd),
+        alwaysOn,
+      };
+    });
 
     res.json({
       success: true,
@@ -65,7 +87,11 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { command, enabled } = req.body;
 
-    if (!command || typeof command !== "string") {
+    // The bot matches command names lowercased, so store them that way. An unknown name is
+    // refused: it would sit in disabledCommands doing nothing, and a padded or differently cased
+    // name would slip past the always-on check below.
+    const name = typeof command === "string" ? command.trim().toLowerCase() : "";
+    if (!ALL_COMMANDS.includes(name)) {
       return res.status(400).json({
         success: false,
         message: tr(req, "api.commands.InvalidCommandName", {}, "Invalid command name"),
@@ -82,6 +108,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    if (!enabled && ALWAYS_ON_COMMANDS.includes(name)) {
+      return res.status(400).json({
+        success: false,
+        message: tr(req, "api.commands.CommandAlwaysOn", { command: name }, `You cannot turn off the command ${name}.`),
+      });
+    }
+
     const docRef = db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelKey);
 
     // Use array operations to match bot's expected structure
@@ -89,7 +122,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       // Enable command by removing from disabledCommands array
       await docRef.set(
         {
-          disabledCommands: FieldValue.arrayRemove(command),
+          disabledCommands: FieldValue.arrayRemove(name),
           channelName: channelLogin,
         },
         { merge: true },
@@ -97,13 +130,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
       logger.info("Enabled command", {
         channelLogin,
-        command,
+        command: name,
       });
     } else {
       // Disable command by adding to disabledCommands array
       await docRef.set(
         {
-          disabledCommands: FieldValue.arrayUnion(command),
+          disabledCommands: FieldValue.arrayUnion(name),
           channelName: channelLogin,
         },
         { merge: true },
@@ -111,7 +144,7 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
 
       logger.info("Disabled command", {
         channelLogin,
-        command,
+        command: name,
       });
     }
 
@@ -120,8 +153,8 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       // Two whole keys rather than splicing "enabled"/"disabled" in as a parameter: the word is
       // English, so a single template renders as "Comando !help enabled correctamente."
       message: enabled
-        ? tr(req, "api.commands.CommandEnabledSuccessfully", { command }, `Command ${command} enabled successfully.`)
-        : tr(req, "api.commands.CommandDisabledSuccessfully", { command }, `Command ${command} disabled successfully.`),
+        ? tr(req, "api.commands.CommandEnabledSuccessfully", { command: name }, `Command ${name} enabled successfully.`)
+        : tr(req, "api.commands.CommandDisabledSuccessfully", { command: name }, `Command ${name} disabled successfully.`),
     });
   } catch (error) {
     logger.error("Error updating command settings", {

@@ -7,11 +7,30 @@ if (DEV_MODE) {
 
 export const mockUser = { login: 'test_user', id: '12345', displayName: 'TestUser' };
 
+// Same order as ALL_COMMANDS in functions/src/config/constants.ts.
 export const mockCommands = [
+    { primaryName: 'ask', name: 'ask', enabled: true },
+    { primaryName: 'search', name: 'search', enabled: true },
+    { primaryName: 'game', name: 'game', enabled: true },
+    { primaryName: 'translate', name: 'translate', enabled: true },
     { primaryName: 'help', name: 'help', enabled: true },
-    { primaryName: 'chatgpt', name: 'chatgpt', enabled: true },
-    { primaryName: 'dalle', name: 'dalle', enabled: true },
-    { primaryName: 'joke', name: 'joke', enabled: false },
+    { primaryName: 'lurk', name: 'lurk', enabled: true },
+    { primaryName: 'geo', name: 'geo', enabled: true },
+    { primaryName: 'riddle', name: 'riddle', enabled: true },
+    { primaryName: 'trivia', name: 'trivia', enabled: true },
+    { primaryName: 'botlang', name: 'botlang', enabled: true },
+    { primaryName: 'auto', name: 'auto', enabled: false },
+    { primaryName: 'disable', name: 'disable', enabled: true, alwaysOn: true },
+    { primaryName: 'enable', name: 'enable', enabled: true, alwaysOn: true },
+    { primaryName: 'ping', name: 'ping', enabled: true },
+    { primaryName: 'quote', name: 'quote', enabled: true },
+    { primaryName: 'command', name: 'command', enabled: true },
+    { primaryName: 'followage', name: 'followage', enabled: true },
+    { primaryName: 'timer', name: 'timer', enabled: true },
+    { primaryName: 'remember', name: 'remember', enabled: true },
+    { primaryName: 'forget', name: 'forget', enabled: true },
+    { primaryName: 'forgetme', name: 'forgetme', enabled: true, alwaysOn: true },
+    { primaryName: 'memory', name: 'memory', enabled: true },
 ];
 
 export const mockCustomCommands = [

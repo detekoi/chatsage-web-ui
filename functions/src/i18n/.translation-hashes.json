@@ -122,7 +122,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "fr": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -247,7 +248,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "de": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -372,7 +374,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "it": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -497,7 +500,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "pt": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -622,7 +626,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "ja": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -747,7 +752,8 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   },
   "ru": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -872,6 +878,7 @@
     "api.middleware.RequestTimeout": "70f60044d161bbdd",
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
-    "api.promptSafety.Unavailable": "970712e14dc5c588"
+    "api.promptSafety.Unavailable": "970712e14dc5c588",
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
   }
 }

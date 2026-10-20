@@ -29,7 +29,7 @@ const mockCollection = jest.fn().mockReturnValue({ doc: mockDoc });
 jest.mock("@/config/database", () => ({
   getDb: () => ({ collection: mockCollection }),
   FieldValue: {
-    arrayRemove: jest.fn((val: string) => ({ _type: "arrayRemove", value: val })),
+    arrayRemove: jest.fn((...vals: string[]) => ({ _type: "arrayRemove", value: vals.length === 1 ? vals[0] : vals })),
     arrayUnion: jest.fn((val: string) => ({ _type: "arrayUnion", value: val })),
     serverTimestamp: jest.fn(() => "SERVER_TIMESTAMP"),
   },
@@ -90,6 +90,75 @@ describe("Commands Router", () => {
       expect(Array.isArray(res.body.commands)).toBe(true);
     });
 
+    it("reports always-on commands as enabled even when stored as disabled", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ disabledCommands: ["enable", "forgetme", "trivia"] }),
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .get("/")
+        .set("Authorization", `Bearer ${token}`);
+
+      const byName = Object.fromEntries(res.body.commands.map((c: any) => [c.name, c]));
+      expect(byName.enable).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.disable).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.forgetme).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.trivia).toEqual(expect.objectContaining({ enabled: false, alwaysOn: false }));
+      expect(byName.timer).toEqual(expect.objectContaining({ enabled: true, alwaysOn: false }));
+      // The stale always-on entries are cleared so a bot that still obeys them stops doing so.
+      expect(mockSet).toHaveBeenCalledWith(
+        { disabledCommands: { _type: "arrayRemove", value: ["enable", "forgetme"] } },
+        { merge: true },
+      );
+    });
+
+    it("still answers when clearing stale always-on entries fails", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ disabledCommands: ["disable"] }),
+      });
+      mockSet.mockRejectedValueOnce(new Error("write failed"));
+
+      const app = createApp();
+      const res = await request(app)
+        .get("/")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it("does not write when no always-on command is stored as disabled", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ disabledCommands: ["trivia"] }),
+      });
+
+      const app = createApp();
+      await request(app)
+        .get("/")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
     it("returns default state when no channel data exists", async () => {
       const token = makeToken({
         login: "testuser",
@@ -128,6 +197,81 @@ describe("Commands Router", () => {
       // Keyed by broadcaster ID, never by login
       expect(mockDoc).toHaveBeenCalledWith("123");
       expect(mockDoc).not.toHaveBeenCalledWith("testuser");
+    });
+
+    it.each(["enable", "disable", "forgetme", "Enable", " enable "])("refuses to turn off the always-on command %p", async (command) => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command, enabled: false });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("still lets an always-on command be turned on, which clears a stored disable", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command: "enable", enabled: true });
+
+      expect(res.status).toBe(200);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({ disabledCommands: { _type: "arrayRemove", value: "enable" } }),
+        { merge: true },
+      );
+    });
+
+    it("stores the name trimmed and lowercased", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command: " ASK ", enabled: false });
+
+      expect(res.status).toBe(200);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({ disabledCommands: { _type: "arrayUnion", value: "ask" } }),
+        { merge: true },
+      );
+    });
+
+    it("returns 400 for a command the bot does not have", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command: "enable\u200b", enabled: false });
+
+      expect(res.status).toBe(400);
+      expect(mockSet).not.toHaveBeenCalled();
     });
 
     it("returns 400 for missing command name", async () => {

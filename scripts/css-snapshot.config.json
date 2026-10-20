@@ -1,7 +1,7 @@
 {
   "publicDir": "public",
   "baselineDir": ".css-baseline",
-  "widths": [1100, 400],
+  "widths": [1440, 1100, 400],
   "themes": ["light", "dark"],
   "themeAttribute": "data-theme",
   "pages": [
