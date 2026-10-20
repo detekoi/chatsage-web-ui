@@ -70,7 +70,33 @@
       "rewardTitle": "Belohnungstitel"
     },
     "checkinTitle": "Täglicher Check-In",
-    "commandsHelp": "Befehle für deinen Kanal aktivieren oder deaktivieren:",
+    "commandsHelp": "Wenn du einen Befehl deaktivierst, ignoriert der Bot ihn im Chat.",
+    "commands": {
+      "groupGeneral": "Allgemein",
+      "groupGames": "Spiele",
+      "groupModerators": "Moderator-Befehle",
+      "moderatorsNote": "Nur Moderatoren und der Streamer können diese Befehle verwenden.",
+      "alwaysOn": "Du kannst diesen Befehl nicht deaktivieren.",
+      "desc": {
+        "ask": "Beantwortet die Frage eines Zuschauers. Der Bot kann im Web nach der Antwort suchen.",
+        "search": "Sucht im Web nach einem Thema und postet das Ergebnis im Chat.",
+        "game": "Zeigt Informationen über das Spiel, das du streamst. Mit \"analyze\" sieht sich der Bot auch ein aktuelles Bild des Streams an.",
+        "translate": "Übersetzt die Chatnachrichten eines Zuschauers in eine andere Sprache. Moderatoren können das für andere Zuschauer einstellen.",
+        "help": "Postet einen Link zur Liste der Bot-Befehle.",
+        "lurk": "Sagt dem Chat, dass ein Zuschauer lurkt (zusieht, ohne zu schreiben). Der Zuschauer kann einen Grund angeben.",
+        "quote": "Zeigt, speichert und findet Zitate für deinen Kanal. Moderatoren können Zitate auch bearbeiten und löschen.",
+        "followage": "Zeigt, wie lange ein Zuschauer deinem Kanal schon folgt.",
+        "ping": "Der Bot antwortet mit \"Pong!\", um zu zeigen, dass er in deinem Chat ist.",
+        "geo": "Startet ein Spiel, in dem Zuschauer einen Ort erraten. Der Ort ist echt oder stammt aus dem Spiel, das du streamst.",
+        "riddle": "Startet ein Rätselspiel über ein allgemeines Thema, das Spiel, das du streamst, oder ein Thema, das du angibst.",
+        "trivia": "Startet ein Quiz über ein allgemeines Thema, ein Thema, das du angibst, oder das Spiel, das du streamst.",
+        "command": "Erstellt, bearbeitet und löscht eigene Befehle über den Chat. Das geht auch unter Eigene Befehle auf dieser Seite.",
+        "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
+        "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Arten. Das geht auch unter Auto-Chat-Einstellungen auf dieser Seite.",
+        "disable": "Deaktiviert einen Befehl über den Chat.",
+        "enable": "Aktiviert einen Befehl über den Chat wieder."
+      }
+    },
     "commandsTitle": "Befehlseinstellungen",
     "customCommands": {
       "aiMode": "AI-Modus <small class=\"text-muted\">(generiert jedes Mal eine neue Antwort)</small>",

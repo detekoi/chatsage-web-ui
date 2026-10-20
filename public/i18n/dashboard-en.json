@@ -70,7 +70,33 @@
             "rewardTitle": "Reward Title"
         },
         "checkinTitle": "Daily Check-In",
-        "commandsHelp": "Enable or disable commands for your channel:",
+        "commandsHelp": "If you turn off a command, the bot ignores it in chat.",
+        "commands": {
+            "groupGeneral": "General",
+            "groupGames": "Games",
+            "groupModerators": "Moderator commands",
+            "moderatorsNote": "Only moderators and the broadcaster can use these commands.",
+            "alwaysOn": "You cannot turn off this command.",
+            "desc": {
+                "ask": "Answers a question from a viewer. The bot can search the web to find the answer.",
+                "search": "Searches the web for a topic and posts the result in chat.",
+                "game": "Gives information about the game that you stream. With \"analyze\", the bot also looks at a recent image of the stream.",
+                "translate": "Translates the chat messages of a viewer into a different language. Moderators can set this for other viewers.",
+                "help": "Posts a link to the list of bot commands.",
+                "lurk": "Tells chat that a viewer is lurking (watching without chatting). The viewer can add a reason.",
+                "quote": "Shows, adds, and finds quotes for your channel. Moderators can also edit and delete quotes.",
+                "followage": "Shows how long a viewer has followed your channel.",
+                "ping": "The bot replies \"Pong!\" to show that it is in your chat.",
+                "geo": "Starts a game in which viewers guess a place. The place is real or from the game that you stream.",
+                "riddle": "Starts a riddle game about a general topic, the game that you stream, or a subject that you give.",
+                "trivia": "Starts a trivia game about a general topic, a topic that you give, or the game that you stream.",
+                "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
+                "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.",
+                "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.",
+                "disable": "Turns off a command from chat.",
+                "enable": "Turns a command back on from chat."
+            }
+        },
         "commandsTitle": "Command Settings",
         "customCommands": {
             "aiMode": "AI Mode <small class=\"text-muted\">(generates a unique response each time)</small>",

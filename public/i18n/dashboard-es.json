@@ -70,7 +70,33 @@
       "rewardTitle": "Título de la recompensa"
     },
     "checkinTitle": "Check-In diario",
-    "commandsHelp": "Activa o desactiva comandos para tu canal:",
+    "commandsHelp": "Si desactivas un comando, el bot lo ignora en el chat.",
+    "commands": {
+      "groupGeneral": "General",
+      "groupGames": "Juegos",
+      "groupModerators": "Comandos de moderador",
+      "moderatorsNote": "Solo los moderadores y el streamer pueden usar estos comandos.",
+      "alwaysOn": "No puedes desactivar este comando.",
+      "desc": {
+        "ask": "Responde a la pregunta de un espectador. El bot puede buscar en la web para encontrar la respuesta.",
+        "search": "Busca un tema en la web y publica el resultado en el chat.",
+        "game": "Da información sobre el juego que transmites. Con \"analyze\", el bot también mira una imagen reciente del stream.",
+        "translate": "Traduce los mensajes de chat de un espectador a otro idioma. Los moderadores pueden activarlo para otros espectadores.",
+        "help": "Publica un enlace a la lista de comandos del bot.",
+        "lurk": "Avisa al chat de que un espectador está en modo lurk (mira sin escribir). El espectador puede añadir un motivo.",
+        "quote": "Muestra, añade y busca citas de tu canal. Los moderadores también pueden editar y eliminar citas.",
+        "followage": "Muestra cuánto tiempo lleva un espectador siguiendo tu canal.",
+        "ping": "El bot responde \"Pong!\" para mostrar que está en tu chat.",
+        "geo": "Inicia un juego en el que los espectadores adivinan un lugar. El lugar es real o del juego que transmites.",
+        "riddle": "Inicia un juego de acertijos sobre un tema general, el juego que transmites o un tema que tú indicas.",
+        "trivia": "Inicia un juego de trivia sobre un tema general, un tema que tú indicas o el juego que transmites.",
+        "command": "Añade, edita y elimina comandos personalizados desde el chat. También puedes hacerlo en Comandos personalizados en esta página.",
+        "botlang": "Establece el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en esta página.",
+        "auto": "Establece con qué frecuencia el bot publica mensajes automáticos y de qué tipos. También puedes hacerlo en Configuración de Auto-Chat en esta página.",
+        "disable": "Desactiva un comando desde el chat.",
+        "enable": "Vuelve a activar un comando desde el chat."
+      }
+    },
     "commandsTitle": "Configuración de comandos",
     "customCommands": {
       "aiMode": "Modo AI <small class=\"text-muted\">(genera una respuesta única cada vez)</small>",
