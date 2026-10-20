@@ -74,8 +74,10 @@
     "commands": {
       "groupGeneral": "Generali",
       "groupGames": "Giochi",
+      "groupMemory": "Memoria del canale",
       "groupModerators": "Comandi per moderatori",
       "moderatorsNote": "Solo i moderatori e lo streamer possono usare questi comandi.",
+      "memoryNote": "Il bot ricorda fatti sulla tua community da una live all'altra.",
       "alwaysOn": "Non puoi disattivare questo comando.",
       "desc": {
         "ask": "Risponde alla domanda di uno spettatore. Il bot può cercare sul web per trovare la risposta.",
@@ -90,7 +92,12 @@
         "geo": "Avvia un gioco in cui gli spettatori indovinano un luogo. Il luogo è reale o viene dal gioco che trasmetti.",
         "riddle": "Avvia un gioco di indovinelli su un argomento generale, il gioco che trasmetti o un tema che scegli tu.",
         "trivia": "Avvia un quiz su un argomento generale, un tema che scegli tu o il gioco che trasmetti.",
+        "remember": "I moderatori insegnano al bot un fatto da ricordare.",
+        "forget": "I moderatori eliminano i ricordi che contengono una frase.",
+        "forgetme": "Elimina i ricordi sullo spettatore che lo invia. Dopo, il bot non salva nuovi ricordi su quello spettatore.",
+        "memory": "I moderatori attivano o disattivano la Memoria del canale. La Memoria del canale è attiva per impostazione predefinita.",
         "command": "Aggiunge, modifica ed elimina comandi personalizzati dalla chat. Puoi farlo anche in Comandi personalizzati in questa pagina.",
+        "timer": "Aggiunge, modifica ed elimina messaggi programmati dalla chat. Puoi farlo anche in Messaggi programmati in questa pagina.",
         "botlang": "Imposta dalla chat la lingua delle risposte del bot. Puoi farlo anche in Lingua del bot in questa pagina.",
         "auto": "Imposta ogni quanto il bot pubblica messaggi automatici e di quali tipi. Puoi farlo anche in Impostazioni Auto-Chat in questa pagina.",
         "disable": "Disattiva un comando dalla chat.",

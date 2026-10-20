@@ -7,7 +7,7 @@
 
 import { Router, Response } from "express";
 import { getDb, FieldValue } from "@/config/database";
-import { ALL_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
+import { ALL_COMMANDS, ALWAYS_ON_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateBoolean } from "@/utils/validation";
@@ -31,11 +31,17 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
     const data = snap.exists ? snap.data() : {};
     const disabledCommands = data?.disabledCommands || [];
 
-    const commandSettings = ALL_COMMANDS.map((cmd) => ({
-      primaryName: cmd,
-      name: cmd,
-      enabled: !disabledCommands.includes(cmd),
-    }));
+    // A channel that turned an always-on command off before the dashboard refused it still has it
+    // in disabledCommands. The bot ignores that entry, so report what the bot does.
+    const commandSettings = ALL_COMMANDS.map((cmd) => {
+      const alwaysOn = ALWAYS_ON_COMMANDS.includes(cmd);
+      return {
+        primaryName: cmd,
+        name: cmd,
+        enabled: alwaysOn || !disabledCommands.includes(cmd),
+        alwaysOn,
+      };
+    });
 
     res.json({
       success: true,
@@ -79,6 +85,13 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         message: tr(req, "api.commands.InvalidEnabledValueMust", {}, "Invalid enabled value - must be boolean"),
+      });
+    }
+
+    if (!enabled && ALWAYS_ON_COMMANDS.includes(command.toLowerCase())) {
+      return res.status(400).json({
+        success: false,
+        message: tr(req, "api.commands.CommandAlwaysOn", { command }, `You cannot turn off the command ${command}.`),
       });
     }
 

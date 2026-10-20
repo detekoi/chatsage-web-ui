@@ -20,12 +20,17 @@ export const mockCommands = [
     { primaryName: 'trivia', name: 'trivia', enabled: true },
     { primaryName: 'botlang', name: 'botlang', enabled: true },
     { primaryName: 'auto', name: 'auto', enabled: false },
-    { primaryName: 'disable', name: 'disable', enabled: true },
-    { primaryName: 'enable', name: 'enable', enabled: true },
+    { primaryName: 'disable', name: 'disable', enabled: true, alwaysOn: true },
+    { primaryName: 'enable', name: 'enable', enabled: true, alwaysOn: true },
     { primaryName: 'ping', name: 'ping', enabled: true },
     { primaryName: 'quote', name: 'quote', enabled: true },
     { primaryName: 'command', name: 'command', enabled: true },
     { primaryName: 'followage', name: 'followage', enabled: true },
+    { primaryName: 'timer', name: 'timer', enabled: true },
+    { primaryName: 'remember', name: 'remember', enabled: true },
+    { primaryName: 'forget', name: 'forget', enabled: true },
+    { primaryName: 'forgetme', name: 'forgetme', enabled: true, alwaysOn: true },
+    { primaryName: 'memory', name: 'memory', enabled: true },
 ];
 
 export const mockCustomCommands = [

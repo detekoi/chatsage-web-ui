@@ -41,23 +41,29 @@ export async function loadCommandSettings() {
 // Grouped as docs.wildcat.chat/sage-commands groups them, except that the
 // moderator-only commands sit together so the group note covers all of them.
 // A command the API adds before this list knows it lands in General.
+// Whether a command can be turned off comes from the API (`alwaysOn`).
 const COMMAND_GROUPS = [
     { id: 'general', commands: ['ask', 'search', 'game', 'translate', 'help', 'lurk', 'quote', 'followage', 'ping'] },
     { id: 'games', commands: ['geo', 'riddle', 'trivia'] },
-    { id: 'moderators', commands: ['command', 'botlang', 'auto', 'disable', 'enable'] },
+    { id: 'memory', commands: ['remember', 'forget', 'forgetme', 'memory'] },
+    { id: 'moderators', commands: ['command', 'timer', 'botlang', 'auto', 'disable', 'enable'] },
 ];
-
-// The bot refuses `!disable enable` (PROTECTED_COMMANDS in the bot's
-// commandStateManager.js) but obeys whatever the dashboard writes, so a switch
-// here was the one way to stop moderators re-enabling commands from chat.
-const ALWAYS_ON = new Set(['enable', 'disable']);
 
 // Literal t() calls, so verify-i18n.mjs sees every key.
 function groupTitle(id) {
     switch (id) {
         case 'games': return t('page.commands.groupGames', {}, 'Games');
+        case 'memory': return t('page.commands.groupMemory', {}, 'Channel Memory');
         case 'moderators': return t('page.commands.groupModerators', {}, 'Moderator commands');
         default: return t('page.commands.groupGeneral', {}, 'General');
+    }
+}
+
+function groupNote(id) {
+    switch (id) {
+        case 'memory': return t('page.commands.memoryNote', {}, 'The bot remembers facts about your community from one stream to the next.');
+        case 'moderators': return t('page.commands.moderatorsNote', {}, 'Only moderators and the broadcaster can use these commands.');
+        default: return '';
     }
 }
 
@@ -75,7 +81,12 @@ function commandDescription(name) {
         case 'geo': return t('page.commands.desc.geo', {}, 'Starts a game in which viewers guess a place. The place is real or from the game that you stream.');
         case 'riddle': return t('page.commands.desc.riddle', {}, 'Starts a riddle game about a general topic, the game that you stream, or a subject that you give.');
         case 'trivia': return t('page.commands.desc.trivia', {}, 'Starts a trivia game about a general topic, a topic that you give, or the game that you stream.');
+        case 'remember': return t('page.commands.desc.remember', {}, 'Moderators teach the bot a fact to remember.');
+        case 'forget': return t('page.commands.desc.forget', {}, 'Moderators delete the memories that contain a phrase.');
+        case 'forgetme': return t('page.commands.desc.forgetme', {}, 'Deletes the memories about the viewer who sends it. The bot then stores no new memories about that viewer.');
+        case 'memory': return t('page.commands.desc.memory', {}, 'Moderators turn Channel Memory on or off. Channel Memory is on by default.');
         case 'command': return t('page.commands.desc.command', {}, 'Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.');
+        case 'timer': return t('page.commands.desc.timer', {}, 'Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.');
         case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.');
         case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.');
         case 'disable': return t('page.commands.desc.disable', {}, 'Turns off a command from chat.');
@@ -93,11 +104,12 @@ function renderGroupHead(id) {
     title.textContent = groupTitle(id);
     head.appendChild(title);
 
-    if (id === 'moderators') {
-        const note = document.createElement('p');
-        note.className = 'cmd-group-note';
-        note.textContent = t('page.commands.moderatorsNote', {}, 'Only moderators and the broadcaster can use these commands.');
-        head.appendChild(note);
+    const note = groupNote(id);
+    if (note) {
+        const noteEl = document.createElement('p');
+        noteEl.className = 'cmd-group-note';
+        noteEl.textContent = note;
+        head.appendChild(noteEl);
     }
     return head;
 }
@@ -120,7 +132,7 @@ function renderCommandRow(cmd) {
     label.appendChild(strong);
     col.appendChild(label);
 
-    const alwaysOn = ALWAYS_ON.has(cmd.primaryName);
+    const alwaysOn = cmd.alwaysOn === true;
     const text = [commandDescription(cmd.primaryName),
         alwaysOn ? t('page.commands.alwaysOn', {}, 'You cannot turn off this command.') : '']
         .filter(Boolean).join(' ');

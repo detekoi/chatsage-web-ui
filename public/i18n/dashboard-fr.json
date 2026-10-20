@@ -74,8 +74,10 @@
     "commands": {
       "groupGeneral": "Général",
       "groupGames": "Jeux",
+      "groupMemory": "Mémoire de chaîne",
       "groupModerators": "Commandes de modération",
       "moderatorsNote": "Seuls les modérateurs et le streamer peuvent utiliser ces commandes.",
+      "memoryNote": "Le bot retient des faits sur votre communauté d'un stream à l'autre.",
       "alwaysOn": "Vous ne pouvez pas désactiver cette commande.",
       "desc": {
         "ask": "Répond à la question d'un spectateur. Le bot peut chercher sur le web pour trouver la réponse.",
@@ -90,7 +92,12 @@
         "geo": "Lance un jeu où les spectateurs devinent un lieu. Le lieu est réel ou vient du jeu que vous streamez.",
         "riddle": "Lance un jeu de devinettes sur un thème général, le jeu que vous streamez ou un sujet que vous donnez.",
         "trivia": "Lance un quiz sur un thème général, un thème que vous donnez ou le jeu que vous streamez.",
+        "remember": "Les modérateurs apprennent au bot un fait à retenir.",
+        "forget": "Les modérateurs suppriment les souvenirs qui contiennent une phrase.",
+        "forgetme": "Supprime les souvenirs sur le spectateur qui l'envoie. Le bot n'enregistre ensuite plus de souvenirs sur ce spectateur.",
+        "memory": "Les modérateurs activent ou désactivent la Mémoire de chaîne. La Mémoire de chaîne est activée par défaut.",
         "command": "Ajoute, modifie et supprime des commandes personnalisées depuis le tchat. Vous pouvez aussi le faire dans Commandes personnalisées sur cette page.",
+        "timer": "Ajoute, modifie et supprime des messages programmés depuis le tchat. Vous pouvez aussi le faire dans Messages programmés sur cette page.",
         "botlang": "Définit la langue des réponses du bot depuis le tchat. Vous pouvez aussi le faire dans Langue du bot sur cette page.",
         "auto": "Définit à quelle fréquence le bot publie des messages automatiques, et de quels types. Vous pouvez aussi le faire dans Paramètres d'Auto-Chat sur cette page.",
         "disable": "Désactive une commande depuis le tchat.",

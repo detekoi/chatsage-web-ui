@@ -74,8 +74,10 @@
     "commands": {
       "groupGeneral": "General",
       "groupGames": "Juegos",
+      "groupMemory": "Memoria del canal",
       "groupModerators": "Comandos de moderador",
       "moderatorsNote": "Solo los moderadores y el streamer pueden usar estos comandos.",
+      "memoryNote": "El bot recuerda datos sobre tu comunidad de un stream al siguiente.",
       "alwaysOn": "No puedes desactivar este comando.",
       "desc": {
         "ask": "Responde a la pregunta de un espectador. El bot puede buscar en la web para encontrar la respuesta.",
@@ -90,7 +92,12 @@
         "geo": "Inicia un juego en el que los espectadores adivinan un lugar. El lugar es real o del juego que transmites.",
         "riddle": "Inicia un juego de acertijos sobre un tema general, el juego que transmites o un tema que tú indicas.",
         "trivia": "Inicia un juego de trivia sobre un tema general, un tema que tú indicas o el juego que transmites.",
+        "remember": "Los moderadores enseñan al bot un dato para recordar.",
+        "forget": "Los moderadores eliminan los recuerdos que contienen una frase.",
+        "forgetme": "Elimina los recuerdos sobre el espectador que lo envía. Después, el bot no guarda nuevos recuerdos sobre ese espectador.",
+        "memory": "Los moderadores activan o desactivan la Memoria del canal. La Memoria del canal está activada por defecto.",
         "command": "Añade, edita y elimina comandos personalizados desde el chat. También puedes hacerlo en Comandos personalizados en esta página.",
+        "timer": "Añade, edita y elimina mensajes programados desde el chat. También puedes hacerlo en Mensajes programados en esta página.",
         "botlang": "Establece el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en esta página.",
         "auto": "Establece con qué frecuencia el bot publica mensajes automáticos y de qué tipos. También puedes hacerlo en Configuración de Auto-Chat en esta página.",
         "disable": "Desactiva un comando desde el chat.",

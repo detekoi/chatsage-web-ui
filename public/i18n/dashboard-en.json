@@ -74,8 +74,10 @@
         "commands": {
             "groupGeneral": "General",
             "groupGames": "Games",
+            "groupMemory": "Channel Memory",
             "groupModerators": "Moderator commands",
             "moderatorsNote": "Only moderators and the broadcaster can use these commands.",
+            "memoryNote": "The bot remembers facts about your community from one stream to the next.",
             "alwaysOn": "You cannot turn off this command.",
             "desc": {
                 "ask": "Answers a question from a viewer. The bot can search the web to find the answer.",
@@ -90,7 +92,12 @@
                 "geo": "Starts a game in which viewers guess a place. The place is real or from the game that you stream.",
                 "riddle": "Starts a riddle game about a general topic, the game that you stream, or a subject that you give.",
                 "trivia": "Starts a trivia game about a general topic, a topic that you give, or the game that you stream.",
+                "remember": "Moderators teach the bot a fact to remember.",
+                "forget": "Moderators delete the memories that contain a phrase.",
+                "forgetme": "Deletes the memories about the viewer who sends it. The bot then stores no new memories about that viewer.",
+                "memory": "Moderators turn Channel Memory on or off. Channel Memory is on by default.",
                 "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
+                "timer": "Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.",
                 "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.",
                 "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.",
                 "disable": "Turns off a command from chat.",

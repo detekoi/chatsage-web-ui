@@ -90,6 +90,30 @@ describe("Commands Router", () => {
       expect(Array.isArray(res.body.commands)).toBe(true);
     });
 
+    it("reports always-on commands as enabled even when stored as disabled", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ disabledCommands: ["enable", "forgetme", "trivia"] }),
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .get("/")
+        .set("Authorization", `Bearer ${token}`);
+
+      const byName = Object.fromEntries(res.body.commands.map((c: any) => [c.name, c]));
+      expect(byName.enable).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.disable).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.forgetme).toEqual(expect.objectContaining({ enabled: true, alwaysOn: true }));
+      expect(byName.trivia).toEqual(expect.objectContaining({ enabled: false, alwaysOn: false }));
+      expect(byName.timer).toEqual(expect.objectContaining({ enabled: true, alwaysOn: false }));
+    });
+
     it("returns default state when no channel data exists", async () => {
       const token = makeToken({
         login: "testuser",
@@ -128,6 +152,44 @@ describe("Commands Router", () => {
       // Keyed by broadcaster ID, never by login
       expect(mockDoc).toHaveBeenCalledWith("123");
       expect(mockDoc).not.toHaveBeenCalledWith("testuser");
+    });
+
+    it.each(["enable", "disable", "forgetme", "Enable"])("refuses to turn off the always-on command %s", async (command) => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command, enabled: false });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("still lets an always-on command be turned on, which clears a stored disable", async () => {
+      const token = makeToken({
+        login: "testuser",
+        userId: "123",
+        displayName: "TestUser",
+      });
+
+      const app = createApp();
+      const res = await request(app)
+        .post("/")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ command: "enable", enabled: true });
+
+      expect(res.status).toBe(200);
+      expect(mockSet).toHaveBeenCalledWith(
+        expect.objectContaining({ disabledCommands: { _type: "arrayRemove", value: "enable" } }),
+        { merge: true },
+      );
     });
 
     it("returns 400 for missing command name", async () => {
