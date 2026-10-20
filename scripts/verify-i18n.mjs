@@ -8,6 +8,7 @@
 //      half a page in one language and half in another.
 //   3. Translations keep every {placeholder}, $(variable), !command literal and HTML tag, since
 //      losing any of those breaks interpolation, variable expansion or markup at runtime.
+//   4. Every command in the API's ALL_COMMANDS has a dashboard group and a description.
 //
 // Usage: node scripts/verify-i18n.mjs
 
@@ -120,6 +121,27 @@ for (const page of pages) {
                 fail(`${page}-${locale}.json: "${key}" HTML tag drift — expected ${tags(en) || 'none'}, got ${tags(tr) || 'none'}`);
             }
         }
+    }
+}
+
+// --- 4. every built-in command the API lists is grouped and described ---
+//
+// The API's ALL_COMMANDS and the dashboard's COMMAND_GROUPS are separate lists. A command added
+// to the first alone renders under General with no description and no catalog key, which looks
+// fine in English review, so fail here instead.
+
+const constantsTs = readFileSync(join(ROOT, 'functions', 'src', 'config', 'constants.ts'), 'utf8');
+const allCommandsSrc = constantsTs.match(/export const ALL_COMMANDS = \[([^\]]*)\]/);
+const builtInJs = readFileSync(join(PUBLIC_DIR, 'js', 'sections', 'built-in-commands.js'), 'utf8');
+const quoted = src => [...src.matchAll(/["']([a-z]+)["']/g)].map(m => m[1]);
+if (!allCommandsSrc) {
+    fail('functions/src/config/constants.ts: ALL_COMMANDS not found');
+} else {
+    const grouped = new Set([...builtInJs.matchAll(/commands: \[([^\]]*)\]/g)].flatMap(m => quoted(m[1])));
+    const pageEn = readCatalog('dashboard', 'en') || {};
+    for (const name of quoted(allCommandsSrc[1])) {
+        if (!grouped.has(name)) fail(`built-in-commands.js: !${name} is in ALL_COMMANDS but in no COMMAND_GROUPS entry`);
+        if (!(`page.commands.desc.${name}` in pageEn)) fail(`dashboard-en.json: no page.commands.desc.${name} for !${name}`);
     }
 }
 

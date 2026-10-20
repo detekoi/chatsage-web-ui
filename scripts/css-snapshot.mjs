@@ -42,7 +42,7 @@ const PROPS = [
   'font-family', 'font-size', 'font-weight', 'text-transform', 'letter-spacing', 'line-height',
   'text-align', 'white-space', 'overflow-wrap', 'margin', 'padding', 'opacity', 'cursor', 'appearance',
   'justify-content', 'align-items', 'flex-direction', 'flex-wrap', 'gap',
-  'grid-template-columns', 'grid-area', 'width', 'height', 'min-height', 'min-width',
+  'grid-template-columns', 'grid-area', 'width', 'height', 'min-height', 'min-width', 'max-width',
 ];
 
 const MIME = {
@@ -119,7 +119,7 @@ async function main() {
   try {
     for (const page of config.pages) {
       if (onlyPage && page.name !== onlyPage) continue;
-      for (const width of config.widths || [1100, 400]) {
+      for (const width of config.widths || [1440, 1100, 400]) {
         const ctx = await browser.newContext({ viewport: { width, height: config.height || 900 } });
         const tab = await ctx.newPage();
         await tab.goto(`http://127.0.0.1:${port}${page.path}`, { waitUntil: 'networkidle' });

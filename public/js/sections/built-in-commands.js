@@ -40,8 +40,10 @@ export async function loadCommandSettings() {
 
 // Grouped as docs.wildcat.chat/sage-commands groups them, except that the
 // moderator-only commands sit together so the group note covers all of them.
-// A command the API adds before this list knows it lands in General.
-// Whether a command can be turned off comes from the API (`alwaysOn`).
+// A command the API adds before this list knows it lands in General;
+// verify-i18n.mjs fails until it is placed here and described.
+// Whether a command can be turned off comes from the API (`alwaysOn`), and
+// the API already reports such a command as enabled.
 const COMMAND_GROUPS = [
     { id: 'general', commands: ['ask', 'search', 'game', 'translate', 'help', 'lurk', 'quote', 'followage', 'ping'] },
     { id: 'games', commands: ['geo', 'riddle', 'trivia'] },
@@ -156,8 +158,9 @@ function renderCommandRow(cmd) {
     checkbox.className = 'form-check-input';
     checkbox.type = 'checkbox';
     checkbox.id = `cmd-${cmd.primaryName}`;
-    checkbox.checked = alwaysOn || cmd.enabled;
+    checkbox.checked = cmd.enabled;
     checkbox.disabled = alwaysOn;
+    if (alwaysOn) checkbox.classList.add('cmd-always-on');
     checkbox.dataset.command = cmd.primaryName;
     checkbox.role = 'switch';
     checkbox.setAttribute('aria-label', t('label.enableCommand', { name: cmd.name }, `Enable command !${cmd.name}`));

@@ -150,9 +150,11 @@
     margin: 0;
 }
 
-/* !enable and !disable are always on (built-in-commands.js): their switch
-   shows the on state and does not take input. */
-:root .wc-card .form-switch .form-check-input:disabled {
+/* An always-on command (!enable, !disable, !forgetme; alwaysOn from the
+   API) shows a switch that is on and does not take input. Scoped to those
+   rows: toggleItem() also disables a switch while its save is in flight,
+   and that must not dim it. */
+:root .wc-card .form-switch .form-check-input.cmd-always-on:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
