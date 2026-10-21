@@ -26,7 +26,7 @@ export const mockCommands = [
     { primaryName: 'quote', name: 'quote', enabled: true },
     { primaryName: 'command', name: 'command', enabled: true },
     { primaryName: 'followage', name: 'followage', enabled: true },
-    { primaryName: 'so', name: 'so', enabled: true },
+    { primaryName: 'so', name: 'so', enabled: true, options: { aiMessage: true, twitchShoutout: true } },
     { primaryName: 'timer', name: 'timer', enabled: true },
     { primaryName: 'remember', name: 'remember', enabled: true },
     { primaryName: 'forget', name: 'forget', enabled: true },

@@ -87,7 +87,7 @@ function commandDescription(name) {
         case 'forget': return t('page.commands.desc.forget', {}, 'Moderators delete the memories that contain a phrase.');
         case 'forgetme': return t('page.commands.desc.forgetme', {}, 'Deletes the memories about the viewer who sends it. The bot then stores no new memories about that viewer.');
         case 'memory': return t('page.commands.desc.memory', {}, 'Moderators turn Channel Memory on or off. Channel Memory is on by default.');
-        case 'so': return t('page.commands.desc.so', {}, 'Recommends another streamer to your chat. The bot posts the game that they play and a link to their channel. The bot also asks Twitch to send a Shoutout. Twitch sends it only while your stream is live. If you made a custom !so command, the bot runs your command instead, with the permission that you gave it.');
+        case 'so': return t('page.commands.desc.so', {}, 'Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.');
         case 'command': return t('page.commands.desc.command', {}, 'Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.');
         case 'timer': return t('page.commands.desc.timer', {}, 'Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.');
         case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.');
@@ -96,6 +96,66 @@ function commandDescription(name) {
         case 'enable': return t('page.commands.desc.enable', {}, 'Turns a command back on from chat.');
         default: return '';
     }
+}
+
+// The options a command has come from the API (`options`, already holding the defaults).
+// Literal t() calls, so verify-i18n.mjs sees every key.
+function optionText(command, option) {
+    switch (`${command}.${option}`) {
+        case 'so.aiMessage': return {
+            label: t('page.commands.soOptions.aiMessage', {}, 'Write the message with AI'),
+            help: t('page.commands.soOptions.aiMessageHelp', {}, 'The AI uses the game, the stream title, the tags, the bio and the pronouns of the streamer.'),
+            item: t('label.soOptionAi', {}, 'AI message for !so'),
+        };
+        case 'so.twitchShoutout': return {
+            label: t('page.commands.soOptions.twitchShoutout', {}, 'Send a Twitch Shoutout'),
+            help: t('page.commands.soOptions.twitchShoutoutHelp', {}, 'Twitch sends it only while your stream is live.'),
+            item: t('label.soOptionShoutout', {}, 'Twitch Shoutout for !so'),
+        };
+        default: return null;
+    }
+}
+
+function renderCommandOptions(cmd) {
+    const wrap = document.createElement('div');
+    wrap.className = 'cmd-options';
+
+    Object.entries(cmd.options).forEach(([option, value]) => {
+        const text = optionText(cmd.primaryName, option);
+        if (!text) return;
+        const id = `cmd-${cmd.primaryName}-opt-${option}`;
+
+        const check = document.createElement('div');
+        check.className = 'form-check';
+
+        const input = document.createElement('input');
+        input.className = 'form-check-input';
+        input.type = 'checkbox';
+        input.id = id;
+        input.checked = value === true;
+        input.setAttribute('aria-describedby', `${id}-help`);
+        input.addEventListener('change', async function () {
+            await toggleItem('POST', '/api/commands/options',
+                { command: cmd.primaryName, option, value: this.checked }, text.item, this.checked, this);
+        });
+
+        const label = document.createElement('label');
+        label.className = 'form-check-label';
+        label.htmlFor = id;
+        label.textContent = text.label;
+
+        check.appendChild(input);
+        check.appendChild(label);
+        wrap.appendChild(check);
+
+        const help = document.createElement('p');
+        help.className = 'cmd-option-help text-muted';
+        help.id = `${id}-help`;
+        help.textContent = text.help;
+        wrap.appendChild(help);
+    });
+
+    return wrap.childElementCount ? wrap : null;
 }
 
 function renderGroupHead(id) {
@@ -122,7 +182,8 @@ function renderCommandRow(cmd) {
     commandItem.className = 'list-group-item';
 
     const row = document.createElement('div');
-    row.className = 'row align-items-center';
+    // A row with options keeps its switch at the top (.row:has(.cmd-options) in chatsage-specific.css)
+    row.className = cmd.options ? 'row' : 'row align-items-center';
 
     const col = document.createElement('div');
     col.className = 'col';
@@ -147,6 +208,10 @@ function renderCommandRow(cmd) {
         desc.id = descId;
         desc.textContent = text;
         col.appendChild(desc);
+    }
+    if (cmd.options) {
+        const options = renderCommandOptions(cmd);
+        if (options) col.appendChild(options);
     }
 
     const colAuto = document.createElement('div');
