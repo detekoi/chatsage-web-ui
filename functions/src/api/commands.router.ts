@@ -7,7 +7,7 @@
 
 import { Router, Response } from "express";
 import { getDb, FieldValue } from "@/config/database";
-import { ALL_COMMANDS, ALWAYS_ON_COMMANDS, CHANNEL_COMMANDS_COLLECTION } from "@/config/constants";
+import { ALL_COMMANDS, ALWAYS_ON_COMMANDS, CHANNEL_COMMANDS_COLLECTION, COMMAND_OPTION_DEFAULTS } from "@/config/constants";
 import { logger } from "@/config/logger";
 import { AuthenticatedRequest } from "@/auth/jwt.middleware";
 import { validateBoolean } from "@/utils/validation";
@@ -49,14 +49,23 @@ router.get("/", async (req: AuthenticatedRequest, res: Response) => {
       }
     }
 
+    const storedOptions = data?.commandOptions || {};
     const commandSettings = ALL_COMMANDS.map((cmd) => {
       const alwaysOn = ALWAYS_ON_COMMANDS.includes(cmd);
-      return {
+      const setting: Record<string, unknown> = {
         primaryName: cmd,
         name: cmd,
         enabled: alwaysOn || !disabledCommands.includes(cmd),
         alwaysOn,
       };
+      const defaults = COMMAND_OPTION_DEFAULTS[cmd];
+      if (defaults) {
+        // A stored value counts only when it is a boolean, so a bad write falls back to the default
+        const stored = storedOptions[cmd] || {};
+        setting.options = Object.fromEntries(Object.entries(defaults).map(([option, fallback]) =>
+          [option, typeof stored[option] === "boolean" ? stored[option] : fallback]));
+      }
+      return setting;
     });
 
     res.json({
@@ -158,6 +167,58 @@ router.post("/", async (req: AuthenticatedRequest, res: Response) => {
     });
   } catch (error) {
     logger.error("Error updating command settings", {
+      channelLogin,
+      error: (error as Error).message,
+    });
+    res.status(500).json({
+      success: false,
+      message: tr(req, "api.commands.ErrorUpdatingCommandSettings", {}, "Error updating command settings"),
+    });
+  }
+});
+
+/**
+ * POST /api/commands/options
+ * Update one option of a built-in command, for example { command: "so", option: "aiMessage", value: false }
+ */
+router.post("/options", async (req: AuthenticatedRequest, res: Response) => {
+  const channelLogin = req.user.login;
+  const channelKey = channelDocKey(req.user);
+  const db = getDb();
+
+  try {
+    const { command, option, value } = req.body;
+    const name = typeof command === "string" ? command.trim().toLowerCase() : "";
+    const defaults = COMMAND_OPTION_DEFAULTS[name];
+    if (!defaults || typeof option !== "string" || !Object.prototype.hasOwnProperty.call(defaults, option)) {
+      return res.status(400).json({
+        success: false,
+        message: tr(req, "api.commands.InvalidCommandOption", {}, "Invalid command option"),
+      });
+    }
+
+    try {
+      validateBoolean(value);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        message: tr(req, "api.commands.InvalidEnabledValueMust", {}, "Invalid enabled value - must be boolean"),
+      });
+    }
+
+    // A nested map with merge: true sets this one option and keeps the others
+    await db.collection(CHANNEL_COMMANDS_COLLECTION).doc(channelKey).set(
+      {
+        commandOptions: { [name]: { [option]: value } },
+        channelName: channelLogin,
+      },
+      { merge: true },
+    );
+
+    logger.info("Updated command option", { channelLogin, command: name, option, value });
+    res.json({ success: true });
+  } catch (error) {
+    logger.error("Error updating command option", {
       channelLogin,
       error: (error as Error).message,
     });

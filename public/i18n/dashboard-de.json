@@ -17,7 +17,9 @@
     "enableCommand": "Befehl !{name} aktivieren",
     "enableTimer": "Timer {name} aktivieren",
     "enableTimerTitle": "Diese zeitgesteuerte Nachricht aktivieren oder deaktivieren",
-    "everyMinutes": "alle {minutes}m"
+    "everyMinutes": "alle {minutes}m",
+    "soOptionAi": "AI-Nachricht für !so",
+    "soOptionShoutout": "Twitch-Shoutout für !so"
   },
   "page": {
     "adNotifications": {
@@ -96,13 +98,19 @@
         "forget": "Moderatoren löschen die Erinnerungen, die eine Phrase enthalten.",
         "forgetme": "Löscht die Erinnerungen über den Zuschauer, der ihn sendet. Danach speichert der Bot keine neuen Erinnerungen über diesen Zuschauer.",
         "memory": "Moderatoren schalten das Kanalgedächtnis ein oder aus. Das Kanalgedächtnis ist standardmäßig eingeschaltet.",
-        "so": "Empfiehlt deinem Chat einen anderen Streamer. Der Bot postet das aktuelle Spiel und einen Link zum Kanal. Der Bot bittet Twitch außerdem, einen Shoutout zu senden. Twitch sendet ihn nur, während dein Stream live ist. Wenn du einen benutzerdefinierten !so-Befehl erstellt hast, führt der Bot stattdessen deinen Befehl aus.",
+        "so": "Empfiehlt deinem Chat einen anderen Streamer. Der Bot postet eine Nachricht über den Streamer und einen Link zu dessen Kanal.",
         "command": "Erstellt, bearbeitet und löscht eigene Befehle über den Chat. Das geht auch unter Eigene Befehle auf dieser Seite.",
         "timer": "Erstellt, bearbeitet und löscht zeitgesteuerte Nachrichten über den Chat. Das geht auch unter Zeitgesteuerte Nachrichten auf dieser Seite.",
         "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
         "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Arten. Das geht auch unter Auto-Chat-Einstellungen auf dieser Seite.",
         "disable": "Deaktiviert einen Befehl über den Chat.",
         "enable": "Aktiviert einen Befehl über den Chat wieder."
+      },
+      "soOptions": {
+        "aiMessage": "Nachricht mit AI erstellen",
+        "aiMessageHelp": "Die AI nutzt das Spiel, den Stream-Titel, die Tags, die Biografie und die Pronomen des Streamers.",
+        "twitchShoutout": "Einen Twitch-Shoutout senden",
+        "twitchShoutoutHelp": "Twitch sendet ihn nur, während dein Stream live ist."
       }
     },
     "commandsTitle": "Befehlseinstellungen",

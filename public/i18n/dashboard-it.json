@@ -17,7 +17,9 @@
     "enableCommand": "Abilita comando !{name}",
     "enableTimer": "Abilita timer {name}",
     "enableTimerTitle": "Abilita o disabilita questo messaggio programmato",
-    "everyMinutes": "ogni {minutes}m"
+    "everyMinutes": "ogni {minutes}m",
+    "soOptionAi": "Messaggio AI per !so",
+    "soOptionShoutout": "Twitch Shoutout per !so"
   },
   "page": {
     "adNotifications": {
@@ -96,13 +98,19 @@
         "forget": "I moderatori eliminano i ricordi che contengono una frase.",
         "forgetme": "Elimina i ricordi sullo spettatore che lo invia. Dopo, il bot non salva nuovi ricordi su quello spettatore.",
         "memory": "I moderatori attivano o disattivano la Memoria del canale. La Memoria del canale è attiva per impostazione predefinita.",
-        "so": "Consiglia un altro streamer alla tua chat. Il bot pubblica il gioco a cui gioca e un link al suo canale. Il bot chiede anche a Twitch di inviare uno Shoutout. Twitch lo invia solo mentre sei in live. Se hai creato un comando !so personalizzato, il bot eseguirà invece il tuo.",
+        "so": "Consiglia un altro streamer alla tua chat. Il bot invia un messaggio sullo streamer e il link al suo canale.",
         "command": "Aggiunge, modifica ed elimina comandi personalizzati dalla chat. Puoi farlo anche in Comandi personalizzati in questa pagina.",
         "timer": "Aggiunge, modifica ed elimina messaggi programmati dalla chat. Puoi farlo anche in Messaggi programmati in questa pagina.",
         "botlang": "Imposta dalla chat la lingua delle risposte del bot. Puoi farlo anche in Lingua del bot in questa pagina.",
         "auto": "Imposta ogni quanto il bot pubblica messaggi automatici e di quali tipi. Puoi farlo anche in Impostazioni Auto-Chat in questa pagina.",
         "disable": "Disattiva un comando dalla chat.",
         "enable": "Riattiva un comando dalla chat."
+      },
+      "soOptions": {
+        "aiMessage": "Scrivi il messaggio con l'AI",
+        "aiMessageHelp": "L'AI usa il gioco, il titolo dello stream, i tag, la bio e i pronomi dello streamer.",
+        "twitchShoutout": "Invia un Twitch Shoutout",
+        "twitchShoutoutHelp": "Twitch lo invia solo mentre sei in live."
       }
     },
     "commandsTitle": "Impostazioni comandi",

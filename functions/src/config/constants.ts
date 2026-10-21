@@ -160,6 +160,14 @@ export const ALL_COMMANDS = [
 // ignores a stored disable for these; change both together.
 export const ALWAYS_ON_COMMANDS: readonly string[] = ["enable", "disable", "forgetme"];
 
+// Options that the dashboard stores for a built-in command, with their defaults. They live in
+// channelCommands/{broadcasterId} as commandOptions.{command}.{option}, and the bot reads them with
+// getCommandOptions() in src/components/context/channelCommandsStorage.js; change both together.
+// !so: aiMessage writes the shoutout line with the AI, twitchShoutout also sends the Twitch Shoutout.
+export const COMMAND_OPTION_DEFAULTS: Readonly<Record<string, Readonly<Record<string, boolean>>>> = {
+  so: { aiMessage: true, twitchShoutout: true },
+};
+
 
 // Languages the dashboard offers for bot responses, stored as the lowercase English name the bot
 // keeps in Firestore. Mirrors COMMON_LANGUAGES in the bot's translationUtils.js — the two repos

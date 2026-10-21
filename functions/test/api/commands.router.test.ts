@@ -159,6 +159,21 @@ describe("Commands Router", () => {
       expect(mockSet).not.toHaveBeenCalled();
     });
 
+    it("reports the !so options with their defaults, and only !so has options", async () => {
+      const token = makeToken({ login: "testuser", userId: "123", displayName: "TestUser" });
+      mockGet.mockResolvedValue({
+        exists: true,
+        data: () => ({ commandOptions: { so: { aiMessage: false, twitchShoutout: "yes" } } }),
+      });
+
+      const res = await request(createApp()).get("/").set("Authorization", `Bearer ${token}`);
+
+      const byName = Object.fromEntries(res.body.commands.map((c: any) => [c.name, c]));
+      // A stored value that is not a boolean falls back to the default
+      expect(byName.so.options).toEqual({ aiMessage: false, twitchShoutout: true });
+      expect(byName.ping.options).toBeUndefined();
+    });
+
     it("returns default state when no channel data exists", async () => {
       const token = makeToken({
         login: "testuser",
@@ -304,6 +319,52 @@ describe("Commands Router", () => {
         .send({ command: "ask", enabled: "not-a-boolean" });
 
       expect(res.status).toBe(400);
+    });
+  });
+  describe("POST /options", () => {
+    const token = () => makeToken({ login: "testuser", userId: "123", displayName: "TestUser" });
+
+    it("stores one !so option on the channel document", async () => {
+      const res = await request(createApp())
+        .post("/options")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ command: " SO ", option: "aiMessage", value: false });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(mockDoc).toHaveBeenCalledWith("123");
+      expect(mockSet).toHaveBeenCalledWith(
+        { commandOptions: { so: { aiMessage: false } }, channelName: "testuser" },
+        { merge: true },
+      );
+    });
+
+    it.each([
+      ["a command without options", { command: "ping", option: "aiMessage", value: true }],
+      ["an unknown option", { command: "so", option: "volume", value: true }],
+      ["an inherited property name", { command: "so", option: "toString", value: true }],
+      ["a value that is not a boolean", { command: "so", option: "twitchShoutout", value: "off" }],
+    ])("returns 400 for %s", async (_label, body) => {
+      const res = await request(createApp())
+        .post("/options")
+        .set("Authorization", `Bearer ${token()}`)
+        .send(body);
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("returns 500 when the write fails", async () => {
+      mockSet.mockRejectedValueOnce(new Error("write failed"));
+
+      const res = await request(createApp())
+        .post("/options")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ command: "so", option: "twitchShoutout", value: true });
+
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
     });
   });
 });

@@ -657,7 +657,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:fr": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -897,7 +903,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:de": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1137,7 +1149,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:it": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1377,7 +1395,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:pt": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1617,7 +1641,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:ja": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1857,7 +1887,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "dashboard:ru": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -2097,7 +2133,13 @@
     "page.commands.desc.auto": "6c696b39c009ab91",
     "page.commands.desc.disable": "fb3ebddb9bd756fe",
     "page.commands.desc.enable": "26020be0d91e53b7",
-    "page.commands.desc.so": "12a58acb04288fcf"
+    "page.commands.desc.so": "daed9909e933faa9",
+    "label.soOptionAi": "4a908f56dff61a08",
+    "label.soOptionShoutout": "5833ea4cccf97151",
+    "page.commands.soOptions.aiMessage": "adbaaebd4c67c49a",
+    "page.commands.soOptions.aiMessageHelp": "fff6eb43fa69eac7",
+    "page.commands.soOptions.twitchShoutout": "e4f24f7ccc8296c3",
+    "page.commands.soOptions.twitchShoutoutHelp": "6ee3a4bd93d0b7b6"
   },
   "index:es": {
     "page.accessLabel": "ec5ba0abb717da87",

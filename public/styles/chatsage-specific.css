@@ -158,6 +158,31 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+/* A built-in command with options (the !so switches; options from the API)
+   lists them as checkboxes under its description, each with a help line
+   lined up with its label text. */
+:root .wc-card .cmd-options {
+    margin-block-start: 10px;
+}
+
+/* Keep the command's own switch level with its name, not centred beside the
+   options. The second :has() outranks the design system's phone-width rule
+   that centres a row holding a lone switch. */
+:root .wc-card .list-group-item > .row:has(> .col > .cmd-options):has(> .col-auto > .form-check.form-switch) {
+    align-items: flex-start;
+}
+
+:root .wc-card .cmd-options .form-check {
+    margin-bottom: 0;
+}
+
+:root .wc-card .cmd-options .cmd-option-help {
+    font-size: 12px;
+    line-height: 1.5;
+    padding-inline-start: calc(1em + 8px);
+    margin-block-end: 6px;
+}
+
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
    the centred italic spinner caption that lived here was removed with it.
    The AI preview bar sits inside its panel, so trim .wc-loading's
