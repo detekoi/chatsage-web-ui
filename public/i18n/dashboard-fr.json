@@ -96,13 +96,13 @@
         "forget": "Les modérateurs suppriment les souvenirs qui contiennent une phrase.",
         "forgetme": "Supprime les souvenirs sur le spectateur qui l'envoie. Le bot n'enregistre ensuite plus de souvenirs sur ce spectateur.",
         "memory": "Les modérateurs activent ou désactivent la Mémoire de chaîne. La Mémoire de chaîne est activée par défaut.",
+        "so": "Recommande un autre streamer à votre chat. Le bot publie son jeu et un lien vers sa chaîne, et envoie un Shoutout Twitch. Si vous avez créé une commande !so personnalisée, le bot exécute votre commande à la place.",
         "command": "Ajoute, modifie et supprime des commandes personnalisées depuis le tchat. Vous pouvez aussi le faire dans Commandes personnalisées sur cette page.",
         "timer": "Ajoute, modifie et supprime des messages programmés depuis le tchat. Vous pouvez aussi le faire dans Messages programmés sur cette page.",
         "botlang": "Définit la langue des réponses du bot depuis le tchat. Vous pouvez aussi le faire dans Langue du bot sur cette page.",
         "auto": "Définit à quelle fréquence le bot publie des messages automatiques, et de quels types. Vous pouvez aussi le faire dans Paramètres d'Auto-Chat sur cette page.",
         "disable": "Désactive une commande depuis le tchat.",
-        "enable": "Réactive une commande depuis le tchat.",
-        "so": "Fait un shoutout à un autre streamer : le bot publie son jeu et un lien vers sa chaîne, puis envoie un Shoutout Twitch. Si tu as créé une commande !so personnalisée, le bot lancera la tienne à la place."
+        "enable": "Réactive une commande depuis le tchat."
       }
     },
     "commandsTitle": "Paramètres des commandes",

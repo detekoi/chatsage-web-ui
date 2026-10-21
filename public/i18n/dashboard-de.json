@@ -96,13 +96,13 @@
         "forget": "Moderatoren löschen die Erinnerungen, die eine Phrase enthalten.",
         "forgetme": "Löscht die Erinnerungen über den Zuschauer, der ihn sendet. Danach speichert der Bot keine neuen Erinnerungen über diesen Zuschauer.",
         "memory": "Moderatoren schalten das Kanalgedächtnis ein oder aus. Das Kanalgedächtnis ist standardmäßig eingeschaltet.",
+        "so": "Empfiehlt deinem Chat einen anderen Streamer. Der Bot postet das Spiel, das sie spielen, einen Link zu ihrem Kanal und sendet einen Twitch-Shoutout. Wenn du einen eigenen !so-Befehl erstellt hast, führt der Bot stattdessen deinen Befehl aus.",
         "command": "Erstellt, bearbeitet und löscht eigene Befehle über den Chat. Das geht auch unter Eigene Befehle auf dieser Seite.",
         "timer": "Erstellt, bearbeitet und löscht zeitgesteuerte Nachrichten über den Chat. Das geht auch unter Zeitgesteuerte Nachrichten auf dieser Seite.",
         "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
         "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Arten. Das geht auch unter Auto-Chat-Einstellungen auf dieser Seite.",
         "disable": "Deaktiviert einen Befehl über den Chat.",
-        "enable": "Aktiviert einen Befehl über den Chat wieder.",
-        "so": "Gibt einem anderen Streamer ein Shoutout: Der Bot postet das gespielte Spiel und einen Link zum Kanal und sendet ein Twitch-Shoutout. Wenn du einen eigenen !so-Befehl erstellt hast, führt der Bot stattdessen deinen aus."
+        "enable": "Aktiviert einen Befehl über den Chat wieder."
       }
     },
     "commandsTitle": "Befehlseinstellungen",

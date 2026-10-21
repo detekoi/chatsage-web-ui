@@ -96,13 +96,13 @@
         "forget": "Moderadores excluem as memórias que contêm uma frase.",
         "forgetme": "Exclui as memórias sobre o espectador que o envia. Depois, o bot não guarda novas memórias sobre esse espectador.",
         "memory": "Moderadores ativam ou desativam a Memória do Canal. A Memória do Canal fica ativada por padrão.",
+        "so": "Recomenda outro streamer para o seu chat. O bot posta o jogo que ele joga, um link para o canal e envia um Twitch Shoutout. Se você criou um comando !so personalizado, o bot executa o seu comando no lugar deste.",
         "command": "Adiciona, edita e exclui comandos personalizados pelo chat. Você também pode fazer isso em Comandos Personalizados nesta página.",
         "timer": "Adiciona, edita e exclui mensagens programadas pelo chat. Você também pode fazer isso em Mensagens Programadas nesta página.",
         "botlang": "Define pelo chat o idioma das respostas do bot. Você também pode fazer isso em Idioma do Bot nesta página.",
         "auto": "Define com que frequência o bot publica mensagens automáticas e de quais tipos. Você também pode fazer isso em Configurações do Auto-Chat nesta página.",
         "disable": "Desativa um comando pelo chat.",
-        "enable": "Reativa um comando pelo chat.",
-        "so": "Dá shoutout para outro streamer: o bot posta o jogo que ele joga e um link para o canal, além de enviar um Twitch Shoutout. Se você criou um comando !so personalizado, o bot executa o seu no lugar."
+        "enable": "Reativa um comando pelo chat."
       }
     },
     "commandsTitle": "Configurações de comandos",
