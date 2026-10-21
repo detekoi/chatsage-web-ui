@@ -113,6 +113,20 @@ export const RATE_LIMIT = {
   },
 };
 
+// Twitch OAuth scopes that the dashboard requests from a broadcaster. The bot uses this token
+// when it is not a moderator in the channel, for announcements and for the Shoutout from !so.
+// The bot account requests its own list in the bot's scripts/get-user-token.js.
+export const TWITCH_OAUTH_SCOPES: readonly string[] = [
+  "user:read:email",
+  "channel:read:ads",
+  "channel:read:subscriptions",
+  "channel:manage:moderators",
+  "moderator:read:followers",
+  "channel:manage:redemptions",
+  "moderator:manage:announcements",
+  "moderator:manage:shoutouts",
+];
+
 // Available bot commands
 export const ALL_COMMANDS = [
   "ask",
@@ -132,6 +146,7 @@ export const ALL_COMMANDS = [
   "quote",
   "command",
   "followage",
+  "so",
   "timer",
   "remember",
   "forget",

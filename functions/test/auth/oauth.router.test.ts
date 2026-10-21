@@ -8,6 +8,7 @@ import request from "supertest";
 import axios from "axios";
 import oauthRouter from "@/auth/oauth.router";
 import { STATE_COOKIE_NAME } from "@/auth/state";
+import { TWITCH_OAUTH_SCOPES } from "@/config/constants";
 import { createSessionToken } from "@/auth/jwt.middleware";
 
 jest.mock("axios");
@@ -89,12 +90,14 @@ describe("OAuth Router", () => {
       expect(res.headers.location).toContain("state=");
     });
 
-    it("includes required scopes", async () => {
+    it("requests every scope in TWITCH_OAUTH_SCOPES", async () => {
       const app = createApp();
       const res = await request(app).get("/twitch");
 
-      // Should include at least one scope
-      expect(res.headers.location).toContain("scope=");
+      const scopes = new URL(res.headers.location).searchParams.get("scope")?.split(" ");
+      expect(scopes).toEqual([...TWITCH_OAUTH_SCOPES]);
+      // The bot sends a Shoutout for !so with this token where it is not a moderator
+      expect(scopes).toContain("moderator:manage:shoutouts");
     });
   });
 

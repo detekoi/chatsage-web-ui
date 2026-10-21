@@ -96,6 +96,7 @@
         "forget": "Moderatoren löschen die Erinnerungen, die eine Phrase enthalten.",
         "forgetme": "Löscht die Erinnerungen über den Zuschauer, der ihn sendet. Danach speichert der Bot keine neuen Erinnerungen über diesen Zuschauer.",
         "memory": "Moderatoren schalten das Kanalgedächtnis ein oder aus. Das Kanalgedächtnis ist standardmäßig eingeschaltet.",
+        "so": "Empfiehlt deinem Chat einen anderen Streamer. Der Bot postet das gespielte Spiel und einen Link zum Kanal. Zudem bittet der Bot Twitch, ein Shoutout zu senden. Twitch sendet es nur, während dein Stream live ist. Wenn du einen eigenen !so-Befehl erstellt hast, führt der Bot stattdessen deinen Befehl mit den von dir erteilten Berechtigungen aus.",
         "command": "Erstellt, bearbeitet und löscht eigene Befehle über den Chat. Das geht auch unter Eigene Befehle auf dieser Seite.",
         "timer": "Erstellt, bearbeitet und löscht zeitgesteuerte Nachrichten über den Chat. Das geht auch unter Zeitgesteuerte Nachrichten auf dieser Seite.",
         "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
