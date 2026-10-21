@@ -96,7 +96,7 @@
         "forget": "Les modérateurs suppriment les souvenirs qui contiennent une phrase.",
         "forgetme": "Supprime les souvenirs sur le spectateur qui l'envoie. Le bot n'enregistre ensuite plus de souvenirs sur ce spectateur.",
         "memory": "Les modérateurs activent ou désactivent la Mémoire de chaîne. La Mémoire de chaîne est activée par défaut.",
-        "so": "Recommande un autre streamer à votre chat. Le bot affiche son jeu actuel et un lien vers sa chaîne. Le bot demande aussi à Twitch d'envoyer un Shoutout. Twitch ne l'envoie que si votre stream est en direct. Si vous avez créé une commande !so personnalisée, le bot exécute votre commande à la place, avec les permissions que vous lui avez accordées.",
+        "so": "Recommande un autre streamer à votre chat. Le bot publie le jeu auquel cette personne joue et un lien vers sa chaîne. Le bot demande aussi à Twitch d'envoyer un Shoutout. Twitch ne l'envoie que lorsque votre stream est en live. Si vous avez créé une commande !so personnalisée, le bot exécute votre commande à la place.",
         "command": "Ajoute, modifie et supprime des commandes personnalisées depuis le tchat. Vous pouvez aussi le faire dans Commandes personnalisées sur cette page.",
         "timer": "Ajoute, modifie et supprime des messages programmés depuis le tchat. Vous pouvez aussi le faire dans Messages programmés sur cette page.",
         "botlang": "Définit la langue des réponses du bot depuis le tchat. Vous pouvez aussi le faire dans Langue du bot sur cette page.",
