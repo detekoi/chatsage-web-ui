@@ -1,0 +1,56 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time. A newer push waits for the running deploy to finish.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install functions dependencies
+        run: npm ci
+        working-directory: functions
+
+      - name: Test functions
+        run: npm test
+        working-directory: functions
+
+      # The Firebase CLI deploys functions/.env and functions/.env.<project> as
+      # environment variables. Both files are gitignored, so CI writes them
+      # from repository secrets.
+      - name: Write functions env files
+        env:
+          FUNCTIONS_ENV: ${{ secrets.FUNCTIONS_ENV }}
+          FUNCTIONS_ENV_PROJECT: ${{ secrets.FUNCTIONS_ENV_PROJECT }}
+        run: |
+          test -n "$FUNCTIONS_ENV" || { echo "::error::FUNCTIONS_ENV secret is not set"; exit 1; }
+          test -n "$FUNCTIONS_ENV_PROJECT" || { echo "::error::FUNCTIONS_ENV_PROJECT secret is not set"; exit 1; }
+          printf '%s\n' "$FUNCTIONS_ENV" > functions/.env
+          printf '%s\n' "$FUNCTIONS_ENV_PROJECT" > functions/.env.streamsage-bot
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+
+      - name: Deploy
+        run: npx --yes firebase-tools@15 deploy --project streamsage-bot --non-interactive --force
