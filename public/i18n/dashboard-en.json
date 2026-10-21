@@ -96,7 +96,7 @@
                 "forget": "Moderators delete the memories that contain a phrase.",
                 "forgetme": "Deletes the memories about the viewer who sends it. The bot then stores no new memories about that viewer.",
                 "memory": "Moderators turn Channel Memory on or off. Channel Memory is on by default.",
-                "so": "Recommends another streamer to your chat. The bot posts the game that they play and a link to their channel, and sends a Twitch Shoutout. If you made a custom !so command, the bot runs your command instead.",
+                "so": "Recommends another streamer to your chat. The bot posts the game that they play and a link to their channel. The bot also asks Twitch to send a Shoutout. Twitch sends it only while your stream is live. If you made a custom !so command, the bot runs your command instead, with the permission that you gave it.",
                 "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
                 "timer": "Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.",
                 "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.",
