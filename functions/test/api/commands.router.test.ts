@@ -343,6 +343,8 @@ describe("Commands Router", () => {
       ["a command without options", { command: "ping", option: "aiMessage", value: true }],
       ["an unknown option", { command: "so", option: "volume", value: true }],
       ["an inherited property name", { command: "so", option: "toString", value: true }],
+      ["a command that names an Object property", { command: "constructor", option: "name", value: true }],
+      ["a command that names the prototype", { command: "__proto__", option: "hasOwnProperty", value: true }],
       ["a value that is not a boolean", { command: "so", option: "twitchShoutout", value: "off" }],
     ])("returns 400 for %s", async (_label, body) => {
       const res = await request(createApp())
@@ -353,6 +355,16 @@ describe("Commands Router", () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
       expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("names the value, not the enabled field, when the value is not a boolean", async () => {
+      const res = await request(createApp())
+        .post("/options")
+        .set("Authorization", `Bearer ${token()}`)
+        .send({ command: "so", option: "aiMessage", value: "off" });
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toBe("The option value must be true or false.");
     });
 
     it("returns 500 when the write fails", async () => {

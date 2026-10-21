@@ -149,7 +149,7 @@ function renderCommandOptions(cmd) {
         wrap.appendChild(check);
 
         const help = document.createElement('p');
-        help.className = 'cmd-option-help text-muted mb-0';
+        help.className = 'cmd-option-help text-muted';
         help.id = `${id}-help`;
         help.textContent = text.help;
         wrap.appendChild(help);

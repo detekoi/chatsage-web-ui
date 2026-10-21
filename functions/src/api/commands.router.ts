@@ -189,8 +189,10 @@ router.post("/options", async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { command, option, value } = req.body;
     const name = typeof command === "string" ? command.trim().toLowerCase() : "";
-    const defaults = COMMAND_OPTION_DEFAULTS[name];
-    if (!defaults || typeof option !== "string" || !Object.prototype.hasOwnProperty.call(defaults, option)) {
+    // Own properties only: "constructor" or "__proto__" would otherwise reach Object and its prototype
+    const hasOwn = (obj: object, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+    const defaults = hasOwn(COMMAND_OPTION_DEFAULTS, name) ? COMMAND_OPTION_DEFAULTS[name] : undefined;
+    if (!defaults || typeof option !== "string" || !hasOwn(defaults, option)) {
       return res.status(400).json({
         success: false,
         message: tr(req, "api.commands.InvalidCommandOption", {}, "Invalid command option"),
@@ -202,7 +204,7 @@ router.post("/options", async (req: AuthenticatedRequest, res: Response) => {
     } catch {
       return res.status(400).json({
         success: false,
-        message: tr(req, "api.commands.InvalidEnabledValueMust", {}, "Invalid enabled value - must be boolean"),
+        message: tr(req, "api.commands.InvalidOptionValue", {}, "The option value must be true or false."),
       });
     }
 
