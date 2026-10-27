@@ -73,7 +73,7 @@
       "rewardTitle": "Título de la recompensa"
     },
     "checkinTitle": "Check-In diario",
-    "commandsHelp": "Si desactivas un comando, el bot lo ignorará en el chat. Activa o desactiva los juegos de chat en Juegos del chat en esta página.",
+    "commandsHelp": "Si desactivas un comando, el bot lo ignorará en el chat. Activa o desactiva los juegos de chat en la pestaña Juegos.",
     "commands": {
       "groupGeneral": "General",
       "groupMemory": "Memoria del canal",
@@ -101,8 +101,8 @@
         "so": "Recomienda a otro streamer a tu chat. El bot publica un mensaje sobre el streamer y un enlace a su canal.",
         "command": "Añade, edita y elimina comandos personalizados desde el chat. También puedes hacerlo en Comandos personalizados en esta página.",
         "timer": "Añade, edita y elimina mensajes programados desde el chat. También puedes hacerlo en Mensajes programados en esta página.",
-        "botlang": "Establece el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en esta página.",
-        "auto": "Establece con qué frecuencia el bot publica mensajes automáticos y de qué tipos. También puedes hacerlo en Configuración de Auto-Chat en esta página.",
+        "botlang": "Define el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en la pestaña Bot.",
+        "auto": "Define la frecuencia con la que el bot envía mensajes automáticos y qué tipos envía. También puedes hacerlo en Configuración de Auto-Chat en la pestaña Stream.",
         "disable": "Desactiva un comando desde el chat.",
         "enable": "Vuelve a activar un comando desde el chat."
       },
@@ -251,6 +251,13 @@
       "roundLimitHelp": "El número máximo de rondas por partida.",
       "roundPause": "Pausa entre rondas",
       "roundPauseHelp": "Tiempo para leer la respuesta antes del siguiente acertijo."
+    },
+    "tabs": {
+      "label": "Secciones del panel",
+      "commands": "Comandos",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Juegos"
     }
   },
   "status": {

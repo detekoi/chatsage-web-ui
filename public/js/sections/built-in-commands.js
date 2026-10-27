@@ -100,8 +100,8 @@ function commandDescription(name) {
         case 'so': return t('page.commands.desc.so', {}, 'Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.');
         case 'command': return t('page.commands.desc.command', {}, 'Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.');
         case 'timer': return t('page.commands.desc.timer', {}, 'Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.');
-        case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.');
-        case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.');
+        case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.');
+        case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.');
         case 'disable': return t('page.commands.desc.disable', {}, 'Turns off a command from chat.');
         case 'enable': return t('page.commands.desc.enable', {}, 'Turns a command back on from chat.');
         default: return '';

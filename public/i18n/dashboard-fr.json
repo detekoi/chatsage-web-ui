@@ -73,7 +73,7 @@
       "rewardTitle": "Titre de la récompense"
     },
     "checkinTitle": "Check-in quotidien",
-    "commandsHelp": "Si vous désactivez une commande, le bot l'ignore dans le chat. Activez ou désactivez les jeux dans Jeux du chat sur cette page.",
+    "commandsHelp": "Si tu désactives une commande, le bot l'ignore dans le chat. Active ou désactive les jeux du chat dans l'onglet Jeux.",
     "commands": {
       "groupGeneral": "Général",
       "groupMemory": "Mémoire de chaîne",
@@ -101,8 +101,8 @@
         "so": "Recommande un autre streamer à votre chat. Le bot poste un message sur le streamer et un lien vers sa chaîne.",
         "command": "Ajoute, modifie et supprime des commandes personnalisées depuis le tchat. Vous pouvez aussi le faire dans Commandes personnalisées sur cette page.",
         "timer": "Ajoute, modifie et supprime des messages programmés depuis le tchat. Vous pouvez aussi le faire dans Messages programmés sur cette page.",
-        "botlang": "Définit la langue des réponses du bot depuis le tchat. Vous pouvez aussi le faire dans Langue du bot sur cette page.",
-        "auto": "Définit à quelle fréquence le bot publie des messages automatiques, et de quels types. Vous pouvez aussi le faire dans Paramètres d'Auto-Chat sur cette page.",
+        "botlang": "Définit la langue des réponses du bot depuis le chat. Tu peux aussi le faire dans Langue du bot dans l'onglet Bot.",
+        "auto": "Définit la fréquence d'envoi et les types de messages automatiques du bot. Tu peux aussi le faire dans Paramètres d'Auto-Chat dans l'onglet Stream.",
         "disable": "Désactive une commande depuis le tchat.",
         "enable": "Réactive une commande depuis le tchat."
       },
@@ -251,6 +251,13 @@
       "roundLimitHelp": "Le nombre maximum de manches par partie.",
       "roundPause": "Pause entre les manches",
       "roundPauseHelp": "Le temps pour lire la réponse avant la prochaine énigme."
+    },
+    "tabs": {
+      "label": "Sections du tableau de bord",
+      "commands": "Commandes",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Jeux"
     }
   },
   "status": {

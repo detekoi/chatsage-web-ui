@@ -73,7 +73,7 @@
       "rewardTitle": "Titolo ricompensa"
     },
     "checkinTitle": "Check-In giornaliero",
-    "commandsHelp": "Se disattivi un comando, il bot lo ignora in chat. Attiva o disattiva i giochi di chat nella sezione Giochi della chat in questa pagina.",
+    "commandsHelp": "Se disattivi un comando, il bot lo ignorerà in chat. Attiva o disattiva i giochi per la chat nella scheda Giochi.",
     "commands": {
       "groupGeneral": "Generali",
       "groupMemory": "Memoria del canale",
@@ -101,8 +101,8 @@
         "so": "Consiglia un altro streamer alla tua chat. Il bot invia un messaggio sullo streamer e il link al suo canale.",
         "command": "Aggiunge, modifica ed elimina comandi personalizzati dalla chat. Puoi farlo anche in Comandi personalizzati in questa pagina.",
         "timer": "Aggiunge, modifica ed elimina messaggi programmati dalla chat. Puoi farlo anche in Messaggi programmati in questa pagina.",
-        "botlang": "Imposta dalla chat la lingua delle risposte del bot. Puoi farlo anche in Lingua del bot in questa pagina.",
-        "auto": "Imposta ogni quanto il bot pubblica messaggi automatici e di quali tipi. Puoi farlo anche in Impostazioni Auto-Chat in questa pagina.",
+        "botlang": "Imposta la lingua delle risposte del bot dalla chat. Puoi farlo anche in Lingua del bot nella scheda Bot.",
+        "auto": "Imposta la frequenza con cui il bot invia messaggi automatici e quali tipi inviare. Puoi farlo anche in Impostazioni Auto-Chat nella scheda Stream.",
         "disable": "Disattiva un comando dalla chat.",
         "enable": "Riattiva un comando dalla chat."
       },
@@ -251,6 +251,13 @@
       "roundLimitHelp": "Il numero massimo di round in una partita.",
       "roundPause": "Pausa tra i round",
       "roundPauseHelp": "Il tempo per leggere la risposta prima del prossimo indovinello."
+    },
+    "tabs": {
+      "label": "Sezioni dashboard",
+      "commands": "Comandi",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Giochi"
     }
   },
   "status": {

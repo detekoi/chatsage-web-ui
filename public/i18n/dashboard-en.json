@@ -28,6 +28,13 @@
         },
         "adNotificationsTitle": "Ad Notifications",
         "appbarPage": "Dashboard",
+        "tabs": {
+            "label": "Dashboard sections",
+            "commands": "Commands",
+            "bot": "Bot",
+            "stream": "Stream",
+            "games": "Games"
+        },
         "aside": {
             "addBot": "Add bot to my channel",
             "botInChannel": "Bot in your channel",
@@ -73,7 +80,7 @@
             "rewardTitle": "Reward Title"
         },
         "checkinTitle": "Daily Check-In",
-        "commandsHelp": "If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in Chat Games on this page.",
+        "commandsHelp": "If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in the Games tab.",
         "commands": {
             "groupGeneral": "General",
             "groupMemory": "Channel Memory",
@@ -101,8 +108,8 @@
                 "so": "Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.",
                 "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
                 "timer": "Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.",
-                "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.",
-                "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.",
+                "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.",
+                "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.",
                 "disable": "Turns off a command from chat.",
                 "enable": "Turns a command back on from chat."
             },

@@ -18,6 +18,7 @@ const source = resolve(process.env.WILDCAT_DESIGN_SYSTEM_DIR || join(root, "..",
 const stylesDir = existsSync(join(root, "public/styles")) ? "public/styles" : "public/css";
 const files = {
   "design-system.css": join(stylesDir, "design-system.css"),
+  "wc-tabs.js": "public/js/vendor/wc-tabs.js",
   "css-snapshot.mjs": "scripts/css-snapshot.mjs",
 };
 const check = process.argv.includes("--check");

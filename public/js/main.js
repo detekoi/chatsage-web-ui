@@ -11,6 +11,7 @@ import { initCheckin, loadCheckinSettings } from './sections/checkin.js';
 import { initPersona, loadPersona } from './sections/persona.js';
 import { initBotLanguage, loadBotLanguage } from './sections/bot-language.js';
 import { initGames, loadGames, renderGameSwitches } from './sections/games.js';
+import { initTabs } from './vendor/wc-tabs.js';
 
 let twitchUsernameEl;
 let channelNameStatusEl;
@@ -99,6 +100,9 @@ async function initializeDashboard() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Before the catalog loads, so a #games link does not show the first tab for a moment.
+    initTabs(document.querySelector('.nav-tabs[role="tablist"]'));
+
     // 0. Catalog first. Every section below renders text through t(), so the strings have to be
     //    available before the first paint rather than after it.
     await initI18n();

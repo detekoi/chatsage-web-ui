@@ -73,7 +73,7 @@
       "rewardTitle": "Belohnungstitel"
     },
     "checkinTitle": "Täglicher Check-In",
-    "commandsHelp": "Wenn du einen Befehl deaktivierst, ignoriert der Bot ihn im Chat. Chat-Spiele kannst du unter Chat-Spiele auf dieser Seite ein- oder ausschalten.",
+    "commandsHelp": "Wenn du einen Befehl ausschaltest, ignoriert der Bot ihn im Chat. Chat-Spiele kannst du im Spiele-Tab ein- oder ausschalten.",
     "commands": {
       "groupGeneral": "Allgemein",
       "groupMemory": "Kanalgedächtnis",
@@ -101,8 +101,8 @@
         "so": "Empfiehlt deinem Chat einen anderen Streamer. Der Bot postet eine Nachricht über den Streamer und einen Link zu dessen Kanal.",
         "command": "Erstellt, bearbeitet und löscht eigene Befehle über den Chat. Das geht auch unter Eigene Befehle auf dieser Seite.",
         "timer": "Erstellt, bearbeitet und löscht zeitgesteuerte Nachrichten über den Chat. Das geht auch unter Zeitgesteuerte Nachrichten auf dieser Seite.",
-        "botlang": "Legt über den Chat die Sprache der Bot-Antworten fest. Das geht auch unter Bot-Sprache auf dieser Seite.",
-        "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Arten. Das geht auch unter Auto-Chat-Einstellungen auf dieser Seite.",
+        "botlang": "Legt die Sprache der Bot-Antworten im Chat fest. Du kannst das auch unter Bot-Sprache im Bot-Tab einstellen.",
+        "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Typen. Du kannst das auch in den Auto-Chat-Einstellungen im Stream-Tab einstellen.",
         "disable": "Deaktiviert einen Befehl über den Chat.",
         "enable": "Aktiviert einen Befehl über den Chat wieder."
       },
@@ -251,6 +251,13 @@
       "roundLimitHelp": "Die maximale Rundenzahl in einem Spiel.",
       "roundPause": "Pause zwischen Runden",
       "roundPauseHelp": "Zeit zum Lesen der Antwort, bevor das nächste Rätsel startet."
+    },
+    "tabs": {
+      "label": "Dashboard-Bereiche",
+      "commands": "Befehle",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Spiele"
     }
   },
   "status": {

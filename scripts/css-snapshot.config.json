@@ -7,6 +7,9 @@
   "pages": [
     { "name": "index", "path": "/index.html", "settleMs": 1500 },
     { "name": "dashboard", "path": "/dashboard.html?dev=true", "settleMs": 2500, "click": ["#custom-cmd-add-btn", "#timer-add-btn"] },
+    { "name": "dashboard-bot", "path": "/dashboard.html?dev=true#bot", "settleMs": 2500 },
+    { "name": "dashboard-stream", "path": "/dashboard.html?dev=true#stream", "settleMs": 2500 },
+    { "name": "dashboard-games", "path": "/dashboard.html?dev=true#games", "settleMs": 2500 },
     { "name": "404", "path": "/404.html", "settleMs": 1000 },
     { "name": "auth-complete", "path": "/auth-complete.html", "settleMs": 1000 },
     { "name": "auth-error", "path": "/auth-error.html", "settleMs": 1000 }
