@@ -30,9 +30,15 @@ export function initTabs(tablist) {
     const tabs = [...tablist.querySelectorAll('[role="tab"]')];
     const panelOf = tab => document.getElementById(tab.getAttribute('aria-controls'));
     const hashOf = tab => tab.getAttribute('aria-controls').slice(PANEL_PREFIX.length);
+    // A malformed hash (#%, a link cut off mid-escape) opens the default tab
+    // instead of throwing, which would stop the page script that called initTabs.
     const fromHash = () => {
-        const name = decodeURIComponent(location.hash.slice(1));
-        return name ? tabs.find(tab => hashOf(tab) === name) : undefined;
+        try {
+            const name = decodeURIComponent(location.hash.slice(1));
+            return name ? tabs.find(tab => hashOf(tab) === name) : undefined;
+        } catch {
+            return undefined;
+        }
     };
 
     function select(tab) {
