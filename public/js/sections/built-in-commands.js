@@ -170,17 +170,17 @@ function renderCommandOptions(cmd) {
 
 function renderGroupHead(id) {
     const head = document.createElement('div');
-    head.className = 'list-group-item cmd-group-head';
+    head.className = 'list-group-item wc-group-head';
 
     const title = document.createElement('h3');
-    title.className = 'cmd-group-title';
+    title.className = 'wc-group-title';
     title.textContent = groupTitle(id);
     head.appendChild(title);
 
     const note = groupNote(id);
     if (note) {
         const noteEl = document.createElement('p');
-        noteEl.className = 'cmd-group-note';
+        noteEl.className = 'wc-group-note';
         noteEl.textContent = note;
         head.appendChild(noteEl);
     }
