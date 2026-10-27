@@ -73,10 +73,9 @@
             "rewardTitle": "Reward Title"
         },
         "checkinTitle": "Daily Check-In",
-        "commandsHelp": "If you turn off a command, the bot ignores it in chat.",
+        "commandsHelp": "If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in Chat Games on this page.",
         "commands": {
             "groupGeneral": "General",
-            "groupGames": "Games",
             "groupMemory": "Channel Memory",
             "groupModerators": "Moderator commands",
             "moderatorsNote": "Only moderators and the broadcaster can use these commands.",
@@ -211,7 +210,8 @@
         "title": "Channel dashboard",
         "gamesTitle": "Chat Games",
         "games": {
-            "help": "Settings for !trivia, !geo and !riddle. A change applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.",
+            "help": "Turn !trivia, !geo and !riddle on or off here. A change to a setting applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.",
+            "offNote": "Turn on the game to see its settings.",
             "trivia": "Trivia",
             "difficulty": "Difficulty",
             "difficultyHelp": "When the difficulty bonus is on, harder questions give more points.",

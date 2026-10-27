@@ -73,10 +73,9 @@
       "rewardTitle": "リワード名"
     },
     "checkinTitle": "デイリーチェックイン",
-    "commandsHelp": "コマンドをオフにすると、ボットはチャットでそのコマンドに反応しません。",
+    "commandsHelp": "コマンドをオフにすると、ボットはチャット内で無視します。チャットゲームのオン/オフはこのページの「チャットゲーム」で切り替えられます。",
     "commands": {
       "groupGeneral": "一般",
-      "groupGames": "ゲーム",
       "groupMemory": "チャンネルメモリ",
       "groupModerators": "モデレーター用コマンド",
       "moderatorsNote": "これらのコマンドを使えるのはモデレーターと配信者だけです。",
@@ -211,7 +210,8 @@
     "title": "チャンネルダッシュボード",
     "gamesTitle": "チャットゲーム",
     "games": {
-      "help": "!trivia、!geo、!riddleの設定です。変更は次の問題またはラウンドから適用されます。モデレーターはチャット内で!trivia config、!geo config、!riddle configを使って設定を変更することもできます。",
+      "help": "ここで !trivia、!geo、!riddle のオン/オフを切り替えます。設定の変更は次の問題またはラウンドから適用されます。モデレーターはチャット内で !trivia config、!geo config、!riddle config を使って設定を変更することもできます。",
+      "offNote": "ゲームをオンにすると設定が表示されます。",
       "trivia": "トリビア",
       "difficulty": "難易度",
       "difficultyHelp": "難易度ボーナスがオンの場合、難しい問題ほど多くのポイントを獲得できます。",

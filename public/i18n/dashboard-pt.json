@@ -73,10 +73,9 @@
       "rewardTitle": "Título da recompensa"
     },
     "checkinTitle": "Check-In Diário",
-    "commandsHelp": "Se você desativar um comando, o bot o ignora no chat.",
+    "commandsHelp": "Se você desativar um comando, o bot vai ignorá-lo no chat. Ative ou desative os jogos de chat em Jogos do Chat nesta página.",
     "commands": {
       "groupGeneral": "Gerais",
-      "groupGames": "Jogos",
       "groupMemory": "Memória do Canal",
       "groupModerators": "Comandos de moderador",
       "moderatorsNote": "Somente moderadores e o streamer podem usar estes comandos.",
@@ -211,7 +210,8 @@
     "title": "Painel do canal",
     "gamesTitle": "Jogos do Chat",
     "games": {
-      "help": "Configurações para !trivia, !geo e !riddle. As alterações valem a partir da próxima pergunta ou rodada. Moderadores também podem alterar essas configurações no chat com !trivia config, !geo config e !riddle config.",
+      "help": "Ative ou desative !trivia, !geo e !riddle aqui. Qualquer alteração passa a valer a partir da próxima pergunta ou rodada. Moderadores também podem alterar essas configurações no chat com !trivia config, !geo config e !riddle config.",
+      "offNote": "Ative o jogo para ver suas configurações.",
       "trivia": "Trivia",
       "difficulty": "Dificuldade",
       "difficultyHelp": "Quando o bônus de dificuldade está ativado, perguntas mais difíceis dão mais pontos.",

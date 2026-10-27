@@ -73,10 +73,9 @@
       "rewardTitle": "Belohnungstitel"
     },
     "checkinTitle": "Täglicher Check-In",
-    "commandsHelp": "Wenn du einen Befehl deaktivierst, ignoriert der Bot ihn im Chat.",
+    "commandsHelp": "Wenn du einen Befehl deaktivierst, ignoriert der Bot ihn im Chat. Chat-Spiele kannst du unter Chat-Spiele auf dieser Seite ein- oder ausschalten.",
     "commands": {
       "groupGeneral": "Allgemein",
-      "groupGames": "Spiele",
       "groupMemory": "Kanalgedächtnis",
       "groupModerators": "Moderator-Befehle",
       "moderatorsNote": "Nur Moderatoren und der Streamer können diese Befehle verwenden.",
@@ -211,7 +210,8 @@
     "title": "Kanal-Dashboard",
     "gamesTitle": "Chat-Spiele",
     "games": {
-      "help": "Einstellungen für !trivia, !geo und !riddle. Änderungen gelten ab der nächsten Frage oder Runde. Moderatoren können diese Einstellungen auch im Chat mit !trivia config, !geo config und !riddle config ändern.",
+      "help": "Schalte !trivia, !geo und !riddle hier ein oder aus. Geänderte Einstellungen gelten ab der nächsten Frage oder Runde. Moderatoren können diese Einstellungen auch im Chat mit !trivia config, !geo config und !riddle config anpassen.",
+      "offNote": "Schalte das Spiel ein, um seine Einstellungen zu sehen.",
       "trivia": "Trivia",
       "difficulty": "Schwierigkeit",
       "difficultyHelp": "Wenn der Schwierigkeitsbonus aktiv ist, bringen schwerere Fragen mehr Punkte.",

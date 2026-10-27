@@ -73,10 +73,9 @@
       "rewardTitle": "Titre de la récompense"
     },
     "checkinTitle": "Check-in quotidien",
-    "commandsHelp": "Si vous désactivez une commande, le bot l'ignore dans le tchat.",
+    "commandsHelp": "Si vous désactivez une commande, le bot l'ignore dans le chat. Activez ou désactivez les jeux dans Jeux du chat sur cette page.",
     "commands": {
       "groupGeneral": "Général",
-      "groupGames": "Jeux",
       "groupMemory": "Mémoire de chaîne",
       "groupModerators": "Commandes de modération",
       "moderatorsNote": "Seuls les modérateurs et le streamer peuvent utiliser ces commandes.",
@@ -211,7 +210,8 @@
     "title": "Tableau de bord de la chaîne",
     "gamesTitle": "Jeux du chat",
     "games": {
-      "help": "Paramètres pour !trivia, !geo et !riddle. Les modifications s'appliquent dès la question ou la manche suivante. Les modérateurs peuvent aussi les modifier dans le chat avec !trivia config, !geo config et !riddle config.",
+      "help": "Activez ou désactivez !trivia, !geo et !riddle ici. Toute modification s'applique dès la question ou manche suivante. Les modérateurs peuvent aussi modifier ces paramètres dans le chat avec !trivia config, !geo config et !riddle config.",
+      "offNote": "Activez le jeu pour voir ses paramètres.",
       "trivia": "Trivia",
       "difficulty": "Difficulté",
       "difficultyHelp": "Quand le bonus de difficulté est activé, les questions plus dures rapportent plus de points.",

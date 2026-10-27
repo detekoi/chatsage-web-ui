@@ -10,7 +10,7 @@ import { initTimers, loadTimers } from './sections/timers.js';
 import { initCheckin, loadCheckinSettings } from './sections/checkin.js';
 import { initPersona, loadPersona } from './sections/persona.js';
 import { initBotLanguage, loadBotLanguage } from './sections/bot-language.js';
-import { initGames, loadGames } from './sections/games.js';
+import { initGames, loadGames, renderGameSwitches } from './sections/games.js';
 
 let twitchUsernameEl;
 let channelNameStatusEl;
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    initBuiltInCommands();
+    initBuiltInCommands({ onCommandsLoaded: renderGameSwitches });
     initAutoChat();
     initCustomCommands();
     initTimers();

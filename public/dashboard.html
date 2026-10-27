@@ -143,7 +143,7 @@
                     <h2 class="wc-card-title mb-0" data-i18n="page.commandsTitle">Command Settings</h2>
                 </div>
                 <div class="card-body">
-                    <p class="wc-card-desc" data-i18n="page.commandsHelp">If you turn off a command, the bot ignores it in chat.</p>
+                    <p class="wc-card-desc" data-i18n="page.commandsHelp">If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in Chat Games on this page.</p>
                     <div id="commands-loading" style="display:none;" class="wc-loading">
                         <div class="wc-bar" role="progressbar" aria-label="Loading command settings" data-i18n-aria-label="page.loading.commandsAria"><span></span></div>
                         <p class="wc-loading-label" data-i18n="page.loading.commands">Loading command settings…</p>
@@ -216,7 +216,7 @@
                             </select>
                         </div>
 
-                        <div class="mb-3">
+                        <div id="auto-chat-categories" class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
                                 <label class="form-check-label" for="auto-cat-facts" data-i18n="page.autoChat.facts">Facts/Tips</label>
@@ -627,12 +627,12 @@
                     <h2 class="wc-card-title mb-0" data-i18n="page.gamesTitle">Chat Games</h2>
                 </div>
                 <div class="card-body">
-                    <p class="wc-card-desc" data-i18n="page.games.help">Settings for !trivia, !geo and !riddle. A change applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.</p>
+                    <p class="wc-card-desc" data-i18n="page.games.help">Turn !trivia, !geo and !riddle on or off here. A change to a setting applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.</p>
                     <div id="games-loading" class="wc-loading" hidden>
                         <div class="wc-bar" role="progressbar" aria-label="Loading game settings" data-i18n-aria-label="page.loading.gamesAria"><span></span></div>
                         <p class="wc-loading-label" data-i18n="page.loading.games">Loading game settings…</p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-trivia-title">
+                    <div id="games-trivia-group" class="list-group games-group" aria-labelledby="games-trivia-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-trivia-title" class="cmd-group-title" data-i18n="page.games.trivia">Trivia</h3>
                         </div>
@@ -728,11 +728,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-trivia-actions" class="wc-card-actions games-actions">
                         <button id="games-trivia-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-trivia-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-geo-title">
+                    <div id="games-geo-group" class="list-group games-group" aria-labelledby="games-geo-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-geo-title" class="cmd-group-title" data-i18n="page.games.geo">Geo-Game</h3>
                         </div>
@@ -851,11 +851,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-geo-actions" class="wc-card-actions games-actions">
                         <button id="games-geo-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-geo-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-riddle-title">
+                    <div id="games-riddle-group" class="list-group games-group" aria-labelledby="games-riddle-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-riddle-title" class="cmd-group-title" data-i18n="page.games.riddle">Riddle</h3>
                         </div>
@@ -970,7 +970,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-riddle-actions" class="wc-card-actions games-actions">
                         <button id="games-riddle-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-riddle-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
