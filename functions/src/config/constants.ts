@@ -223,6 +223,111 @@ export const DEFAULT_AUTO_CHAT_CONFIG = {
   },
 };
 
+// Chat game configs. The bot owns these documents: each game reads its config
+// at the first game in a channel and listens for changes after that. Keyed by
+// broadcaster ID (utils/channelKey), as the bot keys them. The defaults and the
+// limits below copy the bot's DEFAULT_CONFIG and configureGame checks in
+// src/components/{trivia,geo,riddle}/*GameManager.js; change both together.
+export const GAME_IDS = ["trivia", "geo", "riddle"] as const;
+export type GameId = (typeof GAME_IDS)[number];
+
+export const GAME_DIFFICULTIES = ["easy", "normal", "hard"] as const;
+
+// Limits for the list settings (topics, regions, game titles).
+export const GAME_LIST_MAX_ITEMS = 20;
+export const GAME_LIST_MAX_LENGTH = 60;
+
+export type GameFieldSpec =
+  | { type: "enum"; values: readonly string[] }
+  | { type: "int"; min: number; max: number }
+  | { type: "bool" }
+  | { type: "list" };
+
+export interface GameConfigSpec {
+  collection: string;
+  // Every default the bot's `!<game> resetconfig` writes, including the ones
+  // the dashboard does not show.
+  defaults: Record<string, unknown>;
+  // The settings the dashboard reads and writes.
+  fields: Record<string, GameFieldSpec>;
+}
+
+const SCORING_FIELDS: Record<string, GameFieldSpec> = {
+  pointsTimeBonus: { type: "bool" },
+  pointsDifficultyMultiplier: { type: "bool" },
+  scoreTracking: { type: "bool" },
+};
+
+export const GAME_CONFIGS: Record<GameId, GameConfigSpec> = {
+  trivia: {
+    collection: "triviaGameConfigs",
+    defaults: {
+      difficulty: "normal",
+      questionTimeSeconds: 45,
+      roundDurationMinutes: 2,
+      scoreTracking: true,
+      topicPreferences: [],
+      pointsBase: 10,
+      pointsTimeBonus: true,
+      pointsDifficultyMultiplier: true,
+    },
+    fields: {
+      difficulty: { type: "enum", values: GAME_DIFFICULTIES },
+      questionTimeSeconds: { type: "int", min: 10, max: 120 },
+      pointsBase: { type: "int", min: 1, max: 100 },
+      ...SCORING_FIELDS,
+      topicPreferences: { type: "list" },
+    },
+  },
+  geo: {
+    collection: "geoGameConfigs",
+    defaults: {
+      difficulty: "normal",
+      clueIntervalSeconds: 45,
+      roundDurationMinutes: 5,
+      scoreTracking: true,
+      pointsBase: 15,
+      pointsTimeBonus: true,
+      pointsDifficultyMultiplier: true,
+      regionRestrictions: [],
+      gameTitlePreferences: [],
+    },
+    fields: {
+      difficulty: { type: "enum", values: GAME_DIFFICULTIES },
+      clueIntervalSeconds: { type: "int", min: 30, max: 300 },
+      roundDurationMinutes: { type: "int", min: 3, max: 20 },
+      pointsBase: { type: "int", min: 1, max: 100 },
+      ...SCORING_FIELDS,
+      regionRestrictions: { type: "list" },
+      gameTitlePreferences: { type: "list" },
+    },
+  },
+  riddle: {
+    collection: "riddleGameConfigs",
+    defaults: {
+      difficulty: "normal",
+      questionTimeSeconds: 45,
+      pointsBase: 15,
+      pointsTimeBonus: true,
+      pointsDifficultyMultiplier: true,
+      scoreTracking: true,
+      maxRounds: 10,
+      recentKeywordsFetchLimit: 50,
+      multiRoundDelayMs: 12000,
+      maxRiddleGenerationRetries: 3,
+    },
+    fields: {
+      difficulty: { type: "enum", values: GAME_DIFFICULTIES },
+      questionTimeSeconds: { type: "int", min: 15, max: 120 },
+      pointsBase: { type: "int", min: 1, max: 1000 },
+      ...SCORING_FIELDS,
+      // The bot accepts up to 20, but a chat command never starts more than 10 rounds.
+      maxRounds: { type: "int", min: 1, max: 10 },
+      multiRoundDelayMs: { type: "int", min: 1000, max: 60000 },
+    },
+  },
+};
+
 // Token cache configuration
 export const TOKEN_CACHE_BUFFER_SECONDS = 300; // 5 minutes before expiry
 

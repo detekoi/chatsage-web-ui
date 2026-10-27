@@ -2,7 +2,8 @@
   "confirm": {
     "deleteCheckin": "チャンネルからデイリーチェックインのリワードを削除しますか？この操作は取り消せません。",
     "deleteItem": "{item}を削除しますか？",
-    "resetPersona": "ボットをデフォルトの人格にリセットしますか？カスタムテキストは削除されます。"
+    "resetPersona": "ボットをデフォルトの人格にリセットしますか？カスタムテキストは削除されます。",
+    "resetGame": "{game}の設定をすべてデフォルトに戻しますか？"
   },
   "label": {
     "charCounter": "{used} 文字",
@@ -146,7 +147,9 @@
       "streamEvents": "配信イベント設定を読み込み中…",
       "streamEventsAria": "配信イベント設定を読み込み中",
       "timers": "タイマーメッセージを読み込み中…",
-      "timersAria": "タイマーメッセージを読み込み中"
+      "timersAria": "タイマーメッセージを読み込み中",
+      "gamesAria": "ゲーム設定を読み込み中",
+      "games": "ゲーム設定を読み込み中…"
     },
     "permission": {
       "broadcaster": "配信者",
@@ -205,7 +208,50 @@
       "namePlaceholder": "discord"
     },
     "timersTitle": "タイマーメッセージ",
-    "title": "チャンネルダッシュボード"
+    "title": "チャンネルダッシュボード",
+    "gamesTitle": "チャットゲーム",
+    "games": {
+      "help": "!trivia、!geo、!riddleの設定です。変更は次の問題またはラウンドから適用されます。モデレーターはチャット内で!trivia config、!geo config、!riddle configを使って設定を変更することもできます。",
+      "trivia": "トリビア",
+      "difficulty": "難易度",
+      "difficultyHelp": "難易度ボーナスがオンの場合、難しい問題ほど多くのポイントを獲得できます。",
+      "difficultyEasy": "イージー",
+      "difficultyNormal": "ノーマル",
+      "difficultyHard": "ハード",
+      "answerTime": "回答時間",
+      "triviaAnswerTimeHelp": "チャットが問題に回答できる制限時間です。",
+      "unitSeconds": "秒",
+      "pointsBase": "基本ポイント",
+      "pointsBaseHelp": "ボーナス適用前の正解ポイントです。",
+      "timeBonus": "スピードボーナス",
+      "timeBonusHelp": "素早く回答すると最大50%の追加ポイントを獲得できます。",
+      "difficultyBonus": "難易度ボーナス",
+      "difficultyBonusHelp": "ノーマルの問題は1.5倍、ハードの問題は2倍のポイントを獲得できます。",
+      "scoreTracking": "スコア記録",
+      "scoreTrackingHelp": "ボットがチャンネルのリーダーボードにポイントと勝利数を記録します。",
+      "topics": "優先トピック",
+      "topicsHelp": "トピックを指定せずにゲームを開始した場合、ボットはこれらのトピックから選びます。トピック間はカンマで区切ってください。空欄の場合は一般常識から出題されます。",
+      "topicsPlaceholder": "宇宙, ポケモン, 90年代音楽",
+      "reset": "デフォルトに戻す",
+      "geo": "Geoゲーム",
+      "clueInterval": "ヒントの間隔",
+      "clueIntervalHelp": "次のヒントが出るまでの間隔時間。",
+      "roundLength": "ラウンド時間",
+      "roundLengthHelp": "ボットが正解を表示するまでの制限時間。",
+      "unitMinutes": "分",
+      "regions": "地域",
+      "regionsHelp": "ボットは指定された地域の実在する場所のみを出題します。地域間はカンマで区切ってください。空欄の場合は全世界から出題されます。",
+      "regionsPlaceholder": "ヨーロッパ, 日本",
+      "gameTitles": "優先ゲーム",
+      "gameTitlesHelp": "!geo game でタイトルが指定されていない場合、ボットはこれらのゲームから選びます。空欄の場合は配信中のゲームが使用されます。",
+      "gameTitlesPlaceholder": "Elden Ring, Skyrim",
+      "riddle": "なぞなぞ",
+      "riddleAnswerTimeHelp": "チャットがなぞなぞに回答できる制限時間。",
+      "roundLimit": "ラウンド上限",
+      "roundLimitHelp": "1ゲームあたりの最大ラウンド数です。",
+      "roundPause": "ラウンド間の待機時間",
+      "roundPauseHelp": "次の問題が始まる前に答えを確認する時間です。"
+    }
   },
   "status": {
     "active": "有効",
@@ -270,7 +316,10 @@
     "streamEventsSaved": "配信イベント設定を保存しました。",
     "timerSaveFailed": "タイマーの保存に失敗しました。",
     "timerSavedDev": "タイマー「{name}」を保存しました（開発モード）。",
-    "updateFailed": "{item}の更新に失敗しました。"
+    "updateFailed": "{item}の更新に失敗しました。",
+    "loadGamesFailed": "ゲーム設定を読み込めませんでした。",
+    "gameSaved": "{game}の設定を保存しました。",
+    "gameReset": "{game}の設定をデフォルトに戻しました。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",
@@ -283,6 +332,8 @@
     "personaTooLong": "ペルソナの指示は{max}文字以下にしてください。",
     "previewPromptRequired": "AIプロンプトを入力してから「プレビュー」を選択してください。",
     "responseRequired": "応答テキストは必須です。",
-    "timerNameRequired": "タイマー名は必須です。"
+    "timerNameRequired": "タイマー名は必須です。",
+    "gamesRange": "{min}から{max}までの整数を入力してください。",
+    "gamesList": "最大{maxItems}個の名前を入力してください。各名前は最大{maxLength}文字です。"
   }
 }

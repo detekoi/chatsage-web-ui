@@ -123,7 +123,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "fr": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -249,7 +258,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "de": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -375,7 +393,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "it": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -501,7 +528,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "pt": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -627,7 +663,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "ja": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -753,7 +798,16 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   },
   "ru": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -879,6 +933,15 @@
     "api.middleware.DatabaseUnavailable": "0bdbe74ce2fb4f82",
     "api.promptSafety.Rejected": "8e7c8b673e41770d",
     "api.promptSafety.Unavailable": "970712e14dc5c588",
-    "api.commands.CommandAlwaysOn": "066cfea87eeac326"
+    "api.commands.CommandAlwaysOn": "066cfea87eeac326",
+    "api.games.FailedLoadGames": "7e8e45a1d5daa977",
+    "api.games.FailedSaveGame": "231cc6a2f529b99d",
+    "api.games.UnknownGame": "392084fccb2ccbc0",
+    "api.games.UnknownSetting": "d8c27e3d42f8ee01",
+    "api.games.NoSettings": "85a6b1a77bf8c8e2",
+    "api.games.InvalidChoice": "01b9cee0ee93ed28",
+    "api.games.InvalidNumber": "b22e51c722a0d3f9",
+    "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
+    "api.games.InvalidList": "08b01bf427df1fbd"
   }
 }
