@@ -88,7 +88,7 @@ export function renderGameSwitches(commands) {
         row.querySelector('.col').appendChild(note);
 
         if (switchRows[game]) switchRows[game].replaceWith(row);
-        else groupEls[game].querySelector('.cmd-group-head').after(row);
+        else groupEls[game].querySelector('.wc-group-head').after(row);
         switchRows[game] = row;
         showSettings(game, cmd.enabled);
     }
@@ -96,7 +96,7 @@ export function renderGameSwitches(commands) {
 
 function showSettings(game, enabled) {
     for (const item of groupEls[game].children) {
-        if (item !== switchRows[game] && !item.classList.contains('cmd-group-head')) item.hidden = !enabled;
+        if (item !== switchRows[game] && !item.classList.contains('wc-group-head')) item.hidden = !enabled;
     }
     actionsEls[game].hidden = !enabled;
     switchRows[game].querySelector('[data-off-note]').hidden = enabled;
