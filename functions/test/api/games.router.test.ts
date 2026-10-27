@@ -161,12 +161,27 @@ describe("Games Router", () => {
       ["a list entry that is too long", "/trivia", { topicPreferences: ["x".repeat(61)] }],
       ["a hidden setting", "/trivia", { roundDurationMinutes: 3 }],
       ["a setting of another game", "/riddle", { clueIntervalSeconds: 60 }],
+      ["an inherited name (constructor)", "/trivia", { constructor: 1 }],
+      ["an inherited name (toString)", "/geo", { toString: 1 }],
       ["no settings", "/trivia", {}],
     ])("returns 400 for %s and writes nothing", async (_name, path, body) => {
       const res = await post(path, body);
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
+      expect(typeof res.body.message).toBe("string");
+      expect(mockSet).not.toHaveBeenCalled();
+    });
+
+    it("returns 400 for a __proto__ key and writes nothing", async () => {
+      // A JS object literal would set the prototype, so send raw JSON to make "__proto__" an own key.
+      const res = await request(createApp())
+        .post("/riddle")
+        .set("Authorization", `Bearer ${token}`)
+        .set("Content-Type", "application/json")
+        .send("{\"__proto__\": 1}");
+
+      expect(res.status).toBe(400);
       expect(typeof res.body.message).toBe("string");
       expect(mockSet).not.toHaveBeenCalled();
     });

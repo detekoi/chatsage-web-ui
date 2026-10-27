@@ -159,7 +159,8 @@ router.post("/:game", async (req: AuthenticatedRequest, res: Response) => {
   const body = req.body && typeof req.body === "object" && !Array.isArray(req.body) ? req.body : {};
   const updates: GameConfig = {};
   for (const [field, value] of Object.entries(body)) {
-    const fieldSpec = spec.fields[field];
+    // Own properties only: "constructor" or "__proto__" would otherwise reach Object and its prototype
+    const fieldSpec = Object.prototype.hasOwnProperty.call(spec.fields, field) ? spec.fields[field] : undefined;
     if (!fieldSpec) {
       return res.status(400).json({
         success: false,
