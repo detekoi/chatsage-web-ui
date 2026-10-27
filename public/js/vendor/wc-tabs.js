@@ -28,6 +28,8 @@ const PANEL_PREFIX = 'tab-';
  */
 export function initTabs(tablist) {
     const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+    // The tab the markup selects, read before select() changes aria-selected.
+    const defaultTab = tabs.find(tab => tab.getAttribute('aria-selected') === 'true') ?? tabs[0];
     const panelOf = tab => document.getElementById(tab.getAttribute('aria-controls'));
     const hashOf = tab => tab.getAttribute('aria-controls').slice(PANEL_PREFIX.length);
     // A malformed hash (#%, a link cut off mid-escape) opens the default tab
@@ -61,6 +63,8 @@ export function initTabs(tablist) {
     for (const tab of tabs) {
         tab.addEventListener('click', () => open(tab));
         tab.addEventListener('keydown', event => {
+            // Leave shortcuts to the browser: Alt+Left and Cmd+Left go back, Ctrl+Home scrolls.
+            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
             const i = tabs.indexOf(tab);
             // In a right-to-left page the first tab is on the right.
             const forward = getComputedStyle(tablist).direction === 'rtl' ? -1 : 1;
@@ -81,11 +85,13 @@ export function initTabs(tablist) {
         });
     }
 
+    // An empty hash (Back to the plain URL) opens the default tab. A hash that
+    // names no tab leaves the open tab as it is.
     window.addEventListener('hashchange', () => {
-        const tab = fromHash();
+        const tab = location.hash.length > 1 ? fromHash() : defaultTab;
         if (tab) select(tab);
     });
 
-    select(fromHash() ?? tabs.find(tab => tab.getAttribute('aria-selected') === 'true') ?? tabs[0]);
+    select(fromHash() ?? defaultTab);
     return { open };
 }
