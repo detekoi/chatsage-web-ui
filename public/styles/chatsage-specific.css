@@ -183,6 +183,36 @@
     margin-block-end: 6px;
 }
 
+/* Chat Games card (games.js): three row groups, each with its own reset
+   rail. A number field sits beside its unit, at a width for four digits.
+   A list field spans the row under its description. */
+:root .wc-card .games-number {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+:root .wc-card .games-number .form-control {
+    width: 76px;
+}
+
+/* Every number field has a unit slot, empty or not, so the fields line up. */
+:root .wc-card .games-number .wc-unit {
+    width: 4ch;
+}
+
+:root .wc-card .games-list-input {
+    margin-block-start: 6px;
+}
+
+:root .wc-card .form-control[aria-invalid="true"] {
+    border-color: var(--wc-danger);
+}
+
+:root .wc-card .games-actions {
+    align-items: center;
+}
+
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
    the centred italic spinner caption that lived here was removed with it.
    The AI preview bar sits inside its panel, so trim .wc-loading's

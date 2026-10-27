@@ -88,6 +88,15 @@ const en: Catalog = {
   "api.language.LanguageNotAvailableHere": "\"{language}\" is not in the list of languages here. A moderator can set any language in chat with !botlang.",
   "api.language.LanguageSaved": "Bot language saved.",
   "api.language.FailedSaveLanguageSetting": "Failed to save language setting",
+  "api.games.FailedLoadGames": "The game settings did not load. Try again.",
+  "api.games.FailedSaveGame": "The game settings did not save. Try again.",
+  "api.games.UnknownGame": "\"{game}\" is not a game. Use one of: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" is not a setting for this game.",
+  "api.games.NoSettings": "Send at least one setting to change.",
+  "api.games.InvalidChoice": "{field} must be one of: {values}.",
+  "api.games.InvalidNumber": "{field} must be a whole number from {min} to {max}.",
+  "api.games.InvalidSwitch": "{field} must be true or false.",
+  "api.games.InvalidList": "{field} must be a list of up to {maxItems} names. Each name can have up to {maxLength} characters.",
   "api.timers.ErrorFetchingTimers": "Error fetching timers",
   "api.timers.TimerNameRequiredLetters": "Timer name is required (letters, numbers, or underscores; reserved words not allowed).",
   "api.timers.MessageTextRequired": "Message text is required.",
@@ -269,6 +278,15 @@ const es: Catalog = {
   "api.middleware.DatabaseUnavailable": "Base de datos no disponible",
   "api.promptSafety.Rejected": "Prompt rechazado: {reasons}",
   "api.promptSafety.Unavailable": "Verificación de seguridad no disponible. Inténtalo de nuevo.",
+  "api.games.FailedLoadGames": "No se pudo cargar la configuración del juego. Inténtalo de nuevo.",
+  "api.games.FailedSaveGame": "No se pudo guardar la configuración del juego. Inténtalo de nuevo.",
+  "api.games.UnknownGame": "\"{game}\" no es un juego. Usa uno de estos: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" no es un ajuste para este juego.",
+  "api.games.NoSettings": "Envía al menos un ajuste para cambiar.",
+  "api.games.InvalidChoice": "{field} debe ser uno de estos: {values}.",
+  "api.games.InvalidNumber": "{field} debe ser un número entero entre {min} y {max}.",
+  "api.games.InvalidSwitch": "{field} debe ser true o false.",
+  "api.games.InvalidList": "{field} debe ser una lista de hasta {maxItems} nombres. Cada nombre puede tener hasta {maxLength} caracteres.",
 };
 
 const fr: Catalog = {
@@ -398,6 +416,15 @@ const fr: Catalog = {
   "api.middleware.DatabaseUnavailable": "Base de données indisponible",
   "api.promptSafety.Rejected": "Prompt refusé : {reasons}",
   "api.promptSafety.Unavailable": "Vérification de sécurité indisponible. Réessaie.",
+  "api.games.FailedLoadGames": "Impossible de charger les paramètres du jeu. Réessaie.",
+  "api.games.FailedSaveGame": "Impossible d'enregistrer les paramètres du jeu. Réessaie.",
+  "api.games.UnknownGame": "\"{game}\" n'est pas un jeu valide. Choisis parmi : {games}.",
+  "api.games.UnknownSetting": "\"{field}\" n'est pas un paramètre pour ce jeu.",
+  "api.games.NoSettings": "Envoie au moins un paramètre à modifier.",
+  "api.games.InvalidChoice": "{field} doit faire partie de : {values}.",
+  "api.games.InvalidNumber": "{field} doit être un nombre entier entre {min} et {max}.",
+  "api.games.InvalidSwitch": "{field} doit être true ou false.",
+  "api.games.InvalidList": "{field} doit être une liste d'au maximum {maxItems} noms. Chaque nom peut faire jusqu'à {maxLength} caractères.",
 };
 
 const de: Catalog = {
@@ -527,6 +554,15 @@ const de: Catalog = {
   "api.middleware.DatabaseUnavailable": "Datenbank nicht verfügbar",
   "api.promptSafety.Rejected": "Prompt abgelehnt: {reasons}",
   "api.promptSafety.Unavailable": "Sicherheitsprüfung nicht verfügbar. Bitte versuche es erneut.",
+  "api.games.FailedLoadGames": "Die Spieleinstellungen konnten nicht geladen werden. Versuch es noch einmal.",
+  "api.games.FailedSaveGame": "Die Spieleinstellungen konnten nicht gespeichert werden. Versuch es noch einmal.",
+  "api.games.UnknownGame": "\"{game}\" ist kein Spiel. Nutze eins von: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" ist keine Einstellung für dieses Spiel.",
+  "api.games.NoSettings": "Gib mindestens eine Einstellung zum Ändern an.",
+  "api.games.InvalidChoice": "{field} muss eins von Folgendem sein: {values}.",
+  "api.games.InvalidNumber": "{field} muss eine ganze Zahl von {min} bis {max} sein.",
+  "api.games.InvalidSwitch": "{field} muss true oder false sein.",
+  "api.games.InvalidList": "{field} muss eine Liste von bis zu {maxItems} Namen sein. Jeder Name darf bis zu {maxLength} Zeichen haben.",
 };
 
 const it: Catalog = {
@@ -656,6 +692,15 @@ const it: Catalog = {
   "api.middleware.DatabaseUnavailable": "Database non disponibile",
   "api.promptSafety.Rejected": "Prompt rifiutato: {reasons}",
   "api.promptSafety.Unavailable": "Controllo di sicurezza non disponibile. Riprova.",
+  "api.games.FailedLoadGames": "Impossibile caricare le impostazioni di gioco. Riprova.",
+  "api.games.FailedSaveGame": "Impossibile salvare le impostazioni di gioco. Riprova.",
+  "api.games.UnknownGame": "\"{game}\" non è un gioco. Usa uno tra: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" non è un'impostazione per questo gioco.",
+  "api.games.NoSettings": "Invia almeno un'impostazione da modificare.",
+  "api.games.InvalidChoice": "{field} deve essere uno tra: {values}.",
+  "api.games.InvalidNumber": "{field} deve essere un numero intero da {min} a {max}.",
+  "api.games.InvalidSwitch": "{field} deve essere true o false.",
+  "api.games.InvalidList": "{field} deve essere una lista di massimo {maxItems} nomi. Ciascun nome può contenere fino a {maxLength} caratteri.",
 };
 
 const pt: Catalog = {
@@ -785,6 +830,15 @@ const pt: Catalog = {
   "api.middleware.DatabaseUnavailable": "Banco de dados indisponível",
   "api.promptSafety.Rejected": "Prompt rejeitado: {reasons}",
   "api.promptSafety.Unavailable": "Verificação de segurança indisponível. Tente novamente.",
+  "api.games.FailedLoadGames": "As configurações do jogo não carregaram. Tente novamente.",
+  "api.games.FailedSaveGame": "As configurações do jogo não foram salvas. Tente novamente.",
+  "api.games.UnknownGame": "\"{game}\" não é um jogo. Use um destes: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" não é uma configuração deste jogo.",
+  "api.games.NoSettings": "Envie pelo menos uma configuração para alterar.",
+  "api.games.InvalidChoice": "{field} deve ser um destes: {values}.",
+  "api.games.InvalidNumber": "{field} deve ser um número inteiro de {min} a {max}.",
+  "api.games.InvalidSwitch": "{field} deve ser true ou false.",
+  "api.games.InvalidList": "{field} deve ser uma lista de até {maxItems} nomes. Cada nome pode ter até {maxLength} caracteres.",
 };
 
 const ja: Catalog = {
@@ -914,6 +968,15 @@ const ja: Catalog = {
   "api.middleware.DatabaseUnavailable": "データベースを利用できません",
   "api.promptSafety.Rejected": "プロンプトが拒否されました: {reasons}",
   "api.promptSafety.Unavailable": "安全性チェックを利用できません。もう一度お試しください。",
+  "api.games.FailedLoadGames": "ゲーム設定を読み込めませんでした。もう一度お試しください。",
+  "api.games.FailedSaveGame": "ゲーム設定を保存できませんでした。もう一度お試しください。",
+  "api.games.UnknownGame": "\"{game}\" はゲームではありません。次のいずれかを指定してください: {games}",
+  "api.games.UnknownSetting": "\"{field}\" はこのゲームの設定項目ではありません。",
+  "api.games.NoSettings": "変更する設定を少なくとも1つ指定してください。",
+  "api.games.InvalidChoice": "{field} は次のいずれかにしてください: {values}",
+  "api.games.InvalidNumber": "{field} は {min} から {max} までの整数にしてください。",
+  "api.games.InvalidSwitch": "{field} は true または false にしてください。",
+  "api.games.InvalidList": "{field} は最大 {maxItems} 個の名前のリストにしてください。各名前は最大 {maxLength} 文字です。",
 };
 
 const ru: Catalog = {
@@ -1043,6 +1106,15 @@ const ru: Catalog = {
   "api.middleware.DatabaseUnavailable": "База данных недоступна",
   "api.promptSafety.Rejected": "Промпт отклонён: {reasons}",
   "api.promptSafety.Unavailable": "Проверка безопасности недоступна. Пожалуйста, попробуйте снова.",
+  "api.games.FailedLoadGames": "Не удалось загрузить настройки игры. Попробуйте еще раз.",
+  "api.games.FailedSaveGame": "Не удалось сохранить настройки игры. Попробуйте еще раз.",
+  "api.games.UnknownGame": "\"{game}\" — такой игры нет. Выберите одну из: {games}.",
+  "api.games.UnknownSetting": "\"{field}\" — нет такой настройки для этой игры.",
+  "api.games.NoSettings": "Укажите хотя бы одну настройку для изменения.",
+  "api.games.InvalidChoice": "{field} должно быть одним из: {values}.",
+  "api.games.InvalidNumber": "{field} должно быть целым числом от {min} до {max}.",
+  "api.games.InvalidSwitch": "{field} должно быть true или false.",
+  "api.games.InvalidList": "{field} должно быть списком максимум из {maxItems} имен. В каждом имени может быть до {maxLength} символов.",
 };
 
 export const catalogs: Record<SupportedLocale, Catalog> = { en, es, fr, de, it, pt, ja, ru };

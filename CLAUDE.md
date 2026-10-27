@@ -72,7 +72,7 @@ lives in `.css-baseline/` and is not committed. The script is synced from
   it. The OAuth state cookie is host-only and the session lives in
   `localStorage`, so all four have to agree; change them together.
 - Channel-scoped Firestore documents (timers, custom commands, command
-  settings, auto-chat, language, check-in, personas) are keyed by the
+  settings, auto-chat, language, check-in, personas, game configs) are keyed by the
   broadcaster's Twitch user ID via `channelDocKey(req.user)` in
   `functions/src/utils/channelKey.ts`, never by login. The login is stored on
   the parent document as `channelName` for readability only. The bot reads the

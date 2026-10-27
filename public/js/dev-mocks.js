@@ -69,6 +69,30 @@ export const mockBotLanguage = {
     ],
 };
 
+// GET /api/games returns the stored values merged over these defaults.
+export const mockGameDefaults = {
+    trivia: {
+        difficulty: 'normal', questionTimeSeconds: 45, pointsBase: 10,
+        pointsTimeBonus: true, pointsDifficultyMultiplier: true, scoreTracking: true, topicPreferences: [],
+    },
+    geo: {
+        difficulty: 'normal', clueIntervalSeconds: 45, roundDurationMinutes: 5, pointsBase: 15,
+        pointsTimeBonus: true, pointsDifficultyMultiplier: true, scoreTracking: true,
+        regionRestrictions: [], gameTitlePreferences: [],
+    },
+    riddle: {
+        difficulty: 'normal', questionTimeSeconds: 45, pointsBase: 15,
+        pointsTimeBonus: true, pointsDifficultyMultiplier: true, scoreTracking: true,
+        maxRounds: 10, multiRoundDelayMs: 12000,
+    },
+};
+
+export const mockGameSettings = {
+    trivia: { ...mockGameDefaults.trivia, difficulty: 'hard', topicPreferences: ['Space', 'Pokémon'] },
+    geo: { ...mockGameDefaults.geo, regionRestrictions: ['Europe'], gameTitlePreferences: ['Elden Ring'] },
+    riddle: { ...mockGameDefaults.riddle, pointsTimeBonus: false },
+};
+
 export function mockDelay(ms = 500) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

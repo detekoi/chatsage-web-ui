@@ -2,7 +2,8 @@
   "confirm": {
     "deleteCheckin": "Supprimer la récompense de Check-in quotidien de votre chaîne ? Cette action est irréversible.",
     "deleteItem": "Supprimer {item} ?",
-    "resetPersona": "Réinitialiser la personnalité par défaut du bot ? Cette action supprimera votre texte personnalisé."
+    "resetPersona": "Réinitialiser la personnalité par défaut du bot ? Cette action supprimera votre texte personnalisé.",
+    "resetGame": "Réinitialiser tous les paramètres de {game} par défaut ?"
   },
   "label": {
     "charCounter": "{used} caractères",
@@ -146,7 +147,9 @@
       "streamEvents": "Chargement des paramètres d'événements de stream…",
       "streamEventsAria": "Chargement des paramètres d'événements de stream",
       "timers": "Chargement des messages programmés…",
-      "timersAria": "Chargement des messages programmés"
+      "timersAria": "Chargement des messages programmés",
+      "gamesAria": "Chargement des paramètres des jeux",
+      "games": "Chargement des paramètres des jeux…"
     },
     "permission": {
       "broadcaster": "Diffuseur",
@@ -205,7 +208,50 @@
       "namePlaceholder": "discord"
     },
     "timersTitle": "Messages programmés",
-    "title": "Tableau de bord de la chaîne"
+    "title": "Tableau de bord de la chaîne",
+    "gamesTitle": "Jeux du chat",
+    "games": {
+      "help": "Paramètres pour !trivia, !geo et !riddle. Les modifications s'appliquent dès la question ou la manche suivante. Les modérateurs peuvent aussi les modifier dans le chat avec !trivia config, !geo config et !riddle config.",
+      "trivia": "Trivia",
+      "difficulty": "Difficulté",
+      "difficultyHelp": "Quand le bonus de difficulté est activé, les questions plus dures rapportent plus de points.",
+      "difficultyEasy": "Facile",
+      "difficultyNormal": "Normal",
+      "difficultyHard": "Difficile",
+      "answerTime": "Temps de réponse",
+      "triviaAnswerTimeHelp": "Le temps dont dispose le chat pour répondre à une question.",
+      "unitSeconds": "sec",
+      "pointsBase": "Points de base",
+      "pointsBaseHelp": "Les points accordés pour une bonne réponse, avant les bonus.",
+      "timeBonus": "Bonus de vitesse",
+      "timeBonusHelp": "Une réponse rapide rapporte jusqu'à 50 % de points en plus.",
+      "difficultyBonus": "Bonus de difficulté",
+      "difficultyBonusHelp": "Les questions normales rapportent 1,5 fois plus de points. Les questions difficiles en rapportent 2 fois plus.",
+      "scoreTracking": "Compter les scores",
+      "scoreTrackingHelp": "Le bot enregistre les points et les victoires dans le classement de la chaîne.",
+      "topics": "Thèmes favoris",
+      "topicsHelp": "Si une partie commence sans thème, le bot en choisit un parmi ceux-ci. Séparez les thèmes par une virgule. Si la liste est vide, les questions porteront sur la culture générale.",
+      "topicsPlaceholder": "Espace, Pokémon, Musique des années 90",
+      "reset": "Rétablir par défaut",
+      "geo": "Jeu Géo",
+      "clueInterval": "Intervalle entre les indices",
+      "clueIntervalHelp": "Le temps d'attente entre deux indices.",
+      "roundLength": "Durée de la manche",
+      "roundLengthHelp": "Le temps imparti avant que le bot ne révèle la réponse.",
+      "unitMinutes": "min",
+      "regions": "Régions",
+      "regionsHelp": "Le bot choisira des lieux réels uniquement dans ces régions. Séparez les régions par une virgule. Si la liste est vide, les lieux proviendront du monde entier.",
+      "regionsPlaceholder": "Europe, Japon",
+      "gameTitles": "Jeux favoris",
+      "gameTitlesHelp": "Si !geo game n'a aucun titre spécifié, le bot choisit un de ces jeux. Si la liste est vide, le bot utilise le jeu actuel de votre stream.",
+      "gameTitlesPlaceholder": "Elden Ring, Skyrim",
+      "riddle": "Énigme",
+      "riddleAnswerTimeHelp": "Le temps accordé au chat pour résoudre une énigme.",
+      "roundLimit": "Limite de manches",
+      "roundLimitHelp": "Le nombre maximum de manches par partie.",
+      "roundPause": "Pause entre les manches",
+      "roundPauseHelp": "Le temps pour lire la réponse avant la prochaine énigme."
+    }
   },
   "status": {
     "active": "Actif",
@@ -270,7 +316,10 @@
     "streamEventsSaved": "Paramètres des événements de stream enregistrés.",
     "timerSaveFailed": "Impossible d'enregistrer le timer.",
     "timerSavedDev": "Timer \"{name}\" enregistré (mode dev).",
-    "updateFailed": "Impossible de mettre à jour {item}."
+    "updateFailed": "Impossible de mettre à jour {item}.",
+    "loadGamesFailed": "Impossible de charger les paramètres de jeu.",
+    "gameSaved": "Paramètres de {game} enregistrés.",
+    "gameReset": "Paramètres de {game} réinitialisés."
   },
   "validation": {
     "checkinCost": "Le coût doit être compris entre 1 et 999999 points.",
@@ -283,6 +332,8 @@
     "personaTooLong": "Les instructions de personnalité doivent comporter {max} caractères ou moins.",
     "previewPromptRequired": "Saisis un prompt AI, puis sélectionne Aperçu.",
     "responseRequired": "Le texte de réponse est requis.",
-    "timerNameRequired": "Le nom du timer est requis."
+    "timerNameRequired": "Le nom du timer est requis.",
+    "gamesRange": "Entre un nombre entier de {min} à {max}.",
+    "gamesList": "Entre jusqu'à {maxItems} noms. Chaque nom peut faire jusqu'à {maxLength} caractères."
   }
 }

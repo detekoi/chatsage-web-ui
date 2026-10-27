@@ -40,6 +40,7 @@
     <link rel="modulepreload" href="js/sections/checkin.js">
     <link rel="modulepreload" href="js/sections/persona.js">
     <link rel="modulepreload" href="js/sections/bot-language.js">
+    <link rel="modulepreload" href="js/sections/games.js">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js" defer></script>
@@ -615,6 +616,363 @@
                                 <small class="ai-preview__note" data-i18n="page.preview.note">Each preview is a new response. The real message will be different. The bot does not post previews to chat.</small>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Chat Games Section -->
+        <div id="games-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.gamesTitle">Chat Games</h2>
+                </div>
+                <div class="card-body">
+                    <p class="wc-card-desc" data-i18n="page.games.help">Settings for !trivia, !geo and !riddle. A change applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.</p>
+                    <div id="games-loading" class="wc-loading" hidden>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading game settings" data-i18n-aria-label="page.loading.gamesAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.games">Loading game settings…</p>
+                    </div>
+                    <div class="list-group games-group" aria-labelledby="games-trivia-title">
+                        <div class="list-group-item cmd-group-head">
+                            <h3 id="games-trivia-title" class="cmd-group-title" data-i18n="page.games.trivia">Trivia</h3>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-difficulty" class="form-check-label"><strong data-i18n="page.games.difficulty">Difficulty</strong></label>
+                                    <p id="games-trivia-difficulty-desc" class="text-muted mb-0" data-i18n="page.games.difficultyHelp">When the difficulty bonus is on, harder questions give more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="games-trivia-difficulty" class="form-select" data-game="trivia" data-field="difficulty" aria-describedby="games-trivia-difficulty-desc">
+                                        <option value="easy" data-i18n="page.games.difficultyEasy">Easy</option>
+                                        <option value="normal" data-i18n="page.games.difficultyNormal">Normal</option>
+                                        <option value="hard" data-i18n="page.games.difficultyHard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-questionTimeSeconds" class="form-check-label"><strong data-i18n="page.games.answerTime">Answer time</strong></label>
+                                    <p id="games-trivia-questionTimeSeconds-desc" class="text-muted mb-0" data-i18n="page.games.triviaAnswerTimeHelp">The time that chat has to answer a question.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-trivia-questionTimeSeconds" class="form-control" data-game="trivia" data-field="questionTimeSeconds" aria-describedby="games-trivia-questionTimeSeconds-desc" data-min="10" data-max="120" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitSeconds">sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-pointsBase" class="form-check-label"><strong data-i18n="page.games.pointsBase">Base points</strong></label>
+                                    <p id="games-trivia-pointsBase-desc" class="text-muted mb-0" data-i18n="page.games.pointsBaseHelp">The points for a correct answer, before bonuses.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-trivia-pointsBase" class="form-control" data-game="trivia" data-field="pointsBase" aria-describedby="games-trivia-pointsBase-desc" data-min="1" data-max="100" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-pointsTimeBonus" class="form-check-label"><strong data-i18n="page.games.timeBonus">Speed bonus</strong></label>
+                                    <p id="games-trivia-pointsTimeBonus-desc" class="text-muted mb-0" data-i18n="page.games.timeBonusHelp">A fast answer gets up to 50% more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-trivia-pointsTimeBonus" class="form-check-input" role="switch" data-game="trivia" data-field="pointsTimeBonus" aria-describedby="games-trivia-pointsTimeBonus-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-pointsDifficultyMultiplier" class="form-check-label"><strong data-i18n="page.games.difficultyBonus">Difficulty bonus</strong></label>
+                                    <p id="games-trivia-pointsDifficultyMultiplier-desc" class="text-muted mb-0" data-i18n="page.games.difficultyBonusHelp">Normal questions give 1.5 times the points. Hard questions give 2 times the points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-trivia-pointsDifficultyMultiplier" class="form-check-input" role="switch" data-game="trivia" data-field="pointsDifficultyMultiplier" aria-describedby="games-trivia-pointsDifficultyMultiplier-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-trivia-scoreTracking" class="form-check-label"><strong data-i18n="page.games.scoreTracking">Keep score</strong></label>
+                                    <p id="games-trivia-scoreTracking-desc" class="text-muted mb-0" data-i18n="page.games.scoreTrackingHelp">The bot records points and wins on the channel leaderboard.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-trivia-scoreTracking" class="form-check-input" role="switch" data-game="trivia" data-field="scoreTracking" aria-describedby="games-trivia-scoreTracking-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="games-trivia-topicPreferences" class="form-check-label"><strong data-i18n="page.games.topics">Preferred topics</strong></label>
+                                    <p id="games-trivia-topicPreferences-desc" class="text-muted mb-0" data-i18n="page.games.topicsHelp">If a game starts with no topic, the bot picks one of these topics. Put a comma between topics. If the list is empty, the questions are about general knowledge.</p>
+                                    <input type="text" id="games-trivia-topicPreferences" class="form-control games-list-input" data-game="trivia" data-field="topicPreferences" aria-describedby="games-trivia-topicPreferences-desc" data-list placeholder="Space, Pokémon, 90s music" data-i18n-placeholder="page.games.topicsPlaceholder" maxlength="1300" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wc-card-actions games-actions">
+                        <button id="games-trivia-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
+                        <p id="games-trivia-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                    <div class="list-group games-group" aria-labelledby="games-geo-title">
+                        <div class="list-group-item cmd-group-head">
+                            <h3 id="games-geo-title" class="cmd-group-title" data-i18n="page.games.geo">Geo-Game</h3>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-difficulty" class="form-check-label"><strong data-i18n="page.games.difficulty">Difficulty</strong></label>
+                                    <p id="games-geo-difficulty-desc" class="text-muted mb-0" data-i18n="page.games.difficultyHelp">When the difficulty bonus is on, harder questions give more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="games-geo-difficulty" class="form-select" data-game="geo" data-field="difficulty" aria-describedby="games-geo-difficulty-desc">
+                                        <option value="easy" data-i18n="page.games.difficultyEasy">Easy</option>
+                                        <option value="normal" data-i18n="page.games.difficultyNormal">Normal</option>
+                                        <option value="hard" data-i18n="page.games.difficultyHard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-clueIntervalSeconds" class="form-check-label"><strong data-i18n="page.games.clueInterval">Clue interval</strong></label>
+                                    <p id="games-geo-clueIntervalSeconds-desc" class="text-muted mb-0" data-i18n="page.games.clueIntervalHelp">The time between two clues.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-geo-clueIntervalSeconds" class="form-control" data-game="geo" data-field="clueIntervalSeconds" aria-describedby="games-geo-clueIntervalSeconds-desc" data-min="30" data-max="300" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitSeconds">sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-roundDurationMinutes" class="form-check-label"><strong data-i18n="page.games.roundLength">Round length</strong></label>
+                                    <p id="games-geo-roundDurationMinutes-desc" class="text-muted mb-0" data-i18n="page.games.roundLengthHelp">The time before the bot shows the answer.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-geo-roundDurationMinutes" class="form-control" data-game="geo" data-field="roundDurationMinutes" aria-describedby="games-geo-roundDurationMinutes-desc" data-min="3" data-max="20" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitMinutes">min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-pointsBase" class="form-check-label"><strong data-i18n="page.games.pointsBase">Base points</strong></label>
+                                    <p id="games-geo-pointsBase-desc" class="text-muted mb-0" data-i18n="page.games.pointsBaseHelp">The points for a correct answer, before bonuses.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-geo-pointsBase" class="form-control" data-game="geo" data-field="pointsBase" aria-describedby="games-geo-pointsBase-desc" data-min="1" data-max="100" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-pointsTimeBonus" class="form-check-label"><strong data-i18n="page.games.timeBonus">Speed bonus</strong></label>
+                                    <p id="games-geo-pointsTimeBonus-desc" class="text-muted mb-0" data-i18n="page.games.timeBonusHelp">A fast answer gets up to 50% more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-geo-pointsTimeBonus" class="form-check-input" role="switch" data-game="geo" data-field="pointsTimeBonus" aria-describedby="games-geo-pointsTimeBonus-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-pointsDifficultyMultiplier" class="form-check-label"><strong data-i18n="page.games.difficultyBonus">Difficulty bonus</strong></label>
+                                    <p id="games-geo-pointsDifficultyMultiplier-desc" class="text-muted mb-0" data-i18n="page.games.difficultyBonusHelp">Normal questions give 1.5 times the points. Hard questions give 2 times the points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-geo-pointsDifficultyMultiplier" class="form-check-input" role="switch" data-game="geo" data-field="pointsDifficultyMultiplier" aria-describedby="games-geo-pointsDifficultyMultiplier-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-geo-scoreTracking" class="form-check-label"><strong data-i18n="page.games.scoreTracking">Keep score</strong></label>
+                                    <p id="games-geo-scoreTracking-desc" class="text-muted mb-0" data-i18n="page.games.scoreTrackingHelp">The bot records points and wins on the channel leaderboard.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-geo-scoreTracking" class="form-check-input" role="switch" data-game="geo" data-field="scoreTracking" aria-describedby="games-geo-scoreTracking-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="games-geo-regionRestrictions" class="form-check-label"><strong data-i18n="page.games.regions">Regions</strong></label>
+                                    <p id="games-geo-regionRestrictions-desc" class="text-muted mb-0" data-i18n="page.games.regionsHelp">The bot picks real places only from these regions. Put a comma between regions. If the list is empty, the places come from the whole world.</p>
+                                    <input type="text" id="games-geo-regionRestrictions" class="form-control games-list-input" data-game="geo" data-field="regionRestrictions" aria-describedby="games-geo-regionRestrictions-desc" data-list placeholder="Europe, Japan" data-i18n-placeholder="page.games.regionsPlaceholder" maxlength="1300" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="games-geo-gameTitlePreferences" class="form-check-label"><strong data-i18n="page.games.gameTitles">Preferred games</strong></label>
+                                    <p id="games-geo-gameTitlePreferences-desc" class="text-muted mb-0" data-i18n="page.games.gameTitlesHelp">If !geo game has no title, the bot picks one of these games. If the list is empty, the bot uses the game on your stream.</p>
+                                    <input type="text" id="games-geo-gameTitlePreferences" class="form-control games-list-input" data-game="geo" data-field="gameTitlePreferences" aria-describedby="games-geo-gameTitlePreferences-desc" data-list placeholder="Elden Ring, Skyrim" data-i18n-placeholder="page.games.gameTitlesPlaceholder" maxlength="1300" autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wc-card-actions games-actions">
+                        <button id="games-geo-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
+                        <p id="games-geo-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                    <div class="list-group games-group" aria-labelledby="games-riddle-title">
+                        <div class="list-group-item cmd-group-head">
+                            <h3 id="games-riddle-title" class="cmd-group-title" data-i18n="page.games.riddle">Riddle</h3>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-difficulty" class="form-check-label"><strong data-i18n="page.games.difficulty">Difficulty</strong></label>
+                                    <p id="games-riddle-difficulty-desc" class="text-muted mb-0" data-i18n="page.games.difficultyHelp">When the difficulty bonus is on, harder questions give more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <select id="games-riddle-difficulty" class="form-select" data-game="riddle" data-field="difficulty" aria-describedby="games-riddle-difficulty-desc">
+                                        <option value="easy" data-i18n="page.games.difficultyEasy">Easy</option>
+                                        <option value="normal" data-i18n="page.games.difficultyNormal">Normal</option>
+                                        <option value="hard" data-i18n="page.games.difficultyHard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-questionTimeSeconds" class="form-check-label"><strong data-i18n="page.games.answerTime">Answer time</strong></label>
+                                    <p id="games-riddle-questionTimeSeconds-desc" class="text-muted mb-0" data-i18n="page.games.riddleAnswerTimeHelp">The time that chat has to answer a riddle.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-riddle-questionTimeSeconds" class="form-control" data-game="riddle" data-field="questionTimeSeconds" aria-describedby="games-riddle-questionTimeSeconds-desc" data-min="15" data-max="120" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitSeconds">sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-pointsBase" class="form-check-label"><strong data-i18n="page.games.pointsBase">Base points</strong></label>
+                                    <p id="games-riddle-pointsBase-desc" class="text-muted mb-0" data-i18n="page.games.pointsBaseHelp">The points for a correct answer, before bonuses.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-riddle-pointsBase" class="form-control" data-game="riddle" data-field="pointsBase" aria-describedby="games-riddle-pointsBase-desc" data-min="1" data-max="1000" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-pointsTimeBonus" class="form-check-label"><strong data-i18n="page.games.timeBonus">Speed bonus</strong></label>
+                                    <p id="games-riddle-pointsTimeBonus-desc" class="text-muted mb-0" data-i18n="page.games.timeBonusHelp">A fast answer gets up to 50% more points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-riddle-pointsTimeBonus" class="form-check-input" role="switch" data-game="riddle" data-field="pointsTimeBonus" aria-describedby="games-riddle-pointsTimeBonus-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-pointsDifficultyMultiplier" class="form-check-label"><strong data-i18n="page.games.difficultyBonus">Difficulty bonus</strong></label>
+                                    <p id="games-riddle-pointsDifficultyMultiplier-desc" class="text-muted mb-0" data-i18n="page.games.difficultyBonusHelp">Normal questions give 1.5 times the points. Hard questions give 2 times the points.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-riddle-pointsDifficultyMultiplier" class="form-check-input" role="switch" data-game="riddle" data-field="pointsDifficultyMultiplier" aria-describedby="games-riddle-pointsDifficultyMultiplier-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-scoreTracking" class="form-check-label"><strong data-i18n="page.games.scoreTracking">Keep score</strong></label>
+                                    <p id="games-riddle-scoreTracking-desc" class="text-muted mb-0" data-i18n="page.games.scoreTrackingHelp">The bot records points and wins on the channel leaderboard.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="games-riddle-scoreTracking" class="form-check-input" role="switch" data-game="riddle" data-field="scoreTracking" aria-describedby="games-riddle-scoreTracking-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-maxRounds" class="form-check-label"><strong data-i18n="page.games.roundLimit">Round limit</strong></label>
+                                    <p id="games-riddle-maxRounds-desc" class="text-muted mb-0" data-i18n="page.games.roundLimitHelp">The highest number of rounds in one game.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-riddle-maxRounds" class="form-control" data-game="riddle" data-field="maxRounds" aria-describedby="games-riddle-maxRounds-desc" data-min="1" data-max="10" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="games-riddle-multiRoundDelayMs" class="form-check-label"><strong data-i18n="page.games.roundPause">Pause between rounds</strong></label>
+                                    <p id="games-riddle-multiRoundDelayMs-desc" class="text-muted mb-0" data-i18n="page.games.roundPauseHelp">The time to read the answer before the next riddle starts.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="games-riddle-multiRoundDelayMs" class="form-control" data-game="riddle" data-field="multiRoundDelayMs" aria-describedby="games-riddle-multiRoundDelayMs-desc" data-min="1" data-max="60" data-scale="1000" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitSeconds">sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wc-card-actions games-actions">
+                        <button id="games-riddle-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
+                        <p id="games-riddle-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>
             </div>
