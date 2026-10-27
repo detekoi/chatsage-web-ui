@@ -73,10 +73,9 @@
       "rewardTitle": "Título de la recompensa"
     },
     "checkinTitle": "Check-In diario",
-    "commandsHelp": "Si desactivas un comando, el bot lo ignora en el chat.",
+    "commandsHelp": "Si desactivas un comando, el bot lo ignorará en el chat. Activa o desactiva los juegos de chat en la pestaña Juegos.",
     "commands": {
       "groupGeneral": "General",
-      "groupGames": "Juegos",
       "groupMemory": "Memoria del canal",
       "groupModerators": "Comandos de moderador",
       "moderatorsNote": "Solo los moderadores y el streamer pueden usar estos comandos.",
@@ -102,8 +101,8 @@
         "so": "Recomienda a otro streamer a tu chat. El bot publica un mensaje sobre el streamer y un enlace a su canal.",
         "command": "Añade, edita y elimina comandos personalizados desde el chat. También puedes hacerlo en Comandos personalizados en esta página.",
         "timer": "Añade, edita y elimina mensajes programados desde el chat. También puedes hacerlo en Mensajes programados en esta página.",
-        "botlang": "Establece el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en esta página.",
-        "auto": "Establece con qué frecuencia el bot publica mensajes automáticos y de qué tipos. También puedes hacerlo en Configuración de Auto-Chat en esta página.",
+        "botlang": "Define el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en la pestaña Bot.",
+        "auto": "Define la frecuencia con la que el bot envía mensajes automáticos y qué tipos envía. También puedes hacerlo en Configuración de Auto-Chat en la pestaña Stream.",
         "disable": "Desactiva un comando desde el chat.",
         "enable": "Vuelve a activar un comando desde el chat."
       },
@@ -211,7 +210,8 @@
     "title": "Panel del canal",
     "gamesTitle": "Juegos del chat",
     "games": {
-      "help": "Ajustes para !trivia, !geo y !riddle. Los cambios se aplican a partir de la siguiente pregunta o ronda. Los moderadores también pueden cambiar estos ajustes en el chat con !trivia config, !geo config y !riddle config.",
+      "help": "Activa o desactiva !trivia, !geo y !riddle aquí. Cualquier cambio se aplicará a partir de la siguiente pregunta o ronda. Los moderadores también pueden cambiar estos ajustes en el chat con !trivia config, !geo config y !riddle config.",
+      "offNote": "Activa el juego para ver sus ajustes.",
       "trivia": "Trivia",
       "difficulty": "Dificultad",
       "difficultyHelp": "Cuando el bonus por dificultad está activado, las preguntas más difíciles dan más puntos.",
@@ -251,6 +251,13 @@
       "roundLimitHelp": "El número máximo de rondas por partida.",
       "roundPause": "Pausa entre rondas",
       "roundPauseHelp": "Tiempo para leer la respuesta antes del siguiente acertijo."
+    },
+    "tabs": {
+      "label": "Secciones del panel",
+      "commands": "Comandos",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Juegos"
     }
   },
   "status": {

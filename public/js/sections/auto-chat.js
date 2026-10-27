@@ -5,6 +5,7 @@ import { t } from '../i18n.js';
 
 let autoLoadingEl;
 let autoModeEl;
+let autoCategoriesEl;
 let autoCatFactsEl;
 let autoCatQuestionsEl;
 let autoMsgEl;
@@ -23,6 +24,7 @@ let adNotificationsMsgEl;
 export function initAutoChat() {
     autoLoadingEl = document.getElementById('auto-chat-loading');
     autoModeEl = document.getElementById('auto-mode');
+    autoCategoriesEl = document.getElementById('auto-chat-categories');
     autoCatFactsEl = document.getElementById('auto-cat-facts');
     autoCatQuestionsEl = document.getElementById('auto-cat-questions');
     autoMsgEl = document.getElementById('auto-chat-message');
@@ -43,6 +45,8 @@ export function initAutoChat() {
     [autoModeEl, autoCatFactsEl, autoCatQuestionsEl].forEach(el => {
         el.addEventListener('change', debouncedAutoSave);
     });
+    autoModeEl.addEventListener('change', showAutoChatCategories);
+    showAutoChatCategories();
 
     // Debounced auto-save for stream events
     const debouncedStreamEventsSave = debounce(saveStreamEventsSettings, 600);
@@ -92,9 +96,15 @@ function applyAutoChatSettings(config) {
         autoModeEl.value = config.mode || 'off';
         autoCatFactsEl.checked = config.categories?.facts !== false;
         autoCatQuestionsEl.checked = config.categories?.questions !== false;
+        showAutoChatCategories();
     } else {
         showActionToast(t('toast.loadAutoChatFailed', {}, 'Failed to load auto-chat settings.'), 'danger');
     }
+}
+
+// The message types matter only while auto-chat posts, so they hide while the mode is Off.
+function showAutoChatCategories() {
+    autoCategoriesEl.hidden = autoModeEl.value === 'off';
 }
 
 function applyAdNotificationsSettings(config) {

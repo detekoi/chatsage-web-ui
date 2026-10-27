@@ -133,8 +133,27 @@
             </div>
         </dl>
 
+        <!-- Tabs (wc-tabs.js, synced from wildcat-design-system). The URL hash
+             names the open tab: #games opens #tab-games. -->
+        <ul class="nav nav-tabs" role="tablist" aria-label="Dashboard sections" data-i18n-aria-label="page.tabs.label">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" type="button" role="tab" id="tab-btn-commands" aria-selected="true" aria-controls="tab-commands"><i data-lucide="terminal" class="inline-icon" aria-hidden="true"></i><span data-i18n="page.tabs.commands">Commands</span></button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" type="button" role="tab" id="tab-btn-bot" aria-selected="false" aria-controls="tab-bot" tabindex="-1"><i data-lucide="bot" class="inline-icon" aria-hidden="true"></i><span data-i18n="page.tabs.bot">Bot</span></button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" type="button" role="tab" id="tab-btn-stream" aria-selected="false" aria-controls="tab-stream" tabindex="-1"><i data-lucide="radio-tower" class="inline-icon" aria-hidden="true"></i><span data-i18n="page.tabs.stream">Stream</span></button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" type="button" role="tab" id="tab-btn-games" aria-selected="false" aria-controls="tab-games" tabindex="-1"><i data-lucide="message-circle-question" class="inline-icon" aria-hidden="true"></i><span data-i18n="page.tabs.games">Games</span></button>
+            </li>
+        </ul>
+
         <div class="wc-shell">
             <div class="wc-shell-main">
+        <div class="tab-content">
+        <div class="tab-pane" id="tab-commands" role="tabpanel" aria-labelledby="tab-btn-commands">
 
         <!-- Command Settings Section -->
         <div id="commands-section">
@@ -143,113 +162,12 @@
                     <h2 class="wc-card-title mb-0" data-i18n="page.commandsTitle">Command Settings</h2>
                 </div>
                 <div class="card-body">
-                    <p class="wc-card-desc" data-i18n="page.commandsHelp">If you turn off a command, the bot ignores it in chat.</p>
+                    <p class="wc-card-desc" data-i18n="page.commandsHelp">If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in the Games tab.</p>
                     <div id="commands-loading" style="display:none;" class="wc-loading">
                         <div class="wc-bar" role="progressbar" aria-label="Loading command settings" data-i18n-aria-label="page.loading.commandsAria"><span></span></div>
                         <p class="wc-loading-label" data-i18n="page.loading.commands">Loading command settings…</p>
                     </div>
                     <div id="commands-list" class="list-group" style="min-height: 200px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stream Events Section -->
-        <div id="stream-events-section">
-            <div class="card wc-card">
-                <div class="card-header">
-                    <h2 class="wc-card-title mb-0" data-i18n="page.streamEventsTitle">Stream Events</h2>
-                </div>
-                <div class="card-body">
-                    <p class="wc-card-desc">
-                        <span data-i18n="page.streamEventsHelp">AI messages for stream events.</span>
-                    </p>
-                    <div id="stream-events-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading stream event settings" data-i18n-aria-label="page.loading.streamEventsAria"><span></span></div>
-                        <p class="wc-loading-label" data-i18n="page.loading.streamEvents">Loading stream event settings…</p>
-                    </div>
-                    <div class="wc-switch-rows">
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="stream-greetings-toggle" checked>
-                            <label class="form-check-label" for="stream-greetings-toggle" data-i18n="page.streamEvents.greetingsLabel">Stream Greetings</label>
-                            <small class="d-block text-muted" data-i18n="page.streamEvents.greetingsHelp">Send a greeting when the stream starts and a farewell when the stream ends.</small>
-                        </div>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="stream-follows-toggle" checked>
-                            <label class="form-check-label" for="stream-follows-toggle" data-i18n="page.streamEvents.followsLabel">New Followers</label>
-                            <small class="d-block text-muted" data-i18n="page.streamEvents.followsHelp">Send a greeting when a user follows the channel.</small>
-                        </div>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="stream-subscriptions-toggle" checked>
-                            <label class="form-check-label" for="stream-subscriptions-toggle" data-i18n="page.streamEvents.subscriptionsLabel">Subscriptions</label>
-                            <small class="d-block text-muted" data-i18n="page.streamEvents.subscriptionsHelp">Send a greeting for new subscriptions.</small>
-                        </div>
-                        <div class="form-check form-switch mb-2">
-                            <input class="form-check-input" type="checkbox" id="stream-raids-toggle" checked>
-                            <label class="form-check-label" for="stream-raids-toggle" data-i18n="page.streamEvents.raidsLabel">Raids</label>
-                            <small class="d-block text-muted" data-i18n="page.streamEvents.raidsHelp">Send a greeting when another channel raids the stream.</small>
-                        </div>
-                        <p id="stream-events-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Auto-Chat Settings Section -->
-        <div id="auto-chat-section">
-            <div class="card wc-card">
-                <div class="card-header">
-                    <h2 class="wc-card-title mb-0" data-i18n="page.autoChatTitle">Auto-Chat Settings</h2>
-                </div>
-                <div class="card-body">
-                    <div id="auto-chat-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading auto-chat settings" data-i18n-aria-label="page.loading.autoChatAria"><span></span></div>
-                        <p class="wc-loading-label" data-i18n="page.loading.autoChat">Loading auto-chat settings…</p>
-                    </div>
-                    <div class="auto-chat-form">
-                        <div class="mb-3">
-                            <label for="auto-mode" class="form-label" data-i18n="page.autoChat.mode">Mode:</label>
-                            <select id="auto-mode" class="form-select">
-                                <option value="off" data-i18n="page.autoChat.modeOff">Off</option>
-                                <option value="low" data-i18n="page.autoChat.modeLow">Low</option>
-                                <option value="medium" data-i18n="page.autoChat.modeMedium">Medium</option>
-                                <option value="high" data-i18n="page.autoChat.modeHigh">High</option>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
-                                <label class="form-check-label" for="auto-cat-facts" data-i18n="page.autoChat.facts">Facts/Tips</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="auto-cat-questions" checked>
-                                <label class="form-check-label" for="auto-cat-questions" data-i18n="page.autoChat.questions">Questions</label>
-                            </div>
-                        </div>
-                        <p id="auto-chat-message" class="text-muted" role="status" aria-live="polite"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ad Notifications Section -->
-        <div id="ad-notifications-section">
-            <div class="card wc-card">
-                <div class="card-header">
-                    <h2 class="wc-card-title mb-0" data-i18n="page.adNotificationsTitle">Ad Notifications</h2>
-                </div>
-                <div class="card-body">
-                    <div id="ad-notifications-loading" style="display:none;" class="wc-loading">
-                        <div class="wc-bar" role="progressbar" aria-label="Loading ad notification settings" data-i18n-aria-label="page.loading.adNotificationsAria"><span></span></div>
-                        <p class="wc-loading-label" data-i18n="page.loading.adNotifications">Loading ad notification settings…</p>
-                    </div>
-                    <div class="ad-notifications-form">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="auto-cat-ads">
-                            <label class="form-check-label" for="auto-cat-ads" data-i18n="page.adNotifications.enable">Enable ad break notifications</label>
-                        </div>
-                        <p id="ad-notifications-message" class="text-muted mt-2" role="status" aria-live="polite"></p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -450,6 +368,9 @@
             </div>
         </div>
 
+        </div>
+        <div class="tab-pane" id="tab-bot" role="tabpanel" aria-labelledby="tab-btn-bot" hidden>
+
         <!-- Bot Personality Section -->
         <div id="persona-section">
             <div class="card wc-card">
@@ -522,6 +443,110 @@
                         </div>
                         <p class="text-muted mb-0" style="font-size:0.75rem;" data-i18n="page.botLanguage.chatNote">A moderator can also set the language in chat with <code>!botlang</code>. Chat accepts more languages than this list.</p>
                         <p id="bot-language-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <div class="tab-pane" id="tab-stream" role="tabpanel" aria-labelledby="tab-btn-stream" hidden>
+
+        <!-- Stream Events Section -->
+        <div id="stream-events-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.streamEventsTitle">Stream Events</h2>
+                </div>
+                <div class="card-body">
+                    <p class="wc-card-desc">
+                        <span data-i18n="page.streamEventsHelp">AI messages for stream events.</span>
+                    </p>
+                    <div id="stream-events-loading" style="display:none;" class="wc-loading">
+                        <div class="wc-bar" role="progressbar" aria-label="Loading stream event settings" data-i18n-aria-label="page.loading.streamEventsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.streamEvents">Loading stream event settings…</p>
+                    </div>
+                    <div class="wc-switch-rows">
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-greetings-toggle" checked>
+                            <label class="form-check-label" for="stream-greetings-toggle" data-i18n="page.streamEvents.greetingsLabel">Stream Greetings</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.greetingsHelp">Send a greeting when the stream starts and a farewell when the stream ends.</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-follows-toggle" checked>
+                            <label class="form-check-label" for="stream-follows-toggle" data-i18n="page.streamEvents.followsLabel">New Followers</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.followsHelp">Send a greeting when a user follows the channel.</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-subscriptions-toggle" checked>
+                            <label class="form-check-label" for="stream-subscriptions-toggle" data-i18n="page.streamEvents.subscriptionsLabel">Subscriptions</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.subscriptionsHelp">Send a greeting for new subscriptions.</small>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stream-raids-toggle" checked>
+                            <label class="form-check-label" for="stream-raids-toggle" data-i18n="page.streamEvents.raidsLabel">Raids</label>
+                            <small class="d-block text-muted" data-i18n="page.streamEvents.raidsHelp">Send a greeting when another channel raids the stream.</small>
+                        </div>
+                        <p id="stream-events-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Chat Settings Section -->
+        <div id="auto-chat-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.autoChatTitle">Auto-Chat Settings</h2>
+                </div>
+                <div class="card-body">
+                    <div id="auto-chat-loading" style="display:none;" class="wc-loading">
+                        <div class="wc-bar" role="progressbar" aria-label="Loading auto-chat settings" data-i18n-aria-label="page.loading.autoChatAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.autoChat">Loading auto-chat settings…</p>
+                    </div>
+                    <div class="auto-chat-form">
+                        <div class="mb-3">
+                            <label for="auto-mode" class="form-label" data-i18n="page.autoChat.mode">Mode:</label>
+                            <select id="auto-mode" class="form-select">
+                                <option value="off" data-i18n="page.autoChat.modeOff">Off</option>
+                                <option value="low" data-i18n="page.autoChat.modeLow">Low</option>
+                                <option value="medium" data-i18n="page.autoChat.modeMedium">Medium</option>
+                                <option value="high" data-i18n="page.autoChat.modeHigh">High</option>
+                            </select>
+                        </div>
+
+                        <div id="auto-chat-categories" class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-cat-facts" checked>
+                                <label class="form-check-label" for="auto-cat-facts" data-i18n="page.autoChat.facts">Facts/Tips</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-cat-questions" checked>
+                                <label class="form-check-label" for="auto-cat-questions" data-i18n="page.autoChat.questions">Questions</label>
+                            </div>
+                        </div>
+                        <p id="auto-chat-message" class="text-muted" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Notifications Section -->
+        <div id="ad-notifications-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.adNotificationsTitle">Ad Notifications</h2>
+                </div>
+                <div class="card-body">
+                    <div id="ad-notifications-loading" style="display:none;" class="wc-loading">
+                        <div class="wc-bar" role="progressbar" aria-label="Loading ad notification settings" data-i18n-aria-label="page.loading.adNotificationsAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.adNotifications">Loading ad notification settings…</p>
+                    </div>
+                    <div class="ad-notifications-form">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="auto-cat-ads">
+                            <label class="form-check-label" for="auto-cat-ads" data-i18n="page.adNotifications.enable">Enable ad break notifications</label>
+                        </div>
+                        <p id="ad-notifications-message" class="text-muted mt-2" role="status" aria-live="polite"></p>
                     </div>
                 </div>
             </div>
@@ -620,6 +645,10 @@
                 </div>
             </div>
         </div>
+
+        </div>
+        <div class="tab-pane" id="tab-games" role="tabpanel" aria-labelledby="tab-btn-games" hidden>
+
         <!-- Chat Games Section -->
         <div id="games-section">
             <div class="card wc-card">
@@ -627,12 +656,12 @@
                     <h2 class="wc-card-title mb-0" data-i18n="page.gamesTitle">Chat Games</h2>
                 </div>
                 <div class="card-body">
-                    <p class="wc-card-desc" data-i18n="page.games.help">Settings for !trivia, !geo and !riddle. A change applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.</p>
+                    <p class="wc-card-desc" data-i18n="page.games.help">Turn !trivia, !geo and !riddle on or off here. A change to a setting applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.</p>
                     <div id="games-loading" class="wc-loading" hidden>
                         <div class="wc-bar" role="progressbar" aria-label="Loading game settings" data-i18n-aria-label="page.loading.gamesAria"><span></span></div>
                         <p class="wc-loading-label" data-i18n="page.loading.games">Loading game settings…</p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-trivia-title">
+                    <div id="games-trivia-group" class="list-group games-group" aria-labelledby="games-trivia-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-trivia-title" class="cmd-group-title" data-i18n="page.games.trivia">Trivia</h3>
                         </div>
@@ -728,11 +757,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-trivia-actions" class="wc-card-actions games-actions">
                         <button id="games-trivia-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-trivia-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-geo-title">
+                    <div id="games-geo-group" class="list-group games-group" aria-labelledby="games-geo-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-geo-title" class="cmd-group-title" data-i18n="page.games.geo">Geo-Game</h3>
                         </div>
@@ -851,11 +880,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-geo-actions" class="wc-card-actions games-actions">
                         <button id="games-geo-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-geo-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
-                    <div class="list-group games-group" aria-labelledby="games-riddle-title">
+                    <div id="games-riddle-group" class="list-group games-group" aria-labelledby="games-riddle-title">
                         <div class="list-group-item cmd-group-head">
                             <h3 id="games-riddle-title" class="cmd-group-title" data-i18n="page.games.riddle">Riddle</h3>
                         </div>
@@ -970,12 +999,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wc-card-actions games-actions">
+                    <div id="games-riddle-actions" class="wc-card-actions games-actions">
                         <button id="games-riddle-reset" class="btn btn-outline-danger btn-sm" type="button" data-i18n="page.games.reset">Reset to defaults</button>
                         <p id="games-riddle-message" class="text-muted mb-0" role="status" aria-live="polite"></p>
                     </div>
                 </div>
             </div>
+        </div>
+
+        </div>
         </div>
             </div>
 

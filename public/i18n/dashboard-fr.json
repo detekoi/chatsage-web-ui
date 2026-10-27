@@ -73,10 +73,9 @@
       "rewardTitle": "Titre de la récompense"
     },
     "checkinTitle": "Check-in quotidien",
-    "commandsHelp": "Si vous désactivez une commande, le bot l'ignore dans le tchat.",
+    "commandsHelp": "Si tu désactives une commande, le bot l'ignore dans le chat. Active ou désactive les jeux du chat dans l'onglet Jeux.",
     "commands": {
       "groupGeneral": "Général",
-      "groupGames": "Jeux",
       "groupMemory": "Mémoire de chaîne",
       "groupModerators": "Commandes de modération",
       "moderatorsNote": "Seuls les modérateurs et le streamer peuvent utiliser ces commandes.",
@@ -102,8 +101,8 @@
         "so": "Recommande un autre streamer à votre chat. Le bot poste un message sur le streamer et un lien vers sa chaîne.",
         "command": "Ajoute, modifie et supprime des commandes personnalisées depuis le tchat. Vous pouvez aussi le faire dans Commandes personnalisées sur cette page.",
         "timer": "Ajoute, modifie et supprime des messages programmés depuis le tchat. Vous pouvez aussi le faire dans Messages programmés sur cette page.",
-        "botlang": "Définit la langue des réponses du bot depuis le tchat. Vous pouvez aussi le faire dans Langue du bot sur cette page.",
-        "auto": "Définit à quelle fréquence le bot publie des messages automatiques, et de quels types. Vous pouvez aussi le faire dans Paramètres d'Auto-Chat sur cette page.",
+        "botlang": "Définit la langue des réponses du bot depuis le chat. Tu peux aussi le faire dans Langue du bot dans l'onglet Bot.",
+        "auto": "Définit la fréquence d'envoi et les types de messages automatiques du bot. Tu peux aussi le faire dans Paramètres d'Auto-Chat dans l'onglet Stream.",
         "disable": "Désactive une commande depuis le tchat.",
         "enable": "Réactive une commande depuis le tchat."
       },
@@ -211,7 +210,8 @@
     "title": "Tableau de bord de la chaîne",
     "gamesTitle": "Jeux du chat",
     "games": {
-      "help": "Paramètres pour !trivia, !geo et !riddle. Les modifications s'appliquent dès la question ou la manche suivante. Les modérateurs peuvent aussi les modifier dans le chat avec !trivia config, !geo config et !riddle config.",
+      "help": "Activez ou désactivez !trivia, !geo et !riddle ici. Toute modification s'applique dès la question ou manche suivante. Les modérateurs peuvent aussi modifier ces paramètres dans le chat avec !trivia config, !geo config et !riddle config.",
+      "offNote": "Activez le jeu pour voir ses paramètres.",
       "trivia": "Trivia",
       "difficulty": "Difficulté",
       "difficultyHelp": "Quand le bonus de difficulté est activé, les questions plus dures rapportent plus de points.",
@@ -251,6 +251,13 @@
       "roundLimitHelp": "Le nombre maximum de manches par partie.",
       "roundPause": "Pause entre les manches",
       "roundPauseHelp": "Le temps pour lire la réponse avant la prochaine énigme."
+    },
+    "tabs": {
+      "label": "Sections du tableau de bord",
+      "commands": "Commandes",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Jeux"
     }
   },
   "status": {

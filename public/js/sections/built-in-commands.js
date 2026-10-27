@@ -5,10 +5,17 @@ import { t } from '../i18n.js';
 
 let commandsLoadingEl;
 let commandsListEl;
+let onCommandsLoaded;
 
-export function initBuiltInCommands() {
+/**
+ * @param {object} [callbacks]
+ * @param {(commands: object[]) => void} [callbacks.onCommandsLoaded] - gets every command after
+ *     each load, including the ones a group with `card` leaves for another card to show
+ */
+export function initBuiltInCommands({ onCommandsLoaded: onLoaded } = {}) {
     commandsLoadingEl = document.getElementById('commands-loading');
     commandsListEl = document.getElementById('commands-list');
+    onCommandsLoaded = onLoaded;
 }
 
 export async function loadCommandSettings() {
@@ -18,6 +25,7 @@ export async function loadCommandSettings() {
         await mockDelay(500);
         commandsLoadingEl.style.display = 'none';
         renderCommandsList(mockCommands);
+        onCommandsLoaded?.(mockCommands);
         return;
     }
 
@@ -28,6 +36,7 @@ export async function loadCommandSettings() {
 
         if (data.success && data.commands) {
             renderCommandsList(data.commands);
+            onCommandsLoaded?.(data.commands);
         } else {
             commandsListEl.innerHTML = '<div class="alert alert-danger" role="alert">Failed to load command settings.</div>';
         }
@@ -44,9 +53,11 @@ export async function loadCommandSettings() {
 // verify-i18n.mjs fails until it is placed here and described.
 // Whether a command can be turned off comes from the API (`alwaysOn`), and
 // the API already reports such a command as enabled.
+// A group with `card` is shown in that card instead, beside the settings its
+// switch hides (games.js); this card leaves it out.
 const COMMAND_GROUPS = [
     { id: 'general', commands: ['ask', 'search', 'game', 'translate', 'help', 'lurk', 'quote', 'followage', 'ping'] },
-    { id: 'games', commands: ['geo', 'riddle', 'trivia'] },
+    { id: 'games', commands: ['geo', 'riddle', 'trivia'], card: 'games' },
     { id: 'memory', commands: ['remember', 'forget', 'forgetme', 'memory'] },
     { id: 'moderators', commands: ['so', 'command', 'timer', 'botlang', 'auto', 'disable', 'enable'] },
 ];
@@ -54,7 +65,6 @@ const COMMAND_GROUPS = [
 // Literal t() calls, so verify-i18n.mjs sees every key.
 function groupTitle(id) {
     switch (id) {
-        case 'games': return t('page.commands.groupGames', {}, 'Games');
         case 'memory': return t('page.commands.groupMemory', {}, 'Channel Memory');
         case 'moderators': return t('page.commands.groupModerators', {}, 'Moderator commands');
         default: return t('page.commands.groupGeneral', {}, 'General');
@@ -90,8 +100,8 @@ function commandDescription(name) {
         case 'so': return t('page.commands.desc.so', {}, 'Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.');
         case 'command': return t('page.commands.desc.command', {}, 'Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.');
         case 'timer': return t('page.commands.desc.timer', {}, 'Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.');
-        case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.');
-        case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.');
+        case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.');
+        case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.');
         case 'disable': return t('page.commands.desc.disable', {}, 'Turns off a command from chat.');
         case 'enable': return t('page.commands.desc.enable', {}, 'Turns a command back on from chat.');
         default: return '';
@@ -177,7 +187,12 @@ function renderGroupHead(id) {
     return head;
 }
 
-function renderCommandRow(cmd) {
+/**
+ * @param {object} cmd - a command from /api/commands
+ * @param {(enabled: boolean) => void} [onToggle] - runs when the switch changes, and again after
+ *     the save, which turns the switch back if the save fails
+ */
+export function renderCommandRow(cmd, onToggle) {
     const commandItem = document.createElement('div');
     commandItem.className = 'list-group-item';
 
@@ -233,7 +248,9 @@ function renderCommandRow(cmd) {
     if (descId) checkbox.setAttribute('aria-describedby', descId);
 
     checkbox.addEventListener('change', async function () {
+        onToggle?.(this.checked);
         await toggleCommand(cmd.primaryName, this.checked, this);
+        onToggle?.(this.checked);
     });
 
     switchDiv.appendChild(checkbox);
@@ -253,6 +270,7 @@ function renderCommandsList(commands) {
     const ungrouped = commands.filter(cmd => !grouped.has(cmd.primaryName));
 
     COMMAND_GROUPS.forEach(group => {
+        if (group.card) return;
         const rows = group.commands.map(name => byName.get(name)).filter(Boolean);
         if (group.id === 'general') rows.push(...ungrouped);
         if (!rows.length) return;

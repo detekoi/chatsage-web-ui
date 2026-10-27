@@ -2,11 +2,14 @@ import { apiGet, apiPost, AuthError, readJson } from '../api.js';
 import { debounce, setSuccessMessage, showActionToast } from '../ui.js';
 import { DEV_MODE, mockDelay, mockGameDefaults, mockGameSettings } from '../dev-mocks.js';
 import { t } from '../i18n.js';
+import { renderCommandRow } from './built-in-commands.js';
 
 // Chat game settings (trivia, geo, riddle). Each control in dashboard.html
 // names its game and field with data-game / data-field, so this module reads
 // and writes them without a per-field table. A changed field is saved on its
 // own, debounced per game; the bot picks the change up from Firestore.
+// A game's on/off switch is its command switch, which Command Settings leaves
+// to this card. While a game is off, its settings and reset rail are hidden.
 
 const GAMES = ['trivia', 'geo', 'riddle'];
 
@@ -18,6 +21,9 @@ let loadingEl;
 const controls = {};      // game -> field -> element
 const statusEls = {};     // game -> status <p>
 const resetBtns = {};     // game -> reset button
+const groupEls = {};      // game -> row stack
+const actionsEls = {};    // game -> reset rail
+const switchRows = {};    // game -> row holding the on/off switch
 const pending = {};       // game -> { field: value } waiting for the debounced save
 const saveLater = {};     // game -> debounced save
 const requestIds = {};    // game -> id of the newest save, so a late response cannot overwrite it
@@ -39,6 +45,8 @@ export function initGames() {
         requestIds[game] = 0;
         statusEls[game] = document.getElementById(`games-${game}-message`);
         resetBtns[game] = document.getElementById(`games-${game}-reset`);
+        groupEls[game] = document.getElementById(`games-${game}-group`);
+        actionsEls[game] = document.getElementById(`games-${game}-actions`);
         saveLater[game] = debounce(() => savePending(game), 600);
 
         document.querySelectorAll(`[data-game="${game}"][data-field]`).forEach(el => {
@@ -61,6 +69,37 @@ export async function loadGames() {
     for (const game of GAMES) {
         if (games[game]) renderGame(game, games[game]);
     }
+}
+
+/**
+ * Puts each game's command switch under the game's title. Called with the
+ * /api/commands list on every load of Command Settings.
+ */
+export function renderGameSwitches(commands) {
+    for (const game of GAMES) {
+        const cmd = commands.find(c => c.primaryName === game);
+        if (!cmd) continue;
+
+        const row = renderCommandRow(cmd, enabled => showSettings(game, enabled));
+        const note = document.createElement('p');
+        note.className = 'text-muted mb-0';
+        note.dataset.offNote = '';
+        note.textContent = t('page.games.offNote', {}, 'Turn on the game to see its settings.');
+        row.querySelector('.col').appendChild(note);
+
+        if (switchRows[game]) switchRows[game].replaceWith(row);
+        else groupEls[game].querySelector('.cmd-group-head').after(row);
+        switchRows[game] = row;
+        showSettings(game, cmd.enabled);
+    }
+}
+
+function showSettings(game, enabled) {
+    for (const item of groupEls[game].children) {
+        if (item !== switchRows[game] && !item.classList.contains('cmd-group-head')) item.hidden = !enabled;
+    }
+    actionsEls[game].hidden = !enabled;
+    switchRows[game].querySelector('[data-off-note]').hidden = enabled;
 }
 
 async function fetchGames() {

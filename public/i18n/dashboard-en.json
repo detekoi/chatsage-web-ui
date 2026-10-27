@@ -28,6 +28,13 @@
         },
         "adNotificationsTitle": "Ad Notifications",
         "appbarPage": "Dashboard",
+        "tabs": {
+            "label": "Dashboard sections",
+            "commands": "Commands",
+            "bot": "Bot",
+            "stream": "Stream",
+            "games": "Games"
+        },
         "aside": {
             "addBot": "Add bot to my channel",
             "botInChannel": "Bot in your channel",
@@ -73,10 +80,9 @@
             "rewardTitle": "Reward Title"
         },
         "checkinTitle": "Daily Check-In",
-        "commandsHelp": "If you turn off a command, the bot ignores it in chat.",
+        "commandsHelp": "If you turn off a command, the bot ignores it in chat. Turn the chat games on or off in the Games tab.",
         "commands": {
             "groupGeneral": "General",
-            "groupGames": "Games",
             "groupMemory": "Channel Memory",
             "groupModerators": "Moderator commands",
             "moderatorsNote": "Only moderators and the broadcaster can use these commands.",
@@ -102,8 +108,8 @@
                 "so": "Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.",
                 "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
                 "timer": "Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.",
-                "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language on this page.",
-                "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings on this page.",
+                "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.",
+                "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.",
                 "disable": "Turns off a command from chat.",
                 "enable": "Turns a command back on from chat."
             },
@@ -211,7 +217,8 @@
         "title": "Channel dashboard",
         "gamesTitle": "Chat Games",
         "games": {
-            "help": "Settings for !trivia, !geo and !riddle. A change applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.",
+            "help": "Turn !trivia, !geo and !riddle on or off here. A change to a setting applies from the next question or round. Moderators can also change these settings in chat with !trivia config, !geo config and !riddle config.",
+            "offNote": "Turn on the game to see its settings.",
             "trivia": "Trivia",
             "difficulty": "Difficulty",
             "difficultyHelp": "When the difficulty bonus is on, harder questions give more points.",

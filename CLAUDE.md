@@ -30,7 +30,8 @@ Rules:
 - **`design-system.css` is a synced copy; its source is the sibling repo
   `../wildcat-design-system`.** Do not edit the copy here. Edit the source,
   then run `npm run sync:design-system` in this repo and in
-  `../chatvibes-web-ui` (it also syncs `scripts/css-snapshot.mjs`), and verify
+  `../chatvibes-web-ui` (it also syncs `public/js/vendor/wc-tabs.js` and
+  `scripts/css-snapshot.mjs`), and verify
   each with `npm run css:check`. `npm run check` fails while a copy has
   drifted. Rules for markup only this app has go in `chatsage-specific.css`.
 - `!important` is reserved for the utility shim, the `[hidden]` rule, the
