@@ -170,7 +170,7 @@ describe("Commands Router", () => {
 
       const byName = Object.fromEntries(res.body.commands.map((c: any) => [c.name, c]));
       // A stored value that is not a boolean falls back to the default
-      expect(byName.so.options).toEqual({ aiMessage: false, twitchShoutout: true });
+      expect(byName.so.options).toEqual({ aiMessage: false, twitchShoutout: true, raidShoutout: false });
       expect(byName.ping.options).toBeUndefined();
     });
 

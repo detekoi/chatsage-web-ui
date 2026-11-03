@@ -20,7 +20,8 @@
         "enableTimerTitle": "Enable or disable this timed message",
         "everyMinutes": "every {minutes}m",
         "soOptionAi": "AI message for !so",
-        "soOptionShoutout": "Twitch Shoutout for !so"
+        "soOptionShoutout": "Twitch Shoutout for !so",
+        "soOptionRaid": "Raid shoutout for !so"
     },
     "page": {
         "adNotifications": {
@@ -108,6 +109,7 @@
                 "so": "Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.",
                 "command": "Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.",
                 "timer": "Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.",
+                "timedgames": "Turns timed games on or off and changes their settings from chat. You can also do this in Timed Games in the Games tab.",
                 "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.",
                 "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.",
                 "disable": "Turns off a command from chat.",
@@ -117,7 +119,9 @@
                 "aiMessage": "Write the message with AI",
                 "aiMessageHelp": "The AI uses the game, the stream title, the tags, the bio and the pronouns of the streamer.",
                 "twitchShoutout": "Send a Twitch Shoutout",
-                "twitchShoutoutHelp": "Twitch sends it only while your stream is live."
+                "twitchShoutoutHelp": "Twitch sends it only while your stream is live.",
+                "raidShoutout": "Shout out raiders",
+                "raidShoutoutHelp": "When a streamer raids your channel, the bot sends a !so shoutout for that streamer. The two options above also apply."
             }
         },
         "commandsTitle": "Command Settings",
@@ -155,7 +159,9 @@
             "timers": "Loading timed messages…",
             "timersAria": "Loading timed messages",
             "gamesAria": "Loading game settings",
-            "games": "Loading game settings…"
+            "games": "Loading game settings…",
+            "timedGames": "Loading timed games settings…",
+            "timedGamesAria": "Loading timed games settings"
         },
         "permission": {
             "broadcaster": "Broadcaster",
@@ -258,6 +264,17 @@
             "roundLimitHelp": "The highest number of rounds in one game.",
             "roundPause": "Pause between rounds",
             "roundPauseHelp": "The time to read the answer before the next riddle starts."
+        },
+        "timedGamesTitle": "Timed Games",
+        "timedGames": {
+            "help": "The bot can start a chat game at a fixed interval while your stream is live. Each time, it plays one round of the next game in your list. Moderators can also change these settings in chat with !timedgames.",
+            "enabled": "Start games on a timer",
+            "enabledHelp": "This setting is off by default. If a game is in progress, the bot waits until that game ends.",
+            "offNote": "Turn on timed games to see their settings.",
+            "interval": "Time between games",
+            "intervalHelp": "The time from the start of one timed game to the start of the next game.",
+            "games": "Games",
+            "gamesHelp": "The bot uses these games in turn. If a game is off in Chat Games, the bot skips it."
         }
     },
     "status": {
@@ -326,7 +343,9 @@
         "updateFailed": "Failed to update {item}.",
         "loadGamesFailed": "Game settings did not load.",
         "gameSaved": "{game} settings saved.",
-        "gameReset": "{game} settings are back to the defaults."
+        "gameReset": "{game} settings are back to the defaults.",
+        "timedGamesSaved": "Timed games settings saved.",
+        "loadTimedGamesFailed": "Timed games settings did not load."
     },
     "validation": {
         "checkinCost": "Cost must be between 1 and 999999 points.",
@@ -341,6 +360,7 @@
         "responseRequired": "Response text is required.",
         "timerNameRequired": "Timer name is required.",
         "gamesRange": "Enter a whole number from {min} to {max}.",
-        "gamesList": "Enter up to {maxItems} names. Each name can have up to {maxLength} characters."
+        "gamesList": "Enter up to {maxItems} names. Each name can have up to {maxLength} characters.",
+        "timedGamesNone": "Select one or more games."
     }
 }

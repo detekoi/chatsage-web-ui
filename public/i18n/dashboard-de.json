@@ -20,7 +20,8 @@
     "enableTimerTitle": "Diese zeitgesteuerte Nachricht aktivieren oder deaktivieren",
     "everyMinutes": "alle {minutes}m",
     "soOptionAi": "AI-Nachricht für !so",
-    "soOptionShoutout": "Twitch-Shoutout für !so"
+    "soOptionShoutout": "Twitch-Shoutout für !so",
+    "soOptionRaid": "Raid-Shoutout für !so"
   },
   "page": {
     "adNotifications": {
@@ -28,6 +29,13 @@
     },
     "adNotificationsTitle": "Werbebenachrichtigungen",
     "appbarPage": "Dashboard",
+    "tabs": {
+      "label": "Dashboard-Bereiche",
+      "commands": "Befehle",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Spiele"
+    },
     "aside": {
       "addBot": "Bot zu meinem Kanal hinzufügen",
       "botInChannel": "Bot in deinem Kanal",
@@ -104,13 +112,16 @@
         "botlang": "Legt die Sprache der Bot-Antworten im Chat fest. Du kannst das auch unter Bot-Sprache im Bot-Tab einstellen.",
         "auto": "Legt fest, wie oft der Bot automatische Nachrichten postet und welche Typen. Du kannst das auch in den Auto-Chat-Einstellungen im Stream-Tab einstellen.",
         "disable": "Deaktiviert einen Befehl über den Chat.",
-        "enable": "Aktiviert einen Befehl über den Chat wieder."
+        "enable": "Aktiviert einen Befehl über den Chat wieder.",
+        "timedgames": "Schaltet zeitgesteuerte Spiele ein oder aus und ändert deren Einstellungen direkt im Chat. Du kannst das auch unter „Zeitgesteuerte Spiele“ im Spiele-Tab tun."
       },
       "soOptions": {
         "aiMessage": "Nachricht mit AI erstellen",
         "aiMessageHelp": "Die AI nutzt das Spiel, den Stream-Titel, die Tags, die Biografie und die Pronomen des Streamers.",
         "twitchShoutout": "Einen Twitch-Shoutout senden",
-        "twitchShoutoutHelp": "Twitch sendet ihn nur, während dein Stream live ist."
+        "twitchShoutoutHelp": "Twitch sendet ihn nur, während dein Stream live ist.",
+        "raidShoutout": "Shoutout für Raider",
+        "raidShoutoutHelp": "Wenn ein Streamer deinen Kanal raidet, sendet der Bot einen !so-Shoutout für diesen Streamer. Die beiden Optionen oben gelten ebenfalls."
       }
     },
     "commandsTitle": "Befehlseinstellungen",
@@ -148,7 +159,9 @@
       "timers": "Lade zeitgesteuerte Nachrichten…",
       "timersAria": "Lade zeitgesteuerte Nachrichten",
       "gamesAria": "Spieleinstellungen werden geladen",
-      "games": "Spieleinstellungen werden geladen…"
+      "games": "Spieleinstellungen werden geladen…",
+      "timedGames": "Lade Einstellungen für zeitgesteuerte Spiele…",
+      "timedGamesAria": "Lade Einstellungen für zeitgesteuerte Spiele"
     },
     "permission": {
       "broadcaster": "Broadcaster",
@@ -252,12 +265,16 @@
       "roundPause": "Pause zwischen Runden",
       "roundPauseHelp": "Zeit zum Lesen der Antwort, bevor das nächste Rätsel startet."
     },
-    "tabs": {
-      "label": "Dashboard-Bereiche",
-      "commands": "Befehle",
-      "bot": "Bot",
-      "stream": "Stream",
-      "games": "Spiele"
+    "timedGamesTitle": "Zeitgesteuerte Spiele",
+    "timedGames": {
+      "help": "Der Bot kann in festen Abständen ein Chat-Spiel starten, während dein Stream live ist. Dabei wird jeweils eine Runde des nächsten Spiels in deiner Liste gespielt. Moderatoren können diese Einstellungen auch im Chat mit !timedgames anpassen.",
+      "enabled": "Spiele per Timer starten",
+      "enabledHelp": "Diese Einstellung ist standardmäßig deaktiviert. Wenn bereits ein Spiel läuft, wartet der Bot, bis dieses beendet ist.",
+      "offNote": "Aktiviere zeitgesteuerte Spiele, um deren Einstellungen zu sehen.",
+      "interval": "Zeit zwischen Spielen",
+      "intervalHelp": "Die Zeit vom Start eines zeitgesteuerten Spiels bis zum Start des nächsten Spiels.",
+      "games": "Spiele",
+      "gamesHelp": "Der Bot spielt diese Spiele der Reihe nach. Ist ein Spiel in Chat-Spiele deaktiviert, überspringt der Bot es."
     }
   },
   "status": {
@@ -326,7 +343,9 @@
     "updateFailed": "{item} konnte nicht aktualisiert werden.",
     "loadGamesFailed": "Spieleinstellungen konnten nicht geladen werden.",
     "gameSaved": "Einstellungen für {game} gespeichert.",
-    "gameReset": "Einstellungen für {game} wurden auf Standard zurückgesetzt."
+    "gameReset": "Einstellungen für {game} wurden auf Standard zurückgesetzt.",
+    "timedGamesSaved": "Einstellungen für zeitgesteuerte Spiele gespeichert.",
+    "loadTimedGamesFailed": "Einstellungen für zeitgesteuerte Spiele konnten nicht geladen werden."
   },
   "validation": {
     "checkinCost": "Kosten müssen zwischen 1 und 999999 Punkten liegen.",
@@ -341,6 +360,7 @@
     "responseRequired": "Antworttext ist erforderlich.",
     "timerNameRequired": "Timer-Name ist erforderlich.",
     "gamesRange": "Gib eine ganze Zahl von {min} bis {max} ein.",
-    "gamesList": "Gib bis zu {maxItems} Namen ein. Jeder Name darf bis zu {maxLength} Zeichen lang sein."
+    "gamesList": "Gib bis zu {maxItems} Namen ein. Jeder Name darf bis zu {maxLength} Zeichen lang sein.",
+    "timedGamesNone": "Wähle ein oder mehrere Spiele aus."
   }
 }

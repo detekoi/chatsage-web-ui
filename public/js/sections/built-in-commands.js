@@ -59,7 +59,7 @@ const COMMAND_GROUPS = [
     { id: 'general', commands: ['ask', 'search', 'game', 'translate', 'help', 'lurk', 'quote', 'followage', 'ping'] },
     { id: 'games', commands: ['geo', 'riddle', 'trivia'], card: 'games' },
     { id: 'memory', commands: ['remember', 'forget', 'forgetme', 'memory'] },
-    { id: 'moderators', commands: ['so', 'command', 'timer', 'botlang', 'auto', 'disable', 'enable'] },
+    { id: 'moderators', commands: ['so', 'command', 'timer', 'timedgames', 'botlang', 'auto', 'disable', 'enable'] },
 ];
 
 // Literal t() calls, so verify-i18n.mjs sees every key.
@@ -100,6 +100,7 @@ function commandDescription(name) {
         case 'so': return t('page.commands.desc.so', {}, 'Recommends another streamer to your chat. The bot posts a message about the streamer and a link to their channel.');
         case 'command': return t('page.commands.desc.command', {}, 'Adds, edits, and deletes custom commands from chat. You can also do this in Custom Commands on this page.');
         case 'timer': return t('page.commands.desc.timer', {}, 'Adds, edits, and deletes timed messages from chat. You can also do this in Timed Messages on this page.');
+        case 'timedgames': return t('page.commands.desc.timedgames', {}, 'Turns timed games on or off and changes their settings from chat. You can also do this in Timed Games in the Games tab.');
         case 'botlang': return t('page.commands.desc.botlang', {}, 'Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.');
         case 'auto': return t('page.commands.desc.auto', {}, 'Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.');
         case 'disable': return t('page.commands.desc.disable', {}, 'Turns off a command from chat.');
@@ -121,6 +122,11 @@ function optionText(command, option) {
             label: t('page.commands.soOptions.twitchShoutout', {}, 'Send a Twitch Shoutout'),
             help: t('page.commands.soOptions.twitchShoutoutHelp', {}, 'Twitch sends it only while your stream is live.'),
             item: t('label.soOptionShoutout', {}, 'Twitch Shoutout for !so'),
+        };
+        case 'so.raidShoutout': return {
+            label: t('page.commands.soOptions.raidShoutout', {}, 'Shout out raiders'),
+            help: t('page.commands.soOptions.raidShoutoutHelp', {}, 'When a streamer raids your channel, the bot sends a !so shoutout for that streamer. The two options above also apply.'),
+            item: t('label.soOptionRaid', {}, 'Raid shoutout for !so'),
         };
         default: return null;
     }

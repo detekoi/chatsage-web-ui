@@ -20,7 +20,8 @@
     "enableTimerTitle": "Activer ou désactiver ce message programmé",
     "everyMinutes": "toutes les {minutes}m",
     "soOptionAi": "Message AI pour !so",
-    "soOptionShoutout": "Twitch Shoutout pour !so"
+    "soOptionShoutout": "Twitch Shoutout pour !so",
+    "soOptionRaid": "Shoutout de raid pour !so"
   },
   "page": {
     "adNotifications": {
@@ -28,6 +29,13 @@
     },
     "adNotificationsTitle": "Notifications de pubs",
     "appbarPage": "Tableau de bord",
+    "tabs": {
+      "label": "Sections du tableau de bord",
+      "commands": "Commandes",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Jeux"
+    },
     "aside": {
       "addBot": "Ajouter le bot à ma chaîne",
       "botInChannel": "Bot présent sur votre chaîne",
@@ -104,13 +112,16 @@
         "botlang": "Définit la langue des réponses du bot depuis le chat. Tu peux aussi le faire dans Langue du bot dans l'onglet Bot.",
         "auto": "Définit la fréquence d'envoi et les types de messages automatiques du bot. Tu peux aussi le faire dans Paramètres d'Auto-Chat dans l'onglet Stream.",
         "disable": "Désactive une commande depuis le tchat.",
-        "enable": "Réactive une commande depuis le tchat."
+        "enable": "Réactive une commande depuis le tchat.",
+        "timedgames": "Active ou désactive les jeux programmés et modifie leurs paramètres depuis le chat. Tu peux aussi le faire dans Jeux programmés sous l'onglet Jeux."
       },
       "soOptions": {
         "aiMessage": "Écrire le message avec l'AI",
         "aiMessageHelp": "L'AI utilise le jeu, le titre du stream, les tags, la bio et les pronoms du streamer.",
         "twitchShoutout": "Envoyer un Twitch Shoutout",
-        "twitchShoutoutHelp": "Twitch l'envoie uniquement quand votre stream est en live."
+        "twitchShoutoutHelp": "Twitch l'envoie uniquement quand votre stream est en live.",
+        "raidShoutout": "Shoutout aux raideurs",
+        "raidShoutoutHelp": "Quand un streamer raid votre chaîne, le bot envoie un shoutout !so pour ce streamer. Les deux options ci-dessus s'appliquent aussi."
       }
     },
     "commandsTitle": "Paramètres des commandes",
@@ -148,7 +159,9 @@
       "timers": "Chargement des messages programmés…",
       "timersAria": "Chargement des messages programmés",
       "gamesAria": "Chargement des paramètres des jeux",
-      "games": "Chargement des paramètres des jeux…"
+      "games": "Chargement des paramètres des jeux…",
+      "timedGames": "Chargement des paramètres des jeux programmés…",
+      "timedGamesAria": "Chargement des paramètres des jeux programmés"
     },
     "permission": {
       "broadcaster": "Diffuseur",
@@ -252,12 +265,16 @@
       "roundPause": "Pause entre les manches",
       "roundPauseHelp": "Le temps pour lire la réponse avant la prochaine énigme."
     },
-    "tabs": {
-      "label": "Sections du tableau de bord",
-      "commands": "Commandes",
-      "bot": "Bot",
-      "stream": "Stream",
-      "games": "Jeux"
+    "timedGamesTitle": "Jeux programmés",
+    "timedGames": {
+      "help": "Le bot peut lancer un jeu dans le chat à intervalles réguliers pendant ton live. À chaque fois, il lance une manche du prochain jeu de ta liste. Les modérateurs peuvent aussi modifier ces paramètres dans le chat avec !timedgames.",
+      "enabled": "Lancer les jeux avec un minuteur",
+      "enabledHelp": "Ce paramètre est désactivé par défaut. Si un jeu est en cours, le bot attend qu'il se termine.",
+      "offNote": "Active les jeux programmés pour voir leurs paramètres.",
+      "interval": "Temps entre les jeux",
+      "intervalHelp": "Le temps écoulé entre le début d'un jeu programmé et le début du suivant.",
+      "games": "Jeux",
+      "gamesHelp": "Le bot lance ces jeux à tour de rôle. Si un jeu est désactivé dans Jeux du chat, le bot l'ignore."
     }
   },
   "status": {
@@ -326,7 +343,9 @@
     "updateFailed": "Impossible de mettre à jour {item}.",
     "loadGamesFailed": "Impossible de charger les paramètres de jeu.",
     "gameSaved": "Paramètres de {game} enregistrés.",
-    "gameReset": "Paramètres de {game} réinitialisés."
+    "gameReset": "Paramètres de {game} réinitialisés.",
+    "timedGamesSaved": "Paramètres des jeux programmés enregistrés.",
+    "loadTimedGamesFailed": "Impossible de charger les paramètres des jeux programmés."
   },
   "validation": {
     "checkinCost": "Le coût doit être compris entre 1 et 999999 points.",
@@ -341,6 +360,7 @@
     "responseRequired": "Le texte de réponse est requis.",
     "timerNameRequired": "Le nom du timer est requis.",
     "gamesRange": "Entre un nombre entier de {min} à {max}.",
-    "gamesList": "Entre jusqu'à {maxItems} noms. Chaque nom peut faire jusqu'à {maxLength} caractères."
+    "gamesList": "Entre jusqu'à {maxItems} noms. Chaque nom peut faire jusqu'à {maxLength} caractères.",
+    "timedGamesNone": "Sélectionne un ou plusieurs jeux."
   }
 }

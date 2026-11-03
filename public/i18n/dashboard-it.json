@@ -20,7 +20,8 @@
     "enableTimerTitle": "Abilita o disabilita questo messaggio programmato",
     "everyMinutes": "ogni {minutes}m",
     "soOptionAi": "Messaggio AI per !so",
-    "soOptionShoutout": "Twitch Shoutout per !so"
+    "soOptionShoutout": "Twitch Shoutout per !so",
+    "soOptionRaid": "Shoutout raid per !so"
   },
   "page": {
     "adNotifications": {
@@ -28,6 +29,13 @@
     },
     "adNotificationsTitle": "Notifiche pubblicità",
     "appbarPage": "Dashboard",
+    "tabs": {
+      "label": "Sezioni dashboard",
+      "commands": "Comandi",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Giochi"
+    },
     "aside": {
       "addBot": "Aggiungi il bot al mio canale",
       "botInChannel": "Bot nel tuo canale",
@@ -104,13 +112,16 @@
         "botlang": "Imposta la lingua delle risposte del bot dalla chat. Puoi farlo anche in Lingua del bot nella scheda Bot.",
         "auto": "Imposta la frequenza con cui il bot invia messaggi automatici e quali tipi inviare. Puoi farlo anche in Impostazioni Auto-Chat nella scheda Stream.",
         "disable": "Disattiva un comando dalla chat.",
-        "enable": "Riattiva un comando dalla chat."
+        "enable": "Riattiva un comando dalla chat.",
+        "timedgames": "Attiva o disattiva i giochi a tempo e ne modifica le impostazioni dalla chat. Puoi farlo anche in Giochi a tempo nella scheda Giochi."
       },
       "soOptions": {
         "aiMessage": "Scrivi il messaggio con l'AI",
         "aiMessageHelp": "L'AI usa il gioco, il titolo dello stream, i tag, la bio e i pronomi dello streamer.",
         "twitchShoutout": "Invia un Twitch Shoutout",
-        "twitchShoutoutHelp": "Twitch lo invia solo mentre sei in live."
+        "twitchShoutoutHelp": "Twitch lo invia solo mentre sei in live.",
+        "raidShoutout": "Fai shoutout ai raider",
+        "raidShoutoutHelp": "Quando uno streamer raida il tuo canale, il bot invia uno shoutout !so per quello streamer. Si applicano anche le due opzioni sopra."
       }
     },
     "commandsTitle": "Impostazioni comandi",
@@ -148,7 +159,9 @@
       "timers": "Caricamento messaggi programmati…",
       "timersAria": "Caricamento messaggi programmati",
       "gamesAria": "Caricamento impostazioni di gioco",
-      "games": "Caricamento impostazioni di gioco…"
+      "games": "Caricamento impostazioni di gioco…",
+      "timedGames": "Caricamento impostazioni giochi a tempo…",
+      "timedGamesAria": "Caricamento impostazioni giochi a tempo"
     },
     "permission": {
       "broadcaster": "Broadcaster",
@@ -252,12 +265,16 @@
       "roundPause": "Pausa tra i round",
       "roundPauseHelp": "Il tempo per leggere la risposta prima del prossimo indovinello."
     },
-    "tabs": {
-      "label": "Sezioni dashboard",
-      "commands": "Comandi",
-      "bot": "Bot",
-      "stream": "Stream",
-      "games": "Giochi"
+    "timedGamesTitle": "Giochi a tempo",
+    "timedGames": {
+      "help": "Il bot può avviare un gioco in chat a intervalli regolari mentre la live è attiva. Ogni volta, avvia un round del gioco successivo nell'elenco. I moderatori possono modificare queste impostazioni anche in chat con !timedgames.",
+      "enabled": "Avvia giochi a intervalli",
+      "enabledHelp": "Questa impostazione è disattivata per impostazione predefinita. Se un gioco è già in corso, il bot aspetta che finisca.",
+      "offNote": "Attiva i giochi a tempo per vederne le impostazioni.",
+      "interval": "Tempo tra i giochi",
+      "intervalHelp": "Il tempo che passa tra l'inizio di un gioco a tempo e l'inizio del successivo.",
+      "games": "Giochi",
+      "gamesHelp": "Il bot propone questi giochi a turno. Se un gioco è disattivato in Giochi chat, il bot lo salta."
     }
   },
   "status": {
@@ -326,7 +343,9 @@
     "updateFailed": "Impossibile aggiornare {item}.",
     "loadGamesFailed": "Impossibile caricare le impostazioni di gioco.",
     "gameSaved": "Impostazioni di {game} salvate.",
-    "gameReset": "Impostazioni di {game} ripristinate ai valori predefiniti."
+    "gameReset": "Impostazioni di {game} ripristinate ai valori predefiniti.",
+    "timedGamesSaved": "Impostazioni dei giochi a tempo salvate.",
+    "loadTimedGamesFailed": "Impossibile caricare le impostazioni dei giochi a tempo."
   },
   "validation": {
     "checkinCost": "Il costo deve essere compreso tra 1 e 999999 punti.",
@@ -341,6 +360,7 @@
     "responseRequired": "Il testo della risposta è obbligatorio.",
     "timerNameRequired": "Il nome del timer è obbligatorio.",
     "gamesRange": "Inserisci un numero intero da {min} a {max}.",
-    "gamesList": "Inserisci fino a {maxItems} nomi. Ogni nome può avere fino a {maxLength} caratteri."
+    "gamesList": "Inserisci fino a {maxItems} nomi. Ogni nome può avere fino a {maxLength} caratteri.",
+    "timedGamesNone": "Seleziona uno o più giochi."
   }
 }

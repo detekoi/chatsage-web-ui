@@ -132,7 +132,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "fr": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -267,7 +275,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "de": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -402,7 +418,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "it": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -537,7 +561,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "pt": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -672,7 +704,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "ja": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -807,7 +847,15 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   },
   "ru": {
     "api.authStatus.TwitchAuthenticationValid": "29e1d43aee0a740b",
@@ -942,6 +990,14 @@
     "api.games.InvalidChoice": "01b9cee0ee93ed28",
     "api.games.InvalidNumber": "b22e51c722a0d3f9",
     "api.games.InvalidSwitch": "405fdaeb6fb61ce6",
-    "api.games.InvalidList": "08b01bf427df1fbd"
+    "api.games.InvalidList": "08b01bf427df1fbd",
+    "api.commands.InvalidCommandOption": "2df8760a5c74b121",
+    "api.commands.InvalidOptionValue": "825939e359fca40c",
+    "api.timedGames.FailedLoad": "e005707e2a6fd62f",
+    "api.timedGames.FailedSave": "886b208d3714dec6",
+    "api.timedGames.InvalidEnabled": "eaa52318bff9f2e2",
+    "api.timedGames.InvalidInterval": "de68d92106febee1",
+    "api.timedGames.InvalidGames": "0cf8c366c65e2768",
+    "api.timedGames.NoSettings": "85a6b1a77bf8c8e2"
   }
 }

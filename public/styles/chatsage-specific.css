@@ -181,6 +181,23 @@
     align-items: center;
 }
 
+/* Timed Games card (timed-games.js): the game list is a fieldset inside a
+   row, so drop the browser's fieldset frame and let the row do the spacing. */
+:root .wc-card .timed-games-pool {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-inline-size: 0;
+}
+
+:root .wc-card .timed-games-pool-help {
+    margin-block-end: 6px;
+}
+
+:root .wc-card .timed-games-status:not(:empty) {
+    margin-block-start: 12px;
+}
+
 /* Loading indicator styling is owned by .wc-loading in design-system.css —
    the centred italic spinner caption that lived here was removed with it.
    The AI preview bar sits inside its panel, so trim .wc-loading's

@@ -148,6 +148,7 @@ export const ALL_COMMANDS = [
   "followage",
   "so",
   "timer",
+  "timedgames",
   "remember",
   "forget",
   "forgetme",
@@ -163,9 +164,10 @@ export const ALWAYS_ON_COMMANDS: readonly string[] = ["enable", "disable", "forg
 // Options that the dashboard stores for a built-in command, with their defaults. They live in
 // channelCommands/{broadcasterId} as commandOptions.{command}.{option}, and the bot reads them with
 // getCommandOptions() in src/components/context/channelCommandsStorage.js; change both together.
-// !so: aiMessage writes the shoutout line with the AI, twitchShoutout also sends the Twitch Shoutout.
+// !so: aiMessage writes the shoutout line with the AI, twitchShoutout also sends the Twitch Shoutout,
+// raidShoutout shouts out every streamer who raids the channel (shoutOutRaider() in the bot's so.js).
 export const COMMAND_OPTION_DEFAULTS: Readonly<Record<string, Readonly<Record<string, boolean>>>> = {
-  so: { aiMessage: true, twitchShoutout: true },
+  so: { aiMessage: true, twitchShoutout: true, raidShoutout: false },
 };
 
 
@@ -326,6 +328,21 @@ export const GAME_CONFIGS: Record<GameId, GameConfigSpec> = {
       multiRoundDelayMs: { type: "int", min: 1000, max: 60000 },
     },
   },
+};
+
+// Timed games: chat games the bot starts on its own at a fixed interval while
+// the stream is live. One document per channel, timedGameConfigs/{broadcasterId},
+// keyed by broadcaster ID (utils/channelKey). The bot owns the runtime fields
+// (lastRunAt, lastGame), so the dashboard never writes them. The defaults and
+// limits copy the bot's src/components/timedGames/timedGamesStorage.js; change
+// both together.
+export const TIMED_GAMES_COLLECTION = "timedGameConfigs";
+export const TIMED_GAMES_MIN_INTERVAL_MINUTES = 5;
+export const TIMED_GAMES_MAX_INTERVAL_MINUTES = 720;
+export const DEFAULT_TIMED_GAMES_CONFIG = {
+  enabled: false,
+  intervalMinutes: 30,
+  games: [...GAME_IDS] as GameId[],
 };
 
 // Token cache configuration
