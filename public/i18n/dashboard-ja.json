@@ -20,7 +20,8 @@
     "enableTimerTitle": "この定期メッセージを有効/無効にする",
     "everyMinutes": "{minutes}分ごと",
     "soOptionAi": "!so 用のAIメッセージ",
-    "soOptionShoutout": "!so 用のTwitchシャウトアウト"
+    "soOptionShoutout": "!so 用のTwitchシャウトアウト",
+    "soOptionRaid": "!so のレイドシャウトアウト"
   },
   "page": {
     "adNotifications": {
@@ -118,7 +119,9 @@
         "aiMessage": "AIでメッセージを作成",
         "aiMessageHelp": "AIが配信者のゲーム、配信タイトル、タグ、プロフィール、代名詞の情報を参照します。",
         "twitchShoutout": "Twitchシャウトアウトを送信",
-        "twitchShoutoutHelp": "配信中のみTwitchから送信されます。"
+        "twitchShoutoutHelp": "配信中のみTwitchから送信されます。",
+        "raidShoutout": "レイド配信者をシャウトアウト",
+        "raidShoutoutHelp": "配信者がチャンネルにレイドした際、ボットがその配信者の !so シャウトアウトを送信します。上記の2つのオプションも適用されます。"
       }
     },
     "commandsTitle": "コマンド設定",

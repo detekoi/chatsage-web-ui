@@ -20,7 +20,8 @@
     "enableTimerTitle": "Включить или отключить это сообщение по таймеру",
     "everyMinutes": "каждые {minutes} мин",
     "soOptionAi": "AI-сообщение для !so",
-    "soOptionShoutout": "Twitch Shoutout для !so"
+    "soOptionShoutout": "Twitch Shoutout для !so",
+    "soOptionRaid": "Шаутаут при рейде для !so"
   },
   "page": {
     "adNotifications": {
@@ -118,7 +119,9 @@
         "aiMessage": "Генерировать сообщение с помощью AI",
         "aiMessageHelp": "AI использует игру, название стрима, теги, описание профиля и местоимения стримера.",
         "twitchShoutout": "Отправлять Twitch Shoutout",
-        "twitchShoutoutHelp": "Twitch отправляет его, только пока идет прямой эфир."
+        "twitchShoutoutHelp": "Twitch отправляет его, только пока идет прямой эфир.",
+        "raidShoutout": "Шаутаут рейдерам",
+        "raidShoutoutHelp": "Когда стример рейдит ваш канал, бот отправляет шаутаут !so для этого стримера. Две опции выше также действуют."
       }
     },
     "commandsTitle": "Настройки команд",

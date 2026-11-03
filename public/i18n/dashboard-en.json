@@ -20,7 +20,8 @@
         "enableTimerTitle": "Enable or disable this timed message",
         "everyMinutes": "every {minutes}m",
         "soOptionAi": "AI message for !so",
-        "soOptionShoutout": "Twitch Shoutout for !so"
+        "soOptionShoutout": "Twitch Shoutout for !so",
+        "soOptionRaid": "Raid shoutout for !so"
     },
     "page": {
         "adNotifications": {
@@ -118,7 +119,9 @@
                 "aiMessage": "Write the message with AI",
                 "aiMessageHelp": "The AI uses the game, the stream title, the tags, the bio and the pronouns of the streamer.",
                 "twitchShoutout": "Send a Twitch Shoutout",
-                "twitchShoutoutHelp": "Twitch sends it only while your stream is live."
+                "twitchShoutoutHelp": "Twitch sends it only while your stream is live.",
+                "raidShoutout": "Shout out raiders",
+                "raidShoutoutHelp": "When a streamer raids your channel, the bot sends a !so shoutout for that streamer. The two options above also apply."
             }
         },
         "commandsTitle": "Command Settings",

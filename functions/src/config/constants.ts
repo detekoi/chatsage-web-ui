@@ -164,9 +164,10 @@ export const ALWAYS_ON_COMMANDS: readonly string[] = ["enable", "disable", "forg
 // Options that the dashboard stores for a built-in command, with their defaults. They live in
 // channelCommands/{broadcasterId} as commandOptions.{command}.{option}, and the bot reads them with
 // getCommandOptions() in src/components/context/channelCommandsStorage.js; change both together.
-// !so: aiMessage writes the shoutout line with the AI, twitchShoutout also sends the Twitch Shoutout.
+// !so: aiMessage writes the shoutout line with the AI, twitchShoutout also sends the Twitch Shoutout,
+// raidShoutout shouts out every streamer who raids the channel (shoutOutRaider() in the bot's so.js).
 export const COMMAND_OPTION_DEFAULTS: Readonly<Record<string, Readonly<Record<string, boolean>>>> = {
-  so: { aiMessage: true, twitchShoutout: true },
+  so: { aiMessage: true, twitchShoutout: true, raidShoutout: false },
 };
 
 

@@ -123,6 +123,11 @@ function optionText(command, option) {
             help: t('page.commands.soOptions.twitchShoutoutHelp', {}, 'Twitch sends it only while your stream is live.'),
             item: t('label.soOptionShoutout', {}, 'Twitch Shoutout for !so'),
         };
+        case 'so.raidShoutout': return {
+            label: t('page.commands.soOptions.raidShoutout', {}, 'Shout out raiders'),
+            help: t('page.commands.soOptions.raidShoutoutHelp', {}, 'When a streamer raids your channel, the bot sends a !so shoutout for that streamer. The two options above also apply.'),
+            item: t('label.soOptionRaid', {}, 'Raid shoutout for !so'),
+        };
         default: return null;
     }
 }
