@@ -93,6 +93,9 @@ export const mockGameSettings = {
     riddle: { ...mockGameDefaults.riddle, pointsTimeBonus: false },
 };
 
+// GET /api/timed-games. Off by default, as for a new channel.
+export const mockTimedGames = { enabled: false, intervalMinutes: 30, games: ['trivia', 'geo', 'riddle'] };
+
 export function mockDelay(ms = 500) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

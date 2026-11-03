@@ -28,6 +28,13 @@
     },
     "adNotificationsTitle": "Notificaciones de anuncios",
     "appbarPage": "Panel de control",
+    "tabs": {
+      "label": "Secciones del panel",
+      "commands": "Comandos",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Juegos"
+    },
     "aside": {
       "addBot": "Añadir bot a mi canal",
       "botInChannel": "Bot en tu canal",
@@ -104,7 +111,8 @@
         "botlang": "Define el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en la pestaña Bot.",
         "auto": "Define la frecuencia con la que el bot envía mensajes automáticos y qué tipos envía. También puedes hacerlo en Configuración de Auto-Chat en la pestaña Stream.",
         "disable": "Desactiva un comando desde el chat.",
-        "enable": "Vuelve a activar un comando desde el chat."
+        "enable": "Vuelve a activar un comando desde el chat.",
+        "timedgames": "Activa o desactiva los juegos programados y cambia su configuración desde el chat. También puedes hacerlo en Juegos programados en la pestaña Juegos."
       },
       "soOptions": {
         "aiMessage": "Escribir el mensaje con AI",
@@ -148,7 +156,9 @@
       "timers": "Cargando mensajes programados…",
       "timersAria": "Cargando mensajes programados",
       "gamesAria": "Cargando ajustes de los juegos",
-      "games": "Cargando ajustes de los juegos…"
+      "games": "Cargando ajustes de los juegos…",
+      "timedGames": "Cargando la configuración de los juegos programados…",
+      "timedGamesAria": "Cargando la configuración de los juegos programados"
     },
     "permission": {
       "broadcaster": "Streamer",
@@ -252,12 +262,16 @@
       "roundPause": "Pausa entre rondas",
       "roundPauseHelp": "Tiempo para leer la respuesta antes del siguiente acertijo."
     },
-    "tabs": {
-      "label": "Secciones del panel",
-      "commands": "Comandos",
-      "bot": "Bot",
-      "stream": "Stream",
-      "games": "Juegos"
+    "timedGamesTitle": "Juegos programados",
+    "timedGames": {
+      "help": "El bot puede iniciar un juego en el chat a intervalos fijos mientras estés en directo. Cada vez, jugará una ronda del siguiente juego de tu lista. Los moderadores también pueden cambiar estos ajustes desde el chat con !timedgames.",
+      "enabled": "Iniciar juegos con temporizador",
+      "enabledHelp": "Esta opción está desactivada por defecto. Si hay una partida en curso, el bot esperará a que termine.",
+      "offNote": "Activa los juegos programados para ver su configuración.",
+      "interval": "Tiempo entre juegos",
+      "intervalHelp": "El tiempo transcurrido desde el inicio de un juego programado hasta el inicio del siguiente.",
+      "games": "Juegos",
+      "gamesHelp": "El bot usará estos juegos por turnos. Si un juego está desactivado en Juegos de chat, el bot se lo saltará."
     }
   },
   "status": {
@@ -326,7 +340,9 @@
     "updateFailed": "Error al actualizar {item}.",
     "loadGamesFailed": "No se cargó la configuración de los juegos.",
     "gameSaved": "Ajustes de {game} guardados.",
-    "gameReset": "Ajustes de {game} restablecidos por defecto."
+    "gameReset": "Ajustes de {game} restablecidos por defecto.",
+    "timedGamesSaved": "Configuración de juegos programados guardada.",
+    "loadTimedGamesFailed": "No se pudo cargar la configuración de los juegos programados."
   },
   "validation": {
     "checkinCost": "El costo debe estar entre 1 y 999999 puntos.",
@@ -341,6 +357,7 @@
     "responseRequired": "El texto de la respuesta es obligatorio.",
     "timerNameRequired": "El nombre del temporizador es obligatorio.",
     "gamesRange": "Introduce un número entero de {min} a {max}.",
-    "gamesList": "Introduce hasta {maxItems} nombres. Cada nombre puede tener hasta {maxLength} caracteres."
+    "gamesList": "Introduce hasta {maxItems} nombres. Cada nombre puede tener hasta {maxLength} caracteres.",
+    "timedGamesNone": "Selecciona uno o más juegos."
   }
 }

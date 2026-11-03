@@ -11,6 +11,7 @@ import { initCheckin, loadCheckinSettings } from './sections/checkin.js';
 import { initPersona, loadPersona } from './sections/persona.js';
 import { initBotLanguage, loadBotLanguage } from './sections/bot-language.js';
 import { initGames, loadGames, renderGameSwitches } from './sections/games.js';
+import { initTimedGames, loadTimedGames } from './sections/timed-games.js';
 import { initTabs } from './vendor/wc-tabs.js';
 
 let twitchUsernameEl;
@@ -26,7 +27,8 @@ async function reloadAllConfigs() {
         loadCheckinSettings(),
         loadPersona(),
         loadBotLanguage(),
-        loadGames()
+        loadGames(),
+        loadTimedGames()
     ]);
 }
 
@@ -132,6 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initPersona();
     initBotLanguage();
     initGames();
+    initTimedGames();
 
     // Setup global UI listeners
     setupNumericInputs();

@@ -148,6 +148,7 @@ export const ALL_COMMANDS = [
   "followage",
   "so",
   "timer",
+  "timedgames",
   "remember",
   "forget",
   "forgetme",
@@ -326,6 +327,21 @@ export const GAME_CONFIGS: Record<GameId, GameConfigSpec> = {
       multiRoundDelayMs: { type: "int", min: 1000, max: 60000 },
     },
   },
+};
+
+// Timed games: chat games the bot starts on its own at a fixed interval while
+// the stream is live. One document per channel, timedGameConfigs/{broadcasterId},
+// keyed by broadcaster ID (utils/channelKey). The bot owns the runtime fields
+// (lastRunAt, lastGame), so the dashboard never writes them. The defaults and
+// limits copy the bot's src/components/timedGames/timedGamesStorage.js; change
+// both together.
+export const TIMED_GAMES_COLLECTION = "timedGameConfigs";
+export const TIMED_GAMES_MIN_INTERVAL_MINUTES = 5;
+export const TIMED_GAMES_MAX_INTERVAL_MINUTES = 720;
+export const DEFAULT_TIMED_GAMES_CONFIG = {
+  enabled: false,
+  intervalMinutes: 30,
+  games: [...GAME_IDS] as GameId[],
 };
 
 // Token cache configuration

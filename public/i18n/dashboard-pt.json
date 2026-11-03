@@ -28,6 +28,13 @@
     },
     "adNotificationsTitle": "Notificações de anúncios",
     "appbarPage": "Painel",
+    "tabs": {
+      "label": "Seções do painel",
+      "commands": "Comandos",
+      "bot": "Bot",
+      "stream": "Stream",
+      "games": "Jogos"
+    },
     "aside": {
       "addBot": "Adicionar bot ao meu canal",
       "botInChannel": "Bot no seu canal",
@@ -104,7 +111,8 @@
         "botlang": "Define o idioma das respostas do bot no chat. Você também pode fazer isso em Idioma do Bot na aba Bot.",
         "auto": "Define a frequência com que o bot envia mensagens automáticas e quais tipos envia. Você também pode fazer isso em Configurações do Auto-Chat na aba Stream.",
         "disable": "Desativa um comando pelo chat.",
-        "enable": "Reativa um comando pelo chat."
+        "enable": "Reativa um comando pelo chat.",
+        "timedgames": "Ativa ou desativa jogos temporizados e altera suas configurações pelo chat. Você também pode fazer isso em Jogos Temporizados na aba Jogos."
       },
       "soOptions": {
         "aiMessage": "Escrever a mensagem com AI",
@@ -148,7 +156,9 @@
       "timers": "Carregando mensagens temporizadas…",
       "timersAria": "Carregando mensagens temporizadas",
       "gamesAria": "Carregando configurações dos jogos",
-      "games": "Carregando configurações dos jogos…"
+      "games": "Carregando configurações dos jogos…",
+      "timedGames": "Carregando configurações dos jogos temporizados…",
+      "timedGamesAria": "Carregando configurações dos jogos temporizados"
     },
     "permission": {
       "broadcaster": "Streamer",
@@ -252,12 +262,16 @@
       "roundPause": "Pausa entre rodadas",
       "roundPauseHelp": "O tempo para ler a resposta antes de começar a próxima charada."
     },
-    "tabs": {
-      "label": "Seções do painel",
-      "commands": "Comandos",
-      "bot": "Bot",
-      "stream": "Stream",
-      "games": "Jogos"
+    "timedGamesTitle": "Jogos Temporizados",
+    "timedGames": {
+      "help": "O bot pode iniciar um jogo no chat em intervalos fixos enquanto sua live estiver ao vivo. A cada vez, ele roda uma rodada do próximo jogo da sua lista. Moderadores também podem alterar essas configurações no chat com !timedgames.",
+      "enabled": "Iniciar jogos com temporizador",
+      "enabledHelp": "Esta configuração vem desativada por padrão. Se um jogo já estiver rolando, o bot espera ele terminar.",
+      "offNote": "Ative os jogos temporizados para ver as configurações.",
+      "interval": "Intervalo entre jogos",
+      "intervalHelp": "O tempo entre o início de um jogo temporizado e o início do próximo.",
+      "games": "Jogos",
+      "gamesHelp": "O bot alterna entre esses jogos. Se um jogo estiver desativado em Jogos do Chat, o bot vai pulá-lo."
     }
   },
   "status": {
@@ -326,7 +340,9 @@
     "updateFailed": "Falha ao atualizar {item}.",
     "loadGamesFailed": "As configurações do jogo não carregaram.",
     "gameSaved": "Configurações de {game} salvas.",
-    "gameReset": "As configurações de {game} voltaram ao padrão."
+    "gameReset": "As configurações de {game} voltaram ao padrão.",
+    "timedGamesSaved": "Configurações dos jogos temporizados salvas.",
+    "loadTimedGamesFailed": "Não foi possível carregar as configurações dos jogos temporizados."
   },
   "validation": {
     "checkinCost": "O custo deve ser entre 1 e 999999 pontos.",
@@ -341,6 +357,7 @@
     "responseRequired": "O texto da resposta é obrigatório.",
     "timerNameRequired": "O nome do timer é obrigatório.",
     "gamesRange": "Insira um número inteiro de {min} a {max}.",
-    "gamesList": "Insira até {maxItems} nomes. Cada nome pode ter até {maxLength} caracteres."
+    "gamesList": "Insira até {maxItems} nomes. Cada nome pode ter até {maxLength} caracteres.",
+    "timedGamesNone": "Selecione um ou mais jogos."
   }
 }

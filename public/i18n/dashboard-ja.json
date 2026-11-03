@@ -28,6 +28,13 @@
     },
     "adNotificationsTitle": "広告通知",
     "appbarPage": "ダッシュボード",
+    "tabs": {
+      "label": "ダッシュボード項目",
+      "commands": "コマンド",
+      "bot": "ボット",
+      "stream": "配信",
+      "games": "ゲーム"
+    },
     "aside": {
       "addBot": "自分のチャンネルにボットを追加",
       "botInChannel": "チャンネル内のボット",
@@ -104,7 +111,8 @@
         "botlang": "チャットでのBot返答の言語を設定します。「ボット」タブの「ボットの言語」でも設定できます。",
         "auto": "Botが自動メッセージを投稿する頻度と種類を設定します。「配信」タブの「自動チャット設定」でも設定できます。",
         "disable": "チャットからコマンドをオフにします。",
-        "enable": "チャットからコマンドを再びオンにします。"
+        "enable": "チャットからコマンドを再びオンにします。",
+        "timedgames": "チャットから定期ゲームのオン/オフや設定の変更ができます。「ゲーム」タブの「定期ゲーム」からも設定可能です。"
       },
       "soOptions": {
         "aiMessage": "AIでメッセージを作成",
@@ -148,7 +156,9 @@
       "timers": "タイマーメッセージを読み込み中…",
       "timersAria": "タイマーメッセージを読み込み中",
       "gamesAria": "ゲーム設定を読み込み中",
-      "games": "ゲーム設定を読み込み中…"
+      "games": "ゲーム設定を読み込み中…",
+      "timedGames": "定期ゲームの設定を読み込み中…",
+      "timedGamesAria": "定期ゲームの設定を読み込み中"
     },
     "permission": {
       "broadcaster": "配信者",
@@ -252,12 +262,16 @@
       "roundPause": "ラウンド間の待機時間",
       "roundPauseHelp": "次の問題が始まる前に答えを確認する時間です。"
     },
-    "tabs": {
-      "label": "ダッシュボード項目",
-      "commands": "コマンド",
-      "bot": "ボット",
-      "stream": "配信",
-      "games": "ゲーム"
+    "timedGamesTitle": "定期ゲーム",
+    "timedGames": {
+      "help": "配信中、ボットが一定の間隔でチャットゲームを自動開始します。リストの次のゲームが順番に1ラウンドずつプレイされます。モデレーターはチャットで !timedgames を使って設定を変更することもできます。",
+      "enabled": "タイマーでゲームを開始する",
+      "enabledHelp": "この設定はデフォルトでオフです。ゲームの進行中は、そのゲームが終わるまで待機します。",
+      "offNote": "設定を表示するには定期ゲームをオンにしてください。",
+      "interval": "ゲームの間隔",
+      "intervalHelp": "ある定期ゲームの開始から、次のゲームの開始までの時間です。",
+      "games": "ゲーム",
+      "gamesHelp": "ボットはこれらのゲームを順番に開始します。「チャットゲーム」でオフになっているゲームはスキップされます。"
     }
   },
   "status": {
@@ -326,7 +340,9 @@
     "updateFailed": "{item}の更新に失敗しました。",
     "loadGamesFailed": "ゲーム設定を読み込めませんでした。",
     "gameSaved": "{game}の設定を保存しました。",
-    "gameReset": "{game}の設定をデフォルトに戻しました。"
+    "gameReset": "{game}の設定をデフォルトに戻しました。",
+    "timedGamesSaved": "定期ゲームの設定を保存しました。",
+    "loadTimedGamesFailed": "定期ゲームの設定を読み込めませんでした。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",
@@ -341,6 +357,7 @@
     "responseRequired": "応答テキストは必須です。",
     "timerNameRequired": "タイマー名は必須です。",
     "gamesRange": "{min}から{max}までの整数を入力してください。",
-    "gamesList": "最大{maxItems}個の名前を入力してください。各名前は最大{maxLength}文字です。"
+    "gamesList": "最大{maxItems}個の名前を入力してください。各名前は最大{maxLength}文字です。",
+    "timedGamesNone": "1つ以上のゲームを選択してください。"
   }
 }

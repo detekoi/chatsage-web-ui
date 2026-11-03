@@ -649,6 +649,71 @@
         </div>
         <div class="tab-pane" id="tab-games" role="tabpanel" aria-labelledby="tab-btn-games" hidden>
 
+        <!-- Timed Games Section -->
+        <div id="timed-games-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.timedGamesTitle">Timed Games</h2>
+                </div>
+                <div class="card-body">
+                    <p class="wc-card-desc" data-i18n="page.timedGames.help">The bot can start a chat game at a fixed interval while your stream is live. Each time, it plays one round of the next game in your list. Moderators can also change these settings in chat with !timedgames.</p>
+                    <div id="timed-games-loading" class="wc-loading" hidden>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading timed games settings" data-i18n-aria-label="page.loading.timedGamesAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.timedGames">Loading timed games settings…</p>
+                    </div>
+                    <div id="timed-games-group" class="list-group games-group">
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="timed-games-enabled" class="form-check-label"><strong data-i18n="page.timedGames.enabled">Start games on a timer</strong></label>
+                                    <p id="timed-games-enabled-desc" class="text-muted mb-0" data-i18n="page.timedGames.enabledHelp">This setting is off by default. If a game is in progress, the bot waits until that game ends.</p>
+                                    <p id="timed-games-off-note" class="text-muted mb-0" data-i18n="page.timedGames.offNote">Turn on timed games to see their settings.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="timed-games-enabled" class="form-check-input" role="switch" aria-describedby="timed-games-enabled-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item" data-timed-setting>
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="timed-games-interval" class="form-check-label"><strong data-i18n="page.timedGames.interval">Time between games</strong></label>
+                                    <p id="timed-games-interval-desc" class="text-muted mb-0" data-i18n="page.timedGames.intervalHelp">The time from the start of one timed game to the start of the next game.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="games-number">
+                                        <input type="text" inputmode="numeric" pattern="[0-9]*" id="timed-games-interval" class="form-control" aria-describedby="timed-games-interval-desc" data-min="5" data-max="720" maxlength="5" autocomplete="off">
+                                        <span class="wc-unit" aria-hidden="true" data-i18n="page.games.unitMinutes">min</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item" data-timed-setting>
+                            <fieldset id="timed-games-games" class="timed-games-pool" aria-describedby="timed-games-games-desc">
+                                <legend class="form-check-label"><strong data-i18n="page.timedGames.games">Games</strong></legend>
+                                <p id="timed-games-games-desc" class="text-muted timed-games-pool-help" data-i18n="page.timedGames.gamesHelp">The bot uses these games in turn. If a game is off in Chat Games, the bot skips it.</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="timed-games-game-trivia" value="trivia">
+                                    <label class="form-check-label" for="timed-games-game-trivia" data-i18n="page.games.trivia">Trivia</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="timed-games-game-geo" value="geo">
+                                    <label class="form-check-label" for="timed-games-game-geo" data-i18n="page.games.geo">Geo-Game</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="timed-games-game-riddle" value="riddle">
+                                    <label class="form-check-label" for="timed-games-game-riddle" data-i18n="page.games.riddle">Riddle</label>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <p id="timed-games-message" class="text-muted mb-0 timed-games-status" role="status" aria-live="polite"></p>
+                </div>
+            </div>
+        </div>
+
         <!-- Chat Games Section -->
         <div id="games-section">
             <div class="card wc-card">
