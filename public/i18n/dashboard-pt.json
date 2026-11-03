@@ -269,7 +269,7 @@
     "timedGames": {
       "help": "O bot pode iniciar um jogo no chat em intervalos fixos enquanto sua live estiver ao vivo. A cada vez, ele roda uma rodada do próximo jogo da sua lista. Moderadores também podem alterar essas configurações no chat com !timedgames.",
       "enabled": "Iniciar jogos com temporizador",
-      "enabledHelp": "Esta configuração vem desativada por padrão. Se um jogo já estiver rolando, o bot espera ele terminar.",
+      "enabledHelp": "Se um jogo já estiver rolando, o bot espera ele terminar.",
       "offNote": "Ative os jogos temporizados para ver as configurações.",
       "interval": "Intervalo entre jogos",
       "intervalHelp": "O tempo entre o início de um jogo temporizado e o início do próximo.",

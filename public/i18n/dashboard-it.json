@@ -269,7 +269,7 @@
     "timedGames": {
       "help": "Il bot può avviare un gioco in chat a intervalli regolari mentre la live è attiva. Ogni volta, avvia un round del gioco successivo nell'elenco. I moderatori possono modificare queste impostazioni anche in chat con !timedgames.",
       "enabled": "Avvia giochi a intervalli",
-      "enabledHelp": "Questa impostazione è disattivata per impostazione predefinita. Se un gioco è già in corso, il bot aspetta che finisca.",
+      "enabledHelp": "Se un gioco è già in corso, il bot aspetta che finisca.",
       "offNote": "Attiva i giochi a tempo per vederne le impostazioni.",
       "interval": "Tempo tra i giochi",
       "intervalHelp": "Il tempo che passa tra l'inizio di un gioco a tempo e l'inizio del successivo.",
