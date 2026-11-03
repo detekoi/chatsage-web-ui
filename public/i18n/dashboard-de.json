@@ -269,7 +269,7 @@
     "timedGames": {
       "help": "Der Bot kann in festen Abständen ein Chat-Spiel starten, während dein Stream live ist. Dabei wird jeweils eine Runde des nächsten Spiels in deiner Liste gespielt. Moderatoren können diese Einstellungen auch im Chat mit !timedgames anpassen.",
       "enabled": "Spiele per Timer starten",
-      "enabledHelp": "Diese Einstellung ist standardmäßig deaktiviert. Wenn bereits ein Spiel läuft, wartet der Bot, bis dieses beendet ist.",
+      "enabledHelp": "Wenn bereits ein Spiel läuft, wartet der Bot, bis dieses beendet ist.",
       "offNote": "Aktiviere zeitgesteuerte Spiele, um deren Einstellungen zu sehen.",
       "interval": "Zeit zwischen Spielen",
       "intervalHelp": "Die Zeit vom Start eines zeitgesteuerten Spiels bis zum Start des nächsten Spiels.",

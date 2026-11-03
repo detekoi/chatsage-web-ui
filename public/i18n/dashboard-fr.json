@@ -269,7 +269,7 @@
     "timedGames": {
       "help": "Le bot peut lancer un jeu dans le chat à intervalles réguliers pendant ton live. À chaque fois, il lance une manche du prochain jeu de ta liste. Les modérateurs peuvent aussi modifier ces paramètres dans le chat avec !timedgames.",
       "enabled": "Lancer les jeux avec un minuteur",
-      "enabledHelp": "Ce paramètre est désactivé par défaut. Si un jeu est en cours, le bot attend qu'il se termine.",
+      "enabledHelp": "Si un jeu est en cours, le bot attend qu'il se termine.",
       "offNote": "Active les jeux programmés pour voir leurs paramètres.",
       "interval": "Temps entre les jeux",
       "intervalHelp": "Le temps écoulé entre le début d'un jeu programmé et le début du suivant.",
