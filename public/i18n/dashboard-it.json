@@ -243,7 +243,7 @@
       "scoreTracking": "Registra punteggio",
       "scoreTrackingHelp": "Il bot registra punti e vittorie nella classifica del canale.",
       "topics": "Argomenti preferiti",
-      "topicsHelp": "Se un gioco inizia senza un argomento, il bot ne sceglie uno tra questi. Separa gli argomenti con una virgola. Se l'elenco è vuoto, le domande saranno di cultura generale.",
+      "topicsHelp": "Se un gioco inizia senza un argomento, il bot ne sceglie uno tra questi. Separa gli argomenti con una virgola. Con l'argomento \"game\", le domande riguardano il gioco che trasmetti. Se l'elenco è vuoto, le domande saranno di cultura generale.",
       "topicsPlaceholder": "Spazio, Pokémon, musica anni 90",
       "reset": "Ripristina predefiniti",
       "geo": "Geo-Game",

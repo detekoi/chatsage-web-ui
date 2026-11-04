@@ -243,7 +243,7 @@
             "scoreTracking": "Keep score",
             "scoreTrackingHelp": "The bot records points and wins on the channel leaderboard.",
             "topics": "Preferred topics",
-            "topicsHelp": "If a game starts with no topic, the bot picks one of these topics. Put a comma between topics. If the list is empty, the questions are about general knowledge.",
+            "topicsHelp": "If a game starts with no topic, the bot picks one of these topics. Put a comma between topics. If you type game as a topic, the questions are about the game that you stream. If the list is empty, the questions are about general knowledge.",
             "topicsPlaceholder": "Space, Pokémon, 90s music",
             "reset": "Reset to defaults",
             "geo": "Geo-Game",

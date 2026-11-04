@@ -243,7 +243,7 @@
       "scoreTracking": "Marcar pontuação",
       "scoreTrackingHelp": "O bot registra pontos e vitórias no placar do canal.",
       "topics": "Tópicos preferidos",
-      "topicsHelp": "Se um jogo começar sem tópico, o bot escolhe um destes tópicos. Separe os tópicos por vírgula. Se a lista estiver vazia, as perguntas serão sobre conhecimentos gerais.",
+      "topicsHelp": "Se um jogo começar sem tópico, o bot escolhe um destes tópicos. Separe os tópicos por vírgula. Com o tópico \"game\", as perguntas são sobre o jogo que você transmite. Se a lista estiver vazia, as perguntas serão sobre conhecimentos gerais.",
       "topicsPlaceholder": "Espaço, Pokémon, Música dos anos 90",
       "reset": "Restaurar padrões",
       "geo": "Geo-Game",

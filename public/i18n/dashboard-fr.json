@@ -243,7 +243,7 @@
       "scoreTracking": "Compter les scores",
       "scoreTrackingHelp": "Le bot enregistre les points et les victoires dans le classement de la chaîne.",
       "topics": "Thèmes favoris",
-      "topicsHelp": "Si une partie commence sans thème, le bot en choisit un parmi ceux-ci. Séparez les thèmes par une virgule. Si la liste est vide, les questions porteront sur la culture générale.",
+      "topicsHelp": "Si une partie commence sans thème, le bot en choisit un parmi ceux-ci. Séparez les thèmes par une virgule. Avec le thème « game », les questions portent sur le jeu que vous streamez. Si la liste est vide, les questions porteront sur la culture générale.",
       "topicsPlaceholder": "Espace, Pokémon, Musique des années 90",
       "reset": "Rétablir par défaut",
       "geo": "Jeu Géo",
