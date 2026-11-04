@@ -243,7 +243,7 @@
       "scoreTracking": "Punkte zählen",
       "scoreTrackingHelp": "Der Bot speichert Punkte und Siege auf der Bestenliste des Kanals.",
       "topics": "Bevorzugte Themen",
-      "topicsHelp": "Startet ein Spiel ohne Thema, wählt der Bot eines dieser Themen. Themen mit Kommas trennen. Ist die Liste leer, gibt es Fragen zum Allgemeinwissen.",
+      "topicsHelp": "Startet ein Spiel ohne Thema, wählt der Bot eines dieser Themen. Themen mit Kommas trennen. Mit dem Thema „game“ gibt es Fragen zu dem Spiel, das du streamst. Ist die Liste leer, gibt es Fragen zum Allgemeinwissen.",
       "topicsPlaceholder": "Weltraum, Pokémon, 90er-Musik",
       "reset": "Auf Standard zurücksetzen",
       "geo": "Geo-Game",

@@ -243,7 +243,7 @@
       "scoreTracking": "Llevar puntuación",
       "scoreTrackingHelp": "El bot registra los puntos y victorias en la tabla de clasificación del canal.",
       "topics": "Temas preferidos",
-      "topicsHelp": "Si una partida empieza sin tema, el bot elegirá uno de estos. Separa los temas con comas. Si la lista está vacía, las preguntas serán de cultura general.",
+      "topicsHelp": "Si una partida empieza sin tema, el bot elegirá uno de estos. Separa los temas con comas. Con el tema \"game\", las preguntas son sobre el juego que transmites. Si la lista está vacía, las preguntas serán de cultura general.",
       "topicsPlaceholder": "Espacio, Pokémon, música de los 90",
       "reset": "Restablecer por defecto",
       "geo": "Geo-Game",
