@@ -24,6 +24,7 @@ import personaRouter from "./persona.router";
 import languageRouter from "./language.router";
 import gamesRouter from "./games.router";
 import timedGamesRouter from "./timedGames.router";
+import responseStyleRouter from "./responseStyle.router";
 import previewRouter from "./preview.router";
 
 const router = Router();
@@ -40,6 +41,7 @@ router.use("/auto-chat", autoChatRouter);
 router.use("/language", languageRouter);
 router.use("/games", gamesRouter);
 router.use("/timed-games", timedGamesRouter);
+router.use("/response-style", responseStyleRouter);
 router.use("/auth", authStatusRouter);
 router.use("/custom-commands", aiPromptWriteLimiter, customCommandsRouter);
 router.use("/checkin", checkinWriteLimiter, checkinRouter);

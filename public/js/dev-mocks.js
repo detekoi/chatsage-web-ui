@@ -96,6 +96,9 @@ export const mockGameSettings = {
 // GET /api/timed-games. Off by default, as for a new channel.
 export const mockTimedGames = { enabled: false, intervalMinutes: 30, games: ['trivia', 'geo', 'riddle'] };
 
+// GET /api/response-style. Off by default, as for a new channel.
+export const mockResponseStyle = { deslop: false };
+
 export function mockDelay(ms = 500) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

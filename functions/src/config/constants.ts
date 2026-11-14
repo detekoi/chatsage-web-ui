@@ -153,6 +153,7 @@ export const ALL_COMMANDS = [
   "forget",
   "forgetme",
   "memory",
+  "deslop",
 ];
 
 // Commands a channel cannot turn off: !enable and !disable so moderators can always re-enable a
@@ -344,6 +345,11 @@ export const DEFAULT_TIMED_GAMES_CONFIG = {
   intervalMinutes: 30,
   games: [...GAME_IDS] as GameId[],
 };
+
+// The De-Slop switch, one document per channel keyed by broadcaster ID. The bot
+// reads and writes the same documents in
+// src/components/context/responseStyleStorage.js; change both together.
+export const RESPONSE_STYLE_COLLECTION = "channelResponseStyles";
 
 // Token cache configuration
 export const TOKEN_CACHE_BUFFER_SECONDS = 300; // 5 minutes before expiry

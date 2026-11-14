@@ -113,7 +113,8 @@
                 "botlang": "Sets the language of the bot replies from chat. You can also do this in Bot Language in the Bot tab.",
                 "auto": "Sets how often the bot posts automatic messages, and which types it posts. You can also do this in Auto-Chat Settings in the Stream tab.",
                 "disable": "Turns off a command from chat.",
-                "enable": "Turns a command back on from chat."
+                "enable": "Turns a command back on from chat.",
+                "deslop": "Turns De-Slop on or off from chat. You can also do this in De-Slop in the Bot tab."
             },
             "soOptions": {
                 "aiMessage": "Write the message with AI",
@@ -161,7 +162,9 @@
             "gamesAria": "Loading game settings",
             "games": "Loading game settings…",
             "timedGames": "Loading timed games settings…",
-            "timedGamesAria": "Loading timed games settings"
+            "timedGamesAria": "Loading timed games settings",
+            "deslop": "Loading the De-Slop setting…",
+            "deslopAria": "Loading the De-Slop setting"
         },
         "permission": {
             "broadcaster": "Broadcaster",
@@ -275,6 +278,14 @@
             "intervalHelp": "The time from the start of one timed game to the start of the next game.",
             "games": "Games",
             "gamesHelp": "The bot uses these games in turn. If a game is off in Chat Games, the bot skips it."
+        },
+        "deslopTitle": "De-Slop",
+        "deslop": {
+            "help": "AI text has habits that readers notice, such as empty openers, hype words, and long dashes. De-Slop tells the bot to write without these habits. The personality of the bot stays the same.",
+            "enabled": "Use the plain writing rules",
+            "enabledHelp": "The rules apply to AI replies, automatic messages, and game text. The bot does not change quotes or fixed command text.",
+            "chatNote": "A moderator can also change this setting in chat with <code>!deslop on</code> or <code>!deslop off</code>.",
+            "credit": "The rules come from <a href=\"https://github.com/blader/humanizer\" target=\"_blank\" rel=\"noopener noreferrer\">Humanizer</a> by Siqi Chen (MIT License)."
         }
     },
     "status": {
@@ -345,7 +356,9 @@
         "gameSaved": "{game} settings saved.",
         "gameReset": "{game} settings are back to the defaults.",
         "timedGamesSaved": "Timed games settings saved.",
-        "loadTimedGamesFailed": "Timed games settings did not load."
+        "loadTimedGamesFailed": "Timed games settings did not load.",
+        "deslopSaved": "De-Slop setting saved.",
+        "loadDeslopFailed": "The De-Slop setting did not load."
     },
     "validation": {
         "checkinCost": "Cost must be between 1 and 999999 points.",
