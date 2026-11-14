@@ -12,6 +12,7 @@ import { initPersona, loadPersona } from './sections/persona.js';
 import { initBotLanguage, loadBotLanguage } from './sections/bot-language.js';
 import { initGames, loadGames, renderGameSwitches } from './sections/games.js';
 import { initTimedGames, loadTimedGames } from './sections/timed-games.js';
+import { initResponseStyle, loadResponseStyle } from './sections/response-style.js';
 import { initTabs } from './vendor/wc-tabs.js';
 
 let twitchUsernameEl;
@@ -28,7 +29,8 @@ async function reloadAllConfigs() {
         loadPersona(),
         loadBotLanguage(),
         loadGames(),
-        loadTimedGames()
+        loadTimedGames(),
+        loadResponseStyle()
     ]);
 }
 
@@ -135,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initBotLanguage();
     initGames();
     initTimedGames();
+    initResponseStyle();
 
     // Setup global UI listeners
     setupNumericInputs();

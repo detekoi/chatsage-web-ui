@@ -109,11 +109,12 @@
         "so": "他の配信者をチャットでおすすめします。ボットが配信者の紹介メッセージとチャンネルリンクを投稿します。",
         "command": "チャットからカスタムコマンドを追加、編集、削除します。このページの「カスタムコマンド」でも同じ操作ができます。",
         "timer": "チャットからタイマーメッセージを追加、編集、削除します。このページの「タイマーメッセージ」でも同じ操作ができます。",
+        "timedgames": "チャットから定期ゲームのオン/オフや設定の変更ができます。「ゲーム」タブの「定期ゲーム」からも設定可能です。",
         "botlang": "チャットでのBot返答の言語を設定します。「ボット」タブの「ボットの言語」でも設定できます。",
         "auto": "Botが自動メッセージを投稿する頻度と種類を設定します。「配信」タブの「自動チャット設定」でも設定できます。",
         "disable": "チャットからコマンドをオフにします。",
         "enable": "チャットからコマンドを再びオンにします。",
-        "timedgames": "チャットから定期ゲームのオン/オフや設定の変更ができます。「ゲーム」タブの「定期ゲーム」からも設定可能です。"
+        "deslop": "チャットからDe-Slopをオン・オフします。BotタブのDe-Slopでも設定できます。"
       },
       "soOptions": {
         "aiMessage": "AIでメッセージを作成",
@@ -161,7 +162,9 @@
       "gamesAria": "ゲーム設定を読み込み中",
       "games": "ゲーム設定を読み込み中…",
       "timedGames": "定期ゲームの設定を読み込み中…",
-      "timedGamesAria": "定期ゲームの設定を読み込み中"
+      "timedGamesAria": "定期ゲームの設定を読み込み中",
+      "deslop": "De-Slopの設定を読み込み中…",
+      "deslopAria": "De-Slopの設定を読み込み中"
     },
     "permission": {
       "broadcaster": "配信者",
@@ -275,6 +278,14 @@
       "intervalHelp": "ある定期ゲームの開始から、次のゲームの開始までの時間です。",
       "games": "ゲーム",
       "gamesHelp": "ボットはこれらのゲームを順番に開始します。「チャットゲーム」でオフになっているゲームはスキップされます。"
+    },
+    "deslopTitle": "De-Slop",
+    "deslop": {
+      "help": "AIの文章には、中身の薄い前置き、大げさな表現、長いダッシュなど読者が気づく癖があります。De-Slopはこうした癖をなくすようボットに指示します。ボットの性格は変わりません。",
+      "enabled": "シンプルな文章ルールを使う",
+      "enabledHelp": "AIの返信、自動メッセージ、ゲームのテキストに適用されます。引用や固定コマンドの文章は変更されません。",
+      "chatNote": "モデレーターはチャットで <code>!deslop on</code> または <code>!deslop off</code> を使ってこの設定を変更できます。",
+      "credit": "このルールはSiqi Chen氏の<a href=\"https://github.com/blader/humanizer\" target=\"_blank\" rel=\"noopener noreferrer\">Humanizer</a>（MITライセンス）に基づいています。"
     }
   },
   "status": {
@@ -345,7 +356,9 @@
     "gameSaved": "{game}の設定を保存しました。",
     "gameReset": "{game}の設定をデフォルトに戻しました。",
     "timedGamesSaved": "定期ゲームの設定を保存しました。",
-    "loadTimedGamesFailed": "定期ゲームの設定を読み込めませんでした。"
+    "loadTimedGamesFailed": "定期ゲームの設定を読み込めませんでした。",
+    "deslopSaved": "De-Slopの設定を保存しました。",
+    "loadDeslopFailed": "De-Slopの設定を読み込めませんでした。"
   },
   "validation": {
     "checkinCost": "コストは1〜999999ポイントの間で指定してください。",

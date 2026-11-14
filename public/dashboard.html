@@ -41,6 +41,8 @@
     <link rel="modulepreload" href="js/sections/persona.js">
     <link rel="modulepreload" href="js/sections/bot-language.js">
     <link rel="modulepreload" href="js/sections/games.js">
+    <link rel="modulepreload" href="js/sections/timed-games.js">
+    <link rel="modulepreload" href="js/sections/response-style.js">
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js" defer></script>
@@ -443,6 +445,42 @@
                         </div>
                         <p class="text-muted mb-0" style="font-size:0.75rem;" data-i18n="page.botLanguage.chatNote">A moderator can also set the language in chat with <code>!botlang</code>. Chat accepts more languages than this list.</p>
                         <p id="bot-language-message" class="text-muted mt-2 mb-0" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- De-Slop Section -->
+        <div id="response-style-section">
+            <div class="card wc-card">
+                <div class="card-header">
+                    <h2 class="wc-card-title mb-0" data-i18n="page.deslopTitle">De-Slop</h2>
+                </div>
+                <div class="card-body">
+                    <p class="wc-card-desc" data-i18n="page.deslop.help">AI text has habits that readers notice, such as empty openers, hype words, and long dashes. De-Slop tells the bot to write without these habits. The personality of the bot stays the same.</p>
+                    <div id="response-style-loading" class="wc-loading" hidden>
+                        <div class="wc-bar" role="progressbar" aria-label="Loading the De-Slop setting" data-i18n-aria-label="page.loading.deslopAria"><span></span></div>
+                        <p class="wc-loading-label" data-i18n="page.loading.deslop">Loading the De-Slop setting…</p>
+                    </div>
+                    <div class="list-group games-group">
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <label for="deslop-enabled" class="form-check-label"><strong data-i18n="page.deslop.enabled">Use the plain writing rules</strong></label>
+                                    <p id="deslop-enabled-desc" class="text-muted mb-0" data-i18n="page.deslop.enabledHelp">The rules apply to AI replies, automatic messages, and game text. The bot does not change quotes or fixed command text.</p>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" id="deslop-enabled" class="form-check-input" role="switch" aria-describedby="deslop-enabled-desc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="response-style-message" class="text-muted mb-0 response-style-status" role="status" aria-live="polite"></p>
+                    <div class="response-style-notes">
+                        <p class="text-muted mb-0" style="font-size:0.75rem;" data-i18n="page.deslop.chatNote">A moderator can also change this setting in chat with <code>!deslop on</code> or <code>!deslop off</code>.</p>
+                        <p class="text-muted mb-0" style="font-size:0.75rem;" data-i18n="page.deslop.credit">The rules come from <a href="https://github.com/blader/humanizer" target="_blank" rel="noopener noreferrer">Humanizer</a> by Siqi Chen (MIT License).</p>
                     </div>
                 </div>
             </div>

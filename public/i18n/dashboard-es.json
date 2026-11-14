@@ -109,11 +109,12 @@
         "so": "Recomienda a otro streamer a tu chat. El bot publica un mensaje sobre el streamer y un enlace a su canal.",
         "command": "Añade, edita y elimina comandos personalizados desde el chat. También puedes hacerlo en Comandos personalizados en esta página.",
         "timer": "Añade, edita y elimina mensajes programados desde el chat. También puedes hacerlo en Mensajes programados en esta página.",
+        "timedgames": "Activa o desactiva los juegos programados y cambia su configuración desde el chat. También puedes hacerlo en Juegos programados en la pestaña Juegos.",
         "botlang": "Define el idioma de las respuestas del bot desde el chat. También puedes hacerlo en Idioma del bot en la pestaña Bot.",
         "auto": "Define la frecuencia con la que el bot envía mensajes automáticos y qué tipos envía. También puedes hacerlo en Configuración de Auto-Chat en la pestaña Stream.",
         "disable": "Desactiva un comando desde el chat.",
         "enable": "Vuelve a activar un comando desde el chat.",
-        "timedgames": "Activa o desactiva los juegos programados y cambia su configuración desde el chat. También puedes hacerlo en Juegos programados en la pestaña Juegos."
+        "deslop": "Activa o desactiva De-Slop desde el chat. También puedes hacerlo en De-Slop en la pestaña Bot."
       },
       "soOptions": {
         "aiMessage": "Escribir el mensaje con AI",
@@ -161,7 +162,9 @@
       "gamesAria": "Cargando ajustes de los juegos",
       "games": "Cargando ajustes de los juegos…",
       "timedGames": "Cargando la configuración de los juegos programados…",
-      "timedGamesAria": "Cargando la configuración de los juegos programados"
+      "timedGamesAria": "Cargando la configuración de los juegos programados",
+      "deslop": "Cargando la configuración de De-Slop…",
+      "deslopAria": "Cargando la configuración de De-Slop"
     },
     "permission": {
       "broadcaster": "Streamer",
@@ -275,6 +278,14 @@
       "intervalHelp": "El tiempo transcurrido desde el inicio de un juego programado hasta el inicio del siguiente.",
       "games": "Juegos",
       "gamesHelp": "El bot usará estos juegos por turnos. Si un juego está desactivado en Juegos de chat, el bot se lo saltará."
+    },
+    "deslopTitle": "De-Slop",
+    "deslop": {
+      "help": "Los textos de AI tienen manías que la gente nota, como inicios vacíos, palabras exageradas y guiones largos. De-Slop le indica al bot que escriba sin estas manías. La personalidad del bot sigue igual.",
+      "enabled": "Usar las reglas de escritura simple",
+      "enabledHelp": "Las reglas se aplican a respuestas de AI, mensajes automáticos y textos de juegos. El bot no cambia citas ni textos fijos de comandos.",
+      "chatNote": "Un moderador también puede cambiar esto en el chat con <code>!deslop on</code> o <code>!deslop off</code>.",
+      "credit": "Las reglas vienen de <a href=\"https://github.com/blader/humanizer\" target=\"_blank\" rel=\"noopener noreferrer\">Humanizer</a> por Siqi Chen (Licencia MIT)."
     }
   },
   "status": {
@@ -345,7 +356,9 @@
     "gameSaved": "Ajustes de {game} guardados.",
     "gameReset": "Ajustes de {game} restablecidos por defecto.",
     "timedGamesSaved": "Configuración de juegos programados guardada.",
-    "loadTimedGamesFailed": "No se pudo cargar la configuración de los juegos programados."
+    "loadTimedGamesFailed": "No se pudo cargar la configuración de los juegos programados.",
+    "deslopSaved": "Configuración de De-Slop guardada.",
+    "loadDeslopFailed": "No se pudo cargar la configuración de De-Slop."
   },
   "validation": {
     "checkinCost": "El costo debe estar entre 1 y 999999 puntos.",

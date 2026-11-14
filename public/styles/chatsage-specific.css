@@ -194,7 +194,8 @@
     margin-block-end: 6px;
 }
 
-:root .wc-card .timed-games-status:not(:empty) {
+:root .wc-card .timed-games-status:not(:empty),
+:root .wc-card .response-style-status:not(:empty) {
     margin-block-start: 12px;
 }
 

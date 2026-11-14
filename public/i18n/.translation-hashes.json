@@ -735,7 +735,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:fr": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1053,7 +1064,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:de": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1371,7 +1393,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:it": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -1689,7 +1722,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:pt": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -2007,7 +2051,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:ja": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -2325,7 +2380,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "dashboard:ru": {
     "confirm.deleteCheckin": "fb0eb0a8c41544c1",
@@ -2643,7 +2709,18 @@
     "page.timedGames.gamesHelp": "7c9e9e76303908c8",
     "toast.timedGamesSaved": "c1705cd5cb593cb9",
     "toast.loadTimedGamesFailed": "c3951753095e3b63",
-    "validation.timedGamesNone": "a1c8860fcf463b5f"
+    "validation.timedGamesNone": "a1c8860fcf463b5f",
+    "page.commands.desc.deslop": "f690f8d630188af0",
+    "page.loading.deslop": "42e17127da9ee5cb",
+    "page.loading.deslopAria": "8d78b201a4e0cdc5",
+    "page.deslopTitle": "22013b4325c34833",
+    "page.deslop.help": "ba2231cff332643c",
+    "page.deslop.enabled": "8ae3af8510c08337",
+    "page.deslop.enabledHelp": "63d32d2a5b157899",
+    "page.deslop.chatNote": "66872e1c0308ef9e",
+    "page.deslop.credit": "29f0139e5d09cd6e",
+    "toast.deslopSaved": "8888a4aa42dfd381",
+    "toast.loadDeslopFailed": "9b7fdc210f40d1d0"
   },
   "index:es": {
     "page.accessLabel": "ec5ba0abb717da87",
